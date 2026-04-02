@@ -2,6 +2,9 @@
 
 A premium personal finance management system built with **FastAPI** (Python) and **React** (Vite). It features real-time analytics for spending, investment tracking (Gold, Property, etc.), and custom category management.
 
+<!-- uvicorn app.main:app --reload --port 8001 -->
+<!-- npm run dev -->
+
 ## Features
 - **Overview Dashboard**: Visual analytics with charts (Spending Trends & Asset Allocation).
 - **Spending Tracker**: Log daily expenses with categories.
