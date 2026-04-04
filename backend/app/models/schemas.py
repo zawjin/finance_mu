@@ -8,6 +8,8 @@ class SpendingItem(BaseModel):
     category: str
     sub_category: str
     description: str # The 'Details' field
+    recovered: float = 0 # Offset amount received against this spending
+    recovery_description: str = "" # Specific details about the recovery/adjustment
 
 class InvestmentItem(BaseModel):
     id: Optional[str] = Field(None, alias="_id")

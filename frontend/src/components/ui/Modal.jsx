@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-export default function Modal({ children, title, onClose }) {
+export default function Modal({ children, title, onClose, maxWidth }) {
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => { document.body.style.overflow = 'auto'; }

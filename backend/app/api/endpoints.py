@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema
 from app.core.database import db
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -19,12 +20,21 @@ async def add_spending(item: SpendingItem):
     result = await db.spending.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
+@router.put("/spending/{item_id}")
+async def update_spending(item_id: str, item: SpendingItem):
+    await db.spending.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    return {"status": "ok"}
+
+@router.delete("/spending/{item_id}")
+async def delete_spending(item_id: str):
+    await db.spending.delete_one({"_id": ObjectId(item_id)})
+    return {"status": "ok"}
+
 @router.get("/investments")
 async def get_investments():
     cursor = db.investments.find().sort("date", -1)
     return [format_doc(doc) async for doc in cursor]
 
-from bson import ObjectId
 
 @router.get("/categories")
 async def get_categories():

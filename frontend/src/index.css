@@ -559,6 +559,10 @@ select {
   border-bottom-color: transparent;
 }
 
+.transaction-row-fancy:hover .row-action-cluster {
+  opacity: 1 !important;
+}
+
 .badge-luxury-mini {
   padding: 0.3rem 0.7rem;
   background: var(--surface);

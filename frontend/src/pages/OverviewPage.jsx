@@ -16,8 +16,6 @@ export default function OverviewPage() {
     const { summary, loading } = useSelector(state => state.finance);
     const [viewMode, setViewMode] = useState('MONTHLY'); // DAILY, MONTHLY, YEARLY
 
-    if (loading) return <Loader message="Generating Intelligence Reports..." />;
-
     const chartData = useMemo(() => {
         if (!summary) return { labels: [], datasets: [] };
 
@@ -48,7 +46,7 @@ export default function OverviewPage() {
         };
     }, [summary, viewMode]);
 
-    if (loading) return <div className="loading-state">Syncing Financial Cloud...</div>
+    if (loading) return <Loader message="Generating Intelligence Reports..." />;
 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="page-container">
