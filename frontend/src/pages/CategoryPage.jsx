@@ -110,8 +110,10 @@ const getSuggestedBranding = (name) => {
 };
 
 export default function CategoryPage() {
-    const { categories, loading } = useSelector(state => state.finance);
+    const { categories, assetClasses, loading } = useSelector(state => state.finance);
     const dispatch = useDispatch();
+    
+    const [activeTab, setActiveTab] = useState('categories'); // 'categories' or 'asset_classes'
     
     // Form Dialog State
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -126,9 +128,10 @@ export default function CategoryPage() {
     const [isSaving, setIsSaving] = useState(false);
 
     // Sorted Categories A-Z
+    const activeDataList = activeTab === 'categories' ? categories : (assetClasses || []);
     const sortedCategories = useMemo(() => {
-        return [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    }, [categories]);
+        return [...activeDataList].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }, [activeDataList]);
 
     useEffect(() => {
         if (!editingId && autoSuggestEnabled && newName.length > 2) {
@@ -178,11 +181,13 @@ export default function CategoryPage() {
         setIsFormOpen(false);
         setIsSaving(true);
         
+        
+        const apiPath = activeTab === 'categories' ? '/categories' : '/asset_classes';
         try {
             if (editingId) {
-                await api.put(`/categories/${editingId}`, payload);
+                await api.put(`${apiPath}/${editingId}`, payload);
             } else {
-                await api.post('/categories', payload);
+                await api.post(apiPath, payload);
             }
             // Once data is returned, Redux will update and clear loading
             await dispatch(fetchFinanceData());
@@ -195,8 +200,9 @@ export default function CategoryPage() {
 
     const handleDelete = async (id) => {
         setIsSaving(true);
+        const apiPath = activeTab === 'categories' ? '/categories' : '/asset_classes';
         try {
-            await api.delete(`/categories/${id}`);
+            await api.delete(`${apiPath}/${id}`);
             await dispatch(fetchFinanceData());
         } catch (err) {
             console.error("Failed to delete", err);
@@ -215,18 +221,52 @@ export default function CategoryPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box sx={{ p: 1.2, bgcolor: 'primary.main', borderRadius: '12px', color: 'white', display: 'flex' }}><Settings size={22}/></Box>
                     <Box>
-                        <Typography variant="h5" fontWeight="900" letterSpacing="-0.02em">Category Architecture</Typography>
+                        <Typography variant="h5" fontWeight="900" letterSpacing="-0.02em">Architecture Central</Typography>
                         <Typography variant="caption" color="text.secondary" fontWeight="700">MASTER TAXONOMY ENGINE</Typography>
                     </Box>
                 </Box>
-                <Button 
-                    variant="contained" 
-                    startIcon={<Plus size={18} />} 
-                    onClick={openAddForm}
-                    sx={{ borderRadius: '12px', px: 3, fontWeight: '800', textTransform: 'none', boxShadow: 'none' }}
-                >
-                    Add Architecture
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '12px', p: 0.5 }}>
+                        <Button 
+                            onClick={() => setActiveTab('categories')}
+                            sx={{ 
+                                borderRadius: '10px', 
+                                px: 3, 
+                                py: 0.5, 
+                                fontWeight: 800, 
+                                color: activeTab === 'categories' ? '#1d1d1f' : 'text.secondary',
+                                bgcolor: activeTab === 'categories' ? 'white' : 'transparent',
+                                boxShadow: activeTab === 'categories' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                                textTransform: 'none'
+                            }}
+                        >
+                            Spending Categories
+                        </Button>
+                        <Button 
+                            onClick={() => setActiveTab('asset_classes')}
+                            sx={{ 
+                                borderRadius: '10px', 
+                                px: 3, 
+                                py: 0.5, 
+                                fontWeight: 800, 
+                                color: activeTab === 'asset_classes' ? '#1d1d1f' : 'text.secondary',
+                                bgcolor: activeTab === 'asset_classes' ? 'white' : 'transparent',
+                                boxShadow: activeTab === 'asset_classes' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                                textTransform: 'none'
+                            }}
+                        >
+                            Asset Classes
+                        </Button>
+                    </Box>
+                    <Button 
+                        variant="contained" 
+                        startIcon={<Plus size={18} />} 
+                        onClick={openAddForm}
+                        sx={{ borderRadius: '12px', px: 3, fontWeight: '800', textTransform: 'none', boxShadow: 'none' }}
+                    >
+                        New Entry
+                    </Button>
+                </Box>
             </Box>
 
             {/* List Table View */}

@@ -281,8 +281,14 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             {/* ANALYTICS HUB - TRIPLE BOX CONVERGENCE */}
             {showAnalytics && (
-                <Modal onClose={onToggleAnalytics} title="Intelligence Convergence Dashboard" maxWidth="1350px">
-                    <Box sx={{ p: 1 }}>
+                <motion.div 
+                    initial={{ height: 0, opacity: 0 }} 
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                    style={{ marginBottom: '2.5rem', overflow: 'hidden' }}
+                >
+                    <Box sx={{ p: 4, borderRadius: '32px', bgcolor: 'white', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
                         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'stretch', width: '100%' }}>
                             {/* BOX 1: ARCHITECTURE - 20% */}
                             <div style={{ flex: '0 0 calc(20% - 1rem)', maxWidth: 'calc(20% - 1rem)' }}>
@@ -290,11 +296,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <PieChart size={14} color="var(--primary)" /> ARCHITECTURE
                                     </Typography>
-                                    <Box sx={{ height: 200, position: 'relative', display: 'grid', placeItems: 'center', mb: 4 }}>
+                                    <Box sx={{ height: 180, position: 'relative', display: 'grid', placeItems: 'center', mb: 3 }}>
                                         <Doughnut data={chartConfig.doughnut} options={{ plugins: { legend: { display: false } }, maintainAspectRatio: false }} />
                                         <Box sx={{ position: 'absolute', textAlign: 'center' }}>
                                             <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>BURN</Typography>
-                                            <Typography variant="body1" sx={{ fontWeight: 900 }}>{formatCurrency(totals.spend)}</Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 900, fontSize: '0.85rem' }}>{formatCurrency(totals.grossSpend)}</Typography>
                                         </Box>
                                     </Box>
                                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -302,9 +308,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             <Box key={cat} sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: 'white', p: 1.25, borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getCatStyle(cat, categories).color }}></div>
-                                                    <Typography variant="caption" sx={{ fontWeight: 800 }}>{cat}</Typography>
+                                                    <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.65rem' }}>{cat}</Typography>
                                                 </Box>
-                                                <Typography variant="caption" sx={{ fontWeight: 900, color: getCatStyle(cat, categories).color }}>{formatCurrency(stats.net)}</Typography>
+                                                <Typography variant="caption" sx={{ fontWeight: 900, color: getCatStyle(cat, categories).color, fontSize: '0.65rem' }}>{formatCurrency(stats.net)}</Typography>
                                             </Box>
                                         ))}
                                     </Box>
@@ -313,13 +319,13 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                             {/* BOX 2: TRAJECTORY - 40% */}
                             <div style={{ flex: '0 0 calc(40% - 0.75rem)', maxWidth: 'calc(40% - 0.75rem)' }}>
-                                <Box sx={{ p: 3, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <TrendingUp size={14} color="#34c759" /> TRAJECTORY
                                         </Typography>
                                         <Box sx={{ textAlign: 'right' }}>
-                                            <Typography variant="h6" sx={{ fontWeight: 900, color: 'success.main', lineHeight: 1 }}>{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
+                                            <Typography variant="h6" sx={{ fontWeight: 900, color: '#34c759', lineHeight: 1 }}>{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
                                             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>CUMULATIVE</Typography>
                                         </Box>
                                     </div>
@@ -329,8 +335,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             options={{
                                                 plugins: { legend: { display: false } },
                                                 scales: {
-                                                    x: { grid: { display: false }, ticks: { font: { size: 9, weight: 800 } } },
-                                                    y: { grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { font: { size: 10, weight: 800 } } }
+                                                    x: { grid: { display: false }, ticks: { font: { family: 'Outfit', size: 9, weight: 800 }, color: '#86868b' } },
+                                                    y: { grid: { color: 'rgba(0,0,0,0.03)' }, border: { display: false }, ticks: { font: { family: 'Outfit', size: 10, weight: 800 }, color: '#86868b' } }
                                                 },
                                                 maintainAspectRatio: false
                                             }}
@@ -341,18 +347,18 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                             {/* BOX 3: VELOCITY - 40% */}
                             <div style={{ flex: '0 0 calc(40% - 0.75rem)', maxWidth: 'calc(40% - 0.75rem)' }}>
-                                <Box sx={{ p: 3, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Activity size={14} color="#0071e3" /> VELOCITY
                                     </Typography>
-                                    <Box sx={{ flex: 1, minHeight: 400 }}>
+                                    <Box sx={{ flex: 1, minHeight: 320 }}>
                                         <Bar
                                             data={chartConfig.bar}
                                             options={{
                                                 plugins: { legend: { display: false } },
                                                 scales: {
-                                                    x: { grid: { display: false }, ticks: { font: { size: 9, weight: 800 } } },
-                                                    y: { grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { font: { size: 10, weight: 800 } } }
+                                                    x: { grid: { display: false }, ticks: { font: { family: 'Outfit', size: 9, weight: 800 }, color: '#86868b' } },
+                                                    y: { grid: { color: 'rgba(0,0,0,0.03)' }, border: { display: false }, ticks: { font: { family: 'Outfit', size: 10, weight: 800 }, color: '#86868b' } }
                                                 },
                                                 maintainAspectRatio: false
                                             }}
@@ -362,7 +368,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             </div>
                         </div>
                     </Box>
-                </Modal>
+                </motion.div>
             )}
             
             {/* PERMANENT PURGE CONFIRMATION DIALOG - POP UP MODAL */}

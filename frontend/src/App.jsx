@@ -1,48 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { AnimatePresence } from 'framer-motion';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchFinanceData } from './store/financeSlice';
 import api from './utils/api';
-
-// Layout & UI Modules
-import TopNavbar from './components/layout/TopNavbar';
-import ExpenseForm from './components/ui/ExpenseForm';
-import { Dialog, DialogTitle, DialogContent, IconButton, Box, Typography, Grow } from '@mui/material';
+import { 
+    ThemeProvider, createTheme, CssBaseline, 
+    Dialog, DialogTitle, DialogContent, 
+    Typography, IconButton, Grow 
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { X } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
-// Page Modules
+import TopNavbar from './components/layout/TopNavbar';
 import OverviewPage from './pages/OverviewPage';
 import SpendingPage from './pages/SpendingPage';
 import InvestmentPage from './pages/InvestmentPage';
+import DebtPage from './pages/DebtPage';
 import CategoryPage from './pages/CategoryPage';
+import ExpenseForm from './components/ui/ExpenseForm';
+import InvestmentForm from './components/ui/InvestmentForm';
+import DebtForm from './components/ui/DebtForm';
+import AiAnalysisModal from './components/ui/AiAnalysisModal';
 
-import { useSelector } from 'react-redux';
-
-// Theming
 const appleTheme = createTheme({
+    typography: { fontFamily: 'Outfit, sans-serif' },
     palette: {
-        mode: 'light',
-        primary: { main: '#0071e3' },
-        secondary: { main: '#6366f1' },
-        background: { default: '#f5f5f7', paper: '#ffffff' },
-        text: { primary: '#1d1d1f', secondary: '#86868b' }
-    },
-    typography: {
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    },
-    shape: { borderRadius: 14 }
+        primary: { main: '#1d1d1f' },
+        background: { default: '#f8fafc' }
+    }
 });
 
 export default function App() {
     const dispatch = useDispatch();
-    const { categories } = useSelector(state => state.finance);
+    const { categories, assetClasses } = useSelector(state => state.finance);
+    
     const [editingItem, setEditingItem] = useState(null);
+    const [editingInvestment, setEditingInvestment] = useState(null);
+    const [editingDebt, setEditingDebt] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
+    const [showAddDebtModal, setShowAddDebtModal] = useState(false);
+    const [showAiModal, setShowAiModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
 
     useEffect(() => {
@@ -61,13 +62,57 @@ export default function App() {
             setShowAddModal(false);
         } catch (err) {
             console.error(err);
-            alert("Digital sync failed. Check cloud heartbeat.");
+        }
+    };
+
+    const handleInvestmentSubmit = async (data) => {
+        try {
+            if (editingInvestment) {
+                await api.put(`/investments/${editingInvestment._id}`, data);
+            } else {
+                await api.post('/investments', data);
+            }
+            dispatch(fetchFinanceData());
+            setEditingInvestment(null);
+            setShowAddInvestmentModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDebtSubmit = async (data) => {
+        try {
+            if (editingDebt) {
+                await api.put(`/debt/${editingDebt._id}`, data);
+            } else {
+                await api.post('/debt', data);
+            }
+            dispatch(fetchFinanceData());
+            setEditingDebt(null);
+            setShowAddDebtModal(false);
+        } catch (err) {
+            console.error(err);
         }
     };
 
     const handleCloseModal = () => {
         setEditingItem(null);
+        setEditingInvestment(null);
+        setEditingDebt(null);
         setShowAddModal(false);
+        setShowAddInvestmentModal(false);
+        setShowAddDebtModal(false);
+    };
+
+    const handleGlobalAdd = () => {
+        const path = window.location.pathname;
+        if (path === '/investments') {
+            setShowAddInvestmentModal(true);
+        } else if (path === '/debt') {
+            setShowAddDebtModal(true);
+        } else {
+            setShowAddModal(true);
+        }
     };
 
     return (
@@ -75,69 +120,59 @@ export default function App() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <CssBaseline />
                 <Router>
-                    <div className="app-shell">
-                        <TopNavbar onAdd={() => setShowAddModal(true)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />
+                    <div className="app-shell" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+                        <TopNavbar 
+                            onAdd={handleGlobalAdd} 
+                            onOpenAiModal={() => setShowAiModal(true)}
+                            onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
+                            showAnalytics={showAnalytics}
+                        />
 
                         <div className="content-shell">
-                            <main className="main-content">
+                            <main className="main-content" style={{ padding: '3.5rem' }}>
                                 <AnimatePresence mode="wait">
                                     <Routes>
                                         <Route path="/" element={<OverviewPage />} />
-                                        <Route path="/spending" element={<SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} />} />
-                                        <Route path="/investments" element={<InvestmentPage />} />
+                                        <Route path="/spending" element={<SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
+                                        <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
+                                        <Route path="/debt" element={<DebtPage onEdit={(item) => setEditingDebt(item)} />} />
                                         <Route path="/categories" element={<CategoryPage />} />
                                     </Routes>
                                 </AnimatePresence>
                             </main>
 
-                            {/* Global High-Fidelity Sync Engine */}
-                            <Dialog
-                                open={showAddModal || !!editingItem}
-                                onClose={handleCloseModal}
-                                TransitionComponent={Grow}
-                                transitionDuration={450}
-                                fullWidth
-                                maxWidth="sm"
-                                PaperProps={{ 
-                                    sx: { 
-                                        borderRadius: '28px', 
-                                        p: 0, 
-                                        overflow: 'hidden', 
-                                        width: '100%', 
-                                        maxWidth: '480px', 
-                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)' 
-                                    } 
-                                }}
-                                BackdropProps={{
-                                    sx: {
-                                        backdropFilter: 'blur(4px)',
-                                        backgroundColor: 'rgba(0,0,0,0.3)',
-                                        transition: '0.4s all ease-in-out'
-                                    }
-                                }}
-                            >
-                                <DialogTitle sx={{ p: 4, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'white' }}>
-                                    <Box>
-                                        <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.03em', color: '#1d1d1f' }}>
-                                            {editingItem ? 'Edit Transaction' : 'Sync New Record'}
-                                        </Typography>
-                                    </Box>
-                                    <IconButton
-                                        onClick={handleCloseModal}
-                                        sx={{ bgcolor: 'rgba(0,0,0,0.04)', color: '#1d1d1f', borderRadius: '12px', transition: '0.2s', '&:hover': { bgcolor: 'rgba(0,0,0,0.08)', transform: 'rotate(90deg)' } }}
-                                    >
-                                        <X size={20} />
-                                    </IconButton>
+                            {/* Forms Modals */}
+                            <Dialog open={showAddModal || !!editingItem} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
+                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingItem ? 'Edit Audit Log' : 'Sync Audit Log'}</Typography>
+                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
                                 </DialogTitle>
-                                <DialogContent sx={{ p: 0, bgcolor: 'white' }}>
-                                    <ExpenseForm 
-                                        categories={categories} 
-                                        onSubmit={handleExpenseSubmit} 
-                                        onCancel={handleCloseModal}
-                                        initialData={editingItem}
-                                    />
+                                <DialogContent sx={{ p: 0 }}>
+                                    <ExpenseForm categories={categories} onSubmit={handleExpenseSubmit} onCancel={handleCloseModal} initialData={editingItem} />
                                 </DialogContent>
                             </Dialog>
+
+                            <Dialog open={showAddInvestmentModal || !!editingInvestment} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
+                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingInvestment ? 'Edit Asset' : 'Sync Asset'}</Typography>
+                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
+                                </DialogTitle>
+                                <DialogContent sx={{ p: 0 }}>
+                                    <InvestmentForm assetClasses={assetClasses} onSubmit={handleInvestmentSubmit} onCancel={handleCloseModal} initialData={editingInvestment} />
+                                </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={showAddDebtModal || !!editingDebt} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
+                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingDebt ? 'Edit Debt Exposure' : 'Sync Debt Exposure'}</Typography>
+                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
+                                </DialogTitle>
+                                <DialogContent sx={{ p: 0 }}>
+                                    <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
+                                </DialogContent>
+                            </Dialog>
+
+                            <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />
                         </div>
                     </div>
                 </Router>

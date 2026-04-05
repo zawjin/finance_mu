@@ -1,7 +1,13 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 
-client = AsyncIOMotorClient(settings.MONGODB_URL, tlsAllowInvalidCertificates=True)
+# HIGH-RESILIENCE DATABASE LINK
+client = AsyncIOMotorClient(
+    settings.MONGODB_URL, 
+    tlsAllowInvalidCertificates=True,
+    serverSelectionTimeoutMS=5000, # Fail fast if cloud is blocked
+    connectTimeoutMS=5000
+)
 db = client[settings.DB_NAME]
 
 async def init_db():
