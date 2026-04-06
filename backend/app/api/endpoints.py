@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem
+from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, CardBillSettlement
 from app.core.database import db
 from bson import ObjectId
 import urllib.request
@@ -21,16 +21,94 @@ async def get_spending():
 
 @router.post("/spending")
 async def add_spending(item: SpendingItem):
+    # For credit card payments, default to unsettled until bill is paid
+    if item.payment_method == "CARD":
+        item.is_settled = False
     result = await db.spending.insert_one(item.dict(exclude={"id"}))
+    # Auto-deduct from reserve if a payment source is linked
+    if item.payment_source_id:
+        try:
+            target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
+            if target_reserve:
+                # Credit cards: spending increases outstanding. Liquid accounts: spending decreases balance.
+                adj = float(item.amount) if target_reserve.get("account_type") == "CREDIT_CARD" else -float(item.amount)
+                await db.reserves.update_one(
+                    {"_id": ObjectId(item.payment_source_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
+        except Exception as e:
+            print(f"Reserve deduction error: {e}")
     return {"id": str(result.inserted_id)}
 
 @router.put("/spending/{item_id}")
 async def update_spending(item_id: str, item: SpendingItem):
+    old_item = await db.spending.find_one({"_id": ObjectId(item_id)})
+    if not old_item:
+        return {"error": "Not found"}
+
+    # Calculate net changes for balance reconciliation
+    # 1. Total spent change: new_amount - old_amount
+    # 2. Total recovered change: new_recovered - old_recovered
+    # Total account adjustment = -(amount_change) + (recovered_change)
+    
+    amt_diff = float(item.amount) - float(old_item.get("amount", 0))
+    rec_diff = float(item.recovered) - float(old_item.get("recovered", 0))
+    
+    # Update the record
     await db.spending.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    
+    # Reconcile with Reserve if applicable
+    source_id = item.payment_source_id or old_item.get("payment_source_id")
+    if source_id:
+        try:
+            target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
+            if target_reserve:
+                # Liquid assets: spending decreases balance, recovery increases balance
+                # Credit cards: spending increases liability, recovery decreases liability
+                
+                # Base Adjustment for Liquid: -amt_diff + rec_diff
+                adj = -amt_diff + rec_diff
+                
+                # Flip for Credit Card (Liability)
+                if target_reserve.get("account_type") == "CREDIT_CARD":
+                    adj = amt_diff - rec_diff
+                
+                await db.reserves.update_one(
+                    {"_id": ObjectId(source_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
+        except Exception as e:
+            print(f"Reconciliation error: {e}")
+
     return {"status": "ok"}
 
 @router.delete("/spending/{item_id}")
 async def delete_spending(item_id: str):
+    old_item = await db.spending.find_one({"_id": ObjectId(item_id)})
+    if not old_item:
+        return {"error": "Not found"}
+
+    # Calculate net refund: amount - recovered
+    # For liquid: balance + net_refund
+    # For card: balance - net_refund (reducing outstanding)
+    net_refund = float(old_item.get("amount", 0)) - float(old_item.get("recovered", 0))
+    source_id = old_item.get("payment_source_id")
+
+    if source_id:
+        try:
+            target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
+            if target_reserve:
+                adj = net_refund
+                if target_reserve.get("account_type") == "CREDIT_CARD":
+                    adj = -net_refund # Reducing outstanding
+                
+                await db.reserves.update_one(
+                    {"_id": ObjectId(source_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
+        except Exception as e:
+            print(f"Delete refund error: {e}")
+
     await db.spending.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
@@ -42,6 +120,20 @@ async def get_investments():
 @router.post("/investments")
 async def add_investment(item: InvestmentItem):
     result = await db.investments.insert_one(item.dict(exclude={"id"}))
+    # Auto-deduct from reserve if a payment source is linked
+    if item.payment_source_id:
+        try:
+            target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
+            if target_reserve:
+                # If it's a credit card, spending increases the outstanding balance (liability)
+                # If it's a bank/cash account, spending decreases the balance (asset)
+                adjustment = float(item.value) if target_reserve.get("account_type") == "CREDIT_CARD" else -float(item.value)
+                await db.reserves.update_one(
+                    {"_id": ObjectId(item.payment_source_id)},
+                    {"$inc": {"balance": round(adjustment, 2)}}
+                )
+        except Exception as e:
+            print(f"Reserve deduction error: {e}")
     return {"id": str(result.inserted_id)}
 
 @router.put("/investments/{item_id}")
@@ -116,11 +208,33 @@ async def delete_debt(item_id: str):
     await db.debt.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
+# RESERVES / LIQUIDITY ENDPOINTS
+@router.get("/reserves")
+async def get_reserves():
+    cursor = db.reserves.find().sort("account_name", 1)
+    return [format_doc(doc) async for doc in cursor]
+
+@router.post("/reserves")
+async def add_reserve(item: ReserveItem):
+    result = await db.reserves.insert_one(item.dict(exclude={"id"}))
+    return {"id": str(result.inserted_id)}
+
+@router.put("/reserves/{item_id}")
+async def update_reserve(item_id: str, item: ReserveItem):
+    await db.reserves.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    return {"status": "ok"}
+
+@router.delete("/reserves/{item_id}")
+async def delete_reserve(item_id: str):
+    await db.reserves.delete_one({"_id": ObjectId(item_id)})
+    return {"status": "ok"}
+
 @router.get("/summary")
 async def get_summary():
     spending = await db.spending.find().to_list(2000)
     investments = await db.investments.find().to_list(100)
     debt = await db.debt.find().to_list(500)
+    reserves = await db.reserves.find().to_list(100)
     
     # Hardened Summary Logic
     total_spending = sum(item.get("amount", 0.0) for item in spending)
@@ -183,6 +297,15 @@ async def get_summary():
     total_owed_to_me = sum(d.get("amount", 0) for d in debt if d.get("direction") == "OWED_TO_ME" and d.get("status") != "SETTLED")
     total_i_owe = sum(d.get("amount", 0) for d in debt if d.get("direction") == "I_OWE" and d.get("status") != "SETTLED")
 
+    # Reserve Summary (Net Liquidity Tracking)
+    total_reserves = 0.0
+    for r in reserves:
+        bal = float(r.get("balance", 0.0))
+        if r.get("account_type") == 'CREDIT_CARD':
+            total_reserves -= bal
+        else:
+            total_reserves += bal
+
     return {
         "total_spending": total_spending,
         "total_investment": total_active_value, 
@@ -194,7 +317,8 @@ async def get_summary():
         "daily_spending": daily_spending,
         "investment_breakdown": investment_breakdown,
         "debt_receivables": total_owed_to_me,
-        "debt_liabilities": total_i_owe
+        "debt_liabilities": total_i_owe,
+        "total_reserves": total_reserves
     }
 
 
@@ -206,7 +330,7 @@ CHROME_HEADERS = {
 
 @router.get("/market-price")
 async def get_market_price(ticker: str):
-    async with httpx.AsyncClient(timeout=15.0, follow_redirects=True, headers=CHROME_HEADERS) as client:
+    async with httpx.AsyncClient(timeout=15.0, follow_redirects=True, headers=CHROME_HEADERS, verify=False) as client:
         try:
             # Screener.in Check
             res = await client.get(f"{settings.SCREENER_BASE_URL}{ticker.upper()}/")
@@ -228,7 +352,7 @@ async def get_market_price(ticker: str):
 
 @router.get("/mf-search")
 async def search_mutual_fund(q: str):
-    async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS) as client:
+    async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS, verify=False) as client:
         try:
             res = await client.get(f"{settings.MF_SEARCH_URL}{q}")
             return res.json()
@@ -236,7 +360,7 @@ async def search_mutual_fund(q: str):
 
 @router.get("/mf-nav")
 async def get_mf_nav(code: str):
-    async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS) as client:
+    async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS, verify=False) as client:
         try:
             res = await client.get(f"{settings.MF_LATEST_URL}{code}/latest")
             d = res.json()
@@ -284,20 +408,54 @@ async def get_ai_insights():
         return []
 
 # NEW: MARKET ENGINE MANIFEST
+@router.post("/sync-prices")
 async def sync_all_prices():
     """Neural hub for background asset price auditing"""
     investments = await db.investments.find().to_list(1000)
+    synced_count = 0
     for item in investments:
         try:
             ticker = item.get("ticker")
             asset_type = item.get("type")
             
             if ticker and asset_type in ["Stocks", "ETFs"]:
-                # Logic for Stock Price Fetch
-                pass # Sync logic goes here internally
-            elif asset_type == "Mutual Funds" and item.get("sub_category") and item["sub_category"] != "-":
-                # Logic for MF Nav Fetch
-                pass
+                res = await get_market_price(ticker)
+                if res and res.get("price", 0) > 0:
+                    new_price = float(res["price"])
+                    qty = float(item.get("quantity", 0))
+                    new_val = new_price * qty
+                    await db.investments.update_one(
+                        {"_id": item["_id"]},
+                        {"$set": {"current_price": new_price, "value": new_val}}
+                    )
+                    synced_count += 1
+            elif asset_type == "Mutual Funds" and ticker:
+                res = await get_mf_nav(ticker)
+                if res and res.get("nav", 0) > 0:
+                    new_price = float(res["nav"])
+                    qty = float(item.get("quantity", 0))
+                    new_val = new_price * qty
+                    await db.investments.update_one(
+                        {"_id": item["_id"]},
+                        {"$set": {"current_price": new_price, "value": new_val}}
+                    )
+                    synced_count += 1
         except Exception as e:
             print(f"SYNC ITEM ERROR: {e}")
-    return {"status": "sync_task_triggered"}
+    return {"status": "sync_task_completed", "updated_count": synced_count}
+
+# Card Bill Settlements (Separated Logs)
+@router.get("/bill-settlements")
+async def get_bill_settlements():
+    cursor = db.bill_settlements.find().sort("date", -1)
+    return [format_doc(doc) async for doc in cursor]
+
+@router.post("/bill-settlements")
+async def create_bill_settlement(item: CardBillSettlement):
+    result = await db.bill_settlements.insert_one(item.dict(exclude={"id"}))
+    return {"id": str(result.inserted_id)}
+
+@router.delete("/bill-settlements/{item_id}")
+async def delete_bill_settlement(item_id: str):
+    await db.bill_settlements.delete_one({"_id": ObjectId(item_id)})
+    return {"status": "ok"}

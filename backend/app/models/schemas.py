@@ -10,6 +10,9 @@ class SpendingItem(BaseModel):
     description: str # The 'Details' field
     recovered: float = 0 # Offset amount received against this spending
     recovery_description: str = "" # Specific details about the recovery/adjustment
+    payment_method: Optional[str] = None  # CASH, BANK, WALLET, GIFT, UPI, CARD, OTHER
+    payment_source_id: Optional[str] = None  # Reserve account _id if debited
+    is_settled: bool = True  # Tracks if card transactions are paid off
 
 class WithdrawalItem(BaseModel):
     amount: float
@@ -30,6 +33,8 @@ class InvestmentItem(BaseModel):
     current_price: Optional[float] = None
     ticker: Optional[str] = None
     withdrawals: List[WithdrawalItem] = []
+    payment_method: Optional[str] = None  # CASH, BANK, WALLET, GIFT, UPI, CARD, OTHER
+    payment_source_id: Optional[str] = None  # Reserve account _id if debited
 
 class CategorySchema(BaseModel):
     name: str
@@ -47,3 +52,21 @@ class DebtItem(BaseModel):
     status: str = "ACTIVE" # ACTIVE, SETTLED, PARTIAL
     description: str = ""
     category: str = "PERSONAL" # PERSONAL, BANK, etc.
+
+class ReserveItem(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    account_name: str
+    account_type: str # BANK, WALLET, CASH, CREDIT_CARD
+    balance: float
+    credit_limit: Optional[float] = 0.0 # Only for CREDIT_CARD
+    last_updated: str
+    description: str = ""
+
+class CardBillSettlement(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    card_id: str
+    card_name: str
+    source_id: str
+    source_name: str
+    amount: float
+    date: str

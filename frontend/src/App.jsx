@@ -20,9 +20,14 @@ import SpendingPage from './pages/SpendingPage';
 import InvestmentPage from './pages/InvestmentPage';
 import DebtPage from './pages/DebtPage';
 import CategoryPage from './pages/CategoryPage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
+import SiteSettingsPage from './pages/SiteSettingsPage';
+import ReservePage from './pages/ReservePage';
 import ExpenseForm from './components/ui/ExpenseForm';
 import InvestmentForm from './components/ui/InvestmentForm';
 import DebtForm from './components/ui/DebtForm';
+import ReserveForm from './components/ui/ReserveForm';
 import AiAnalysisModal from './components/ui/AiAnalysisModal';
 
 const appleTheme = createTheme({
@@ -40,9 +45,11 @@ export default function App() {
     const [editingItem, setEditingItem] = useState(null);
     const [editingInvestment, setEditingInvestment] = useState(null);
     const [editingDebt, setEditingDebt] = useState(null);
+    const [editingReserve, setEditingReserve] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
     const [showAddDebtModal, setShowAddDebtModal] = useState(false);
+    const [showAddReserveModal, setShowAddReserveModal] = useState(false);
     const [showAiModal, setShowAiModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
 
@@ -95,13 +102,30 @@ export default function App() {
         }
     };
 
+    const handleReserveSubmit = async (data) => {
+        try {
+            if (editingReserve) {
+                await api.put(`/reserves/${editingReserve._id}`, data);
+            } else {
+                await api.post('/reserves', data);
+            }
+            dispatch(fetchFinanceData());
+            setEditingReserve(null);
+            setShowAddReserveModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const handleCloseModal = () => {
         setEditingItem(null);
         setEditingInvestment(null);
         setEditingDebt(null);
+        setEditingReserve(null);
         setShowAddModal(false);
         setShowAddInvestmentModal(false);
         setShowAddDebtModal(false);
+        setShowAddReserveModal(false);
     };
 
     const handleGlobalAdd = () => {
@@ -110,6 +134,8 @@ export default function App() {
             setShowAddInvestmentModal(true);
         } else if (path === '/debt') {
             setShowAddDebtModal(true);
+        } else if (path === '/reserves') {
+            setShowAddReserveModal(true);
         } else {
             setShowAddModal(true);
         }
@@ -129,14 +155,18 @@ export default function App() {
                         />
 
                         <div className="content-shell">
-                            <main className="main-content" style={{ padding: '3.5rem' }}>
+                            <main className="main-content" style={{ padding: '1.5rem 3.5rem 3.5rem 3.5rem' }}>
                                 <AnimatePresence mode="wait">
                                     <Routes>
                                         <Route path="/" element={<OverviewPage />} />
                                         <Route path="/spending" element={<SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
                                         <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
                                         <Route path="/debt" element={<DebtPage onEdit={(item) => setEditingDebt(item)} />} />
+                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} />} />
                                         <Route path="/categories" element={<CategoryPage />} />
+                                        <Route path="/profile" element={<ProfilePage />} />
+                                        <Route path="/settings" element={<SettingsPage />} />
+                                        <Route path="/site-settings" element={<SiteSettingsPage />} />
                                     </Routes>
                                 </AnimatePresence>
                             </main>
@@ -169,6 +199,16 @@ export default function App() {
                                 </DialogTitle>
                                 <DialogContent sx={{ p: 0 }}>
                                     <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
+                                </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={showAddReserveModal || !!editingReserve} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
+                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingReserve ? 'Modify Account' : 'Register Account'}</Typography>
+                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
+                                </DialogTitle>
+                                <DialogContent sx={{ p: 0 }}>
+                                    <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
                                 </DialogContent>
                             </Dialog>
 

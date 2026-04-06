@@ -87,6 +87,21 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [period, setPeriod] = useState('ALL');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
+    const [sortBy, setSortBy] = useState('DATE_DESC');
+    const [syncingPrices, setSyncingPrices] = useState(false);
+
+    const handleManualSync = async () => {
+        setSyncingPrices(true);
+        try {
+            await api.post('/sync-prices');
+            dispatch(fetchFinanceData());
+        } catch (error) {
+            console.error(error);
+            alert('Failed to sync prices.');
+        } finally {
+            setSyncingPrices(false);
+        }
+    };
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
@@ -527,6 +542,17 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                             )}
                         </div>
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <Button size="small" variant="outlined" onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>
+                                {sortBy === 'PNL_DESC' ? '▼ P&L DESC' : sortBy === 'PNL_ASC' ? '▲ P&L ASC' : 'SORT BY P&L'}
+                            </Button>
+                            {sortBy !== 'DATE_DESC' && (
+                                <Button size="small" variant="outlined" onClick={() => setSortBy('DATE_DESC')} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>
+                                    BY DATE
+                                </Button>
+                            )}
+                            <Button size="small" variant="contained" onClick={handleManualSync} disabled={syncingPrices} startIcon={<Zap size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2, bgcolor: '#34c759', '&:hover': { bgcolor: '#28a745' } }}>
+                                {syncingPrices ? 'SYNCING...' : 'SYNC ALL'}
+                            </Button>
                             <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>CLEAR ALL</Button>
                             <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2, bgcolor: '#6366f1' }}>EXPORT CSV</Button>
                         </div>
@@ -544,17 +570,66 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 ))}
                              </Box>
                         ) : (() => {
-                            const grouped = filteredInvestments.reduce((acc, curr) => {
-                                const yearMonth = dayjs(curr.date).format('MMMM YYYY');
-                                if (!acc[yearMonth]) acc[yearMonth] = [];
-                                acc[yearMonth].push(curr);
-                                return acc;
-                            }, {});
-                            const months = Object.keys(grouped).sort((a, b) => dayjs(b, 'MMMM YYYY').unix() - dayjs(a, 'MMMM YYYY').unix());
-                            if (months.length === 0) return <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-dim)', fontWeight: 800 }}>No assets acquired in this period.</div>;
-
-                             return months.map(month => {
+                            const renderItem = (s, livePre = null) => {
+                                const catStyle = getAssetStyle(s.type);
+                                const live = livePre || getLiveVal(s);
                                 return (
+                                    <div key={s._id} className="transaction-row-fancy">
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: catStyle.bg, color: catStyle.color, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
+                                            {catStyle.icon}
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '2px' }}>
+                                                <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.9rem' }}>{s.name}</span>
+                                                {s.ticker && <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#6366f1', background: 'rgba(99,102,241,0.1)', padding: '1px 6px', borderRadius: '4px' }}>{s.ticker}</span>}
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem', fontSize: '0.72rem', color: '#86868b', fontWeight: 600 }}>
+                                                <span>{dayjs(s.date).format('YYYY-MM-DD')} • {s.sub}</span>
+                                                {s.quantity && (
+                                                    <span>
+                                                        • Qty: {live.netQty < s.quantity ? `${live.netQty} / ${s.quantity}` : s.quantity}
+                                                    </span>
+                                                )}
+                                                {s.buy_price && s.current_price && <span>• Avg: ₹{s.buy_price} → CMP: ₹{s.current_price}</span>}
+                                                {live.isFixed && <span style={{ color: '#34c759', fontWeight: 900 }}>(+6.5% Yield)</span>}
+                                            </div>
+                                        </div>
+                                        <div style={{ width: '160px', textAlign: 'center' }}>
+                                            <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{s.type}</span>
+                                        </div>
+                                        <div style={{ width: '130px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                                            <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem' }}>{formatCurrency(live.current)}</span>
+                                            {(live.isMarket || live.isFixed) && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', fontWeight: 800, color: live.current + live.withdrawn >= live.invested ? '#34c759' : '#ff3b30', background: live.current + live.withdrawn >= live.invested ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', padding: '1px 6px', borderRadius: '4px' }}>
+                                                    {live.current + live.withdrawn >= live.invested ? '▲' : '▼'} {Math.abs(((live.current + live.withdrawn - live.invested) / (live.invested || 1)) * 100).toFixed(4)}% P&L
+                                                </div>
+                                            )}
+                                            {live.withdrawn > 0 && (
+                                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#ff9500', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9500' }} />
+                                                    Exited: {formatCurrency(live.withdrawn)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="row-action-cluster" style={{ display: 'flex', gap: '0.2rem', marginLeft: '1rem', opacity: 0.6 }}>
+                                            <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: '#6366f1' }}><Edit2 size={12} /></IconButton>
+                                            <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30' }}><Trash2 size={12} /></IconButton>
+                                        </div>
+                                    </div>
+                                );
+                            };
+
+                            if (sortBy === 'DATE_DESC') {
+                                const grouped = filteredInvestments.reduce((acc, curr) => {
+                                    const yearMonth = dayjs(curr.date).format('MMMM YYYY');
+                                    if (!acc[yearMonth]) acc[yearMonth] = [];
+                                    acc[yearMonth].push(curr);
+                                    return acc;
+                                }, {});
+                                const months = Object.keys(grouped).sort((a, b) => dayjs(b, 'MMMM YYYY').unix() - dayjs(a, 'MMMM YYYY').unix());
+                                if (months.length === 0) return <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-dim)', fontWeight: 800 }}>No assets acquired in this period.</div>;
+
+                                return months.map(month => (
                                     <div key={month} className="date-group">
                                         <div className="date-header-luxury">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -566,60 +641,36 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             </div>
                                         </div>
                                         <div className="investment-items-luxury">
-                                            {grouped[month].map((s) => {
-                                                const catStyle = getAssetStyle(s.type);
-                                                const live = getLiveVal(s);
-                                                return (
-                                                    <div key={s._id} className="transaction-row-fancy">
-                                                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: catStyle.bg, color: catStyle.color, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
-                                                            {catStyle.icon}
-                                                        </div>
-                                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '2px' }}>
-                                                                <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.9rem' }}>{s.name}</span>
-                                                                {s.ticker && <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#6366f1', background: 'rgba(99,102,241,0.1)', padding: '1px 6px', borderRadius: '4px' }}>{s.ticker}</span>}
-                                                            </div>
-                                                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem', fontSize: '0.72rem', color: '#86868b', fontWeight: 600 }}>
-                                                                <span>{dayjs(s.date).format('YYYY-MM-DD')} • {s.sub}</span>
-                                                                {s.quantity && (
-                                                                    <span>
-                                                                        • Qty: {live.netQty < s.quantity ? `${live.netQty} / ${s.quantity}` : s.quantity}
-                                                                    </span>
-                                                                )}
-                                                                {s.buy_price && s.current_price && <span>• Avg: ₹{s.buy_price} → CMP: ₹{s.current_price}</span>}
-                                                                {live.isFixed && <span style={{ color: '#34c759', fontWeight: 900 }}>(+6.5% Yield)</span>}
-                                                            </div>
-                                                        </div>
-                                                        <div style={{ width: '160px', textAlign: 'center' }}>
-                                                            <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{s.type}</span>
-                                                        </div>
-                                                        <div style={{ width: '130px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                                                            <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem' }}>{formatCurrency(live.current)}</span>
-                                                            {(live.isMarket || live.isFixed) && (
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', fontWeight: 800, color: live.current + live.withdrawn >= live.invested ? '#34c759' : '#ff3b30', background: live.current + live.withdrawn >= live.invested ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', padding: '1px 6px', borderRadius: '4px' }}>
-                                                                    {live.current + live.withdrawn >= live.invested ? '▲' : '▼'} {Math.abs(((live.current + live.withdrawn - live.invested) / (live.invested || 1)) * 100).toFixed(4)}% P&L
-                                                                </div>
-                                                            )}
-                                                            {live.withdrawn > 0 && (
-                                                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#ff9500', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9500' }} />
-                                                                    Exited: {formatCurrency(live.withdrawn)}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                            {grouped[month].map((s) => renderItem(s))}
+                                        </div>
+                                    </div>
+                                ));
+                            } else {
+                                const flatList = filteredInvestments.map(s => {
+                                    const live = getLiveVal(s);
+                                    let pnl = 0;
+                                    if (live.invested > 0) {
+                                        pnl = ((live.current + live.withdrawn - live.invested) / live.invested) * 100;
+                                    }
+                                    return { item: s, live, pnl };
+                                });
+                                flatList.sort((a, b) => sortBy === 'PNL_DESC' ? b.pnl - a.pnl : a.pnl - b.pnl);
+                                if (flatList.length === 0) return <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-dim)', fontWeight: 800 }}>No assets found.</div>;
 
-                                                        {/* Actions */}
-                                                        <div className="row-action-cluster" style={{ display: 'flex', gap: '0.2rem', marginLeft: '1rem', opacity: 0.6 }}>
-                                                            <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: '#6366f1' }}><Edit2 size={12} /></IconButton>
-                                                            <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30' }}><Trash2 size={12} /></IconButton>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
+                                return (
+                                    <div className="date-group">
+                                        <div className="date-header-luxury">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                <Activity size={14} color="#34c759" />
+                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>SORTED BY P&L PERCENTAGE ({sortBy === 'PNL_DESC' ? 'Highest First' : 'Lowest First'})</span>
+                                            </div>
+                                        </div>
+                                        <div className="investment-items-luxury">
+                                            {flatList.map(obj => renderItem(obj.item, obj.live))}
                                         </div>
                                     </div>
                                 );
-                            });
+                            }
                         })()}
                     </div>
                 </div>

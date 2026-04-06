@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
     X, Calendar, Edit3, ChevronDown, Wallet,
     FileText, LayoutGrid, Tag, CreditCard,
-    AlertCircle, CheckCircle2
+    AlertCircle, CheckCircle2, Landmark, Banknote, Gift, Smartphone, CircleDollarSign
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import { 
@@ -10,8 +10,10 @@ import {
     InputAdornment, FormHelperText, Stack, Autocomplete
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
+import { useSelector } from 'react-redux';
 
 export default function ExpenseForm({ categories, onSubmit, onCancel, initialData }) {
+    const reserves = useSelector(state => state.finance.reserves) || [];
     const [formData, setFormData] = useState({
         amount: initialData?.amount || '',
         description: initialData?.description || '',
@@ -19,7 +21,9 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         sub: initialData?.sub_category || '',
         date: initialData?.date ? dayjs(initialData.date) : dayjs(),
         recovered: initialData?.recovered || '',
-        recovery_desc: initialData?.recovery_description || ''
+        recovery_desc: initialData?.recovery_description || '',
+        payment_method: initialData?.payment_method || '',
+        payment_source_id: initialData?.payment_source_id || ''
     });
 
     const [errors, setErrors] = useState({});
@@ -47,10 +51,32 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 sub_category: formData.sub || '-', 
                 date: formData.date.format('YYYY-MM-DD'),
                 recovered: parseFloat(formData.recovered) || 0,
-                recovery_description: formData.recovery_desc || ""
+                recovery_description: formData.recovery_desc || "",
+                payment_method: formData.payment_method || null,
+                payment_source_id: formData.payment_source_id || null
             });
         }
     };
+
+    const PAYMENT_METHODS = [
+        { key: 'CASH',   label: 'Cash',   icon: <Banknote size={18} />,          color: '#f59e0b', deductsReserve: true  },
+        { key: 'BANK',   label: 'Bank',   icon: <Landmark size={18} />,          color: '#6366f1', deductsReserve: true  },
+        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={18} />,            color: '#10b981', deductsReserve: true  },
+        { key: 'CARD',   label: 'Card',   icon: <CreditCard size={18} />,        color: '#ff3b30', deductsReserve: true  },
+        { key: 'UPI',    label: 'UPI',    icon: <Smartphone size={18} />,        color: '#0071e3', deductsReserve: false },
+        { key: 'GIFT',   label: 'Gift',   icon: <Gift size={18} />,              color: '#ff9500', deductsReserve: false },
+        { key: 'OTHER',  label: 'Other',  icon: <CircleDollarSign size={18} />,  color: '#86868b', deductsReserve: false },
+    ];
+
+    const selectedMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
+    const showSourcePicker = selectedMethod?.deductsReserve && reserves.length > 0;
+    const filteredReserves = reserves.filter(r => {
+        if (formData.payment_method === 'CASH') return r.account_type === 'CASH';
+        if (formData.payment_method === 'BANK') return r.account_type === 'BANK';
+        if (formData.payment_method === 'WALLET') return r.account_type === 'WALLET';
+        if (formData.payment_method === 'CARD') return r.account_type === 'CREDIT_CARD';
+        return true;
+    });
 
     const globalInputStyle = {
         '& .MuiOutlinedInput-root': {
@@ -236,6 +262,56 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         }}
                     />
                 </Box>
+
+                {/* PAYMENT METHOD */}
+                <Box>
+                    <Typography sx={labelStyle}>PAYMENT METHOD</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {PAYMENT_METHODS.map(m => (
+                            <Box
+                                key={m.key}
+                                onClick={() => setFormData({ ...formData, payment_method: m.key, payment_source_id: '' })}
+                                sx={{
+                                    display: 'flex', alignItems: 'center', gap: 0.8,
+                                    px: 1.5, py: 0.9, borderRadius: '12px', cursor: 'pointer',
+                                    border: '1.5px solid',
+                                    borderColor: formData.payment_method === m.key ? m.color : 'rgba(0,0,0,0.07)',
+                                    bgcolor: formData.payment_method === m.key ? `${m.color}15` : '#fafafa',
+                                    transition: '0.15s',
+                                    '&:hover': { borderColor: m.color, bgcolor: `${m.color}08` }
+                                }}
+                            >
+                                <Box sx={{ color: formData.payment_method === m.key ? m.color : '#86868b', display: 'flex' }}>{m.icon}</Box>
+                                <Typography sx={{ fontWeight: 800, fontSize: '0.78rem', color: formData.payment_method === m.key ? m.color : '#86868b' }}>{m.label}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                </Box>
+
+                {/* SOURCE ACCOUNT (only for Cash/Bank/Wallet) */}
+                {showSourcePicker && (
+                    <Box>
+                        <Typography sx={labelStyle}>SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>SELECT TO AUTO-DEDUCT</span></Typography>
+                        <Select
+                            fullWidth
+                            size="small"
+                            value={formData.payment_source_id}
+                            onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
+                            displayEmpty
+                            sx={{ ...globalInputStyle['& .MuiOutlinedInput-root'], borderRadius: '12px' }}
+                        >
+                            <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (manual only)</em></MenuItem>
+                            {filteredReserves.map(r => (
+                                <MenuItem key={r._id} value={r._id}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
+                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#10b981' }}>₹{parseFloat(r.balance).toLocaleString('en-IN')}</Typography>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Box>
+                )}
             </Stack>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3, borderTop: '1.5px solid rgba(0,0,0,0.04)' }}>

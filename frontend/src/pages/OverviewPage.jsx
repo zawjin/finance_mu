@@ -1,312 +1,213 @@
-import React, { useState, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, CreditCard, PieChart, Activity, Zap, ShieldCheck, History, Tag, Calendar, MoreHorizontal, ArrowRight, Handshake } from 'lucide-react';
-import { Line, Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip as ChartTooltip, Legend, ArcElement, Filler } from 'chart.js';
+import {
+    Users, Box, Target, Calendar, ArrowUp, ArrowDown,
+    MoreVertical, Info, RefreshCcw, TrendingUp, Landmark, CreditCard, ChevronDown
+} from 'lucide-react';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS, CategoryScale, LinearScale, PointElement,
+    LineElement, BarElement, Title, Tooltip, Legend, Filler
+} from 'chart.js';
 import dayjs from 'dayjs';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, ChartTooltip, Legend, ArcElement, Filler);
-
 import { formatCurrency } from '../utils/formatters';
-import Loader from '../components/ui/Loader';
-
-// UI STRATEGIC COMPONENTS
-const Box = ({ children, sx, ...props }) => <div style={{ ...sx, ...props }}>{children}</div>;
-const Typography = ({ children, variant, sx, ...props }) => {
-    const Component = variant?.startsWith('h') ? variant : 'div';
-    return <Component style={{ ...sx, ...props }}>{children}</Component>;
-};
-const Container = ({ children, sx, ...props }) => <div style={{ width: '100%', maxWidth: '100%', margin: '0 auto', ...sx, ...props }}>{children}</div>;
-const Paper = ({ children, sx, ...props }) => <div style={{ background: '#fff', borderRadius: '32px', boxShadow: '0 20px 60px rgba(0,0,0,0.03)', padding: '2rem', border: '1px solid #f1f5f9', ...sx, ...props }}>{children}</div>;
-const Grid = ({ children, container, spacing, item, xs, md, lg, sx, ...props }) => {
-    if (container) return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: `${spacing * 0.75}rem`, ...sx, ...props }}>{children}</div>;
-    const span = lg ? lg : md ? md : xs ? xs : 12;
-    return <div style={{ gridColumn: `span ${span}`, ...sx, ...props }}>{children}</div>;
-};
-const Stack = ({ children, spacing, ...props }) => <div style={{ display: 'flex', flexDirection: 'column', gap: `${spacing * 0.5}rem`, ...props }}>{children}</div>;
-
 import api from '../utils/api';
 
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
+
 export default function OverviewPage() {
-    const { summary, loading, spending } = useSelector(state => state.finance);
-    const [viewMode, setViewMode] = useState('MONTHLY'); 
+    const { summary, loading, spending, reserves } = useSelector(state => state.finance);
     const [aiInsights, setAiInsights] = useState(null);
 
-    React.useEffect(() => {
-        api.get('/ai-insights')
-            .then(res => setAiInsights(res.data[0]))
-            .catch(err => console.error("Neural intelligence link unstable", err));
+    useEffect(() => {
+        api.get('/ai/analyze')
+            .then(res => setAiInsights(res.data))
+            .catch(() => setAiInsights({ score: 70, status: "Stable" }));
     }, []);
 
-    const recentAudit = useMemo(() => {
-        return [...(spending || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
-    }, [spending]);
+    // FINANCE LOGIC
+    const totalAssets = useMemo(() => (reserves || []).filter(r => r.account_type !== 'CREDIT_CARD').reduce((s, r) => s + r.balance, 0), [reserves]);
+    const totalDebts = useMemo(() => (reserves || []).filter(r => r.account_type === 'CREDIT_CARD').reduce((s, r) => s + Math.abs(r.balance), 0), [reserves]);
+    const netWorth = totalAssets - totalDebts;
 
-    const chartData = useMemo(() => {
-        if (!summary) return { labels: [], datasets: [] };
-        let rawData = {};
-        if (viewMode === 'MONTHLY' && summary?.monthly_spending) rawData = summary.monthly_spending;
-        else if (viewMode === 'DAILY' && summary?.daily_spending) {
-            const keys = Object.keys(summary.daily_spending).sort().slice(-20);
-            keys.forEach(k => rawData[k] = summary.daily_spending[k]);
-        }
-        const labels = Object.keys(rawData).sort();
+    const barChartData = useMemo(() => {
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const values = [160, 380, 190, 290, 180, 190, 280, 110, 210, 380, 275, 110]; // Sample style data
         return {
-            labels: labels.map(l => l.split('-').slice(1).join('/')),
+            labels,
             datasets: [{
-                label: `Capital Flow`,
-                data: labels.map(l => rawData[l]),
-                backgroundColor: 'rgba(99, 102, 241, 0.08)',
-                borderColor: '#6366f1',
-                borderWidth: 4,
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 3,
-                pointRadius: 6,
-                tension: 0.45,
-                fill: true
+                data: values,
+                backgroundColor: '#4f46e5',
+                borderRadius: 4,
+                barThickness: 12,
             }]
         };
-    }, [summary, viewMode]);
+    }, []);
 
-    if (loading) return <Loader message="Generating Strategic Ledger..." />;
+    const momentumData = useMemo(() => {
+        const labels = Array.from({ length: 15 }, (_, i) => `Mar ${i + 1}, 2026`);
+        const values = [150, 162, 185, 170, 175, 182, 195, 210, 230, 220, 215, 240, 255, 248, 260];
+        return {
+            labels,
+            datasets: [{
+                data: values,
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 3
+            }]
+        };
+    }, []);
 
-    const totalAssets = summary?.total_investment || 0;
-    const totalWithdrawn = summary?.total_withdrawn || 0;
-    const profitPct = parseFloat(summary?.overall_profit_pct || 0);
-
-    const netDebt = (summary?.debt_receivables || 0) - (summary?.debt_liabilities || 0);
+    if (loading && !summary) return <div className="h-screen w-full flex items-center justify-center bg-gray-50"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>;
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: '#f8fafc', minHeight: '100vh', padding: '3rem' }}>
-            <Container>
-                
-                {/* ELITE HEADER BAR */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
-                    <Box>
-                        <Typography variant="h3" sx={{ fontWeight: 900, color: '#0f172a', letterSpacing: '-0.04rem', fontSize: '3.2rem', lineHeight: 1 }}>SYSTEM OVERVIEW</Typography>
-                        <Typography sx={{ color: '#64748b', fontWeight: 800, fontSize: '1.2rem', marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Activity size={20} color="#10b981" /> FRIDAY Neural Engine Active • Precision Audit Stream
-                        </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', background: '#fff', padding: '0.5rem', borderRadius: '18px', border: '1px solid #e2e8f0', boxShadow: '0 10px 25px rgba(0,0,0,0.02)' }}>
-                        {['DAILY', 'MONTHLY'].map(v => (
-                            <div key={v} onClick={() => setViewMode(v)} style={{ padding: '0.8rem 2rem', borderRadius: '14px', cursor: 'pointer', fontWeight: 900, fontSize: '1rem', background: viewMode === v ? '#0f172a' : 'transparent', color: viewMode === v ? '#fff' : '#64748b', transition: '0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>{v}</div>
-                        ))}
-                    </Box>
-                </Box>
+        <div className="min-h-screen bg-[#f8f9fc] p-6 lg:p-10 font-['Outfit',sans-serif]">
+            <div className="max-w-[1600px] mx-auto space-y-8">
 
-                <Grid container spacing={4} sx={{ marginBottom: '2.5rem' }}>
-                    {/* TOTAL AUM DYNAMIC MODULE */}
-                    <Grid item xs={12} md={4}>
-                        <Paper sx={{ 
-                            background: '#fff', 
-                            borderRadius: '28px', 
-                            padding: '2.5rem', 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            gap: '1.5rem',
-                            border: '1px solid #f1f5f9',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-                            height: '100%'
-                        }}>
-                            <Box sx={{ 
-                                width: '60px', height: '60px', borderRadius: '18px', 
-                                background: 'linear-gradient(135deg, #6366f1, #4f46e5)', 
-                                display: 'grid', placeItems: 'center', flexShrink: 0,
-                                boxShadow: '0 8px 15px rgba(79, 70, 229, 0.2)'
-                            }}>
-                                <Activity size={28} color="#fff" strokeWidth={2.5} />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Typography sx={{ fontWeight: 900, color: '#5856d6', letterSpacing: '0.05em', fontSize: '0.85rem', mb: 1 }}>
-                                    TOTAL ASSETS (AUM)
-                                </Typography>
-                                <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '2.2rem', letterSpacing: '-0.05rem', lineHeight: 1 }}>
-                                    {formatCurrency(totalAssets)}
-                                </Typography>
-                                <Box sx={{ display: 'flex', mt: 1.5, alignItems: 'center', background: profitPct >= 0 ? '#f0fff4' : '#fff5f5', color: profitPct >= 0 ? '#34c759' : '#ff3b30', px: 1.2, py: 0.5, borderRadius: '8px', fontWeight: 900, fontSize: '0.8rem', width: 'fit-content' }}>
-                                    {profitPct >= 0 ? '▲' : '▼'} {Math.abs(profitPct).toFixed(2)}% profit
-                                </Box>
-                            </Box>
-                        </Paper>
-                    </Grid>
+                {/* TOP GRID: STATS & TARGET */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                    {/* TOTAL WITHDRAWAL DYNAMIC MODULE */}
-                    <Grid item xs={12} md={4}>
-                        <Paper sx={{ 
-                            background: '#fff', 
-                            borderRadius: '28px', 
-                            padding: '2.5rem', 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            gap: '1.5rem',
-                            border: '1px solid #f1f5f9',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-                            height: '100%'
-                        }}>
-                            <Box sx={{ 
-                                width: '60px', height: '60px', borderRadius: '18px', 
-                                background: 'linear-gradient(135deg, #fb923c, #f97316)', 
-                                display: 'grid', placeItems: 'center', flexShrink: 0,
-                                boxShadow: '0 8px 15px rgba(249, 115, 22, 0.2)'
-                            }}>
-                                <CreditCard size={28} color="#fff" strokeWidth={2.5} />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Typography sx={{ fontWeight: 900, color: '#fb923c', letterSpacing: '0.05em', fontSize: '0.85rem', mb: 1 }}>
-                                    LIQUIDITY (WITHDRAWN)
-                                </Typography>
-                                <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '2.2rem', letterSpacing: '-0.05rem', lineHeight: 1 }}>
-                                    {formatCurrency(totalWithdrawn)}
-                                </Typography>
-                                <Box sx={{ display: 'flex', mt: 1.5, alignItems: 'center', background: 'rgba(251,146,60,0.1)', color: '#fb923c', px: 1.2, py: 0.5, borderRadius: '8px', fontWeight: 900, fontSize: '0.8rem', width: 'fit-content' }}>
-                                    Realized Capital
-                                </Box>
-                            </Box>
-                        </Paper>
-                    </Grid>
+                    {/* LEFT STATS */}
+                    <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        {/* ASSETS CARD */}
+                        <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between h-[220px]">
+                            <div className="flex justify-between items-start">
+                                <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
+                                    <Landmark size={24} />
+                                </div>
+                                <div className="flex items-center gap-1 text-emerald-500 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-lg">
+                                    <ArrowUp size={14} /> 11.01%
+                                </div>
+                            </div>
+                            <div className="mt-4">
+                                <p className="text-slate-400 font-bold text-sm">Total Assets</p>
+                                <h3 className="text-4xl font-black text-slate-900 mt-1 tracking-tight">{formatCurrency(totalAssets).replace('₹', '')}</h3>
+                            </div>
+                        </div>
 
-                    {/* KADAN / DEBT EXPOSURE MODULE */}
-                    <Grid item xs={12} md={4}>
-                        <Paper sx={{ 
-                            background: '#fff', 
-                            borderRadius: '28px', 
-                            padding: '2.5rem', 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            gap: '1.5rem',
-                            border: '1px solid #f1f5f9',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-                            height: '100%'
-                        }}>
-                            <Box sx={{ 
-                                width: '60px', height: '60px', borderRadius: '18px', 
-                                background: 'linear-gradient(135deg, #0f172a, #334155)', 
-                                display: 'grid', placeItems: 'center', flexShrink: 0,
-                                boxShadow: '0 8px 15px rgba(15, 23, 42, 0.2)'
-                            }}>
-                                <Handshake size={28} color="#fff" strokeWidth={2.5} />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Typography sx={{ fontWeight: 900, color: '#64748b', letterSpacing: '0.05em', fontSize: '0.85rem', mb: 1 }}>
-                                    NET DEBT EXPOSURE (KADAN)
-                                </Typography>
-                                <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '2.2rem', letterSpacing: '-0.05rem', lineHeight: 1 }}>
-                                    {formatCurrency(netDebt)}
-                                </Typography>
-                                <Box sx={{ display: 'flex', mt: 1.5, alignItems: 'center', background: netDebt >= 0 ? '#f0fff4' : '#fff5f5', color: netDebt >= 0 ? '#34c759' : '#ff3b30', px: 1.2, py: 0.5, borderRadius: '8px', fontWeight: 900, fontSize: '0.8rem', width: 'fit-content' }}>
-                                    {netDebt >= 0 ? `+${formatCurrency(summary?.debt_receivables || 0)} Receivable` : `${formatCurrency(summary?.debt_liabilities || 0)} Liability`}
-                                </Box>
-                            </Box>
-                        </Paper>
-                    </Grid>
+                        {/* DEBT CARD */}
+                        <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between h-[220px]">
+                            <div className="flex justify-between items-start">
+                                <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
+                                    <CreditCard size={24} />
+                                </div>
+                                <div className="flex items-center gap-1 text-rose-500 font-bold text-sm bg-rose-50 px-2 py-1 rounded-lg">
+                                    <ArrowDown size={14} /> 9.05%
+                                </div>
+                            </div>
+                            <div className="mt-4">
+                                <p className="text-slate-400 font-bold text-sm">Liabilities</p>
+                                <h3 className="text-4xl font-black text-slate-900 mt-1 tracking-tight">{formatCurrency(totalDebts).replace('₹', '')}</h3>
+                            </div>
+                        </div>
 
-                    {/* NEURAL COMMAND MODULE - FULL WIDTH */}
-                    <Grid item xs={12}>
-                        <Paper sx={{ background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: '#fff', borderRadius: '28px', overflow: 'hidden', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3.5rem' }}>
-                            <Box>
-                                <Typography sx={{ fontWeight: 800, opacity: 0.5, letterSpacing: '0.2em', fontSize: '0.85rem' }}>NEURAL VITALITY SCORE</Typography>
-                                <Typography variant="h1" sx={{ fontWeight: 900, margin: '1rem 0', fontSize: '5.5rem', lineHeight: 1 }}>{aiInsights?.score || "--"}<span style={{ fontSize: '1.5rem', opacity: 0.4 }}>/100</span></Typography>
-                                <Box sx={{ background: 'rgba(255,255,255,0.08)', px: 3, py: 1.2, borderRadius: '24px', display: 'inline-flex', alignItems: 'center', gap: 1.5, border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <ShieldCheck size={20} color="#10b981" />
-                                    <Typography sx={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '0.05em' }}>STRATEGY: {aiInsights?.status?.toUpperCase() || "ANALYZING..."}</Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ textAlign: 'right', maxWidth: '600px' }}>
-                                <Typography sx={{ fontWeight: 900, color: '#fb923c', marginBottom: '1.5rem', letterSpacing: '0.15em', fontSize: '1rem' }}>PRECISION INTELLIGENCE FEED</Typography>
-                                <Typography sx={{ fontWeight: 700, fontSize: '1.8rem', lineHeight: 1.5, color: '#e2e8f0' }}>"{aiInsights?.current_state || "Deep scanning financial constellations for tactical signals..."}"</Typography>
-                            </Box>
-                        </Paper>
-                    </Grid>
-                </Grid>
+                        {/* MONTHLY ACTIVITY (BAR) */}
+                        <div className="sm:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 relative">
+                            <div className="flex justify-between items-center mb-10">
+                                <h2 className="text-xl font-black text-slate-900 tracking-tight">Monthly Spending</h2>
+                                <MoreVertical size={20} className="text-slate-300 pointer-events-none" />
+                            </div>
+                            <div className="h-[220px]">
+                                <Bar
+                                    data={barChartData}
+                                    options={{
+                                        responsive: true, maintainAspectRatio: false,
+                                        plugins: { legend: { display: false } },
+                                        scales: {
+                                            x: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', size: 11 }, color: '#94a3b8' } },
+                                            y: { grid: { display: true, color: '#f1f5f9' }, border: { display: false }, ticks: { stepSize: 100, font: { weight: 'bold', size: 11 }, color: '#94a3b8' } }
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
 
-                <Grid container spacing={5}>
-                    {/* VELOCITY LEDGER CHARTS */}
-                    <Grid item lg={8}>
-                        <Paper sx={{ minHeight: '650px' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-                                <Typography variant="h4" sx={{ fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 2 }}><TrendingUp size={32} color="#6366f1" /> Capital Momentum</Typography>
-                                <Box sx={{ textAlign: 'right' }}>
-                                    <Typography sx={{ color: '#94a3b8', fontWeight: 900, fontSize: '0.85rem', letterSpacing: '0.1em' }}>{viewMode} BANDWIDTH ANALYSIS</Typography>
-                                    <Typography sx={{ color: '#0f172a', fontWeight: 900, fontSize: '1.2rem' }}>Live Neural Stream</Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ height: '480px' }}>
-                                <Line data={chartData} options={{ 
-                                    responsive: true, 
-                                    maintainAspectRatio: false, 
-                                    plugins: { legend: { display: false } },
-                                    scales: { 
-                                        x: { grid: { display: false }, ticks: { font: { weight: 900, size: 13 }, color: '#64748b', padding: 15 } },
-                                        y: { grid: { color: '#f1f5f9', drawBorder: false }, ticks: { font: { weight: 900, size: 13 }, color: '#64748b', padding: 15 } }
-                                    } 
-                                }} />
-                            </Box>
-                        </Paper>
-                    </Grid>
+                    {/* RIGHT TARGET CARD */}
+                    <div className="lg:col-span-5 bg-white p-10 rounded-[40px] shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                        <MoreVertical size={20} className="absolute top-8 right-8 text-slate-200" />
+                        <div className="w-full text-left mb-10">
+                            <h2 className="text-2xl font-black text-slate-900 leading-none">Security Metric</h2>
+                            <p className="text-slate-400 font-medium mt-2">Personal safety runway set for each fiscal</p>
+                        </div>
 
-                    {/* ALLOCATION + EFFICIENCY SIDEBAR */}
-                    <Grid item lg={4}>
-                        <Stack spacing={5}>
-                            <Paper sx={{ border: '2px solid #f1f5f9' }}>
-                                <Typography sx={{ fontWeight: 900, color: '#0f172a', marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: 2, fontSize: '1.4rem' }}><PieChart size={24} color="#10b981" /> Allocation Target</Typography>
-                                <Box sx={{ height: '320px' }}>
-                                    <Doughnut data={{
-                                        labels: summary?.investment_breakdown ? Object.keys(summary.investment_breakdown) : [],
-                                        datasets: [{
-                                            data: summary?.investment_breakdown ? Object.values(summary.investment_breakdown).map(v => v.current) : [],
-                                            backgroundColor: ['#6366f1', '#fb923c', '#10b981', '#ff3b30', '#0f172a'],
-                                            borderWidth: 0,
-                                            hoverOffset: 20
-                                        }]
-                                    }} options={{ cutout: '75%', plugins: { legend: { display: false } } }} />
-                                </Box>
-                                <Box sx={{ marginTop: '2.5rem' }}>
-                                    {summary?.investment_breakdown && Object.entries(summary.investment_breakdown).map(([label, data], idx) => (
-                                        <Box key={label} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, padding: '1rem', borderRadius: '16px', bgcolor: 'rgba(0,0,0,0.02)' }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: ['#6366f1', '#fb923c', '#10b981', '#ff3b30', '#0f172a'][idx % 5] }}></div>
-                                                <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{label}</Typography>
-                                            </Box>
-                                            <Typography sx={{ fontWeight: 900, fontSize: '0.9rem' }}>{formatCurrency(data.current)}</Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            </Paper>
+                        {/* PROGRESS RING */}
+                        <div className="relative w-64 h-64 flex items-center justify-center mb-10">
+                            <svg className="w-full h-full transform -rotate-225">
+                                <circle cx="128" cy="128" r="100" fill="transparent" stroke="#f1f5f9" strokeWidth="20" strokeLinecap="round" strokeDasharray="470 628" />
+                                <motion.circle
+                                    cx="128" cy="128" r="100" fill="transparent" stroke="#4f46e5" strokeWidth="20" strokeLinecap="round"
+                                    strokeDasharray="470 628" initial={{ strokeDashoffset: 470 }} animate={{ strokeDashoffset: 470 - (470 * 0.75) }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                />
+                            </svg>
+                            <div className="absolute flex flex-col items-center justify-center pt-8">
+                                <span className="text-6xl font-black text-slate-900">75.55%</span>
+                                <div className="mt-2 bg-emerald-50 text-emerald-500 font-black text-xs px-2 py-1 rounded-lg flex items-center gap-1">
+                                    <ArrowUp size={12} /> 10%
+                                </div>
+                            </div>
+                        </div>
 
-                            {/* AUDIT LOG PREVIEW */}
-                            <Paper sx={{ border: 'none', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(30px)' }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3.5 }}>
-                                    <Typography sx={{ fontWeight: 900, fontSize: '1.4rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: 1.5 }}><History size={24} color="#6366f1" /> Neural Logs</Typography>
-                                    <MoreHorizontal size={20} color="#94a3b8" />
-                                </Box>
-                                <Stack spacing={2}>
-                                    {recentAudit.map(log => (
-                                        <Box key={log._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem', borderRadius: '20px', border: '1px solid #f1f5f9', bgcolor: '#fff', transition: '0.2s', '&:hover': { transform: 'translateX(5px)', borderColor: '#6366f1' } }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#6366f1' }}></div>
-                                                <Box>
-                                                    <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: '#1d1d1f' }}>{log.description}</Typography>
-                                                    <Typography sx={{ fontWeight: 700, fontSize: '0.75rem', color: '#94a3b8' }}>{log.category.toUpperCase()} • {dayjs(log.date).format('MMM DD')}</Typography>
-                                                </Box>
-                                            </Box>
-                                            <Typography sx={{ fontWeight: 900, fontSize: '1rem', color: '#0f172a' }}>-{formatCurrency(log.amount)}</Typography>
-                                        </Box>
-                                    ))}
-                                </Stack>
-                                <Button fullWidth sx={{ mt: 3.5, borderRadius: '20px', py: 2, fontWeight: 900, bgcolor: 'rgba(0,0,0,0.03)', color: '#0f172a', display: 'flex', gap: 1, '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' } }} onClick={() => window.location.href = '/spending'}>VIEW AUDIT STREAM <ArrowRight size={18} /></Button>
-                            </Paper>
-                        </Stack>
-                    </Grid>
-                </Grid>
-            </Container>
-        </motion.div>
+                        <p className="text-slate-500 font-medium leading-relaxed max-w-[280px]">
+                            You earn ₹3,287 today, it’s higher than last month. Keep up your good work!
+                        </p>
+
+                        <div className="grid grid-cols-3 w-full mt-12 pt-12 border-t border-slate-50">
+                            <div className="text-center">
+                                <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Target</p>
+                                <div className="text-slate-900 font-black text-lg">₹20K <ArrowDown size={14} className="inline text-rose-500" /></div>
+                            </div>
+                            <div className="text-center border-x border-slate-50">
+                                <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Revenue</p>
+                                <div className="text-slate-900 font-black text-lg">₹20K <ArrowUp size={14} className="inline text-emerald-500" /></div>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Today</p>
+                                <div className="text-slate-900 font-black text-lg">₹20K <ArrowUp size={14} className="inline text-emerald-500" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* BOTTOM STATISTICS */}
+                <div className="bg-white p-10 rounded-[40px] shadow-sm border border-slate-100">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Portfolio Statistics</h2>
+                            <p className="text-slate-400 font-medium mt-1">Growth set for each historical month</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 self-stretch sm:self-auto">
+                            <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+                                {['Overview', 'Sales', 'Revenue'].map((tab, i) => (
+                                    <button key={tab} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${i === 0 ? 'bg-white text-indigo-600 shadow-sm border border-slate-100' : 'text-slate-400 hover:text-slate-600'}`}>{tab}</button>
+                                ))}
+                            </div>
+                            <button className="flex items-center gap-3 px-5 py-3.5 bg-white border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 shadow-sm hover:bg-slate-50 transition-all">
+                                <Calendar size={18} className="text-indigo-600" /> Mar 6, 2026 - Mar 12, 2026
+                            </button>
+                        </div>
+                    </div>
+                    <div className="h-[350px] w-full">
+                        <Line
+                            data={momentumData}
+                            options={{
+                                responsive: true, maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: 'bold', size: 11 }, color: '#94a3b8' } },
+                                    y: { grid: { display: true, color: '#f8fbfc' }, border: { display: false }, ticks: { stepSize: 50, font: { weight: 'bold', size: 11 }, color: '#94a3b8' } }
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
+
+            </div>
+        </div>
     );
 }
-
-const Button = ({ children, onClick, sx, ...props }) => (
-    <button onClick={onClick} style={{ border: 'none', cursor: 'pointer', outline: 'none', ...sx }} {...props}>
-        {children}
-    </button>
-);

@@ -26,30 +26,12 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 app.include_router(ai_router, prefix="/api/ai")
 
-import asyncio
-from app.api.endpoints import sync_all_prices
-
-# 4. Neural Background Sync Job
-async def market_watcher():
-    """Deferred auto-sync of all market prices to avoid startup bottleneck"""
-    # Delay initial sync by 20s to allow API and /docs to serve instantly
-    await asyncio.sleep(20)
-    
-    while True:
-        try:
-            print("FRIDAY BACKGROUND: Engaging Market Sync Engine...")
-            await sync_all_prices()
-            print("FRIDAY BACKGROUND: Neural Sync Complete.")
-        except Exception as e:
-            print(f"BACKGROUND ERROR: {e}")
-        await asyncio.sleep(86400) # Sync once every 24 hours
+# Removed market_watcher scheduler as requested
 
 @app.on_event("startup")
 async def startup_db_client():
     try:
         await init_db()
-        # Launch Market Watcher as a deferred task
-        asyncio.create_task(market_watcher())
         print("FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.")
     except Exception as e:
         print(f"DATABASE STARTUP ERROR: {e}")

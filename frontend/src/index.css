@@ -1,4 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Metamorphous&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+@import "tailwindcss";
+@source "../src";
+
+@theme {
+  --color-brand-50: #f5f7ff;
+  --color-brand-100: #ebf0fe;
+  --color-brand-200: #cbd9fd;
+  --color-brand-300: #91b1fa;
+  --color-brand-400: #5c81f5;
+  --color-brand-500: #3455eb;
+  --color-brand-600: #233abf;
+  --color-brand-700: #1d2d99;
+  --color-brand-800: #1d287d;
+  --color-brand-900: #1c2669;
+}
 
 :root {
   --primary: #0071e3;
@@ -1126,7 +1143,6 @@ select {
 }
 
 /* NEURAL ENGINE UI UPDATES */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 /* MODERN SAAS LIGHT DESIGN SYSTEM */
 :root {
@@ -1238,7 +1254,7 @@ body {
 }
 
 .main-content {
-  padding: 4rem !important;
+
   max-width: 1800px;
   margin: 0 auto;
 }

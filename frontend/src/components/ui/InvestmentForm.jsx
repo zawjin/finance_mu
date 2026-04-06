@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
     X, Calendar, CreditCard, ChevronDown, 
-    FileText, LayoutGrid, Tag, TrendingUp, Hash, DollarSign, Zap
+    FileText, LayoutGrid, Tag, TrendingUp, Hash, DollarSign, Zap,
+    Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import { 
@@ -9,10 +10,11 @@ import {
     InputAdornment, FormHelperText, Stack, CircularProgress, Chip, IconButton
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-
 import { Autocomplete } from '@mui/material';
-
+import api from '../../utils/api';
+import { useSelector } from 'react-redux';
 export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, initialData }) {
+    const reserves = useSelector(state => state.finance.reserves) || [];
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
         value: initialData?.value || '',
@@ -27,10 +29,13 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         withdrawals: initialData?.withdrawals || [],
         epf_employee: initialData?.epf_employee || '',
         epf_employer: initialData?.epf_employer || '',
-        contributions: initialData?.contributions || []
+        contributions: initialData?.contributions || [],
+        payment_method: initialData?.payment_method || '',
+        payment_source_id: initialData?.payment_source_id || ''
     });
 
     const [newWithdrawal, setNewWithdrawal] = useState({ amount: '', date: dayjs(), details: '', quantity: '' });
+    const [newPurchase, setNewPurchase] = useState({ quantity: '', price: '' });
 
     const [mfOptions, setMfOptions] = useState([]);
     const [mfLoading, setMfLoading] = useState(false);
@@ -44,9 +49,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         if (!formData.ticker) return;
         setFetchingPrice(true);
         try {
-            const res = await fetch(`http://localhost:8001/api/market-price?ticker=${formData.ticker}`);
-            if (!res.ok) throw new Error("Could not fetch");
-            const data = await res.json();
+            const res = await api.get(`/market-price?ticker=${formData.ticker}`);
+            const data = res.data;
             setFormData(prev => ({ ...prev, current_price: data.price.toFixed(2), buy_price: prev.buy_price || data.price.toFixed(2) }));
         } catch (e) {
             console.error(e);
@@ -68,8 +72,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         const timeout = setTimeout(() => {
             if (isMF && formData.sub && formData.sub.length > 2) {
                 setMfLoading(true);
-                fetch(`http://localhost:8001/api/mf-search?q=${formData.sub}`)
-                    .then(res => res.json())
+                api.get(`/mf-search?q=${formData.sub}`)
+                    .then(res => res.data)
                     .then(data => {
                         setMfOptions(data.map(m => ({ label: m.schemeName, value: m.schemeCode })));
                         setMfLoading(false);
@@ -83,9 +87,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
     const handleMfSelect = async (code) => {
         setFetchingPrice(true);
         try {
-            const res = await fetch(`http://localhost:8001/api/mf-nav?code=${code}`);
-            if (!res.ok) throw new Error("Fetch failed");
-            const data = await res.json();
+            const res = await api.get(`/mf-nav?code=${code}`);
+            const data = res.data;
             
             if (data && typeof data.nav !== 'undefined') {
                 setFormData(prev => ({ 
@@ -138,6 +141,25 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         return Object.keys(newErrors).length === 0;
     };
 
+    const PAYMENT_METHODS = [
+        { key: 'CASH',   label: 'Cash',   icon: <Banknote size={16} />,          color: '#f59e0b', deductsReserve: true  },
+        { key: 'BANK',   label: 'Bank',   icon: <Landmark size={16} />,          color: '#6366f1', deductsReserve: true  },
+        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={16} />,            color: '#10b981', deductsReserve: true  },
+        { key: 'UPI',    label: 'UPI',    icon: <Smartphone size={16} />,        color: '#0071e3', deductsReserve: false },
+        { key: 'CARD',   label: 'Card',   icon: <CreditCard size={16} />,        color: '#ff3b30', deductsReserve: false },
+        { key: 'GIFT',   label: 'Gift',   icon: <Gift size={16} />,              color: '#ff9500', deductsReserve: false },
+        { key: 'OTHER',  label: 'Other',  icon: <CircleDollarSign size={16} />,  color: '#86868b', deductsReserve: false },
+    ];
+
+    const selectedPayMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
+    const showSourcePicker = selectedPayMethod?.deductsReserve && reserves.length > 0;
+    const filteredReserves = reserves.filter(r => {
+        if (formData.payment_method === 'CASH') return r.account_type === 'CASH';
+        if (formData.payment_method === 'BANK') return r.account_type === 'BANK';
+        if (formData.payment_method === 'WALLET') return r.account_type === 'WALLET';
+        return true;
+    });
+
     const handleFormSubmit = () => {
         if (validate()) {
             onSubmit({ 
@@ -148,6 +170,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 details: formData.details || '-', 
                 date: formData.date.format('YYYY-MM-DD'),
                 withdrawals: formData.withdrawals,
+                payment_method: formData.payment_method || null,
+                payment_source_id: formData.payment_source_id || null,
                 ...(isMarketAsset && {
                     quantity: parseFloat(formData.quantity) || null,
                     buy_price: parseFloat(formData.buy_price) || null,
@@ -162,11 +186,48 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         const amt = parseFloat(newWithdrawal.amount);
         const qty = parseFloat(newWithdrawal.quantity);
         if (!amt || amt <= 0) return;
+        
+        let newMasterQty = parseFloat(formData.quantity);
+        let updatedMasterQty = formData.quantity;
+        let newValue = formData.value;
+
+        if (qty > 0 && newMasterQty > 0) {
+            newMasterQty -= qty;
+            updatedMasterQty = newMasterQty > 0 ? newMasterQty.toFixed(4).replace(/\.0000$/, '') : "0";
+            newValue = (newMasterQty * parseFloat(formData.current_price || 0)).toFixed(2);
+        }
+
         setFormData(prev => ({ 
             ...prev, 
+            quantity: updatedMasterQty,
+            value: newValue,
             withdrawals: [...prev.withdrawals, { ...newWithdrawal, amount: amt, quantity: qty || 0, date: newWithdrawal.date.format('YYYY-MM-DD') }]
         }));
         setNewWithdrawal({ amount: '', date: dayjs(), details: '', quantity: '' });
+    };
+
+    const handleMergePurchase = () => {
+        const addQty = parseFloat(newPurchase.quantity);
+        const addPrice = parseFloat(newPurchase.price);
+        if (!addQty || addQty <= 0 || !addPrice || addPrice <= 0) return;
+        
+        const oldQty = parseFloat(formData.quantity) || 0;
+        const oldPrice = parseFloat(formData.buy_price) || 0;
+        
+        const oldTotalCost = oldQty * oldPrice;
+        const newTotalCost = addQty * addPrice;
+        
+        const finalQty = oldQty + addQty;
+        const finalAvgPrice = finalQty > 0 ? (oldTotalCost + newTotalCost) / finalQty : 0;
+        
+        setFormData(prev => ({
+            ...prev,
+            quantity: finalQty.toFixed(4).replace(/\.0000$/, ''),
+            buy_price: finalAvgPrice.toFixed(2),
+            value: (finalQty * parseFloat(prev.current_price || 0)).toFixed(2)
+        }));
+        
+        setNewPurchase({ quantity: '', price: '' });
     };
 
     const handleAddContribution = (customAmt = null) => {
@@ -651,6 +712,108 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 </Button>
                             </Stack>
                         </Box>
+                 )}
+
+                 {/* COST AVERAGING MANAGER (BUY MORE TRADING) */}
+                 {isMarketAsset && initialData && (
+                        <Box sx={{ 
+                            mt: 2, p: 3, borderRadius: '28px', 
+                            background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))', 
+                            border: '1px solid rgba(52,199,89,0.15)',
+                            boxShadow: 'inset 0 0 40px rgba(52,199,89,0.02)'
+                        }}>
+                            <Typography sx={{ ...labelStyle, color: '#34c759', mb: 2.5, ml: 0 }}>PORTFOLIO AVERAGING CONSOLE (ADD UNITS)</Typography>
+                            <Stack spacing={2}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
+                                    <TextField
+                                        fullWidth
+                                        placeholder="Add New Units"
+                                        size="small"
+                                        value={newPurchase.quantity}
+                                        onChange={e => {
+                                            const qty = e.target.value;
+                                            if (qty === '' || /^\d*\.?\d*$/.test(qty)) setNewPurchase({ ...newPurchase, quantity: qty });
+                                        }}
+                                        sx={globalInputStyle}
+                                        InputProps={{ startAdornment: <Hash size={16} style={{ color: '#34c759', marginRight: '8px' }} /> }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        placeholder="Purchase Price (₹)"
+                                        size="small"
+                                        value={newPurchase.price}
+                                        onChange={e => setNewPurchase({ ...newPurchase, price: e.target.value })}
+                                        sx={globalInputStyle}
+                                        InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#34c759' }}>₹</Typography> }}
+                                    />
+                                </Stack>
+                                <Button 
+                                    variant="contained" 
+                                    fullWidth
+                                    onClick={handleMergePurchase}
+                                    sx={{ 
+                                        minHeight: '52px', borderRadius: '16px', 
+                                        background: 'linear-gradient(135deg, #34c759, #28a745)', 
+                                        boxShadow: '0 8px 20px rgba(52,199,89,0.2)',
+                                        color: '#ffffff',
+                                        fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(52,199,89,0.3)' }, 
+                                        textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
+                                    }}
+                                >
+                                    Prorate & Merge into Average Buy Price
+                                </Button>
+                            </Stack>
+                        </Box>
+                )}
+
+                {/* PAYMENT METHOD */}
+                <Box>
+                    <Typography sx={labelStyle}>FUNDING METHOD</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {PAYMENT_METHODS.map(m => (
+                            <Box
+                                key={m.key}
+                                onClick={() => setFormData({ ...formData, payment_method: m.key, payment_source_id: '' })}
+                                sx={{
+                                    display: 'flex', alignItems: 'center', gap: 0.8,
+                                    px: 1.5, py: 0.9, borderRadius: '12px', cursor: 'pointer',
+                                    border: '1.5px solid',
+                                    borderColor: formData.payment_method === m.key ? m.color : 'rgba(0,0,0,0.07)',
+                                    bgcolor: formData.payment_method === m.key ? `${m.color}15` : '#fafafa',
+                                    transition: '0.15s',
+                                    '&:hover': { borderColor: m.color, bgcolor: `${m.color}08` }
+                                }}
+                            >
+                                <Box sx={{ color: formData.payment_method === m.key ? m.color : '#86868b', display: 'flex' }}>{m.icon}</Box>
+                                <Typography sx={{ fontWeight: 800, fontSize: '0.78rem', color: formData.payment_method === m.key ? m.color : '#86868b' }}>{m.label}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                </Box>
+
+                {/* SOURCE ACCOUNT (only for Cash/Bank/Wallet) */}
+                {showSourcePicker && (
+                    <Box>
+                        <Typography sx={labelStyle}>SOURCE ACCOUNT — <span style={{ color: selectedPayMethod.color }}>SELECT TO AUTO-DEDUCT</span></Typography>
+                        <Select
+                            fullWidth
+                            size="small"
+                            value={formData.payment_source_id}
+                            onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
+                            displayEmpty
+                            sx={{ borderRadius: '14px', backgroundColor: 'rgba(0,0,0,0.015)', fontWeight: 700, fontSize: '0.92rem' }}
+                        >
+                            <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (track only)</em></MenuItem>
+                            {filteredReserves.map(r => (
+                                <MenuItem key={r._id} value={r._id}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
+                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#10b981' }}>₹{parseFloat(r.balance).toLocaleString('en-IN')}</Typography>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Box>
                 )}
             </Stack>
 
