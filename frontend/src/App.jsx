@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFinanceData } from './store/financeSlice';
 import api from './utils/api';
-import { 
-    ThemeProvider, createTheme, CssBaseline, 
-    Dialog, DialogTitle, DialogContent, 
-    Typography, IconButton, Grow 
+import {
+    ThemeProvider, createTheme, CssBaseline,
+    Dialog, DialogTitle, DialogContent,
+    Typography, IconButton, Grow
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -41,7 +41,7 @@ const appleTheme = createTheme({
 export default function App() {
     const dispatch = useDispatch();
     const { categories, assetClasses } = useSelector(state => state.finance);
-    
+
     const [editingItem, setEditingItem] = useState(null);
     const [editingInvestment, setEditingInvestment] = useState(null);
     const [editingDebt, setEditingDebt] = useState(null);
@@ -147,8 +147,8 @@ export default function App() {
                 <CssBaseline />
                 <Router>
                     <div className="app-shell" style={{ background: '#f8fafc', minHeight: '100vh' }}>
-                        <TopNavbar 
-                            onAdd={handleGlobalAdd} 
+                        <TopNavbar
+                            onAdd={handleGlobalAdd}
                             onOpenAiModal={() => setShowAiModal(true)}
                             onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
                             showAnalytics={showAnalytics}

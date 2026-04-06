@@ -85,6 +85,7 @@ export default function OverviewPage() {
                             </div>
                             <div className="mt-4">
                                 <p className="text-slate-400 font-bold text-sm">Total Assets</p>
+
                                 <h3 className="text-4xl font-black text-slate-900 mt-1 tracking-tight">{formatCurrency(totalAssets).replace('₹', '')}</h3>
                             </div>
                         </div>
