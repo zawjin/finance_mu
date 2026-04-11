@@ -33,6 +33,8 @@ import MonthlyBillForm from './components/ui/MonthlyBillForm';
 import ReserveForm from './components/ui/ReserveForm';
 import LendingForm from './components/ui/LendingForm';
 import SettleCardTermForm from './components/ui/SettleCardTermForm';
+import TransferFundsForm from './components/ui/TransferFundsForm';
+import AddFundsForm from './components/ui/AddFundsForm';
 import AiAnalysisModal from './components/ui/AiAnalysisModal';
 
 const appleTheme = createTheme({
@@ -88,7 +90,9 @@ export default function App() {
     const [showAddDebtModal, setShowAddDebtModal] = useState(false);
     const [showAddLendingModal, setShowAddLendingModal] = useState(false);
     const [showAddReserveModal, setShowAddReserveModal] = useState(false);
+    const [addingFundsTo, setAddingFundsTo] = useState(null);
     const [showAddYearlyModal, setShowAddYearlyModal] = useState(false);
+    const [showTransferModal, setShowTransferModal] = useState(false);
     const [showAiModal, setShowAiModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
 
@@ -198,9 +202,63 @@ export default function App() {
             setShowAddReserveModal(false);
         } catch (err) {
             console.error(err);
+            alert("Submission failed. Cloud link unstable.");
         }
     };
 
+
+    const handleAddFundsSubmit = async (data) => {
+        try {
+            const acc = reserves.find(r => r._id === data.account_id);
+            // 1. Credit Balance
+            await api.put(`/reserves/${acc._id}`, { ...acc, balance: acc.balance + data.amount });
+            // 2. Log as Inflow (Negative amount in spending signifies inflow)
+            await api.post('/spending', {
+                date: data.date,
+                amount: -Math.abs(data.amount),
+                category: 'Inflow',
+                sub_category: 'Direct Deposit',
+                description: data.description,
+                payment_method: acc.account_type,
+                target_account_id: acc._id,
+                is_settled: true
+            });
+            dispatch(fetchFinanceData());
+            setAddingFundsTo(null);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleTransferSubmit = async (data) => {
+        try {
+            const fromAcc = reserves.find(r => r._id === data.from_id);
+            const toAcc = reserves.find(r => r._id === data.to_id);
+
+            // 1. Debit Source
+            await api.put(`/reserves/${fromAcc._id}`, { ...fromAcc, balance: fromAcc.balance - data.amount });
+            // 2. Credit Destination
+            await api.put(`/reserves/${toAcc._id}`, { ...toAcc, balance: toAcc.balance + data.amount });
+
+            // 3. Create Audit Log (Spending)
+            await api.post('/spending', {
+                date: data.date,
+                amount: data.amount,
+                category: 'Transfer',
+                sub_category: 'Internal',
+                description: data.description || `Transfer from ${fromAcc.account_name} to ${toAcc.account_name}`,
+                payment_method: fromAcc.account_type,
+                payment_source_id: fromAcc._id,
+                target_account_id: toAcc._id,
+                is_settled: true
+            });
+
+            dispatch(fetchFinanceData());
+            setShowTransferModal(false);
+        } catch (err) {
+            console.error("Transfer failed:", err);
+        }
+    };
 
     const handleTermSettle = async (paymentData) => {
         try {
@@ -228,18 +286,74 @@ export default function App() {
             await api.post('/spending', {
                 date: paymentData.date,
                 amount: paymentData.amount,
-                category: logCategory,
-                sub_category: instrumentName,
+                category: 'Investment',
+                sub_category: 'Chit fund',
                 description: `Settle Term #${paymentData.term_number} for ${instrumentName}`,
                 payment_method: 'BANK',
                 payment_source_id: paymentData.source_id,
                 is_settled: true
             });
 
+            // 4. Create an Investment Portfolio entry
+            await api.post('/investments', {
+                type: 'Chit Fund',
+                name: 'Chit fund',
+                value: paymentData.amount,
+                date: paymentData.date,
+                details: `Term #${paymentData.term_number} settlement for ${instrumentName}`,
+                sub_category: instrumentName,
+                withdrawals: [],
+                payment_method: 'BANK',
+                payment_source_id: paymentData.source_id
+            });
+
             dispatch(fetchFinanceData());
             setSettlingTerm(null);
         } catch (err) {
             console.error(err);
+        }
+    };
+
+    const handleTermRevert = async (lending, termNumber) => {
+        try {
+            // 1. Filter out the payment for this term
+            const paymentToRevert = (lending.payments || []).find(p => p.term_number === termNumber);
+            if (!paymentToRevert) return;
+
+            const updatedPayments = (lending.payments || []).filter(p => p.term_number !== termNumber);
+            await api.put(`/private-lending/${lending._id}`, { ...lending, payments: updatedPayments });
+
+            // 2. Revert Reserve Balance if possible
+            if (paymentToRevert.source_id) {
+                const target = (reserves || []).find(r => r._id === paymentToRevert.source_id);
+                if (target) {
+                    await api.put(`/reserves/${target._id}`, {
+                        ...target,
+                        balance: target.balance + paymentToRevert.amount
+                    });
+                }
+            }
+
+            // 3. Purge associated Spending & Investment logs (Best effort search)
+            const instrumentName = lending.borrower;
+            const searchSpending = `Settle Term #${termNumber} for ${instrumentName}`;
+            const searchInvest = `Term #${termNumber} settlement for ${instrumentName}`;
+
+            const [spendingRes, investRes] = await Promise.all([
+                api.get('/spending'),
+                api.get('/investments')
+            ]);
+            
+            const spendItem = (spendingRes.data || []).find(s => s.description === searchSpending);
+            const investItem = (investRes.data || []).find(i => i.details === searchInvest);
+
+            if (spendItem) await api.delete(`/spending/${spendItem._id}`);
+            if (investItem) await api.delete(`/investments/${investItem._id}`);
+
+            dispatch(fetchFinanceData());
+        } catch (err) {
+            console.error("Revert failed:", err);
+            alert("Partial revert occurred. Check logs.");
         }
     };
 
@@ -270,8 +384,10 @@ export default function App() {
         setShowAddDebtModal(false);
         setShowAddLendingModal(false);
         setShowAddReserveModal(false);
+        setAddingFundsTo(null);
         setShowAddYearlyModal(false);
         setSettlingTerm(null);
+        setShowTransferModal(false);
     };
 
     const handleGlobalAdd = () => {
@@ -310,7 +426,7 @@ export default function App() {
                                         <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
                                         <Route path="/fixed-expenses" element={<YearlyExpensePage onEdit={(item) => setEditingYearly(item)} />} />
                                         <Route path="/yearly-expenses" element={<Navigate to="/fixed-expenses" replace />} />
-                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} />} />
+                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} onRevert={handleTermRevert} onTransfer={() => setShowTransferModal(true)} onAddFunds={(acc) => setAddingFundsTo(acc)} />} />
                                         <Route path="/categories" element={<CategoryPage />} />
                                         <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/settings" element={<SettingsPage />} />
@@ -348,7 +464,7 @@ export default function App() {
                             <BaseDialog
                                 open={showAddLendingModal || !!editingLending}
                                 onClose={handleCloseModal}
-                                title={editingLending ? 'Add New Local Investment Card' : 'Add New Local Investment Card'}
+                                title={editingLending ? 'Update Chit Fund Card' : 'Add New Chit Fund Card'}
                             >
                                 <LendingForm onSubmit={handleLendingSubmit} onCancel={handleCloseModal} initialData={editingLending} />
                             </BaseDialog>
@@ -356,7 +472,7 @@ export default function App() {
                             <BaseDialog
                                 open={showAddReserveModal || !!editingReserve}
                                 onClose={handleCloseModal}
-                                title={editingReserve ? 'Modify Account' : 'Register Account'}
+                                title={editingReserve ? 'Add New Account' : 'Add New Account'}
                             >
                                 <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
                             </BaseDialog>
@@ -428,6 +544,24 @@ export default function App() {
                                         onCancel={handleCloseModal}
                                     />
                                 )}
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={showTransferModal}
+                                onClose={handleCloseModal}
+                                title=""
+                                maxWidth="xs"
+                            >
+                                <TransferFundsForm reserves={reserves} onSubmit={handleTransferSubmit} onCancel={handleCloseModal} />
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={!!addingFundsTo}
+                                onClose={handleCloseModal}
+                                title=""
+                                maxWidth="xs"
+                            >
+                                {addingFundsTo && <AddFundsForm account={addingFundsTo} onSubmit={handleAddFundsSubmit} onCancel={handleCloseModal} />}
                             </BaseDialog>
 
                             <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />

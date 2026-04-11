@@ -107,6 +107,7 @@ const getSuggestedBranding = (name) => {
     if (n.includes('leisure') || n.includes('game') || n.includes('fun')) return { icon: 'Gamepad2', color: '#ff2d55' };
     if (n.includes('car') || n.includes('transport') || n.includes('auto') || n.includes('fuel')) return { icon: 'Car', color: '#32ade6' };
     if (n.includes('util') || n.includes('power') || n.includes('elec') || n.includes('zap')) return { icon: 'Zap', color: '#ffcc00' };
+    if (n.includes('chit') || n.includes('fund') || n.includes('invest')) return { icon: 'Landmark', color: '#f59e0b' };
     return { icon: 'Package', color: '#0071e3' };
 };
 

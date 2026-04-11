@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Box, Typography, Stack, IconButton, Chip, LinearProgress, Button } from '@mui/material';
-import { Edit2, Trash2, Banknote, CheckCircle2, HandCoins } from 'lucide-react';
+import { Edit2, Trash2, Banknote, CheckCircle2, HandCoins, RotateCcw } from 'lucide-react';
 import dayjs from 'dayjs';
+import { formatCurrency } from '../../utils/formatters';
 
 const CHIT_SCHEDULE_5L = [
     25000, 18750, 19000, 19250, 19500, 19750, 20000, 20500, 21000, 21500,
     22000, 22500, 23000, 23500, 24000, 24250, 24500, 24750, 25000, 25000
 ];
 
-export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSettle, idx }) {
+export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSettle, onRevert, idx }) {
     // Determine plan and data
     let planType = '5L';
     let multiplier = 1;
@@ -76,7 +77,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                 }}
                             />
                             <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                Institutional Lending Asset
+                                Chit Fund Asset
                             </Typography>
                             <Box sx={{ width: '4px', height: '4px', borderRadius: '50%', bgcolor: '#d2d2d7' }} />
                             <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#1d1d1f' }}>
@@ -107,22 +108,47 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                 <Trash2 size={16} />
                             </IconButton>
                         </Stack>
+                    </Stack>
+                </Box>
 
-                        <Box sx={{ width: '180px', textAlign: 'right' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: '#86868b' }}>COLLECTION PROGRESS</Typography>
-                                <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: planColor }}>{progress.toFixed(0)}%</Typography>
-                            </Box>
-                            <LinearProgress
-                                variant="determinate"
-                                value={progress}
-                                sx={{
-                                    height: 6, borderRadius: 3, bgcolor: 'rgba(0,0,0,0.04)',
-                                    '& .MuiLinearProgress-bar': { bgcolor: planColor, borderRadius: 3 }
+                {/* FULL WIDTH COLLECTION PROGRESS BAR - CINEMATIC BELT */}
+                <Box sx={{ 
+                    width: '100%', px: 4, py: 2, 
+                    background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)`,
+                    borderBottom: '1px solid rgba(0,0,0,0.03)'
+                }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b', letterSpacing: '0.1em' }}>CAPITAL RECOVERY PROGRESS</Typography>
+                            <Chip 
+                                label={`${progress.toFixed(1)}% RECLAIMED`}
+                                size="small"
+                                sx={{ 
+                                    height: '20px', fontSize: '0.6rem', fontWeight: 900, 
+                                    bgcolor: 'rgba(16,185,129,0.1)', color: '#10b981',
+                                    borderRadius: '6px'
                                 }}
                             />
-                        </Box>
-                    </Stack>
+                        </div>
+                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 900, color: '#1d1d1f' }}>
+                            {formatCurrency(totalPaid)} Collected / {formatCurrency(multiplier * 475000)} Expected
+                        </Typography>
+                    </Box>
+                    <div style={{ 
+                        width: '100%', height: '14px', background: 'rgba(0,0,0,0.04)', 
+                        borderRadius: '20px', overflow: 'hidden', position: 'relative' 
+                    }}>
+                        <div 
+                            style={{ 
+                                width: `${progress}%`, 
+                                height: '100%', 
+                                background: `linear-gradient(90deg, ${planColor} 0%, #10b981 100%)`,
+                                transition: 'width 1.5s cubic-bezier(1, 0, 0, 1)',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                borderRadius: '20px'
+                            }} 
+                        />
+                    </div>
                 </Box>
 
                 <Box sx={{ bgcolor: '#1d1d1f', px: 3, py: 1.5, display: 'grid', gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px', alignItems: 'center' }}>
@@ -145,12 +171,12 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                         const termPayments = (lending.payments || []).filter(p => p.term_number === termNum);
                         const totalTermPaid = termPayments.reduce((acc, p) => acc + p.amount, 0);
 
-                        let status = 'UNCOLLECTED';
+                        let status = 'UNPAID';
                         let statusColor = '#fef3c7'; // Amber
                         let textColor = '#92400e';
 
                         if (totalTermPaid >= requiredAmount) {
-                            status = 'COLLECTED';
+                            status = 'PAID';
                             statusColor = '#dcfce7'; // green
                             textColor = '#166534';
                         } else if (totalTermPaid > 0) {
@@ -175,8 +201,8 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                 gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px',
                                 px: 3, py: 1.8, alignItems: 'center',
                                 borderBottom: '1px solid rgba(0,0,0,0.04)',
-                                bgcolor: status === 'COLLECTED' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                                transition: '0.1s', '&:hover': { bgcolor: status === 'COLLECTED' ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0,0,0,0.01)' }
+                                bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                                transition: '0.1s', '&:hover': { bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0,0,0,0.01)' }
                             }}>
                                 <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8' }}>{termNum}</Typography>
                                 <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#6366f1', textTransform: 'uppercase' }}>{rowMonth}</Typography>
@@ -196,7 +222,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                     <Chip
                                         label={status}
                                         size="small"
-                                        icon={status === 'COLLECTED' ? <CheckCircle2 size={12} color="#166534" /> : undefined}
+                                        icon={status === 'PAID' ? <CheckCircle2 size={12} color="#166534" /> : undefined}
                                         sx={{
                                             height: 18, fontSize: '0.55rem', fontWeight: 900,
                                             bgcolor: statusColor, color: textColor,
@@ -211,8 +237,22 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                     )}
                                 </Box>
                                 <Box>
-                                    {status === 'COLLECTED' ? (
-                                        <CheckCircle2 size={20} color="#10b981" />
+                                    {status === 'PAID' ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <CheckCircle2 size={20} color="#10b981" />
+                                            <IconButton 
+                                                size="small" 
+                                                onClick={() => onRevert(lending, termNum)}
+                                                sx={{ 
+                                                    color: '#f59e0b', 
+                                                    background: 'rgba(245,158,11,0.05)',
+                                                    '&:hover': { background: 'rgba(245,158,11,0.15)', transform: 'rotate(-45deg)' },
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                            >
+                                                <RotateCcw size={14} />
+                                            </IconButton>
+                                        </div>
                                     ) : (
                                         <Button
                                             size="small"
@@ -237,7 +277,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                                             }}
                                         >
-                                            COLLECT
+                                            PAY
                                         </Button>
                                     )}
                                 </Box>

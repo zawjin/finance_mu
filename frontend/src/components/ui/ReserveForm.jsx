@@ -22,6 +22,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
         account_type: 'BANK',
         balance: '',
         credit_limit: '0',
+        due_date: '',
         last_updated: dayjs().format('YYYY-MM-DD'),
         description: ''
     });
@@ -31,8 +32,9 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
             setFormData({
                 account_name: initialData.account_name || '',
                 account_type: initialData.account_type || 'BANK',
-                balance: initialData.balance || '',
+                balance: (initialData.balance !== undefined && initialData.balance !== null) ? initialData.balance : '',
                 credit_limit: initialData.credit_limit || '0',
+                due_date: initialData.due_date || '',
                 last_updated: initialData.last_updated || dayjs().format('YYYY-MM-DD'),
                 description: initialData.description || ''
             });
@@ -40,11 +42,19 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
     }, [initialData]);
 
     const handleSubmit = () => {
-        if (!formData.account_name || !formData.balance) return;
+        const nameValid = formData.account_name && formData.account_name.trim() !== '';
+        const balanceValid = formData.balance !== '' && formData.balance !== undefined && formData.balance !== null;
+
+        if (!nameValid || !balanceValid) {
+            alert("REQUIRED: Please provide both an Account Name and a Balance (0 is allowed).");
+            return;
+        }
+
         onSubmit({
             ...formData,
             balance: parseFloat(formData.balance),
-            credit_limit: parseFloat(formData.credit_limit) || 0
+            credit_limit: parseFloat(formData.credit_limit) || 0,
+            due_date: formData.due_date || null
         });
     };
 
@@ -124,7 +134,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                 </Box>
                 {isCard && (
                     <Box sx={{ flex: 1 }}>
-                        <Typography sx={labelStyle}>CREDIT LIMIT (₹)</Typography>
+                        <Typography sx={labelStyle}>TOTAL CREDIT LIMIT (₹)</Typography>
                         <TextField
                             fullWidth
                             type="number"
@@ -139,6 +149,37 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                     </Box>
                 )}
             </Stack>
+
+            {isCard && (
+                <Box>
+                    <Typography sx={labelStyle}>BILL PAYMENT DATE (DAY OF MONTH)</Typography>
+                    <TextField
+                        fullWidth
+                        type="number"
+                        placeholder="e.g. 4"
+                        value={formData.due_date}
+                        onChange={e => setFormData({ ...formData, due_date: e.target.value })}
+                        sx={inputStyle}
+                        InputProps={{
+                            inputProps: { min: 1, max: 31 },
+                            endAdornment: formData.due_date && (
+                                <Typography sx={{ fontWeight: 800, color: '#6366f1', fontSize: '0.8rem', whiteSpace: 'nowrap', pr: 1 }}>
+                                    {(() => {
+                                        const d = parseInt(formData.due_date);
+                                        if (d > 3 && d < 21) return 'th';
+                                        switch (d % 10) {
+                                            case 1: return "st";
+                                            case 2: return "nd";
+                                            case 3: return "rd";
+                                            default: return "th";
+                                        }
+                                    })()} OF EVERY MONTH
+                                </Typography>
+                            )
+                        }}
+                    />
+                </Box>
+            )}
 
             <Box>
                 <Typography sx={labelStyle}>NOTES / CONTEXT</Typography>
@@ -156,7 +197,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                     ABORT
                 </Button>
                 <Button fullWidth variant="contained" onClick={handleSubmit} sx={{ py: 2, borderRadius: '50px', fontWeight: 800, bgcolor: '#6366f1', '&:hover': { bgcolor: '#4f46e5' } }}>
-                    {initialData ? 'COMMIT UPDATE' : 'ESTABLISH ACCOUNT'}
+                    SUBMIT
                 </Button>
             </Box>
         </Box>

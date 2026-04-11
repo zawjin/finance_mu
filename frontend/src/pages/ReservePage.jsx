@@ -14,9 +14,9 @@ import ReservesSummaryHeader from '../components/reserve/ReservesSummaryHeader';
 import AccountLedgerTab from '../components/reserve/AccountLedgerTab';
 import BalanceSheetTab from '../components/reserve/BalanceSheetTab';
 import DebtLedgerTab from '../components/reserve/DebtLedgerTab';
-import LocalInvestmentTab from '../components/reserve/LocalInvestmentTab';
+import ChitFundTab from '../components/reserve/ChitFundTab';
 
-export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettle }) {
+export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettle, onRevert, onTransfer, onAddFunds }) {
     const dispatch = useDispatch();
     const { reserves, loading, summary, spending, debt, privateLending } = useSelector(state => state.finance);
     const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
@@ -100,7 +100,7 @@ const handleRevertSettlement = async (item) => {
             if (item.status === 'SETTLED') return;
 
             // Check if it's a local investment
-            const isLocal = item.category === 'LOCAL_INVESTMENT' || item.category === 'PRIVATE_LENDING' || item.type === 'Local Investment';
+            const isLocal = item.category === 'LOCAL_INVESTMENT' || item.category === 'PRIVATE_LENDING' || item.type === 'Chit Fund';
 
             if (isLocal) {
                 const acqDate = dayjs(item.date);
@@ -316,6 +316,7 @@ const handleRevertSettlement = async (item) => {
                 onEditDebt={onEditDebt}
                 onEditLending={onEditLending}
                 localInvestments={localInvestments}
+                onTransfer={onTransfer}
             />
 
             {/* ── TAB SWITCHER ── */}
@@ -324,7 +325,7 @@ const handleRevertSettlement = async (item) => {
                     { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },
                     { id: 'balance-sheet', label: 'Balance Sheet', icon: <BarChart3 size={15} /> },
                     { id: 'debt-ledger', label: 'Debt Ledger', icon: <Handshake size={15} /> },
-                    { id: 'local-investment', label: 'Local Investment', icon: <Landmark size={15} /> }
+                    { id: 'local-investment', label: 'Chit Fund', icon: <Landmark size={15} /> }
                 ].map(tab => (
                     <button
                         key={tab.id}
@@ -354,9 +355,14 @@ const handleRevertSettlement = async (item) => {
                 <AccountLedgerTab
                     reserves={reserves}
                     loading={loading}
+                    spending={spending}
                     totalBank={totalBank}
                     totalCash={totalCash}
                     totalWallet={totalWallet}
+                    onEdit={onEdit}
+                    onDelete={(item) => setDeleteConfirmItem(item)}
+                    onAddFunds={onAddFunds}
+                    onPayBill={onTransfer}
                 />
             )}
 
@@ -383,14 +389,15 @@ const handleRevertSettlement = async (item) => {
                 />
             )}
 
-            {/* ── LOCAL INVESTMENT TAB ── */}
+            {/* ── CHIT FUND TAB ── */}
             {activeTab === 'local-investment' && (
-                <LocalInvestmentTab
+                <ChitFundTab
                     lendingStats={lendingStats}
                     sortedInvestments={sortedInvestments}
                     onEditLending={onEditLending}
                     setDeleteConfirmLending={setDeleteConfirmLending}
                     onSettle={onSettle}
+                    onRevert={onRevert}
                 />
             )}
 

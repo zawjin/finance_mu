@@ -12,6 +12,7 @@ class SpendingItem(BaseModel):
     recovery_description: str = "" # Specific details about the recovery/adjustment
     payment_method: Optional[str] = None  # CASH, BANK, WALLET, GIFT, UPI, CARD, OTHER
     payment_source_id: Optional[str] = None  # Reserve account _id if debited
+    target_account_id: Optional[str] = None  # Reserve account _id if credited/settled (e.g. Card Payment)
     is_settled: bool = True  # Tracks if card transactions are paid off
 
 class YearlyExpenseItem(BaseModel):
@@ -74,6 +75,7 @@ class ReserveItem(BaseModel):
     account_type: str # BANK, WALLET, CASH, CREDIT_CARD
     balance: float
     credit_limit: Optional[float] = 0.0 # Only for CREDIT_CARD
+    due_date: Optional[str] = None # Day of Month (1-31)
     last_updated: str
     description: str = ""
 

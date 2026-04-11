@@ -47,7 +47,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             };
         }
 
-        if (item.type === 'Local Investment' && amt > 0 && item.date) {
+        if (item.type === 'Chit Fund' && amt > 0 && item.date) {
             const acqDate = dayjs(item.date);
             const today = dayjs();
             const diffYears = (today.valueOf() - acqDate.valueOf()) / (1000 * 60 * 60 * 24 * 365.25);
@@ -78,6 +78,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             case 'Cash': return { bg: 'rgba(16, 185, 129, 0.12)', color: '#10b981', icon: <DollarSign size={16} color="#10b981" /> };
             case 'Stocks': return { bg: 'rgba(239, 68, 68, 0.12)', color: '#ef4444', icon: <TrendingUp size={16} color="#ef4444" /> };
             case 'Mutual Funds': return { bg: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6', icon: <Activity size={16} color="#8b5cf6" /> };
+            case 'Chit Fund': return { bg: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', icon: <Landmark size={16} color="#f59e0b" /> };
             default: return { bg: 'rgba(107, 114, 128, 0.12)', color: '#6b7280', icon: <Landmark size={16} color="#6b7280" /> };
         }
     };
@@ -117,9 +118,10 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
     const filteredInvestments = useMemo(() => {
         return investments.filter(item => {
+            const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
             const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.type.toLowerCase().includes(search.toLowerCase());
-            const matchesType = selectedType === 'ALL' || item.type === selectedType;
+                type.toLowerCase().includes(search.toLowerCase());
+            const matchesType = selectedType === 'ALL' || type === selectedType;
 
             const itemDate = dayjs(item.date);
             const now = dayjs();
@@ -175,7 +177,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
         filteredInvestments.forEach(item => {
             const { current, invested, withdrawn } = getLiveVal(item);
-            const type = item.type;
+            const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
 
             if (!typeStats[type]) typeStats[type] = { current: 0, invested: 0 };
 
@@ -254,8 +256,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     };
 
     const uniqueTypes = useMemo(() => {
-        const usageTypes = investments.map(i => i.type);
-        const configuredTypes = (assetClasses || []).map(c => c.name);
+        const usageTypes = investments.map(i => i.type === 'Local Investment' ? 'Chit Fund' : i.type);
+        const configuredTypes = (assetClasses || []).map(c => c.name === 'Local Investment' ? 'Chit Fund' : c.name);
         const types = new Set([...usageTypes, ...configuredTypes]);
         return Array.from(types).sort();
     }, [investments, assetClasses]);
@@ -609,7 +611,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                             </Box>
                         ) : (() => {
                             const renderItem = (s, livePre = null) => {
-                                const catStyle = getAssetStyle(s.type);
+                                const normalizedType = s.type === 'Local Investment' ? 'Chit Fund' : s.type;
+                                const catStyle = getAssetStyle(normalizedType);
                                 const live = livePre || getLiveVal(s);
                                 return (
                                     <div key={s._id} className="transaction-row-fancy">
@@ -633,7 +636,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             </div>
                                         </div>
                                         <div style={{ width: '160px', textAlign: 'center' }}>
-                                            <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{s.type}</span>
+                                            <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{normalizedType}</span>
                                         </div>
                                         <div style={{ width: '150px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                                             <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem', lineHeight: 1.1 }}>{formatCurrency(live.current)}</span>

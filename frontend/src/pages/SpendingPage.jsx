@@ -131,6 +131,48 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
+    const [selectedSourceId, setSelectedSourceId] = useState('ALL');
+
+    // Settlement Logic
+    const [showSettlement, setShowSettlement] = useState(false);
+    const [settling, setSettling] = useState(false);
+    const [settleData, setSettleData] = useState({ cardId: '', sourceId: '', amount: '', targetTx: null });
+
+    const handleSettleTx = async () => {
+        if (!settleData.sourceId || !settleData.amount) return;
+        setSettling(true);
+        try {
+            const amount = parseFloat(settleData.amount);
+            const tx = settleData.targetTx;
+            
+            // 1. Deduct from Source Reserve
+            if (settleData.sourceId) {
+                const target = reserves.find(r => r._id === settleData.sourceId);
+                if (target) {
+                    await api.put(`/reserves/${target._id}`, {
+                        ...target,
+                        balance: target.balance - amount
+                    });
+                }
+            }
+
+            // 2. Update the spending record recovery
+            const newRecovered = (tx.recovered || 0) + amount;
+            await api.put(`/spending/${tx._id}`, {
+                ...tx,
+                recovered: newRecovered
+            });
+
+            dispatch(fetchFinanceData());
+            setShowSettlement(false);
+            setSettleData({ cardId: '', sourceId: '', amount: '', targetTx: null });
+        } catch (err) {
+            console.error(err);
+            alert("Settlement failed.");
+        } finally {
+            setSettling(false);
+        }
+    };
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
@@ -147,6 +189,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const filteredSpending = useMemo(() => {
         let result = spending.filter(item => {
+            // EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT
+            if (item.category === 'Investment') return false;
+
             const matchesSearch = item.description.toLowerCase().includes(search.toLowerCase()) ||
                 item.category.toLowerCase().includes(search.toLowerCase());
             const matchesCat = selectedCat === 'ALL' || item.category === selectedCat;
@@ -169,7 +214,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 if (dateRange.end) matchesPeriod = matchesPeriod && itemDate.isBefore(dayjs(dateRange.end).add(1, 'day'));
             }
 
-            return matchesSearch && matchesCat && matchesSub && matchesPeriod;
+            const matchesSource = selectedSourceId === 'ALL' || item.payment_source_id === selectedSourceId;
+
+            return matchesSearch && matchesCat && matchesSub && matchesPeriod && matchesSource;
         });
 
         // Sort
@@ -180,13 +227,14 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         else if (sortBy === 'AMT_ASC') result.sort((a, b) => (a.amount || 0) - (b.amount || 0));
 
         return result;
-    }, [spending, search, selectedCat, selectedSub, period, dateRange, sortBy]);
+    }, [spending, search, selectedCat, selectedSub, period, dateRange, sortBy, selectedSourceId]);
 
     // Global Position (Unfiltered Persistent State)
     const globalSummary = useMemo(() => {
         let gross = 0;
         let recovered = 0;
         spending.forEach(item => {
+            if (item.category === 'Investment') return;
             gross += item.amount || 0;
             recovered += item.recovered || 0;
         });
@@ -572,6 +620,45 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             </div>
                         </div>
 
+                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                            <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
+                            <div className="category-filter-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                                <div 
+                                    className={`cat-filter-chip ${selectedSourceId === 'ALL' ? 'active' : ''}`} 
+                                    onClick={() => setSelectedSourceId('ALL')}
+                                    style={{ padding: '0.6rem 1.2rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.75rem' }}
+                                >
+                                    All Portals
+                                </div>
+                                {reserves.map(r => (
+                                    <div 
+                                        key={r._id} 
+                                        className={`cat-filter-chip ${selectedSourceId === r._id ? 'active' : ''}`} 
+                                        onClick={() => setSelectedSourceId(r._id)}
+                                        style={{ 
+                                            padding: '0.6rem 1rem', 
+                                            borderRadius: '12px', 
+                                            fontWeight: 800, 
+                                            fontSize: '0.75rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.6rem',
+                                            border: selectedSourceId === r._id ? `1.5px solid ${r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1'}` : '1.5px solid transparent'
+                                        }}
+                                    >
+                                        <div style={{ 
+                                            width: '8px', 
+                                            height: '8px', 
+                                            borderRadius: '2px', 
+                                            background: r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
+                                            boxShadow: `0 0 10px ${r.account_type === 'BANK' ? '#6366f144' : (r.account_type === 'CREDIT_CARD' ? '#ff3b3044' : '#10b98144')}`
+                                        }} />
+                                        {r.account_name}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                         {period === 'CUSTOM' && (
                             <div className="filter-section-block" style={{ marginTop: '1.5rem' }}>
                                 <div className="filter-section-label"><CalendarDays size={13} /><span>DATE RANGE</span></div>
@@ -680,8 +767,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             {grouped[date].map((s, idx) => {
                                                 const catStyle = getCatStyle(s.category, categories);
                                                 const outstanding = (s.amount || 0) - (s.recovered || 0);
-
                                                 const sourceAccount = reserves.find(r => r._id === s.payment_source_id);
+                                                const isUnsettled = (sourceAccount?.account_type === 'CREDIT_CARD') && outstanding > 0;
 
                                                 return (
                                                     <div key={idx} className="transaction-row-fancy">
@@ -693,7 +780,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                                                 <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 600 }}>{s.sub_category}</span>
                                                                 {sourceAccount && (
-                                                                    <span style={{ fontSize: '0.62rem', fontWeight: 900, px: 0.8, py: 0.2, bgcolor: '#f0f9ff', color: '#0369a1', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                                    <span style={{ fontSize: '0.62rem', fontWeight: 900, px: 0.8, py: 0.2, bgcolor: isUnsettled ? '#fff1f2' : '#f0f9ff', color: isUnsettled ? '#ff3b30' : '#0369a1', borderRadius: '4px', textTransform: 'uppercase' }}>
                                                                         via {sourceAccount.account_name}
                                                                     </span>
                                                                 )}
@@ -712,9 +799,17 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                                                         {/* High-Fidelity Action Cluster */}
                                                         <div className="row-action-cluster" style={{ display: 'flex', gap: '0.35rem', marginLeft: '1.5rem', opacity: 0.8 }}>
-                                                                <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: 'var(--primary)', '&:hover': { bgcolor: 'rgba(0,113,227,0.08)' } }}>
-                                                                    <Edit2 size={13} />
+                                                            {isUnsettled && (
+                                                                <IconButton size="small" onClick={() => {
+                                                                    setSettleData({ cardId: s.payment_source_id, sourceId: '', amount: outstanding.toString(), targetTx: s });
+                                                                    setShowSettlement(true);
+                                                                }} sx={{ color: '#ff3b30', '&:hover': { bgcolor: '#fff1f2' } }}>
+                                                                    <ActivityIcon size={14} />
                                                                 </IconButton>
+                                                            )}
+                                                            <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: 'var(--primary)', '&:hover': { bgcolor: 'rgba(0,113,227,0.08)' } }}>
+                                                                <Edit2 size={13} />
+                                                            </IconButton>
                                                             <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' } }}>
                                                                 <Trash2 size={13} />
                                                             </IconButton>
@@ -766,6 +861,56 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 )}
             </BaseDialog>
 
+            {/* SETTLEMENT MODAL */}
+            <BaseDialog
+                open={showSettlement}
+                onClose={() => setShowSettlement(false)}
+                title="Settle Transaction"
+                maxWidth="xs"
+            >
+                <Box sx={{ p: 4 }}>
+                    <Stack spacing={3}>
+                        <Box>
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', mb: 1, textTransform: 'uppercase' }}>SOURCE ACCOUNT (TO DEDUCT FROM)</Typography>
+                            <Select
+                                fullWidth
+                                value={settleData.sourceId}
+                                onChange={(e) => setSettleData({ ...settleData, sourceId: e.target.value })}
+                                size="small"
+                                sx={{ borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.02)', fontWeight: 800 }}
+                            >
+                                {reserves.map(r => (
+                                    <MenuItem key={r._id} value={r._id} sx={{ fontWeight: 800 }}>{r.account_name}</MenuItem>
+                                ))}
+                            </Select>
+                        </Box>
+                        <Box>
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', mb: 1, textTransform: 'uppercase' }}>SETTLEMENT AMOUNT (₹)</Typography>
+                            <TextField
+                                fullWidth
+                                placeholder="0.00"
+                                value={settleData.amount}
+                                onChange={(e) => setSettleData({ ...settleData, amount: e.target.value })}
+                                size="small"
+                                type="number"
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.02)', fontWeight: 800 } }}
+                            />
+                        </Box>
+                        <Stack direction="row" spacing={2}>
+                            <Button fullWidth onClick={() => setShowSettlement(false)} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.05)', color: '#1d1d1f' }}>ABORT</Button>
+                            <Button fullWidth variant="contained" disabled={settling} onClick={handleSettleTx} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 900, bgcolor: '#ff3b30' }}>
+                                {settling ? 'PROCESSING...' : 'COMPLETE SETTLEMENT'}
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Box>
+            </BaseDialog>
         </motion.div>
     );
 }
+
+const TableWrapper = ({ children }) => (
+    <div style={{ background: 'white', borderRadius: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+        {children}
+    </div>
+);

@@ -23,7 +23,8 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         recovered: initialData?.recovered || '',
         recovery_desc: initialData?.recovery_description || '',
         payment_method: initialData?.payment_method || '',
-        payment_source_id: initialData?.payment_source_id || ''
+        payment_source_id: initialData?.payment_source_id || '',
+        target_account_id: initialData?.target_account_id || ''
     });
 
     const [errors, setErrors] = useState({});
@@ -53,7 +54,8 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 recovered: parseFloat(formData.recovered) || 0,
                 recovery_description: formData.recovery_desc || "",
                 payment_method: formData.payment_method || null,
-                payment_source_id: formData.payment_source_id || null
+                payment_source_id: formData.payment_source_id || null,
+                target_account_id: formData.target_account_id || null
             });
         }
     };
@@ -291,7 +293,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 {/* SOURCE ACCOUNT (only for Cash/Bank/Wallet) */}
                 {showSourcePicker && (
                     <Box>
-                        <Typography sx={labelStyle}>SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>SELECT TO AUTO-DEDUCT</span></Typography>
+                        <Typography sx={labelStyle}>SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>DEBIT FROM</span></Typography>
                         <Select
                             fullWidth
                             size="small"
@@ -320,6 +322,35 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         </Select>
                     </Box>
                 )}
+
+                {/* TARGET ACCOUNT (For Settlements/Transfers) */}
+                {formData.category === 'Financial' || formData.payment_method === 'BANK' ? (
+                    <Box>
+                        <Typography sx={labelStyle}>TARGET SETTLEMENT — <span style={{ color: '#6366f1' }}>CREDIT TO / PAY OFF</span></Typography>
+                        <Select
+                            fullWidth
+                            size="small"
+                            value={formData.target_account_id}
+                            onChange={e => setFormData({ ...formData, target_account_id: e.target.value })}
+                            displayEmpty
+                            sx={{ ...globalInputStyle['& .MuiOutlinedInput-root'], borderRadius: '12px' }}
+                            startAdornment={<InputAdornment position="start" sx={{ mr: 1, ml: -0.5 }}><CreditCard size={18} style={{ color: '#6366f1' }} /></InputAdornment>}
+                        >
+                            <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>None (Standard Expense)</em></MenuItem>
+                            {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => (
+                                <MenuItem key={r._id} value={r._id}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
+                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#ff3b30' }}>
+                                            ₹{parseFloat(r.balance).toLocaleString('en-IN')} DUO
+                                        </Typography>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText sx={{ fontWeight: 700, ml: 1, mt: 1 }}>Selecting a card will automatically reduce its debt by the valuation amount.</FormHelperText>
+                    </Box>
+                ) : null}
             </Stack>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3, borderTop: '1.5px solid rgba(0,0,0,0.04)' }}>

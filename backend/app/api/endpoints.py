@@ -31,13 +31,36 @@ async def add_spending(item: SpendingItem):
         try:
             target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
             if target_reserve:
-                adj = -float(item.amount)
+                is_card = target_reserve.get("account_type") == "CREDIT_CARD"
+                # If it's a card, spending INCREASES balance (debt). If liquid, it DECREASES.
+                # Net spent = amount - recovered
+                net_spent = float(item.amount) - float(item.recovered)
+                adj = net_spent if is_card else -net_spent
+                
                 await db.reserves.update_one(
                     {"_id": ObjectId(item.payment_source_id)},
                     {"$inc": {"balance": round(adj, 2)}}
                 )
         except Exception as e:
-            print(f"Reserve deduction error: {e}")
+            print(f"Reserve source adjustment error: {e}")
+            
+    # Auto-settle target reserve if linked (e.g. paying off a card)
+    if item.target_account_id:
+        try:
+            target_res = await db.reserves.find_one({"_id": ObjectId(item.target_account_id)})
+            if target_res:
+                is_card = target_res.get("account_type") == "CREDIT_CARD"
+                net_spent = float(item.amount) - float(item.recovered)
+                # If target is card, spending REDUCES debt (-net_spent)
+                # If target is liquid bank, spending INCREASES balance (+net_spent)
+                adj = -net_spent if is_card else net_spent
+                await db.reserves.update_one(
+                    {"_id": ObjectId(item.target_account_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
+        except Exception as e:
+            print(f"Reserve target adjustment error: {e}")
+            
     return {"id": str(result.inserted_id)}
 
 @router.put("/spending/{item_id}")
@@ -57,19 +80,58 @@ async def update_spending(item_id: str, item: SpendingItem):
     # Update the record
     await db.spending.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
     
-    # Reconcile with Reserve if applicable
-    source_id = item.payment_source_id or old_item.get("payment_source_id")
-    if source_id:
+    # ── SWITCH-AWARE RECONCILIATION ──
+    # Strategy: Undo OLD effects, then apply NEW effects.
+    
+    # 1. UNDO OLD SOURCE EFFECT
+    old_source_id = old_item.get("payment_source_id")
+    if old_source_id:
         try:
-            target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
-            if target_reserve:
-                adj = -amt_diff + rec_diff
-                await db.reserves.update_one(
-                    {"_id": ObjectId(source_id)},
-                    {"$inc": {"balance": round(adj, 2)}}
-                )
-        except Exception as e:
-            print(f"Reconciliation error: {e}")
+            old_source = await db.reserves.find_one({"_id": ObjectId(old_source_id)})
+            if old_source:
+                old_net = float(old_item.get("amount", 0)) - float(old_item.get("recovered", 0))
+                # UNDO: Bank gets refund (+old_net), Card gets debt reduction (-old_net)
+                is_card = old_source.get("account_type") == "CREDIT_CARD"
+                undo_adj = -old_net if is_card else old_net
+                await db.reserves.update_one({"_id": ObjectId(old_source_id)}, {"$inc": {"balance": round(undo_adj, 2)}})
+        except Exception: pass
+
+    # 2. UNDO OLD TARGET EFFECT
+    old_target_id = old_item.get("target_account_id")
+    if old_target_id:
+        try:
+            old_target = await db.reserves.find_one({"_id": ObjectId(old_target_id)})
+            if old_target:
+                old_net = float(old_item.get("amount", 0)) - float(old_item.get("recovered", 0))
+                # UNDO: Card previously reduced debt, so now INCREASES (+old_net). Liquid DECREASES (-old_net).
+                is_card = old_target.get("account_type") == "CREDIT_CARD"
+                undo_adj = old_net if is_card else -old_net
+                await db.reserves.update_one({"_id": ObjectId(old_target_id)}, {"$inc": {"balance": round(undo_adj, 2)}})
+        except Exception: pass
+
+    # 3. APPLY NEW SOURCE EFFECT
+    if item.payment_source_id:
+        try:
+            new_source = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
+            if new_source:
+                new_net = float(item.amount) - float(item.recovered)
+                # APPLY: Bank deducts (-new_net), Card increases debt (+new_net)
+                is_card = new_source.get("account_type") == "CREDIT_CARD"
+                apply_adj = new_net if is_card else -new_net
+                await db.reserves.update_one({"_id": ObjectId(item.payment_source_id)}, {"$inc": {"balance": round(apply_adj, 2)}})
+        except Exception: pass
+
+    # 4. APPLY NEW TARGET EFFECT
+    if item.target_account_id:
+        try:
+            new_target = await db.reserves.find_one({"_id": ObjectId(item.target_account_id)})
+            if new_target:
+                new_net = float(item.amount) - float(item.recovered)
+                # APPLY: Card debt reduced (-new_net), Liquid increased (+new_net)
+                is_card = new_target.get("account_type") == "CREDIT_CARD"
+                apply_adj = -new_net if is_card else new_net
+                await db.reserves.update_one({"_id": ObjectId(item.target_account_id)}, {"$inc": {"balance": round(apply_adj, 2)}})
+        except Exception: pass
 
     return {"status": "ok"}
 
@@ -79,21 +141,38 @@ async def delete_spending(item_id: str):
     if not old_item:
         return {"error": "Not found"}
 
-    # Calculate net refund: amount - recovered
-    # For liquid: balance + net_refund
-    # For card: balance - net_refund (reducing outstanding)
     net_refund = float(old_item.get("amount", 0)) - float(old_item.get("recovered", 0))
     source_id = old_item.get("payment_source_id")
+    target_id = old_item.get("target_account_id")
 
-    if source_id:
+    if source_id and source_id != "null" and source_id != "None" and source_id != "":
         try:
-            adj = net_refund
-            await db.reserves.update_one(
-                {"_id": ObjectId(source_id)},
-                {"$inc": {"balance": round(adj, 2)}}
-            )
+            target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
+            if target_reserve:
+                is_card = target_reserve.get("account_type") == "CREDIT_CARD"
+                adj = -net_refund if is_card else net_refund
+                await db.reserves.update_one(
+                    {"_id": ObjectId(source_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
         except Exception as e:
-            print(f"Delete refund error: {e}")
+            print(f"Delete Source Revert Error: {e}")
+
+    if target_id and target_id != "null" and target_id != "None" and target_id != "":
+        try:
+            target_res = await db.reserves.find_one({"_id": ObjectId(target_id)})
+            if target_res:
+                is_card = target_res.get("account_type") == "CREDIT_CARD"
+                # UNDOing a target settlement:
+                # If target was card: debt INCREASES (+net_refund)
+                # If target was liquid: balance DECREASES (-net_refund)
+                adj = net_refund if is_card else -net_refund
+                await db.reserves.update_one(
+                    {"_id": ObjectId(target_id)},
+                    {"$inc": {"balance": round(adj, 2)}}
+                )
+        except Exception as e:
+            print(f"Delete Target Revert Error: {e}")
 
     await db.spending.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
