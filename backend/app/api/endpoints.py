@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, CardBillSettlement
+from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, YearlyExpenseItem, PrivateLendingItem
 from app.core.database import db
 from bson import ObjectId
 import urllib.request
 import json
 import httpx
+from datetime import datetime
 from app.core.config import settings
 
 router = APIRouter()
@@ -30,8 +31,7 @@ async def add_spending(item: SpendingItem):
         try:
             target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
             if target_reserve:
-                # Credit cards: spending increases outstanding. Liquid accounts: spending decreases balance.
-                adj = float(item.amount) if target_reserve.get("account_type") == "CREDIT_CARD" else -float(item.amount)
+                adj = -float(item.amount)
                 await db.reserves.update_one(
                     {"_id": ObjectId(item.payment_source_id)},
                     {"$inc": {"balance": round(adj, 2)}}
@@ -63,16 +63,7 @@ async def update_spending(item_id: str, item: SpendingItem):
         try:
             target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
             if target_reserve:
-                # Liquid assets: spending decreases balance, recovery increases balance
-                # Credit cards: spending increases liability, recovery decreases liability
-                
-                # Base Adjustment for Liquid: -amt_diff + rec_diff
                 adj = -amt_diff + rec_diff
-                
-                # Flip for Credit Card (Liability)
-                if target_reserve.get("account_type") == "CREDIT_CARD":
-                    adj = amt_diff - rec_diff
-                
                 await db.reserves.update_one(
                     {"_id": ObjectId(source_id)},
                     {"$inc": {"balance": round(adj, 2)}}
@@ -96,16 +87,11 @@ async def delete_spending(item_id: str):
 
     if source_id:
         try:
-            target_reserve = await db.reserves.find_one({"_id": ObjectId(source_id)})
-            if target_reserve:
-                adj = net_refund
-                if target_reserve.get("account_type") == "CREDIT_CARD":
-                    adj = -net_refund # Reducing outstanding
-                
-                await db.reserves.update_one(
-                    {"_id": ObjectId(source_id)},
-                    {"$inc": {"balance": round(adj, 2)}}
-                )
+            adj = net_refund
+            await db.reserves.update_one(
+                {"_id": ObjectId(source_id)},
+                {"$inc": {"balance": round(adj, 2)}}
+            )
         except Exception as e:
             print(f"Delete refund error: {e}")
 
@@ -125,9 +111,7 @@ async def add_investment(item: InvestmentItem):
         try:
             target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
             if target_reserve:
-                # If it's a credit card, spending increases the outstanding balance (liability)
-                # If it's a bank/cash account, spending decreases the balance (asset)
-                adjustment = float(item.value) if target_reserve.get("account_type") == "CREDIT_CARD" else -float(item.value)
+                adjustment = -float(item.value)
                 await db.reserves.update_one(
                     {"_id": ObjectId(item.payment_source_id)},
                     {"$inc": {"balance": round(adjustment, 2)}}
@@ -208,6 +192,27 @@ async def delete_debt(item_id: str):
     await db.debt.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
+# YEARLY FIXED EXPENSES ENDPOINTS
+@router.get("/yearly-expenses")
+async def get_yearly_expenses():
+    cursor = db.yearly_expenses.find().sort("name", 1)
+    return [format_doc(doc) async for doc in cursor]
+
+@router.post("/yearly-expenses")
+async def add_yearly_expense(item: YearlyExpenseItem):
+    result = await db.yearly_expenses.insert_one(item.dict(exclude={"id"}))
+    return {"id": str(result.inserted_id)}
+
+@router.put("/yearly-expenses/{item_id}")
+async def update_yearly_expense(item_id: str, item: YearlyExpenseItem):
+    await db.yearly_expenses.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    return {"status": "ok"}
+
+@router.delete("/yearly-expenses/{item_id}")
+async def delete_yearly_expense(item_id: str):
+    await db.yearly_expenses.delete_one({"_id": ObjectId(item_id)})
+    return {"status": "ok"}
+
 # RESERVES / LIQUIDITY ENDPOINTS
 @router.get("/reserves")
 async def get_reserves():
@@ -229,12 +234,37 @@ async def delete_reserve(item_id: str):
     await db.reserves.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
+# PRIVATE LENDING REGISTRY ENDPOINTS
+@router.get("/private-lending")
+async def get_private_lending():
+    cursor = db.private_lending.find().sort("start_date", -1)
+    items = []
+    async for doc in cursor:
+        items.append(format_doc(doc))
+    return items
+
+@router.post("/private-lending")
+async def add_private_lending(item: PrivateLendingItem):
+    result = await db.private_lending.insert_one(item.dict(exclude={"id"}))
+    return {"id": str(result.inserted_id)}
+
+@router.put("/private-lending/{item_id}")
+async def update_private_lending(item_id: str, item: PrivateLendingItem):
+    await db.private_lending.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    return {"status": "ok"}
+
+@router.delete("/private-lending/{item_id}")
+async def delete_private_lending(item_id: str):
+    await db.private_lending.delete_one({"_id": ObjectId(item_id)})
+    return {"status": "ok"}
+
 @router.get("/summary")
 async def get_summary():
     spending = await db.spending.find().to_list(2000)
     investments = await db.investments.find().to_list(100)
     debt = await db.debt.find().to_list(500)
     reserves = await db.reserves.find().to_list(100)
+    lending = await db.private_lending.find().to_list(100)
     
     # Hardened Summary Logic
     total_spending = sum(item.get("amount", 0.0) for item in spending)
@@ -274,9 +304,9 @@ async def get_summary():
         buy = item.get("buy_price")
         item_invested = (float(qty) * float(buy)) if (qty is not None and buy is not None) else float(val)
         
+        # Legacy Local Investment Logic in Investments Collection
         if t == 'Local Investment' and (qty is None or buy is None) and val > 0 and item.get('date'):
             try:
-                from datetime import datetime
                 acq_date = datetime.strptime(item['date'], '%Y-%m-%d')
                 days_diff = (datetime.now() - acq_date).days
                 val = float(val) + (float(val) * 0.065 * (days_diff / 365.25))
@@ -287,11 +317,61 @@ async def get_summary():
         investment_breakdown[t]["current"] += float(net_val)
         investment_breakdown[t]["invested"] += float(item_invested)
         investment_breakdown[t]["withdrawn"] += float(w_total)
+
+    # PRIVATE LENDING INTEGRATION
+    total_lending_live = 0.0
+    total_lending_principal = 0.0
+    for item in lending:
+        principal = float(item.get("principal", 0))
+        rate = float(item.get("interest_rate", 0.065))
+        start_str = item.get("start_date")
+        status = item.get("status", "ACTIVE")
+        
+        if status == "SETTLED":
+            w_total = float(item.get("settled_amount", 0))
+            total_withdrawn += w_total
+            total_invested_value += principal
+            
+            if "Private Lending" not in investment_breakdown: 
+                investment_breakdown["Private Lending"] = {"current": 0.0, "invested": 0.0, "withdrawn": 0.0}
+            investment_breakdown["Private Lending"]["invested"] += principal
+            investment_breakdown["Private Lending"]["withdrawn"] += w_total
+            continue
+
+        try:
+            start_date = datetime.strptime(start_str, '%Y-%m-%d')
+            days_diff = (datetime.now() - start_date).days
+            years = days_diff / 365.25
+            
+            annual_rate = item.get("interest_rate", 21.9)
+            daily_factor = (annual_rate / 100) / 365.25
+
+            if item.get("fixed_valuation") is not None:
+                live_val = float(item["fixed_valuation"])
+            else:
+                live_val = principal + (principal * daily_factor * days_diff)
+
+
+
+
+
+
+                
+            total_lending_live += live_val
+            total_lending_principal += principal
+            total_active_value += live_val
+            total_invested_value += principal
+
+            if "Private Lending" not in investment_breakdown: 
+                investment_breakdown["Private Lending"] = {"current": 0.0, "invested": 0.0, "withdrawn": 0.0}
+            investment_breakdown["Private Lending"]["current"] += live_val
+            investment_breakdown["Private Lending"]["invested"] += principal
+        except: pass
         
     for t in investment_breakdown:
         curr = investment_breakdown[t]["current"]
         inv = investment_breakdown[t]["invested"]
-        investment_breakdown[t]["profit_pct"] = ((curr - inv) / inv * 100) if inv > 0 else 0.0
+        investment_breakdown[t]["profit_pct"] = ((curr + investment_breakdown[t]["withdrawn"] - inv) / inv * 100) if inv > 0 else 0.0
 
     # Debt Summary
     total_owed_to_me = sum(d.get("amount", 0) for d in debt if d.get("direction") == "OWED_TO_ME" and d.get("status") != "SETTLED")
@@ -301,10 +381,7 @@ async def get_summary():
     total_reserves = 0.0
     for r in reserves:
         bal = float(r.get("balance", 0.0))
-        if r.get("account_type") == 'CREDIT_CARD':
-            total_reserves -= bal
-        else:
-            total_reserves += bal
+        total_reserves += bal
 
     return {
         "total_spending": total_spending,
@@ -318,7 +395,8 @@ async def get_summary():
         "investment_breakdown": investment_breakdown,
         "debt_receivables": total_owed_to_me,
         "debt_liabilities": total_i_owe,
-        "total_reserves": total_reserves
+        "total_reserves": total_reserves,
+        "lending_active_value": total_lending_live
     }
 
 
@@ -364,7 +442,7 @@ async def get_mf_nav(code: str):
         try:
             res = await client.get(f"{settings.MF_LATEST_URL}{code}/latest")
             d = res.json()
-            return {"nav": float(d['data'][0]['nav']), "scheme_name": d['meta']['scheme_name']}
+            return {"nav": float(d['nav']), "scheme_name": d['meta']['scheme_name']}
         except: return {"nav": 0.0, "scheme_name": "API_TIMEOUT"}
 
 @router.get("/ai-insights")
@@ -416,46 +494,41 @@ async def sync_all_prices():
     for item in investments:
         try:
             ticker = item.get("ticker")
-            asset_type = item.get("type")
+            asset_type = (item.get("type") or "").strip()
+            asset_type_lower = asset_type.lower()
             
-            if ticker and asset_type in ["Stocks", "ETFs"]:
+            if not ticker or not asset_type:
+                continue
+
+            # Universal Market Engine: Stocks & ETFs
+            if "stock" in asset_type_lower or "etf" in asset_type_lower or "equity" in asset_type_lower:
                 res = await get_market_price(ticker)
                 if res and res.get("price", 0) > 0:
                     new_price = float(res["price"])
                     qty = float(item.get("quantity", 0))
-                    new_val = new_price * qty
-                    await db.investments.update_one(
-                        {"_id": item["_id"]},
-                        {"$set": {"current_price": new_price, "value": new_val}}
-                    )
-                    synced_count += 1
-            elif asset_type == "Mutual Funds" and ticker:
+                    # Only update if quantity is available to prevent zeroing out
+                    if qty > 0:
+                        new_val = new_price * qty
+                        await db.investments.update_one(
+                            {"_id": item["_id"]},
+                            {"$set": {"current_price": new_price, "value": new_val}}
+                        )
+                        synced_count += 1
+            
+            # Universal NAV Engine: Mutual Funds & Debt Funds
+            elif "mutual" in asset_type_lower or "fund" in asset_type_lower:
                 res = await get_mf_nav(ticker)
                 if res and res.get("nav", 0) > 0:
                     new_price = float(res["nav"])
                     qty = float(item.get("quantity", 0))
-                    new_val = new_price * qty
-                    await db.investments.update_one(
-                        {"_id": item["_id"]},
-                        {"$set": {"current_price": new_price, "value": new_val}}
-                    )
-                    synced_count += 1
+                    if qty > 0:
+                        new_val = new_price * qty
+                        await db.investments.update_one(
+                            {"_id": item["_id"]},
+                            {"$set": {"current_price": new_price, "value": new_val}}
+                        )
+                        synced_count += 1
         except Exception as e:
-            print(f"SYNC ITEM ERROR: {e}")
+            print(f"SYNC ITEM ERROR [{item.get('name')}]: {e}")
     return {"status": "sync_task_completed", "updated_count": synced_count}
 
-# Card Bill Settlements (Separated Logs)
-@router.get("/bill-settlements")
-async def get_bill_settlements():
-    cursor = db.bill_settlements.find().sort("date", -1)
-    return [format_doc(doc) async for doc in cursor]
-
-@router.post("/bill-settlements")
-async def create_bill_settlement(item: CardBillSettlement):
-    result = await db.bill_settlements.insert_one(item.dict(exclude={"id"}))
-    return {"id": str(result.inserted_id)}
-
-@router.delete("/bill-settlements/{item_id}")
-async def delete_bill_settlement(item_id: str):
-    await db.bill_settlements.delete_one({"_id": ObjectId(item_id)})
-    return {"status": "ok"}

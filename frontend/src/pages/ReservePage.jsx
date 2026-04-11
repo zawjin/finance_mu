@@ -1,33 +1,247 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Edit2, Landmark, Wallet, Banknote, Activity, CreditCard as CardIcon, Receipt, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
-import { Dialog, Grow, Box, Typography, Button, IconButton, Skeleton, Select, MenuItem, TextField, InputAdornment, Stack } from '@mui/material';
+import { Plus, Replace, Trash2, Edit2, AlertCircle, Banknote, Wallet, ArrowRightLeft, History, PieChart, Activity, Briefcase, TrendingUp, TrendingDown, Landmark, Receipt, FileText, BarChart3, Handshake, Calendar, CheckCircle2, ArrowRight, Sigma, Sparkles } from 'lucide-react';
+import BaseDialog from '../components/ui/BaseDialog';
+import { Box, Typography, Button, IconButton, Dialog, Grow, Stack, TextField, InputAdornment, LinearProgress, Skeleton, Grid } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import { formatCurrency } from '../utils/formatters';
 import dayjs from 'dayjs';
 
-export default function ReservePage({ onEdit }) {
-    const dispatch = useDispatch();
-    const { reserves, loading, summary, billSettlements, spending } = useSelector(state => state.finance);
-    const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
-    
-    // Pay Bill State
-    const [showPayBill, setShowPayBill] = React.useState(false);
-    const [payBillData, setPayBillData] = React.useState({
-        cardId: '',
-        sourceId: '',
-        amount: ''
-    });
-    const [paying, setPaying] = React.useState(false);
+// Micro Components
+import ReservesSummaryHeader from '../components/reserve/ReservesSummaryHeader';
+import AccountLedgerTab from '../components/reserve/AccountLedgerTab';
+import BalanceSheetTab from '../components/reserve/BalanceSheetTab';
+import DebtLedgerTab from '../components/reserve/DebtLedgerTab';
+import LocalInvestmentTab from '../components/reserve/LocalInvestmentTab';
 
-    // Filter unpaid for current selected card
-    const unpaidCardTrans = spending.filter(s => 
-        s.payment_method === 'CARD' && 
-        s.payment_source_id === payBillData.cardId && 
-        !s.is_settled
-    );
+export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettle }) {
+    const dispatch = useDispatch();
+    const { reserves, loading, summary, spending, debt, privateLending } = useSelector(state => state.finance);
+    const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
+    const [deleteConfirmDebt, setDeleteConfirmDebt] = React.useState(null);
+    const [deleteConfirmLending, setDeleteConfirmLending] = React.useState(null);
+    const [activeTab, setActiveTab] = React.useState('local-investment'); // 'accounts' | 'balance-sheet' | 'debt-ledger' | 'local-investment'
+
+    // Debt State
+    const [debtSearch, setDebtSearch] = React.useState('');
+    const [debtFilterType, setDebtFilterType] = React.useState('ALL');
+
+    // Balance sheet filter state
+    const [bsFilterMonth, setBsFilterMonth] = React.useState('ALL');
+
+
+
+    // Lending Settlement State
+    const [settlementItem, setSettlementItem] = React.useState(null);
+    const [settlementSource, setSettlementSource] = React.useState('');
+    const [settlementDate, setSettlementDate] = React.useState(dayjs().format('YYYY-MM-DD'));
+    const [settling, setSettling] = React.useState(false);
+    const [settlementAmount, setSettlementAmount] = React.useState('');
+
+    React.useEffect(() => {
+        if (settlementItem) {
+
+            const remaining = (settlementItem.actualValue || 0) - (settlementItem.settled_amount || 0);
+            setSettlementAmount(remaining.toString());
+        }
+    }, [settlementItem]);
+
+
+const handleRevertSettlement = async (item) => {
+        try {
+            // Updated logic: DO NOT DELETE THE LOGS.
+            // We only reset the status to ACTIVE to allow for re-settling.
+            // This ensures historical entries in the finance logs are preserved for audit.
+
+            await api.put(`/private-lending/${item._id}`, {
+                ...item,
+                status: 'ACTIVE',
+                settled_date: null,
+                settled_amount: null,
+                settled_interest: null,
+                payment_source_id: null,
+                linked_spending_id: null,
+                linked_investment_id: null
+            });
+
+            dispatch(fetchFinanceData());
+            setSuccessMsg('Record reverted to Active status. Associated logs have been preserved.');
+        } catch (error) {
+            console.error('Revert failed:', error);
+            alert('Revert operation failed.');
+        }
+    };
+
+
+
+
+    // ── DEBT LEDGER COMPUTATION ──────────────────────────────────────────────
+    const filteredDebt = useMemo(() => {
+        if (!debt) return [];
+        return debt.filter(item => {
+            const matchesSearch = item.person.toLowerCase().includes(debtSearch.toLowerCase()) ||
+                item.description?.toLowerCase().includes(debtSearch.toLowerCase());
+            const matchesType = debtFilterType === 'ALL' ||
+                (debtFilterType === 'RECEIVABLE' && item.direction === 'OWED_TO_ME') ||
+                (debtFilterType === 'LIABILITY' && item.direction === 'I_OWE');
+            return matchesSearch && matchesType;
+        });
+    }, [debt, debtSearch, debtFilterType]);
+
+    const debtStats = useMemo(() => {
+        let receivables = 0;
+        let liabilities = 0;
+        let localPrincipals = 0;
+        let localValuation = 0;
+
+        filteredDebt.forEach(item => {
+            if (item.status === 'SETTLED') return;
+
+            // Check if it's a local investment
+            const isLocal = item.category === 'LOCAL_INVESTMENT' || item.category === 'PRIVATE_LENDING' || item.type === 'Local Investment';
+
+            if (isLocal) {
+                const acqDate = dayjs(item.date);
+                const today = dayjs();
+                const diffYears = (today.valueOf() - acqDate.valueOf()) / (1000 * 60 * 60 * 24 * 365.25);
+                const interest = item.amount * 0.065 * Math.max(0, diffYears);
+                localPrincipals += item.amount;
+                localValuation += (item.amount + interest);
+            }
+
+            if (item.direction === 'OWED_TO_ME') receivables += item.amount;
+            else liabilities += item.amount;
+        });
+        return { receivables, liabilities, net: receivables - liabilities, localPrincipals, localValuation };
+    }, [filteredDebt]);
+
+    // ────────────────────────────────────────────────────────────────────────
+
+    // ────────────────────────────────────────────────────────────────────────
+
+    // ── PRIVATE LENDING REGISTRY (DB BACKED) ──
+    const localInvestments = useMemo(() => {
+        // Calculate total weighted principal for ALL items
+        const totalWeightedPrincipal = (privateLending || []).reduce((acc, curr) => {
+            const p = parseFloat(curr.principal || 0);
+            return acc + p;
+        }, 0);
+        const targetTotalInterest = 32250;
+
+        return (privateLending || []).map(item => {
+            const principal = parseFloat(item.principal || 0);
+            const effectivePrincipal = principal;
+
+            const acqDate = dayjs(item.start_date);
+            const today = dayjs();
+            let liveVal = principal;
+
+            const weight = totalWeightedPrincipal > 0 ? (effectivePrincipal / totalWeightedPrincipal) : 0;
+            const totalInterest = targetTotalInterest * weight;
+            const actualValue = effectivePrincipal;
+
+
+            if (item.fixed_valuation !== undefined && item.fixed_valuation !== null) {
+                liveVal = parseFloat(item.fixed_valuation);
+            } else {
+                // If partial, base it on what is remaining + interest
+                const remainingRaw = actualValue - (item.settled_amount || 0);
+                liveVal = remainingRaw + totalInterest;
+            }
+
+            if (item.status === 'SETTLED') {
+                liveVal = item.settled_amount || actualValue;
+            }
+
+
+
+            return {
+                ...item,
+                person: item.borrower,
+                amount: effectivePrincipal,
+                date: item.start_date,
+                fixedInterest: 0,
+                dailyInterest: 0,
+                accruedInterest: totalInterest,
+                currentValue: liveVal,
+                actualValue: actualValue,
+                profitPct: (totalInterest / (actualValue || principal)) * 100
+            };
+        });
+    }, [privateLending]);
+
+
+
+    const sortedInvestments = useMemo(() => {
+        return [...localInvestments].sort((a, b) => b._id.localeCompare(a._id));
+    }, [localInvestments]);
+
+    const lendingStats = useMemo(() => {
+        let principalTotal = 0;
+        let activeValuation = 0;
+        let totalYield = 0;
+        let totalMonthlyInst = 0;
+
+        sortedInvestments.forEach(item => {
+            principalTotal += item.actualValue;
+            activeValuation += item.currentValue;
+            totalYield += item.accruedInterest;
+            totalMonthlyInst += (item.actualValue / 13.73);
+        });
+
+        return { principalTotal, activeValuation, yield: totalYield, totalMonthlyInst };
+    }, [sortedInvestments]);
+
+    // ────────────────────────────────────────────────────────────────────────
+
+    // ── BALANCE SHEET COMPUTATION ────────────────────────────────────────────
+    const balanceSheetData = useMemo(() => {
+        const monthMap = {};
+
+        // Process all spending transactions
+        (spending || []).forEach(s => {
+            const m = (s.date || '').slice(0, 7); // YYYY-MM
+            if (!m) return;
+            if (!monthMap[m]) monthMap[m] = { month: m, debits: 0, credits: 0 };
+            monthMap[m].debits += parseFloat(s.amount || 0);
+            monthMap[m].credits += parseFloat(s.recovered || 0);
+        });
+
+        // Sort months ascending
+        const sorted = Object.values(monthMap).sort((a, b) => a.month.localeCompare(b.month));
+
+        // Compute running balance (cumulative net)
+        let running = 0;
+        return sorted.map(row => {
+            const net = row.credits - row.debits;
+            const opening = running;
+            running += net;
+            return {
+                ...row,
+                net,
+                opening,
+                closing: running,
+            };
+        });
+    }, [spending]);
+
+    // Available months for filter
+    const availableMonths = useMemo(() => balanceSheetData.map(r => r.month), [balanceSheetData]);
+
+    const filteredRows = useMemo(() => {
+        if (bsFilterMonth === 'ALL') return balanceSheetData;
+        return balanceSheetData.filter(r => r.month === bsFilterMonth);
+    }, [balanceSheetData, bsFilterMonth]);
+
+    // Totals row
+    const bsTotals = useMemo(() => ({
+        debits: filteredRows.reduce((s, r) => s + r.debits, 0),
+        credits: filteredRows.reduce((s, r) => s + r.credits, 0),
+        net: filteredRows.reduce((s, r) => s + r.net, 0),
+    }), [filteredRows]);
+    // ────────────────────────────────────────────────────────────────────────
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
@@ -41,207 +255,50 @@ export default function ReservePage({ onEdit }) {
         }
     };
 
-    const handleDeleteSettlement = async (settlement) => {
-        if (!window.confirm(`Permanently remove this settlement of ${formatCurrency(settlement.amount)}? This will undo the balance changes.`)) return;
+    const handleRemoveLending = async () => {
+        if (!deleteConfirmLending) return;
         try {
-            await api.delete(`/bill-settlements/${settlement._id}`);
-            
-            // Undo balance changes: Add back to Bank, Add back to Card Outstanding
-            const source = reserves.find(r => r._id === settlement.source_id);
-            const card = reserves.find(r => r._id === settlement.card_id);
-
-            if (source) {
-                await api.put(`/reserves/${source._id}`, {
-                    ...source,
-                    balance: parseFloat(source.balance) + parseFloat(settlement.amount)
-                });
-            }
-            if (card) {
-                await api.put(`/reserves/${card._id}`, {
-                    ...card,
-                    balance: parseFloat(card.balance) + parseFloat(settlement.amount)
-                });
-            }
-
+            await api.delete(`/private-lending/${deleteConfirmLending._id}`);
             dispatch(fetchFinanceData());
+            setDeleteConfirmLending(null);
         } catch (err) {
             console.error(err);
-            alert("Delete failed.");
         }
     };
 
-    const handlePayBill = async () => {
-        if (!payBillData.cardId || !payBillData.sourceId || !payBillData.amount) return;
-        setPaying(true);
+    const handleDebtStatusUpdate = async (item, newStatus) => {
         try {
-            const card = reserves.find(r => r._id === payBillData.cardId);
-            const source = reserves.find(r => r._id === payBillData.sourceId);
-            const amt = parseFloat(payBillData.amount);
-
-            // 1. Deduct from Source (Bank)
-            await api.put(`/reserves/${source._id}`, {
-                ...source,
-                balance: parseFloat(source.balance) - amt,
-                last_updated: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 2. Reduce Outstanding from Card
-            await api.put(`/reserves/${card._id}`, {
-                ...card,
-                balance: parseFloat(card.balance) - amt,
-                last_updated: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 3. Add to Settlement Log
-            await api.post('/bill-settlements', {
-                card_id: card._id,
-                card_name: card.account_name,
-                source_id: source._id,
-                source_name: source.account_name,
-                amount: amt,
-                date: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 4. Mark matching unpaid transactions as settled if they fit in the amount
-            // Or just mark ALL as settled if it's a full payment.
-            // Simplified: Mark all pending for this card as settled if payment is made.
-            for (const s of unpaidCardTrans) {
-                // In a real app we'd track partials, but here we just mark as settled for now
-                await api.put(`/spending/${s._id}`, { ...s, is_settled: true });
-            }
-
+            await api.put(`/debt/${item._id}`, { ...item, status: newStatus });
             dispatch(fetchFinanceData());
-            setShowPayBill(false);
-            setPayBillData({ cardId: '', sourceId: '', amount: '' });
         } catch (err) {
             console.error(err);
-            alert("Pay Bill failed.");
-        } finally {
-            setPaying(false);
         }
     };
+
+
 
     const getTypeStyle = (type) => {
         if (type === 'BANK') return { bg: 'rgba(99,102,241,0.12)', color: '#6366f1', icon: <Landmark size={18} color="#6366f1" /> };
         if (type === 'WALLET') return { bg: 'rgba(16,185,129,0.12)', color: '#10b981', icon: <Wallet size={18} color="#10b981" /> };
-        if (type === 'CREDIT_CARD') return { bg: 'rgba(255,59,48,0.12)', color: '#ff3b30', icon: <CardIcon size={18} color="#ff3b30" /> };
         return { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', icon: <Banknote size={18} color="#f59e0b" /> };
     };
 
     const totalBank = reserves ? reserves.filter(r => r.account_type === 'BANK').reduce((s, r) => s + parseFloat(r.balance || 0), 0) : 0;
     const totalCash = reserves ? reserves.filter(r => r.account_type === 'CASH').reduce((s, r) => s + parseFloat(r.balance || 0), 0) : 0;
     const totalWallet = reserves ? reserves.filter(r => r.account_type === 'WALLET').reduce((s, r) => s + parseFloat(r.balance || 0), 0) : 0;
-    const totalCards = reserves ? reserves.filter(r => r.account_type === 'CREDIT_CARD').reduce((s, r) => s + parseFloat(r.balance || 0), 0) : 0;
-    
+
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-            
-            {/* PAY BILL DIALOG */}
-            <Dialog 
-                open={showPayBill} 
-                onClose={() => setShowPayBill(false)}
-                TransitionComponent={Grow}
-                PaperProps={{ sx: { borderRadius: '28px', width: '100%', maxWidth: '480px' } }}
-            >
-                <Box sx={{ p: 4 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Receipt size={24} color="#6366f1" /> SETTLE CARD BILL
-                    </Typography>
-                    
-                    <Stack spacing={3}>
-                        <Box>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#86868b', mb: 1 }}>SELECT CREDIT CARD</Typography>
-                            <Select 
-                                fullWidth 
-                                value={payBillData.cardId}
-                                onChange={e => setPayBillData({...payBillData, cardId: e.target.value})}
-                                sx={{ borderRadius: '16px', bgcolor: '#f8fafc' }}
-                            >
-                                {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => (
-                                    <MenuItem key={r._id} value={r._id}>{r.account_name} (₹{parseFloat(r.balance).toLocaleString()})</MenuItem>
-                                ))}
-                            </Select>
-                        </Box>
-                        
-                        <Box>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#86868b', mb: 1 }}>DEBIT FROM (BANK ACCOUNT)</Typography>
-                            <Select 
-                                fullWidth 
-                                value={payBillData.sourceId}
-                                onChange={e => setPayBillData({...payBillData, sourceId: e.target.value})}
-                                sx={{ borderRadius: '16px', bgcolor: '#f8fafc' }}
-                            >
-                                {reserves.filter(r => r.account_type === 'BANK').map(r => (
-                                    <MenuItem key={r._id} value={r._id}>{r.account_name} (₹{parseFloat(r.balance).toLocaleString()})</MenuItem>
-                                ))}
-                            </Select>
-                        </Box>
 
-                        {/* LIST UNPAID TRANSACTIONS */}
-                        {payBillData.cardId && (
-                            <Box sx={{ border: '1px solid rgba(0,0,0,0.05)', borderRadius: '18px', p: 2, bgcolor: '#fafafa' }}>
-                                <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b', mb: 1.5, textTransform: 'uppercase' }}>UNSETTLED CARD EXPENDITURES</Typography>
-                                <Stack spacing={1} sx={{ maxHeight: '180px', overflowY: 'auto', pr: 0.5 }}>
-                                    {unpaidCardTrans.length === 0 ? (
-                                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, textAlign: 'center', color: '#86868b', py: 2 }}>No unsettled transactions.</Typography>
-                                    ) : (
-                                        unpaidCardTrans.map(t => (
-                                            <Box key={t._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.03)', pb: 0.8 }}>
-                                                <Box>
-                                                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 800 }}>{t.description || t.category}</Typography>
-                                                    <Typography sx={{ fontSize: '0.6rem', color: '#86868b', fontWeight: 600 }}>{t.date}</Typography>
-                                                </Box>
-                                                <Typography sx={{ fontSize: '0.85rem', fontWeight: 900 }}>₹{parseFloat(t.amount).toLocaleString()}</Typography>
-                                            </Box>
-                                        ))
-                                    )}
-                                </Stack>
-                                {unpaidCardTrans.length > 0 && (
-                                   <Box sx={{ mt: 2, pt: 1.5, borderTop: '1.5px dashed rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'space-between' }}>
-                                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 900 }}>PENDING TOTAL</Typography>
-                                        <Typography sx={{ fontSize: '0.9rem', fontWeight: 900, color: '#ff3b30' }}>
-                                            ₹{unpaidCardTrans.reduce((s,t) => s + parseFloat(t.amount), 0).toLocaleString()}
-                                        </Typography>
-                                   </Box>
-                                )}
-                            </Box>
-                        )}
-                        
-                        <Box>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#86868b', mb: 1 }}>PAYMENT AMOUNT (₹) — <span style={{ color: '#6366f1' }}>FULL OR PARTIAL</span></Typography>
-                            <TextField 
-                                fullWidth 
-                                type="number"
-                                placeholder="0.00"
-                                value={payBillData.amount}
-                                onChange={e => setPayBillData({...payBillData, amount: e.target.value})}
-                                InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr:1 }}>₹</Typography> }}
-                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '16px', bgcolor: '#f8fafc' } }}
-                            />
-                        </Box>
-                        
-                        <Button 
-                            fullWidth 
-                            variant="contained" 
-                            onClick={handlePayBill}
-                            disabled={paying || !payBillData.amount || !payBillData.cardId || !payBillData.sourceId}
-                            sx={{ py: 2, borderRadius: '50px', fontWeight: 900, bgcolor: '#1d1d1f', '&:hover': { bgcolor: '#000' } }}
-                        >
-                            {paying ? 'PROCESSING...' : 'CONFIRM BILL SETTLEMENT'}
-                        </Button>
-                    </Stack>
-                </Box>
-            </Dialog>
 
-            <Dialog 
-                open={!!deleteConfirmItem} 
+            <BaseDialog
+                open={!!deleteConfirmItem}
                 onClose={() => setDeleteConfirmItem(null)}
-                TransitionComponent={Grow}
-                PaperProps={{ sx: { borderRadius: '28px', maxWidth: '440px' } }}
+                title="Delete Account?"
+                maxWidth="xs"
             >
                 {deleteConfirmItem && (
                     <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>DELETE ACCOUNT?</Typography>
                         <Typography sx={{ color: '#86868b', mb: 3 }}>Remove {deleteConfirmItem.account_name} from tracking?</Typography>
                         <Stack direction="row" spacing={2}>
                             <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', bgcolor: '#f1f5f9', color: '#1d1d1f' }}>ABORT</Button>
@@ -249,167 +306,128 @@ export default function ReservePage({ onEdit }) {
                         </Stack>
                     </Box>
                 )}
+            </BaseDialog>
+
+            {/* SUMMARY HEADER */}
+            <ReservesSummaryHeader
+                totalLiquidity={totalBank + totalCash + totalWallet}
+                activeTab={activeTab}
+                onEdit={onEdit}
+                onEditDebt={onEditDebt}
+                onEditLending={onEditLending}
+                localInvestments={localInvestments}
+            />
+
+            {/* ── TAB SWITCHER ── */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', background: '#f1f5f9', padding: '6px', borderRadius: '18px', width: 'fit-content' }}>
+                {[
+                    { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },
+                    { id: 'balance-sheet', label: 'Balance Sheet', icon: <BarChart3 size={15} /> },
+                    { id: 'debt-ledger', label: 'Debt Ledger', icon: <Handshake size={15} /> },
+                    { id: 'local-investment', label: 'Local Investment', icon: <Landmark size={15} /> }
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            padding: '0.6rem 1.4rem',
+                            borderRadius: '12px',
+                            border: 'none',
+                            fontWeight: 900,
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                            letterSpacing: '0.03em',
+                            transition: 'all 0.2s ease',
+                            background: activeTab === tab.id ? '#fff' : 'transparent',
+                            color: activeTab === tab.id ? '#1d1d1f' : '#94a3b8',
+                            boxShadow: activeTab === tab.id ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                        }}
+                    >
+                        {tab.icon} {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* ── ACCOUNT LEDGER TAB ── */}
+            {activeTab === 'accounts' && (
+                <AccountLedgerTab
+                    reserves={reserves}
+                    loading={loading}
+                    totalBank={totalBank}
+                    totalCash={totalCash}
+                    totalWallet={totalWallet}
+                />
+            )}
+
+            {/* ── BALANCE SHEET TAB ── */}
+            {activeTab === 'balance-sheet' && (
+                <BalanceSheetTab
+                    filteredRows={filteredRows}
+                    bsTotals={bsTotals}
+                />
+            )}
+
+            {/* ── DEBT LEDGER TAB ── */}
+            {activeTab === 'debt-ledger' && (
+                <DebtLedgerTab
+                    debtSearch={debtSearch}
+                    setDebtSearch={setDebtSearch}
+                    debtFilterType={debtFilterType}
+                    setDebtFilterType={setDebtFilterType}
+                    debtStats={debtStats}
+                    filteredDebt={filteredDebt}
+                    onEditDebt={onEditDebt}
+                    onDebtStatusUpdate={handleDebtStatusUpdate}
+                    setDeleteConfirmDebt={setDeleteConfirmDebt}
+                />
+            )}
+
+            {/* ── LOCAL INVESTMENT TAB ── */}
+            {activeTab === 'local-investment' && (
+                <LocalInvestmentTab
+                    lendingStats={lendingStats}
+                    sortedInvestments={sortedInvestments}
+                    onEditLending={onEditLending}
+                    setDeleteConfirmLending={setDeleteConfirmLending}
+                    onSettle={onSettle}
+                />
+            )}
+
+            <Dialog open={!!deleteConfirmDebt} onClose={() => setDeleteConfirmDebt(null)} TransitionComponent={Grow}>
+                {deleteConfirmDebt && (
+                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white', borderRadius: '32px', maxWidth: '440px' }}>
+                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                            <Trash2 size={32} />
+                        </div>
+                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>PURGE DEBT LOG</Typography>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                            <Button fullWidth onClick={() => setDeleteConfirmDebt(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.05)', color: '#1d1d1f' }}>ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemoveDebt} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30' }}>PROCEED</Button>
+                        </div>
+                    </Box>
+                )}
             </Dialog>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                <div className="glass-effect" style={{ padding: '1.5rem', borderRadius: '1.5rem', border: '1.5px solid rgba(52,199,89,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#34c759', color: 'white', display: 'grid', placeItems: 'center' }}><Banknote size={24} /></div>
-                        <div>
-                            <Typography variant="caption" sx={{ fontWeight: 900, color: '#34c759', display: 'block', mb: -0.4, opacity: 0.8 }}>TOTAL RESERVE LIQUIDITY</Typography>
-                            <Typography variant="h4" sx={{ fontWeight: 900, color: '#1d1d1f' }}>{formatCurrency(totalBank + totalCash + totalWallet)}</Typography>
+            <Dialog open={!!deleteConfirmLending} onClose={() => setDeleteConfirmLending(null)} TransitionComponent={Grow}>
+                {deleteConfirmLending && (
+                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white', borderRadius: '32px', maxWidth: '440px' }}>
+                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                            <Trash2 size={32} />
                         </div>
-                    </div>
-                    <Button 
-                        onClick={() => setShowPayBill(true)}
-                        startIcon={<Receipt size={18} />}
-                        sx={{ bgcolor: '#1d1d1f', color: '#fff', px: 3, py: 1.2, borderRadius: '14px', fontWeight: 900, '&:hover': { bgcolor: '#000' } }}
-                    >
-                        PAY CARD BILL
-                    </Button>
-                </div>
-            </div>
+                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>DELETE LENDING RECORD</Typography>
+                        <Typography sx={{ color: '#86868b', fontWeight: 600 }}>This will permanently remove the record for {deleteConfirmLending.borrower}.</Typography>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                            <Button fullWidth onClick={() => setDeleteConfirmLending(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.05)', color: '#1d1d1f' }}>CANCEL</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemoveLending} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30' }}>DELETE</Button>
+                        </div>
+                    </Box>
+                )}
+            </Dialog>
 
-            <div style={{ width: '100%', overflow: 'hidden', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1' }}><Landmark size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">BANK</span>
-                            <span className="pill-amt-val" style={{ color: '#6366f1' }}>{formatCurrency(totalBank)}</span>
-                        </div>
-                    </div>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(255,59,48,0.12)', color: '#ff3b30' }}><CardIcon size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">CARDS (O/S)</span>
-                            <span className="pill-amt-val" style={{ color: '#ff3b30' }}>{formatCurrency(totalCards)}</span>
-                        </div>
-                    </div>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}><Banknote size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">CASH</span>
-                            <span className="pill-amt-val" style={{ color: '#f59e0b' }}>{formatCurrency(totalCash)}</span>
-                        </div>
-                    </div>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}><Wallet size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">WALLETS</span>
-                            <span className="pill-amt-val" style={{ color: '#10b981' }}>{formatCurrency(totalWallet)}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div className="spending-split-layout" style={{ marginBottom: '4rem' }}>
-                <div className="spending-main-content" style={{ gridColumn: '1 / -1' }}>
-                    <div className="data-table-premium scroll-y-luxury">
-                        {loading ? (
-                             <Skeleton variant="rectangular" width="100%" height={200} sx={{ borderRadius: '28px' }} />
-                        ) : (
-                            <div className="date-group">
-                                <div className="date-header-luxury">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                        <Activity size={14} color="#1d1d1f" />
-                                        <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>ACCOUNT LEDGER</span>
-                                    </div>
-                                </div>
-                                <div className="investment-items-luxury">
-                                    {(reserves || []).map(r => {
-                                        const style = getTypeStyle(r.account_type);
-                                        const isCard = r.account_type === 'CREDIT_CARD';
-                                        const utilization = isCard && r.credit_limit > 0 ? (parseFloat(r.balance) / r.credit_limit) * 100 : 0;
-                                        
-                                        return (
-                                            <div key={r._id} className="transaction-row-fancy" style={{ padding: '1.2rem 1.5rem' }}>
-                                                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: style.bg, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
-                                                    {style.icon}
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                                        <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '1rem' }}>{r.account_name}</span>
-                                                        <span style={{ px: 1, py: 0.2, fontSize: '0.6rem', fontWeight: 900, background: style.bg, color: style.color, borderRadius: '4px' }}>{r.account_type}</span>
-                                                    </div>
-                                                    {isCard && (
-                                                        <Box sx={{ mt: 1, width: '100%', maxWidth: '200px' }}>
-                                                            <div style={{ height: '4px', bgcolor: 'rgba(0,0,0,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-                                                                <div style={{ width: `${Math.min(utilization, 100)}%`, height: '100%', background: utilization > 80 ? '#ff3b30' : (utilization > 50 ? '#ff9500' : '#34c759') }}></div>
-                                                            </div>
-                                                            <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#86868b', mt: 0.5 }}>
-                                                                {utilization.toFixed(1)}% Utilized • ₹{(r.credit_limit - r.balance).toLocaleString()} Avail.
-                                                            </Typography>
-                                                        </Box>
-                                                    )}
-                                                </div>
-                                                <div style={{ textAlign: 'right', marginRight: '2rem' }}>
-                                                    <Typography sx={{ fontWeight: 900, color: isCard ? '#ff3b30' : '#1d1d1f', fontSize: '1.1rem' }}>
-                                                        {isCard ? '-' : ''}{formatCurrency(r.balance)}
-                                                    </Typography>
-                                                    {isCard && <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: '#86868b' }}>Limit: {formatCurrency(r.credit_limit)}</Typography>}
-                                                </div>
-                                                <div className="row-action-cluster" style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <IconButton size="small" onClick={() => onEdit(r)} sx={{ color: '#6366f1' }}><Edit2 size={16} /></IconButton>
-                                                    <IconButton size="small" onClick={() => setDeleteConfirmItem(r)} sx={{ color: '#ff3b30' }}><Trash2 size={16} /></IconButton>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
 
-            {/* SETTLEMENT LOGS */}
-            <div className="spending-split-layout">
-                <div className="spending-main-content" style={{ gridColumn: '1 / -1' }}>
-                    <div className="data-table-premium" style={{ border: '1px solid rgba(99,102,241,0.1)' }}>
-                        <div className="date-group">
-                            <div className="date-header-luxury" style={{ background: 'linear-gradient(90deg, rgba(99,102,241,0.05), transparent)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <Receipt size={14} color="#6366f1" />
-                                    <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#6366f1' }}>BILL SETTLEMENT HISTORY</span>
-                                </div>
-                            </div>
-                            <div className="investment-items-luxury">
-                                {(billSettlements || []).length === 0 ? (
-                                    <div style={{ textAlign: 'center', padding: '3rem', color: '#86868b', fontWeight: 800 }}>No settlements recorded yet.</div>
-                                ) : (
-                                    (billSettlements || []).map(s => (
-                                        <div key={s._id} className="transaction-row-fancy" style={{ padding: '1rem 1.5rem' }}>
-                                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(52,199,89,0.1)', display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
-                                                <CheckCircle2 size={18} color="#34c759" />
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                                    <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.95rem' }}>{s.card_name}</span>
-                                                    <ArrowRight size={14} color="#86868b" />
-                                                    <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.95rem' }}>{s.source_name}</span>
-                                                </div>
-                                                <Typography sx={{ fontSize: '0.7rem', color: '#86868b', fontWeight: 700, mt: 0.2 }}>
-                                                    {dayjs(s.date).format('MMM DD, YYYY')} • FULLY SETTLED
-                                                </Typography>
-                                            </div>
-                                            <div style={{ textAlign: 'right', marginRight: '1.5rem' }}>
-                                                <Typography sx={{ fontWeight: 900, color: '#10b981', fontSize: '1.05rem' }}>{formatCurrency(s.amount)}</Typography>
-                                            </div>
-                                            <div className="row-action-cluster">
-                                                <IconButton size="small" onClick={() => handleDeleteSettlement(s)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' } }}>
-                                                    <Trash2 size={15} />
-                                                </IconButton>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </motion.div>
+
+        </motion.div >
     );
 }
-

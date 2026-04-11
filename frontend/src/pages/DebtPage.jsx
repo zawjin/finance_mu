@@ -7,9 +7,9 @@ import {
     Clock, Activity, ArrowUpRight, ArrowDownRight, ChevronRight,
     User, DollarSign, CalendarDays
 } from 'lucide-react';
-import { 
-    Box, Typography, Button, IconButton, Grid, 
-    Skeleton, Table, TableBody, TableCell, TableHead, 
+import {
+    Box, Typography, Button, IconButton, Grid,
+    Skeleton, Table, TableBody, TableCell, TableHead,
     TableRow, Chip, Dialog, Grow, TextField, InputAdornment
 } from '@mui/material';
 import dayjs from 'dayjs';
@@ -28,7 +28,7 @@ export default function DebtPage({ onEdit }) {
         return debt.filter(item => {
             const matchesSearch = item.person.toLowerCase().includes(search.toLowerCase()) ||
                 item.description?.toLowerCase().includes(search.toLowerCase());
-            const matchesType = filterType === 'ALL' || 
+            const matchesType = filterType === 'ALL' ||
                 (filterType === 'RECEIVABLE' && item.direction === 'OWED_TO_ME') ||
                 (filterType === 'LIABILITY' && item.direction === 'I_OWE');
             return matchesSearch && matchesType;
@@ -68,7 +68,7 @@ export default function DebtPage({ onEdit }) {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-            
+
             {/* NET EXPOSURE GAUGE */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '2.5rem' }}>
                 <Box className="glass-effect" sx={{ p: 4, borderRadius: '32px', border: '1.5px solid rgba(0,0,0,0.04)', bgcolor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(30px)', position: 'relative', overflow: 'hidden' }}>
@@ -85,9 +85,9 @@ export default function DebtPage({ onEdit }) {
                     <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', display: 'block', mt: 1 }}>Money you owe to others</Typography>
                 </Box>
 
-                <Box sx={{ 
-                    p: 4, borderRadius: '32px', border: 'none', 
-                    bgcolor: stats.net >= 0 ? '#0f172a' : '#ff3b30', 
+                <Box sx={{
+                    p: 4, borderRadius: '32px', border: 'none',
+                    bgcolor: stats.net >= 0 ? '#0f172a' : '#ff3b30',
                     color: 'white', position: 'relative', overflow: 'hidden',
                     boxShadow: stats.net >= 0 ? '0 25px 50px rgba(15,23,42,0.2)' : '0 25px 50px rgba(255,59,48,0.2)'
                 }}>
@@ -161,15 +161,15 @@ export default function DebtPage({ onEdit }) {
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Chip 
-                                                    label={item.direction === 'OWED_TO_ME' ? 'RECEIVABLE' : 'LIABILITY'} 
-                                                    size="small" 
-                                                    sx={{ 
-                                                        fontWeight: 900, fontSize: '0.65rem', 
+                                                <Chip
+                                                    label={item.direction === 'OWED_TO_ME' ? 'RECEIVABLE' : 'LIABILITY'}
+                                                    size="small"
+                                                    sx={{
+                                                        fontWeight: 900, fontSize: '0.65rem',
                                                         bgcolor: item.direction === 'OWED_TO_ME' ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)',
                                                         color: item.direction === 'OWED_TO_ME' ? '#34c759' : '#ff3b30',
                                                         borderRadius: '8px', border: 'none'
-                                                    }} 
+                                                    }}
                                                 />
                                             </TableCell>
                                             <TableCell>
@@ -178,15 +178,15 @@ export default function DebtPage({ onEdit }) {
                                                 </Typography>
                                             </TableCell>
                                             <TableCell>
-                                                <Chip 
-                                                    label={item.status} 
+                                                <Chip
+                                                    label={item.status}
                                                     size="small"
                                                     icon={item.status === 'SETTLED' ? <CheckCircle2 size={12} /> : (item.status === 'ACTIVE' ? <Activity size={12} /> : <Clock size={12} />)}
-                                                    sx={{ 
+                                                    sx={{
                                                         fontWeight: 900, fontSize: '0.65rem', borderRadius: '8px',
                                                         bgcolor: item.status === 'SETTLED' ? 'rgba(0,0,0,0.05)' : (item.status === 'ACTIVE' ? 'rgba(99,102,241,0.1)' : 'rgba(251,146,60,0.1)'),
                                                         color: item.status === 'SETTLED' ? '#86868b' : (item.status === 'ACTIVE' ? '#6366f1' : '#fb923c')
-                                                    }} 
+                                                    }}
                                                 />
                                             </TableCell>
                                             <TableCell>

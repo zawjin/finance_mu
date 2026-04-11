@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
+import {
     X, Calendar, Edit3, ChevronDown, Wallet,
     FileText, LayoutGrid, Tag, CreditCard,
     AlertCircle, CheckCircle2, Landmark, Banknote, Gift, Smartphone, CircleDollarSign
 } from 'lucide-react';
 import dayjs from 'dayjs';
-import { 
-    Box, TextField, Select, MenuItem, Button, Typography, 
+import {
+    Box, TextField, Select, MenuItem, Button, Typography,
     InputAdornment, FormHelperText, Stack, Autocomplete
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -37,18 +37,18 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = 'Amount must be greater than 0';
         if (!formData.category) newErrors.category = 'Please select a category';
         if (!formData.date) newErrors.date = 'Date is required';
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleFormSubmit = () => {
         if (validate()) {
-            onSubmit({ 
-                amount: parseFloat(formData.amount), 
-                description: formData.description, 
-                category: formData.category, 
-                sub_category: formData.sub || '-', 
+            onSubmit({
+                amount: parseFloat(formData.amount),
+                description: formData.description,
+                category: formData.category,
+                sub_category: formData.sub || '-',
                 date: formData.date.format('YYYY-MM-DD'),
                 recovered: parseFloat(formData.recovered) || 0,
                 recovery_description: formData.recovery_desc || "",
@@ -59,13 +59,13 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
     };
 
     const PAYMENT_METHODS = [
-        { key: 'CASH',   label: 'Cash',   icon: <Banknote size={18} />,          color: '#f59e0b', deductsReserve: true  },
-        { key: 'BANK',   label: 'Bank',   icon: <Landmark size={18} />,          color: '#6366f1', deductsReserve: true  },
-        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={18} />,            color: '#10b981', deductsReserve: true  },
-        { key: 'CARD',   label: 'Card',   icon: <CreditCard size={18} />,        color: '#ff3b30', deductsReserve: true  },
-        { key: 'UPI',    label: 'UPI',    icon: <Smartphone size={18} />,        color: '#0071e3', deductsReserve: false },
-        { key: 'GIFT',   label: 'Gift',   icon: <Gift size={18} />,              color: '#ff9500', deductsReserve: false },
-        { key: 'OTHER',  label: 'Other',  icon: <CircleDollarSign size={18} />,  color: '#86868b', deductsReserve: false },
+        { key: 'CASH', label: 'Cash', icon: <Banknote size={18} />, color: '#f59e0b', deductsReserve: true },
+        { key: 'BANK', label: 'Bank', icon: <Landmark size={18} />, color: '#6366f1', deductsReserve: true },
+        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={18} />, color: '#10b981', deductsReserve: true },
+        { key: 'CARD', label: 'Card', icon: <CreditCard size={18} />, color: '#ff3b30', deductsReserve: true },
+        { key: 'UPI', label: 'UPI', icon: <Smartphone size={18} />, color: '#0071e3', deductsReserve: false },
+        { key: 'GIFT', label: 'Gift', icon: <Gift size={18} />, color: '#ff9500', deductsReserve: false },
+        { key: 'OTHER', label: 'Other', icon: <CircleDollarSign size={18} />, color: '#86868b', deductsReserve: false },
     ];
 
     const selectedMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
@@ -91,8 +91,8 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         '& .MuiOutlinedInput-input': { fontWeight: 600, color: '#1d1d1f', fontSize: '0.95rem' }
     };
 
-    const labelStyle = { 
-        fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary', 
+    const labelStyle = {
+        fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary',
         marginBottom: '0.5rem', display: 'block', letterSpacing: '0.05em'
     };
 
@@ -116,7 +116,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                     const val = e.target.value;
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, recovered: val });
                                 }}
-                                InputProps={{ 
+                                InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CheckCircle2 size={18} style={{ color: '#34c759' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#34c759', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                                 }}
                                 sx={globalInputStyle}
@@ -131,7 +131,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                 size="small"
                                 value={formData.recovery_desc}
                                 onChange={e => setFormData({ ...formData, recovery_desc: e.target.value })}
-                                InputProps={{ 
+                                InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#5ac8fa' }} /></InputAdornment>
                                 }}
                                 sx={globalInputStyle}
@@ -139,7 +139,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         </Box>
                     </Stack>
                 )}
-                
+
                 {/* VALUATION */}
                 <Box>
                     <Typography sx={labelStyle}>VALUATION</Typography>
@@ -155,7 +155,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         }}
                         error={!!errors.amount}
                         helperText={errors.amount}
-                        InputProps={{ 
+                        InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
                         sx={globalInputStyle}
@@ -174,7 +174,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         onChange={e => setFormData({ ...formData, description: e.target.value })}
                         error={!!errors.description}
                         helperText={errors.description}
-                        InputProps={{ 
+                        InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#ff9500' }} /></InputAdornment>
                         }}
                         sx={globalInputStyle}
@@ -187,15 +187,15 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
-                        slotProps={{ 
-                            textField: { 
-                                fullWidth: true, size: 'small', error: !!errors.date, 
+                        slotProps={{
+                            textField: {
+                                fullWidth: true, size: 'small', error: !!errors.date,
                                 helperText: errors.date, sx: globalInputStyle,
                                 InputProps: {
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>,
                                     sx: { pl: '12px' }
                                 }
-                            } 
+                            }
                         }}
                     />
                 </Box>
@@ -255,7 +255,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                             />
                         )}
                         sx={{
-                            '& .MuiAutocomplete-inputRoot': { 
+                            '& .MuiAutocomplete-inputRoot': {
                                 paddingLeft: '12px !important' // Force standard left alignment
                             },
                             '& .MuiAutocomplete-endAdornment': { top: 'calc(50% - 14px)' }
@@ -301,37 +301,45 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                             sx={{ ...globalInputStyle['& .MuiOutlinedInput-root'], borderRadius: '12px' }}
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (manual only)</em></MenuItem>
-                            {filteredReserves.map(r => (
-                                <MenuItem key={r._id} value={r._id}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#10b981' }}>₹{parseFloat(r.balance).toLocaleString('en-IN')}</Typography>
-                                    </Box>
-                                </MenuItem>
-                            ))}
+                            {filteredReserves.map(r => {
+                                const isInsufficient = parseFloat(r.balance) < (parseFloat(formData.amount) || 0) && r.account_type !== 'CREDIT_CARD';
+                                return (
+                                    <MenuItem key={r._id} value={r._id} disabled={isInsufficient}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', opacity: isInsufficient ? 0.5 : 1 }}>
+                                            <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: isInsufficient ? '#ff3b30' : '#10b981' }}>
+                                                    ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                                </Typography>
+                                                {isInsufficient && <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#ff3b30' }}>INSUFFICIENT</Typography>}
+                                            </Box>
+                                        </Box>
+                                    </MenuItem>
+                                );
+                            })}
                         </Select>
                     </Box>
                 )}
             </Stack>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3, borderTop: '1.5px solid rgba(0,0,0,0.04)' }}>
-                <Button 
+                <Button
                     onClick={onCancel}
-                    variant="text" 
-                    sx={{ 
-                        borderRadius: '12px', px: 4, 
-                        fontWeight: 800, textTransform: 'none', 
+                    variant="text"
+                    sx={{
+                        borderRadius: '12px', px: 4,
+                        fontWeight: 800, textTransform: 'none',
                         color: 'text.secondary', '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' }
                     }}
                 >
                     Dismiss
                 </Button>
-                <Button 
-                    variant="contained" 
+                <Button
+                    variant="contained"
                     onClick={handleFormSubmit}
-                    sx={{ 
-                        borderRadius: '12px', px: 5, py: 1.2, 
-                        fontWeight: 900, textTransform: 'none', 
+                    sx={{
+                        borderRadius: '12px', px: 5, py: 1.2,
+                        fontWeight: 900, textTransform: 'none',
                         bgcolor: '#1d1d1f', color: '#ffffff',
                         boxShadow: 'none',
                         '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' },

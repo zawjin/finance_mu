@@ -1,28 +1,29 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import { 
-    Plus, Edit2, Trash2, Settings, X, PlusCircle, Fingerprint, Layers, Package, Heart, 
-    ShoppingCart, Stethoscope, Briefcase, Utensils, ShoppingBag, Car, Zap, Gamepad2, 
-    CreditCard, Plane, Home, Music, Tag, Coffee, Smartphone, Laptop, Tv, Film, Camera, 
-    Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun, Moon, Cloud, Star, Shield, 
-    Key, Lock, Bell, Mail, Phone, MapPin, Flag, Globe, Cpu, HardDrive, Database, Book, 
-    Library, Building, Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin, Landmark, 
-    TrendingUp, Wallet, Gavel, Terminal, Code, Webhook, Hash, Hexagon, Server, Wifi, 
-    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree, ChefHat, 
-    Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine, Activity, Bone, Brain, 
-    HeartPulse, Microscope, Syringe, Thermometer, Bath, Bed, Lamp, Refrigerator, Sofa, 
-    WashingMachine, Bird, Bug, Dog, Fish, Flower, Leaf, Rabbit, TreeDeciduous, 
-    TreePine, Brush, Music2, Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive, 
-    Atom, Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component, Construction, 
-    Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical, Gamepad, Gift, Glasses, 
-    GraduationCap, Hammer, Infinity, Joystick, Lasso, LifeBuoy, Monitor, Mouse, Network, 
-    Newspaper, Nut, Orbit, Paperclip, PawPrint, PersonStanding, Pipette, Plug, Printer, 
-    Puzzle, Quote, Radiation, Radio, Rocket, Search, Send, Share2, Shrink, Shuffle, 
+import {
+    Plus, Edit2, Trash2, Settings, X, PlusCircle, Fingerprint, Layers, Package, Heart,
+    ShoppingCart, Stethoscope, Briefcase, Utensils, ShoppingBag, Car, Zap, Gamepad2,
+    CreditCard, Plane, Home, Music, Tag, Coffee, Smartphone, Laptop, Tv, Film, Camera,
+    Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun, Moon, Cloud, Star, Shield,
+    Key, Lock, Bell, Mail, Phone, MapPin, Flag, Globe, Cpu, HardDrive, Database, Book,
+    Library, Building, Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin, Landmark,
+    TrendingUp, Wallet, Gavel, Terminal, Code, Webhook, Hash, Hexagon, Server, Wifi,
+    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree, ChefHat,
+    Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine, Activity, Bone, Brain,
+    HeartPulse, Microscope, Syringe, Thermometer, Bath, Bed, Lamp, Refrigerator, Sofa,
+    WashingMachine, Bird, Bug, Dog, Fish, Flower, Leaf, Rabbit, TreeDeciduous,
+    TreePine, Brush, Music2, Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive,
+    Atom, Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component, Construction,
+    Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical, Gamepad, Gift, Glasses,
+    GraduationCap, Hammer, Infinity, Joystick, Lasso, LifeBuoy, Monitor, Mouse, Network,
+    Newspaper, Nut, Orbit, Paperclip, PawPrint, PersonStanding, Pipette, Plug, Printer,
+    Puzzle, Quote, Radiation, Radio, Rocket, Search, Send, Share2, Shrink, Shuffle,
     Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon, Users, Video, Volume2, Watch
 } from 'lucide-react';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import BaseDialog from '../components/ui/BaseDialog';
 
 import {
     Card, Button, Typography,
@@ -33,58 +34,58 @@ import {
 
 // Expanded high-res icon map - Universal Taxonomy (100+ Icons)
 const IconMap = {
-    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />, 
-    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />, 
+    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
+    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
     ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
-    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />, 
-    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />, 
-    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />, 
-    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />, 
-    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />, 
-    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />, 
-    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />, 
-    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />, 
-    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />, 
+    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
+    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
+    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
+    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
+    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
+    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
+    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
+    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
+    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
     Library: <Library />, Building: <Building />, Store: <Store />,
-    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />, 
-    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />, 
+    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
+    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
     TrendingUp: <TrendingUp />, Wallet: <Wallet />, Gavel: <Gavel />,
-    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />, 
+    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />,
     Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />, Settings2: <Settings2 />,
-    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />, 
+    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />,
     Mountain: <Mountain />, Tents: <Tent />, Palmtree: <Palmtree />,
-    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />, 
+    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
     IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Soup />, Wine: <Wine />,
-    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />, 
+    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />,
     Microscope: <Microscope />, Syringe: <Syringe />, Thermometer: <Thermometer />,
-    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />, 
+    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />,
     Sofa: <Sofa />, WashingMachine: <WashingMachine />,
-    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />, 
+    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
     Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />, TreePine: <TreePine />,
-    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />, 
+    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />,
     PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
-    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />, 
-    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />, 
-    Compass: <Compass />, Component: <Component />, Construction: <Construction />, 
-    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />, 
-    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />, 
-    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />, 
-    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />, 
-    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />, 
-    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />, 
-    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />, 
-    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />, 
-    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />, 
-    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />, 
-    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />, 
-    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />, 
+    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
+    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
+    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
+    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
+    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
+    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
+    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
+    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
+    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
+    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
+    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
+    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />,
+    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />,
+    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />,
+    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />,
     Video: <Video />, Volume2: <Volume2 />, Watch: <Watch />
 };
 
 const UI_ICONS = Object.keys(IconMap);
 const UI_COLORS = [
     // Primary Vibrant
-    '#0071e3', '#34c759', '#ff3b30', '#ff9500', '#af52de', '#5856d6', '#ff2d55', 
+    '#0071e3', '#34c759', '#ff3b30', '#ff9500', '#af52de', '#5856d6', '#ff2d55',
     '#32ade6', '#00c7be', '#5ac8fa', '#ffcc00', '#8e8e93',
     // High-Fidelity Shades
     '#003366', '#124E27', '#6A0B0B', '#6D4001', '#401A51', '#212053', '#620D20',
@@ -112,9 +113,9 @@ const getSuggestedBranding = (name) => {
 export default function CategoryPage() {
     const { categories, assetClasses, loading } = useSelector(state => state.finance);
     const dispatch = useDispatch();
-    
+
     const [activeTab, setActiveTab] = useState('categories'); // 'categories' or 'asset_classes'
-    
+
     // Form Dialog State
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -129,6 +130,7 @@ export default function CategoryPage() {
 
     // Sorted Categories A-Z
     const activeDataList = activeTab === 'categories' ? categories : (assetClasses || []);
+
     const sortedCategories = useMemo(() => {
         return [...activeDataList].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }, [activeDataList]);
@@ -170,19 +172,20 @@ export default function CategoryPage() {
     const handleSave = async () => {
         if (!newName) return;
         const subList = newSubs.map(s => s.trim()).filter(s => s);
-        const payload = { 
-            name: newName, 
+        const payload = {
+            name: newName,
             sub_categories: subList.length > 0 ? subList : ['General'],
             icon: newIcon,
             color: newColor
         };
-        
+
         // Immediate UI Close for perceived speed
         setIsFormOpen(false);
         setIsSaving(true);
-        
-        
+
+
         const apiPath = activeTab === 'categories' ? '/categories' : '/asset_classes';
+
         try {
             if (editingId) {
                 await api.put(`${apiPath}/${editingId}`, payload);
@@ -215,11 +218,11 @@ export default function CategoryPage() {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '1.5rem' }}>
-            
+
             {/* Header Section */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ p: 1.2, bgcolor: 'primary.main', borderRadius: '12px', color: 'white', display: 'flex' }}><Settings size={22}/></Box>
+                    <Box sx={{ p: 1.2, bgcolor: 'primary.main', borderRadius: '12px', color: 'white', display: 'flex' }}><Settings size={22} /></Box>
                     <Box>
                         <Typography variant="h5" fontWeight="900" letterSpacing="-0.02em">Architecture Central</Typography>
                         <Typography variant="caption" color="text.secondary" fontWeight="700">MASTER TAXONOMY ENGINE</Typography>
@@ -227,13 +230,13 @@ export default function CategoryPage() {
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '12px', p: 0.5 }}>
-                        <Button 
+                        <Button
                             onClick={() => setActiveTab('categories')}
-                            sx={{ 
-                                borderRadius: '10px', 
-                                px: 3, 
-                                py: 0.5, 
-                                fontWeight: 800, 
+                            sx={{
+                                borderRadius: '10px',
+                                px: 3,
+                                py: 0.5,
+                                fontWeight: 800,
                                 color: activeTab === 'categories' ? '#1d1d1f' : 'text.secondary',
                                 bgcolor: activeTab === 'categories' ? 'white' : 'transparent',
                                 boxShadow: activeTab === 'categories' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
@@ -242,13 +245,13 @@ export default function CategoryPage() {
                         >
                             Spending Categories
                         </Button>
-                        <Button 
+                        <Button
                             onClick={() => setActiveTab('asset_classes')}
-                            sx={{ 
-                                borderRadius: '10px', 
-                                px: 3, 
-                                py: 0.5, 
-                                fontWeight: 800, 
+                            sx={{
+                                borderRadius: '10px',
+                                px: 3,
+                                py: 0.5,
+                                fontWeight: 800,
                                 color: activeTab === 'asset_classes' ? '#1d1d1f' : 'text.secondary',
                                 bgcolor: activeTab === 'asset_classes' ? 'white' : 'transparent',
                                 boxShadow: activeTab === 'asset_classes' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
@@ -258,9 +261,9 @@ export default function CategoryPage() {
                             Asset Classes
                         </Button>
                     </Box>
-                    <Button 
-                        variant="contained" 
-                        startIcon={<Plus size={18} />} 
+                    <Button
+                        variant="contained"
+                        startIcon={<Plus size={18} />}
                         onClick={openAddForm}
                         sx={{ borderRadius: '12px', px: 3, fontWeight: '800', textTransform: 'none', boxShadow: 'none' }}
                     >
@@ -315,10 +318,10 @@ export default function CategoryPage() {
                                     <TableRow key={cat._id || cat.name} hover>
                                         <TableCell sx={{ py: 2.5, pl: 4 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                                                <Avatar sx={{ 
-                                                    width: 48, height: 48, 
-                                                    bgcolor: `${branding.color}12`, 
-                                                    color: branding.color, 
+                                                <Avatar sx={{
+                                                    width: 48, height: 48,
+                                                    bgcolor: `${branding.color}12`,
+                                                    color: branding.color,
                                                     border: `1.5px solid ${branding.color}20`,
                                                     borderRadius: '16px'
                                                 }}>
@@ -356,24 +359,14 @@ export default function CategoryPage() {
             </TableContainer>
 
             {/* Redesigned Slimmer Dialog */}
-            <Dialog 
-                open={isFormOpen} 
-                onClose={closeForm} 
-                TransitionComponent={Grow}
-                transitionDuration={450}
-                maxWidth="sm" 
-                fullWidth 
-                PaperProps={{ sx: { borderRadius: '24px', p: 1 } }}
-                BackdropProps={{
-                    sx: {
-                        backdropFilter: 'blur(4px)',
-                        backgroundColor: 'rgba(0,0,0,0.3)',
-                        transition: '0.4s all ease-in-out'
-                    }
-                }}
+            <BaseDialog
+                open={isFormOpen}
+                onClose={closeForm}
+                title={editingId ? 'Update Entity' : 'Create Entity'}
+                maxWidth="sm"
             >
-                <DialogTitle sx={{ p: 3, pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ p: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
                         <Avatar sx={{ bgcolor: `${newColor}15`, color: newColor, border: `1.5px solid ${newColor}25`, borderRadius: '14px', width: 48, height: 48 }}>
                             {React.cloneElement(IconMap[newIcon] || <Fingerprint />, { size: 24, strokeWidth: 2.5 })}
                         </Avatar>
@@ -384,10 +377,7 @@ export default function CategoryPage() {
                             <Typography variant="caption" color="text.secondary" fontWeight="700">ENTITY BRANDING</Typography>
                         </Box>
                     </Box>
-                    <IconButton onClick={closeForm} sx={{ bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '10px' }} size="small"><X size={20}/></IconButton>
-                </DialogTitle>
-                
-                <DialogContent sx={{ p: 3, pt: 2 }}>
+
                     <Stack spacing={3} sx={{ mb: 4 }}>
                         <Box>
                             <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>ENTITY NAME</Typography>
@@ -396,121 +386,114 @@ export default function CategoryPage() {
                                 placeholder="e.g. Healthcare..."
                                 fullWidth
                                 variant="outlined"
-                                size="small"
                                 value={newName}
                                 onChange={e => setNewName(e.target.value)}
-                                InputProps={{ sx: { borderRadius: '12px', fontWeight: 800, fontSize: '1rem', bgcolor: 'rgba(0,0,0,0.01)' } }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '12px',
-                                        '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' },
-                                        '&.Mui-focused fieldset': { borderColor: newColor, borderWidth: '2px' }
-                                    }
-                                }}
+                                InputProps={{ sx: { borderRadius: '16px', fontWeight: 900, fontSize: '1rem', border: '1.5px solid rgba(0,0,0,0.06)', '&:hover': { border: '1.5px solid var(--primary)' } } }}
                             />
                         </Box>
-                        
+
                         <Box>
-                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>COLOUR PALETTE</Typography>
-                            <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap', maxHeight: '120px', overflowY: 'auto', p: 2, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', bgcolor: 'rgba(0,0,0,0.01)' }}>
+                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>BRAND COLOR</Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
                                 {UI_COLORS.map(c => (
-                                    <Box 
-                                        key={c} 
+                                    <Box
+                                        key={c}
                                         onClick={() => { setNewColor(c); setAutoSuggestEnabled(false); }}
-                                        sx={{ 
-                                            width: 26, height: 26, borderRadius: '8px', cursor: 'pointer', bgcolor: c, 
+                                        sx={{
+                                            width: 26, height: 26, borderRadius: '8px', cursor: 'pointer', bgcolor: c,
                                             border: newColor === c ? '2.5px solid white' : 'none',
                                             boxShadow: newColor === c ? `0 0 0 2.5px ${c}` : 'none',
-                                            transition: '0.2s cubic-bezier(0.4, 0, 0.2, 1)', 
+                                            transition: '0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                             '&:hover': { transform: 'scale(1.2)' }
-                                        }} 
+                                        }}
                                     />
                                 ))}
                             </Box>
                         </Box>
+
+                        <Box sx={{ mb: 4 }}>
+                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>ICON ARCHETYPE SELECTION</Typography>
+                            <Box sx={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))',
+                                gap: 1.5,
+                                maxHeight: '180px',
+                                overflowY: 'auto',
+                                p: 2,
+                                border: '1px solid rgba(0,0,0,0.06)',
+                                borderRadius: '16px',
+                                bgcolor: 'rgba(0,0,0,0.02)'
+                            }}>
+                                {UI_ICONS.map(icon => (
+                                    <IconButton
+                                        key={icon}
+                                        onClick={() => { setNewIcon(icon); setAutoSuggestEnabled(false); }}
+                                        sx={{
+                                            p: 1.2, borderRadius: '12px',
+                                            bgcolor: newIcon === icon ? `${newColor}20` : 'rgba(255,255,255,0.8)',
+                                            color: newIcon === icon ? newColor : 'text.secondary',
+                                            boxShadow: newIcon === icon ? `0 4px 12px ${newColor}30` : 'none',
+                                            transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)',
+                                            '&:hover': { bgcolor: `${newColor}12`, transform: 'translateY(-2px)' }
+                                        }}
+                                    >
+                                        {React.cloneElement(IconMap[icon], { size: 20, strokeWidth: 2.5 })}
+                                    </IconButton>
+                                ))}
+                            </Box>
+                        </Box>
+
+                        <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="overline" sx={{ fontWeight: 900, color: 'text.secondary', letterSpacing: '0.1em' }}>SUB-NODES ({newSubs.length})</Typography>
+                            <Button variant="text" size="small" startIcon={<PlusCircle size={16} />} onClick={() => setNewSubs(['', ...newSubs])} sx={{ fontWeight: 800, textTransform: 'none', color: newColor }}>Add Node</Button>
+                        </Box>
+
+                        <Box sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)', bgcolor: 'rgba(0,0,0,0.01)' }}>
+                            <Stack divider={<Divider sx={{ opacity: 0.4 }} />}>
+                                {newSubs.length === 0 ? (
+                                    <Box sx={{ p: 3, textAlign: 'center', opacity: 0.4 }}><Typography variant="caption" fontWeight="800">NO NODES DEFINED</Typography></Box>
+                                ) : (
+                                    newSubs.map((sub, idx) => (
+                                        <Box key={idx} sx={{ p: 1.5, display: 'flex', alignItems: 'center', gap: 2, '&:hover': { bgcolor: 'white' } }}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                variant="standard"
+                                                placeholder="Label..."
+                                                value={sub}
+                                                onChange={(e) => {
+                                                    const updated = [...newSubs];
+                                                    updated[idx] = e.target.value;
+                                                    setNewSubs(updated);
+                                                }}
+                                                InputProps={{ disableUnderline: true, sx: { fontWeight: 800, fontSize: '0.9rem', color: 'text.primary' } }}
+                                            />
+                                            <IconButton size="small" onClick={() => {
+                                                const updated = [...newSubs];
+                                                updated.splice(idx, 1);
+                                                setNewSubs(updated);
+                                            }} sx={{ color: 'text.secondary' }}><Trash2 size={16} /></IconButton>
+                                        </Box>
+                                    ))
+                                )}
+                            </Stack>
+                        </Box>
                     </Stack>
 
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>ICON ARCHETYPE SELECTION</Typography>
-                        <Box sx={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))', 
-                            gap: 1.5, 
-                            maxHeight: '180px', 
-                            overflowY: 'auto', 
-                            p: 2, 
-                            border: '1px solid rgba(0,0,0,0.06)', 
-                            borderRadius: '16px',
-                            bgcolor: 'rgba(0,0,0,0.02)'
-                        }}>
-                            {UI_ICONS.map(icon => (
-                                <IconButton 
-                                    key={icon} 
-                                    onClick={() => { setNewIcon(icon); setAutoSuggestEnabled(false); }}
-                                    sx={{ 
-                                        p: 1.2, borderRadius: '12px',
-                                        bgcolor: newIcon === icon ? `${newColor}20` : 'rgba(255,255,255,0.8)',
-                                        color: newIcon === icon ? newColor : 'text.secondary',
-                                        boxShadow: newIcon === icon ? `0 4px 12px ${newColor}30` : 'none',
-                                        transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)',
-                                        '&:hover': { bgcolor: `${newColor}12`, transform: 'translateY(-2px)' }
-                                    }}
-                                >
-                                    {React.cloneElement(IconMap[icon], { size: 20, strokeWidth: 2.5 })}
-                                </IconButton>
-                            ))}
-                        </Box>
-                    </Box>
-
-                    <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="overline" sx={{ fontWeight: 900, color: 'text.secondary', letterSpacing: '0.1em' }}>SUB-NODES ({newSubs.length})</Typography>
-                        <Button variant="text" size="small" startIcon={<PlusCircle size={16}/>} onClick={() => setNewSubs(['', ...newSubs])} sx={{ fontWeight: 800, textTransform: 'none', color: newColor }}>Add Node</Button>
-                    </Box>
-                    
-                    <Box sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)', bgcolor: 'rgba(0,0,0,0.01)' }}>
-                        <Stack divider={<Divider sx={{ opacity: 0.4 }} />}>
-                            {newSubs.length === 0 ? (
-                                <Box sx={{ p: 3, textAlign: 'center', opacity: 0.4 }}><Typography variant="caption" fontWeight="800">NO NODES DEFINED</Typography></Box>
-                            ) : (
-                                newSubs.map((sub, idx) => (
-                                    <Box key={idx} sx={{ p: 1.5, display: 'flex', alignItems: 'center', gap: 2, '&:hover': { bgcolor: 'white' } }}>
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            variant="standard"
-                                            placeholder="Label..."
-                                            value={sub}
-                                            onChange={(e) => {
-                                                const updated = [...newSubs];
-                                                updated[idx] = e.target.value;
-                                                setNewSubs(updated);
-                                            }}
-                                            InputProps={{ disableUnderline: true, sx: { fontWeight: 800, fontSize: '0.9rem', color: 'text.primary' } }}
-                                        />
-                                        <IconButton size="small" onClick={() => {
-                                            const updated = [...newSubs];
-                                            updated.splice(idx, 1);
-                                            setNewSubs(updated);
-                                        }} sx={{ color: 'text.secondary' }}><Trash2 size={16} /></IconButton>
-                                    </Box>
-                                ))
-                            )}
-                        </Stack>
-                    </Box>
-                </DialogContent>
-
-                <DialogActions sx={{ p: 3, pt: 1, justifyContent: 'space-between' }}>
-                    <Button onClick={closeForm} color="inherit" sx={{ fontWeight: 800, textTransform: 'none', color: 'text.secondary' }}>Cancel</Button>
-                    <Button 
-                        onClick={handleSave} 
-                        variant="contained" 
-                        disabled={!newName} 
-                        sx={{ px: 4, py: 1, borderRadius: '12px', textTransform: 'none', fontWeight: 900, bgcolor: newColor, boxShadow: `0 8px 24px ${newColor}25` }}
-                    >
-                        {editingId ? "Update Identity" : "Finalize Infrastructure"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                    <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+                        <Button fullWidth onClick={closeForm} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>CANCEL</Button>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={handleSave}
+                            disabled={!newName}
+                            sx={{ py: 1.5, borderRadius: '50px', textTransform: 'none', fontWeight: 900, bgcolor: newColor, boxShadow: `0 8px 24px ${newColor}25` }}
+                        >
+                            {editingId ? "Update Identity" : "Finalize Infrastructure"}
+                        </Button>
+                    </Stack>
+                </Box>
+            </BaseDialog>
 
         </motion.div>
     );

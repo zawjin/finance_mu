@@ -14,6 +14,20 @@ class SpendingItem(BaseModel):
     payment_source_id: Optional[str] = None  # Reserve account _id if debited
     is_settled: bool = True  # Tracks if card transactions are paid off
 
+class YearlyExpenseItem(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    name: str
+    amount: float
+    category: str # "Term Insurance", "Medical Insurance", "Temple", etc.
+    sub_category: Optional[str] = "General"
+    due_month: str # "January", "February", etc. OR date. Let's just use string
+    description: str = ""
+    funding_source: Optional[str] = None # Which account/investment pays for this
+    last_paid_year: Optional[int] = None
+    last_paid_period: Optional[str] = None # Tracks the year this was last paid
+    status: str = "ACTIVE" # ACTIVE, DISABLED
+    frequency: str = "YEARLY" # YEARLY, MONTHLY
+
 class WithdrawalItem(BaseModel):
     amount: float
     date: str # ISO Format YYYY-MM-DD
@@ -38,6 +52,7 @@ class InvestmentItem(BaseModel):
 
 class CategorySchema(BaseModel):
     name: str
+    type: str = "spending" # "spending", "yearly", "monthly", "asset_class"
     sub_categories: List[str] = []
     icon: Optional[str] = "Package"
     color: Optional[str] = "#0071e3"
@@ -70,3 +85,34 @@ class CardBillSettlement(BaseModel):
     source_name: str
     amount: float
     date: str
+
+class PrivateLendingItem(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    borrower: str                          # Person / entity who borrowed
+    principal: float                       # Original loan amount (₹)
+    interest_rate: float = 0.065          # Annual rate as decimal (0.065 = 6.5%)
+    start_date: str                        # "YYYY-MM-DD" — when money was deployed
+    due_date: Optional[str] = None        # Expected return date (None = open-ended)
+    status: str = "ACTIVE"               # ACTIVE | SETTLED | PARTIAL
+    settled_amount: Optional[float] = 0.0 # Amount actually recovered
+    settled_date: Optional[str] = None   # Date of settlement
+    settled_interest: Optional[float] = 0.0 # Locked interest amount at settlement
+    payment_source_id: Optional[str] = None # ID of the account used for payment
+    linked_spending_id: Optional[str] = None # Reference to the auto-generated spending record
+    linked_investment_id: Optional[str] = None # Reference to the auto-generated investment log
+    description: str = ""                 # Notes / context
+
+    category: str = "PERSONAL"           # PERSONAL | BUSINESS | FAMILY
+    interest_type: str = "SIMPLE"        # SIMPLE | COMPOUND
+    fixed_valuation: Optional[float] = None # Manual override for live valuation
+    card_number: Optional[str] = "1"      # Reference number or multiplier
+    payments: List[dict] = []             # List of {term_number, amount, date, source_id, source_name, comment}
+
+class CardItem(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    account_name: str
+    description: str
+    credit_limit: Optional[float] = 0.0
+    last_updated: str
+    payments: List[dict] = [] # List of {term_number, amount, date, source_id, source_name}
+

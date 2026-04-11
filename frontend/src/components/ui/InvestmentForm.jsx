@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    X, Calendar, CreditCard, ChevronDown, 
+import {
+    X, Calendar, CreditCard, ChevronDown,
     FileText, LayoutGrid, Tag, TrendingUp, Hash, DollarSign, Zap,
     Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign
 } from 'lucide-react';
 import dayjs from 'dayjs';
-import { 
-    Box, TextField, Select, MenuItem, Button, Typography, 
+import {
+    Box, TextField, Select, MenuItem, Button, Typography,
     InputAdornment, FormHelperText, Stack, CircularProgress, Chip, IconButton
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -89,17 +89,17 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         try {
             const res = await api.get(`/mf-nav?code=${code}`);
             const data = res.data;
-            
+
             if (data && typeof data.nav !== 'undefined') {
-                setFormData(prev => ({ 
-                    ...prev, 
-                    current_price: data.nav.toFixed(4), 
+                setFormData(prev => ({
+                    ...prev,
+                    current_price: data.nav.toFixed(4),
                     buy_price: prev.buy_price || data.nav.toFixed(4),
                     name: prev.name || data.scheme_name,
                     ticker: code.toString()
                 }));
             }
-        } catch(e) {
+        } catch (e) {
             console.error("MF Fetch Error", e);
         } finally {
             setFetchingPrice(false);
@@ -120,7 +120,12 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         if (isMarketAsset && formData.quantity && formData.current_price) {
             const calculatedVal = parseFloat(formData.quantity) * parseFloat(formData.current_price);
             if (!isNaN(calculatedVal)) {
-                setFormData(prev => ({ ...prev, value: calculatedVal.toFixed(2) }));
+                // Use a functional update to avoid unnecessary re-renders
+                setFormData(prev => {
+                    const newVal = calculatedVal.toFixed(2);
+                    if (prev.value === newVal) return prev;
+                    return { ...prev, value: newVal };
+                });
             }
         }
     }, [formData.quantity, formData.current_price, isMarketAsset]);
@@ -136,19 +141,19 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         if (!formData.value || parseFloat(formData.value) <= 0) newErrors.value = 'Value must be greater than 0';
         if (!formData.type) newErrors.type = 'Please select an asset type';
         if (!formData.date) newErrors.date = 'Date is required';
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const PAYMENT_METHODS = [
-        { key: 'CASH',   label: 'Cash',   icon: <Banknote size={16} />,          color: '#f59e0b', deductsReserve: true  },
-        { key: 'BANK',   label: 'Bank',   icon: <Landmark size={16} />,          color: '#6366f1', deductsReserve: true  },
-        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={16} />,            color: '#10b981', deductsReserve: true  },
-        { key: 'UPI',    label: 'UPI',    icon: <Smartphone size={16} />,        color: '#0071e3', deductsReserve: false },
-        { key: 'CARD',   label: 'Card',   icon: <CreditCard size={16} />,        color: '#ff3b30', deductsReserve: false },
-        { key: 'GIFT',   label: 'Gift',   icon: <Gift size={16} />,              color: '#ff9500', deductsReserve: false },
-        { key: 'OTHER',  label: 'Other',  icon: <CircleDollarSign size={16} />,  color: '#86868b', deductsReserve: false },
+        { key: 'CASH', label: 'Cash', icon: <Banknote size={16} />, color: '#f59e0b', deductsReserve: true },
+        { key: 'BANK', label: 'Bank', icon: <Landmark size={16} />, color: '#6366f1', deductsReserve: true },
+        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={16} />, color: '#10b981', deductsReserve: true },
+        { key: 'UPI', label: 'UPI', icon: <Smartphone size={16} />, color: '#0071e3', deductsReserve: false },
+        { key: 'CARD', label: 'Card', icon: <CreditCard size={16} />, color: '#ff3b30', deductsReserve: false },
+        { key: 'GIFT', label: 'Gift', icon: <Gift size={16} />, color: '#ff9500', deductsReserve: false },
+        { key: 'OTHER', label: 'Other', icon: <CircleDollarSign size={16} />, color: '#86868b', deductsReserve: false },
     ];
 
     const selectedPayMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
@@ -162,16 +167,18 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
     const handleFormSubmit = () => {
         if (validate()) {
-            onSubmit({ 
+            onSubmit({
                 name: formData.name,
-                value: parseFloat(formData.value), 
-                type: formData.type, 
+                value: parseFloat(formData.value),
+                type: formData.type,
                 sub_category: formData.sub || '-',
-                details: formData.details || '-', 
+                details: formData.details || '-',
                 date: formData.date.format('YYYY-MM-DD'),
                 withdrawals: formData.withdrawals,
+                contributions: formData.contributions, // Ensure EPF contribs are passed
                 payment_method: formData.payment_method || null,
                 payment_source_id: formData.payment_source_id || null,
+                recentPurchase: formData._recentPurchaseAmt || null, // Pass top-up amount
                 ...(isMarketAsset && {
                     quantity: parseFloat(formData.quantity) || null,
                     buy_price: parseFloat(formData.buy_price) || null,
@@ -186,7 +193,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         const amt = parseFloat(newWithdrawal.amount);
         const qty = parseFloat(newWithdrawal.quantity);
         if (!amt || amt <= 0) return;
-        
+
         let newMasterQty = parseFloat(formData.quantity);
         let updatedMasterQty = formData.quantity;
         let newValue = formData.value;
@@ -197,8 +204,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
             newValue = (newMasterQty * parseFloat(formData.current_price || 0)).toFixed(2);
         }
 
-        setFormData(prev => ({ 
-            ...prev, 
+        setFormData(prev => ({
+            ...prev,
             quantity: updatedMasterQty,
             value: newValue,
             withdrawals: [...prev.withdrawals, { ...newWithdrawal, amount: amt, quantity: qty || 0, date: newWithdrawal.date.format('YYYY-MM-DD') }]
@@ -210,23 +217,28 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         const addQty = parseFloat(newPurchase.quantity);
         const addPrice = parseFloat(newPurchase.price);
         if (!addQty || addQty <= 0 || !addPrice || addPrice <= 0) return;
-        
+
         const oldQty = parseFloat(formData.quantity) || 0;
         const oldPrice = parseFloat(formData.buy_price) || 0;
-        
+        const addAmt = addQty * addPrice;
+
         const oldTotalCost = oldQty * oldPrice;
         const newTotalCost = addQty * addPrice;
-        
+
         const finalQty = oldQty + addQty;
         const finalAvgPrice = finalQty > 0 ? (oldTotalCost + newTotalCost) / finalQty : 0;
-        
-        setFormData(prev => ({
-            ...prev,
-            quantity: finalQty.toFixed(4).replace(/\.0000$/, ''),
-            buy_price: finalAvgPrice.toFixed(2),
-            value: (finalQty * parseFloat(prev.current_price || 0)).toFixed(2)
-        }));
-        
+
+        setFormData(prev => {
+            const currentPrice = parseFloat(prev.current_price || 0);
+            return {
+                ...prev,
+                quantity: finalQty.toFixed(4).replace(/\.0000$/, ''),
+                buy_price: finalAvgPrice.toFixed(2),
+                value: (finalQty * currentPrice).toFixed(2),
+                _recentPurchaseAmt: (prev._recentPurchaseAmt || 0) + addAmt
+            };
+        });
+
         setNewPurchase({ quantity: '', price: '' });
     };
 
@@ -234,9 +246,9 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         const emp = parseFloat(formData.epf_employee) || 0;
         const mbr = parseFloat(formData.epf_employer) || 0;
         const total = customAmt || (emp + mbr);
-        
+
         if (total <= 0) return;
-        
+
         const newEntry = {
             amount: total,
             employee: customAmt ? total : emp,
@@ -248,7 +260,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         setFormData(prev => ({
             ...prev,
             contributions: [...prev.contributions, newEntry],
-            value: (parseFloat(prev.value) || 0) + total
+            value: (parseFloat(prev.value) || 0) + total,
+            _recentPurchaseAmt: (prev._recentPurchaseAmt || 0) + total // Accumulate for audit
         }));
     };
 
@@ -286,16 +299,16 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 '& fieldset': { borderColor: '#1d1d1f', borderWidth: '1.5px' }
             }
         },
-        '& .MuiOutlinedInput-input': { 
+        '& .MuiOutlinedInput-input': {
             fontWeight: 700, color: '#1d1d1f', fontSize: '0.92rem',
             letterSpacing: '-0.01em', paddingLeft: '4px'
         },
         '& .MuiInputAdornment-root': { color: '#86868b' }
     };
 
-    const labelStyle = { 
-        fontSize: '0.68rem', fontWeight: 900, color: '#86868b', 
-        marginBottom: '0.6rem', marginLeft: '0.4rem', display: 'block', 
+    const labelStyle = {
+        fontSize: '0.68rem', fontWeight: 900, color: '#86868b',
+        marginBottom: '0.6rem', marginLeft: '0.4rem', display: 'block',
         letterSpacing: '0.12em', textTransform: 'uppercase'
     };
 
@@ -317,7 +330,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         }}
                         error={!!errors.value}
                         helperText={errors.value}
-                        InputProps={{ 
+                        InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
                         sx={globalInputStyle}
@@ -336,13 +349,13 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 size="small"
                                 value={formData.ticker}
                                 onChange={e => setFormData({ ...formData, ticker: e.target.value })}
-                                InputProps={{ 
+                                InputProps={{
                                     startAdornment: <InputAdornment position="start"><TrendingUp size={16} style={{ color: '#0071e3' }} /></InputAdornment>,
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            <Button 
-                                                size="small" 
-                                                onClick={handleFetchPrice} 
+                                            <Button
+                                                size="small"
+                                                onClick={handleFetchPrice}
                                                 disabled={!formData.ticker || fetchingPrice}
                                                 sx={{ minWidth: '32px', height: '32px', p: 0, borderRadius: '8px', bgcolor: 'rgba(0,113,227,0.1)', '&:hover': { bgcolor: 'rgba(0,113,227,0.2)' } }}
                                             >
@@ -417,14 +430,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* EPF CONTRIBUTION CONSOLE */}
                 {isEPF && (
-                    <Box sx={{ 
-                        p: 3, borderRadius: '28px', 
-                        background: 'linear-gradient(135deg, rgba(99,102,241,0.03), rgba(99,102,241,0.06))', 
+                    <Box sx={{
+                        p: 3, borderRadius: '28px',
+                        background: 'linear-gradient(135deg, rgba(99,102,241,0.03), rgba(99,102,241,0.06))',
                         border: '1px solid rgba(99,102,241,0.15)',
                         boxShadow: 'inset 0 0 40px rgba(99,102,241,0.02)'
                     }}>
                         <Typography sx={{ ...labelStyle, color: '#6366f1', mb: 2.5, ml: 0 }}>EPF ACCUMULATION CONSOLE (MONTHLY)</Typography>
-                        
+
                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={3}>
                             <TextField
                                 label="Employee Contrib (₹)"
@@ -444,17 +457,17 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                             />
                         </Stack>
 
-                        <Button 
-                            variant="contained" 
+                        <Button
+                            variant="contained"
                             fullWidth
                             onClick={() => handleAddContribution()}
                             startIcon={<Zap size={18} />}
-                            sx={{ 
-                                minHeight: '52px', borderRadius: '16px', 
-                                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', 
+                            sx={{
+                                minHeight: '52px', borderRadius: '16px',
+                                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
                                 boxShadow: '0 8px 20px rgba(99,102,241,0.2)',
                                 color: '#ffffff',
-                                fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(99,102,241,0.3)' }, 
+                                fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(99,102,241,0.3)' },
                                 textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)',
                                 mb: 3
                             }}
@@ -465,9 +478,9 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         {/* CONTRIBUTION HISTORY */}
                         <Stack spacing={1.2}>
                             {formData.contributions.map((c, idx) => (
-                                <Box key={idx} sx={{ 
-                                    p: 1.5, bgcolor: '#ffffff', borderRadius: '14px', 
-                                    border: '1px solid rgba(99,102,241,0.1)', 
+                                <Box key={idx} sx={{
+                                    p: 1.5, bgcolor: '#ffffff', borderRadius: '14px',
+                                    border: '1px solid rgba(99,102,241,0.1)',
                                     display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                                 }}>
                                     <Box>
@@ -495,7 +508,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                         error={!!errors.name}
                         helperText={errors.name}
-                        InputProps={{ 
+                        InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><LayoutGrid size={18} style={{ color: '#ff9500' }} /></InputAdornment>
                         }}
                         sx={globalInputStyle}
@@ -571,8 +584,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                             />
                         )}
                         sx={{
-                            '& .MuiAutocomplete-inputRoot': { 
-                                paddingLeft: '12px !important' 
+                            '& .MuiAutocomplete-inputRoot': {
+                                paddingLeft: '12px !important'
                             },
                             '& .MuiAutocomplete-endAdornment': { top: 'calc(50% - 14px)' }
                         }}
@@ -585,15 +598,15 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
-                        slotProps={{ 
-                            textField: { 
-                                fullWidth: true, size: 'small', error: !!errors.date, 
+                        slotProps={{
+                            textField: {
+                                fullWidth: true, size: 'small', error: !!errors.date,
                                 helperText: errors.date, sx: globalInputStyle,
                                 InputProps: {
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>,
                                     sx: { pl: '12px' }
                                 }
-                            } 
+                            }
                         }}
                     />
                 </Box>
@@ -608,7 +621,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         size="small"
                         value={formData.details}
                         onChange={e => setFormData({ ...formData, details: e.target.value })}
-                        InputProps={{ 
+                        InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#32ade6' }} /></InputAdornment>
                         }}
                         sx={globalInputStyle}
@@ -617,153 +630,153 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* WITHDRAWALS - ONLY IN EDIT MODE */}
                 {initialData && (
-                        <Box sx={{ 
-                            mt: 2, p: 3, borderRadius: '28px', 
-                            background: 'linear-gradient(135deg, rgba(255,149,0,0.03), rgba(255,149,0,0.06))', 
-                            border: '1px solid rgba(255,149,0,0.15)',
-                            boxShadow: 'inset 0 0 40px rgba(255,149,0,0.02)'
-                        }}>
-                            <Typography sx={{ ...labelStyle, color: '#ff9500', mb: 2.5, ml: 0 }}>CAPITAL EXIT REGISTRY (QUICK SETTLE)</Typography>
-                            
-                            <Stack spacing={1.5} mb={3.5}>
-                                {formData.withdrawals.map((w, idx) => (
-                                    <Box key={idx} sx={{ 
-                                        p: 2, bgcolor: '#ffffff', borderRadius: '18px', 
-                                        border: '1px solid rgba(255,149,0,0.1)', 
-                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-                                    }}>
-                                        <Box>
-                                            <Typography sx={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.02em', color: '#1d1d1f' }}>- ₹{w.amount.toLocaleString()}</Typography>
-                                            <Typography sx={{ fontSize: '0.68rem', color: '#86868b', fontWeight: 700 }}>
-                                                {w.date} • {w.details} {w.quantity ? `• Qty Exited: ${w.quantity}` : ''}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                            <Chip label="SETTLED" size="small" sx={{ height: '22px', fontSize: '0.6rem', fontWeight: 900, bgcolor: 'rgba(52,199,89,0.1)', color: '#34c759', borderRadius: '6px' }} />
-                                            <IconButton size="small" onClick={() => handleRemoveWithdrawal(idx)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.1)' } }}>
-                                                <X size={16} />
-                                            </IconButton>
-                                        </Box>
+                    <Box sx={{
+                        mt: 2, p: 3, borderRadius: '28px',
+                        background: 'linear-gradient(135deg, rgba(255,149,0,0.03), rgba(255,149,0,0.06))',
+                        border: '1px solid rgba(255,149,0,0.15)',
+                        boxShadow: 'inset 0 0 40px rgba(255,149,0,0.02)'
+                    }}>
+                        <Typography sx={{ ...labelStyle, color: '#ff9500', mb: 2.5, ml: 0 }}>CAPITAL EXIT REGISTRY (QUICK SETTLE)</Typography>
+
+                        <Stack spacing={1.5} mb={3.5}>
+                            {formData.withdrawals.map((w, idx) => (
+                                <Box key={idx} sx={{
+                                    p: 2, bgcolor: '#ffffff', borderRadius: '18px',
+                                    border: '1px solid rgba(255,149,0,0.1)',
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+                                }}>
+                                    <Box>
+                                        <Typography sx={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.02em', color: '#1d1d1f' }}>- ₹{w.amount.toLocaleString()}</Typography>
+                                        <Typography sx={{ fontSize: '0.68rem', color: '#86868b', fontWeight: 700 }}>
+                                            {w.date} • {w.details} {w.quantity ? `• Qty Exited: ${w.quantity}` : ''}
+                                        </Typography>
                                     </Box>
-                                ))}
-                            </Stack>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                        <Chip label="SETTLED" size="small" sx={{ height: '22px', fontSize: '0.6rem', fontWeight: 900, bgcolor: 'rgba(52,199,89,0.1)', color: '#34c759', borderRadius: '6px' }} />
+                                        <IconButton size="small" onClick={() => handleRemoveWithdrawal(idx)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.1)' } }}>
+                                            <X size={16} />
+                                        </IconButton>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Stack>
 
-                            <Stack spacing={2}>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
-                                    {isMarketAsset && (
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Exit Units"
-                                            size="small"
-                                            value={newWithdrawal.quantity}
-                                            onChange={e => {
-                                                const qty = e.target.value;
-                                                if (qty === '' || /^\d*\.?\d*$/.test(qty)) {
-                                                    const currentPrice = parseFloat(formData.current_price) || 0;
-                                                    const calculatedAmt = (parseFloat(qty) * currentPrice).toFixed(2);
-                                                    setNewWithdrawal({ ...newWithdrawal, quantity: qty, amount: qty ? calculatedAmt : '' });
-                                                }
-                                            }}
-                                            sx={globalInputStyle}
-                                            InputProps={{ startAdornment: <Hash size={16} style={{ color: '#ff9500', marginRight: '8px' }} /> }}
-                                        />
-                                    )}
+                        <Stack spacing={2}>
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
+                                {isMarketAsset && (
                                     <TextField
                                         fullWidth
-                                        placeholder="Settle Amount (₹)"
+                                        placeholder="Exit Units"
                                         size="small"
-                                        value={newWithdrawal.amount}
-                                        onChange={e => setNewWithdrawal({ ...newWithdrawal, amount: e.target.value })}
-                                        sx={globalInputStyle}
-                                        InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#ff9500' }}>₹</Typography> }}
-                                    />
-                                </Stack>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
-                                    <TextField
-                                        fullWidth
-                                        placeholder="Exit Justification..."
-                                        size="small"
-                                        value={newWithdrawal.details}
-                                        onChange={e => setNewWithdrawal({ ...newWithdrawal, details: e.target.value })}
-                                        sx={globalInputStyle}
-                                        InputProps={{ startAdornment: <FileText size={16} style={{ color: '#86868b', marginRight: '8px' }} /> }}
-                                    />
-                                    <DatePicker
-                                        value={newWithdrawal.date}
-                                        onChange={val => setNewWithdrawal({ ...newWithdrawal, date: val })}
-                                        slotProps={{ textField: { fullWidth: true, size: 'small', sx: globalInputStyle } }}
-                                    />
-                                </Stack>
-                                <Button 
-                                    variant="contained" 
-                                    fullWidth
-                                    onClick={handleAddWithdrawal}
-                                    sx={{ 
-                                        minHeight: '52px', borderRadius: '16px', 
-                                        background: 'linear-gradient(135deg, #ff9500, #ffb347)', 
-                                        boxShadow: '0 8px 20px rgba(255,149,0,0.2)',
-                                        color: '#ffffff',
-                                        fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(255,149,0,0.3)' }, 
-                                        textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
-                                    }}
-                                >
-                                    Commit Capital Exit
-                                </Button>
-                            </Stack>
-                        </Box>
-                 )}
-
-                 {/* COST AVERAGING MANAGER (BUY MORE TRADING) */}
-                 {isMarketAsset && initialData && (
-                        <Box sx={{ 
-                            mt: 2, p: 3, borderRadius: '28px', 
-                            background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))', 
-                            border: '1px solid rgba(52,199,89,0.15)',
-                            boxShadow: 'inset 0 0 40px rgba(52,199,89,0.02)'
-                        }}>
-                            <Typography sx={{ ...labelStyle, color: '#34c759', mb: 2.5, ml: 0 }}>PORTFOLIO AVERAGING CONSOLE (ADD UNITS)</Typography>
-                            <Stack spacing={2}>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
-                                    <TextField
-                                        fullWidth
-                                        placeholder="Add New Units"
-                                        size="small"
-                                        value={newPurchase.quantity}
+                                        value={newWithdrawal.quantity}
                                         onChange={e => {
                                             const qty = e.target.value;
-                                            if (qty === '' || /^\d*\.?\d*$/.test(qty)) setNewPurchase({ ...newPurchase, quantity: qty });
+                                            if (qty === '' || /^\d*\.?\d*$/.test(qty)) {
+                                                const currentPrice = parseFloat(formData.current_price) || 0;
+                                                const calculatedAmt = (parseFloat(qty) * currentPrice).toFixed(2);
+                                                setNewWithdrawal({ ...newWithdrawal, quantity: qty, amount: qty ? calculatedAmt : '' });
+                                            }
                                         }}
                                         sx={globalInputStyle}
-                                        InputProps={{ startAdornment: <Hash size={16} style={{ color: '#34c759', marginRight: '8px' }} /> }}
+                                        InputProps={{ startAdornment: <Hash size={16} style={{ color: '#ff9500', marginRight: '8px' }} /> }}
                                     />
-                                    <TextField
-                                        fullWidth
-                                        placeholder="Purchase Price (₹)"
-                                        size="small"
-                                        value={newPurchase.price}
-                                        onChange={e => setNewPurchase({ ...newPurchase, price: e.target.value })}
-                                        sx={globalInputStyle}
-                                        InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#34c759' }}>₹</Typography> }}
-                                    />
-                                </Stack>
-                                <Button 
-                                    variant="contained" 
+                                )}
+                                <TextField
                                     fullWidth
-                                    onClick={handleMergePurchase}
-                                    sx={{ 
-                                        minHeight: '52px', borderRadius: '16px', 
-                                        background: 'linear-gradient(135deg, #34c759, #28a745)', 
-                                        boxShadow: '0 8px 20px rgba(52,199,89,0.2)',
-                                        color: '#ffffff',
-                                        fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(52,199,89,0.3)' }, 
-                                        textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
-                                    }}
-                                >
-                                    Prorate & Merge into Average Buy Price
-                                </Button>
+                                    placeholder="Settle Amount (₹)"
+                                    size="small"
+                                    value={newWithdrawal.amount}
+                                    onChange={e => setNewWithdrawal({ ...newWithdrawal, amount: e.target.value })}
+                                    sx={globalInputStyle}
+                                    InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#ff9500' }}>₹</Typography> }}
+                                />
                             </Stack>
-                        </Box>
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
+                                <TextField
+                                    fullWidth
+                                    placeholder="Exit Justification..."
+                                    size="small"
+                                    value={newWithdrawal.details}
+                                    onChange={e => setNewWithdrawal({ ...newWithdrawal, details: e.target.value })}
+                                    sx={globalInputStyle}
+                                    InputProps={{ startAdornment: <FileText size={16} style={{ color: '#86868b', marginRight: '8px' }} /> }}
+                                />
+                                <DatePicker
+                                    value={newWithdrawal.date}
+                                    onChange={val => setNewWithdrawal({ ...newWithdrawal, date: val })}
+                                    slotProps={{ textField: { fullWidth: true, size: 'small', sx: globalInputStyle } }}
+                                />
+                            </Stack>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                onClick={handleAddWithdrawal}
+                                sx={{
+                                    minHeight: '52px', borderRadius: '16px',
+                                    background: 'linear-gradient(135deg, #ff9500, #ffb347)',
+                                    boxShadow: '0 8px 20px rgba(255,149,0,0.2)',
+                                    color: '#ffffff',
+                                    fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(255,149,0,0.3)' },
+                                    textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
+                                }}
+                            >
+                                Commit Capital Exit
+                            </Button>
+                        </Stack>
+                    </Box>
+                )}
+
+                {/* COST AVERAGING MANAGER (BUY MORE TRADING) */}
+                {isMarketAsset && initialData && (
+                    <Box sx={{
+                        mt: 2, p: 3, borderRadius: '28px',
+                        background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))',
+                        border: '1px solid rgba(52,199,89,0.15)',
+                        boxShadow: 'inset 0 0 40px rgba(52,199,89,0.02)'
+                    }}>
+                        <Typography sx={{ ...labelStyle, color: '#34c759', mb: 2.5, ml: 0 }}>PORTFOLIO AVERAGING CONSOLE (ADD UNITS)</Typography>
+                        <Stack spacing={2}>
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
+                                <TextField
+                                    fullWidth
+                                    placeholder="Add New Units"
+                                    size="small"
+                                    value={newPurchase.quantity}
+                                    onChange={e => {
+                                        const qty = e.target.value;
+                                        if (qty === '' || /^\d*\.?\d*$/.test(qty)) setNewPurchase({ ...newPurchase, quantity: qty });
+                                    }}
+                                    sx={globalInputStyle}
+                                    InputProps={{ startAdornment: <Hash size={16} style={{ color: '#34c759', marginRight: '8px' }} /> }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    placeholder="Purchase Price (₹)"
+                                    size="small"
+                                    value={newPurchase.price}
+                                    onChange={e => setNewPurchase({ ...newPurchase, price: e.target.value })}
+                                    sx={globalInputStyle}
+                                    InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#34c759' }}>₹</Typography> }}
+                                />
+                            </Stack>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                onClick={handleMergePurchase}
+                                sx={{
+                                    minHeight: '52px', borderRadius: '16px',
+                                    background: 'linear-gradient(135deg, #34c759, #28a745)',
+                                    boxShadow: '0 8px 20px rgba(52,199,89,0.2)',
+                                    color: '#ffffff',
+                                    fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(52,199,89,0.3)' },
+                                    textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
+                                }}
+                            >
+                                Prorate & Merge into Average Buy Price
+                            </Button>
+                        </Stack>
+                    </Box>
                 )}
 
                 {/* PAYMENT METHOD */}
@@ -804,48 +817,56 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                             sx={{ borderRadius: '14px', backgroundColor: 'rgba(0,0,0,0.015)', fontWeight: 700, fontSize: '0.92rem' }}
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (track only)</em></MenuItem>
-                            {filteredReserves.map(r => (
-                                <MenuItem key={r._id} value={r._id}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#10b981' }}>₹{parseFloat(r.balance).toLocaleString('en-IN')}</Typography>
-                                    </Box>
-                                </MenuItem>
-                            ))}
+                            {filteredReserves.map(r => {
+                                const isInsufficient = parseFloat(r.balance) < (parseFloat(formData.value) || 0) && r.account_type !== 'CREDIT_CARD';
+                                return (
+                                    <MenuItem key={r._id} value={r._id} disabled={isInsufficient}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', opacity: isInsufficient ? 0.5 : 1 }}>
+                                            <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: isInsufficient ? '#ff3b30' : '#10b981' }}>
+                                                    ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                                </Typography>
+                                                {isInsufficient && <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#ff3b30' }}>INSUFFICIENT</Typography>}
+                                            </Box>
+                                        </Box>
+                                    </MenuItem>
+                                );
+                            })}
                         </Select>
                     </Box>
                 )}
             </Stack>
 
-            <Box sx={{ 
-                display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3, 
-                borderTop: '1px solid rgba(0,0,0,0.06)' 
+            <Box sx={{
+                display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3,
+                borderTop: '1px solid rgba(0,0,0,0.06)'
             }}>
-                <Button 
+                <Button
                     onClick={onCancel}
-                    variant="text" 
-                    sx={{ 
-                        borderRadius: '16px', px: 4, 
-                        fontWeight: 800, textTransform: 'none', 
+                    variant="text"
+                    sx={{
+                        borderRadius: '16px', px: 4,
+                        fontWeight: 800, textTransform: 'none',
                         color: '#86868b', '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', color: '#1d1d1f' },
                         transition: '0.2s all ease'
                     }}
                 >
                     Dismiss
                 </Button>
-                <Button 
-                    variant="contained" 
+                <Button
+                    variant="contained"
                     onClick={handleFormSubmit}
-                    sx={{ 
-                        borderRadius: '16px', px: 6, py: 1.5, 
-                        fontWeight: 900, textTransform: 'none', 
+                    sx={{
+                        borderRadius: '16px', px: 6, py: 1.5,
+                        fontWeight: 900, textTransform: 'none',
                         bgcolor: '#1d1d1f', color: '#ffffff',
                         boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        '&:hover': { 
-                            bgcolor: '#000', 
+                        '&:hover': {
+                            bgcolor: '#000',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 12px 32px rgba(0,0,0,0.2)' 
+                            boxShadow: '0 12px 32px rgba(0,0,0,0.2)'
                         },
                         '&:active': { transform: 'translateY(0)' },
                         transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'

@@ -10,6 +10,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
 import Modal from '../components/ui/Modal';
+import BaseDialog from '../components/ui/BaseDialog';
 import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
@@ -26,23 +27,23 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         const buy = parseFloat(item.buy_price) || 0;
         const cur = parseFloat(item.current_price) || 0;
         const amt = parseFloat(item.value) || 0;
-        
+
         const withdrawals = item.withdrawals || [];
         const totalWithdrawnAmt = withdrawals.reduce((sum, w) => sum + (parseFloat(w.amount) || 0), 0);
         const totalWithdrawnQty = withdrawals.reduce((sum, w) => sum + (parseFloat(w.quantity) || 0), 0);
-        
+
         const isMarket = !isNaN(qty) && qty > 0 && !isNaN(cur) && cur > 0;
 
         if (isMarket) {
             const netQty = Math.max(0, qty - totalWithdrawnQty);
             const netValue = netQty * cur;
-            return { 
-                current: netValue, 
-                invested: qty * buy, 
-                withdrawn: totalWithdrawnAmt, 
+            return {
+                current: netValue,
+                invested: qty * buy,
+                withdrawn: totalWithdrawnAmt,
                 withdrawnQty: totalWithdrawnQty,
                 netQty: netQty,
-                isMarket: true 
+                isMarket: true
             };
         }
 
@@ -51,11 +52,11 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             const today = dayjs();
             const diffYears = (today.valueOf() - acqDate.valueOf()) / (1000 * 60 * 60 * 24 * 365.25);
             const interest = amt * 0.065 * Math.max(0, diffYears);
-            return { 
-                current: (amt + interest) - totalWithdrawnAmt, 
-                invested: amt, 
-                withdrawn: totalWithdrawnAmt, 
-                isFixed: true, yield: 6.5, profitPct: diffYears * 6.5 
+            return {
+                current: (amt + interest) - totalWithdrawnAmt,
+                invested: amt,
+                withdrawn: totalWithdrawnAmt,
+                isFixed: true, yield: 6.5, profitPct: diffYears * 6.5
             };
         }
 
@@ -71,7 +72,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 icon: <Activity size={16} color={found.color} />
             };
         }
-        switch(type) {
+        switch (type) {
             case 'Gold': return { bg: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', icon: <Gem size={16} color="#f59e0b" /> };
             case 'Property': return { bg: 'rgba(99, 102, 241, 0.12)', color: '#6366f1', icon: <Home size={16} color="#6366f1" /> };
             case 'Cash': return { bg: 'rgba(16, 185, 129, 0.12)', color: '#10b981', icon: <DollarSign size={16} color="#10b981" /> };
@@ -97,7 +98,6 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             dispatch(fetchFinanceData());
         } catch (error) {
             console.error(error);
-            alert('Failed to sync prices.');
         } finally {
             setSyncingPrices(false);
         }
@@ -165,7 +165,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             return matchesSearch && matchesType && matchesPeriod;
         });
     }, [investments, search, selectedType, period, dateRange]);
-    
+
     // Analytics
     const totals = useMemo(() => {
         let grossValue = 0;
@@ -176,13 +176,13 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         filteredInvestments.forEach(item => {
             const { current, invested, withdrawn } = getLiveVal(item);
             const type = item.type;
-            
+
             if (!typeStats[type]) typeStats[type] = { current: 0, invested: 0 };
-            
+
             grossValue += current;
             grossInvested += invested;
             grossWithdrawn += withdrawn;
-            
+
             typeStats[type].current += current;
             typeStats[type].invested += invested;
         });
@@ -195,8 +195,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
     const trendAnalysis = useMemo(() => {
         const dailyNet = {};
-        filteredInvestments.forEach(s => { 
-            dailyNet[s.date] = (dailyNet[s.date] || 0) + s.value; 
+        filteredInvestments.forEach(s => {
+            dailyNet[s.date] = (dailyNet[s.date] || 0) + s.value;
         });
         const dates = Object.keys(dailyNet).sort();
         let cumulative = 0;
@@ -264,8 +264,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
 
             {showAnalytics && (
-                <motion.div 
-                    initial={{ height: 0, opacity: 0 }} 
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: 'easeInOut' }}
@@ -327,22 +327,20 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     </Box>
                 </motion.div>
             )}
-            
-            <Dialog 
-                open={!!deleteConfirmItem} 
+
+            <BaseDialog
+                open={!!deleteConfirmItem}
                 onClose={() => setDeleteConfirmItem(null)}
-                TransitionComponent={Grow}
-                transitionDuration={400}
-                PaperProps={{ sx: { borderRadius: '28px', overflow: 'hidden', width: '100%', maxWidth: '440px' } }}
+                title="Liquidate Asset"
+                maxWidth="xs"
             >
                 {deleteConfirmItem && (
                     <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white' }}>
                         <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
                             <Trash2 size={32} />
                         </div>
-                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, color: '#1d1d1f' }}>LIQUIDATE ASSET</Typography>
                         <Typography variant="body1" sx={{ color: '#86868b', mb: 3 }}>
-                            Permanently remove <strong style={{color: '#1d1d1f'}}>{deleteConfirmItem.name}</strong> from the portfolio?
+                            Permanently remove <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.name}</strong> from the portfolio?
                         </Typography>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>ABORT</Button>
@@ -350,7 +348,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         </div>
                     </Box>
                 )}
-            </Dialog>
+            </BaseDialog>
 
             {/* FINANCIAL SUMMARY CORE - LEGACY DESIGN RESTORED */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
@@ -368,6 +366,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         </div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
                             <Typography variant="h5" sx={{ fontWeight: 900 }}>{formatCurrency(totals.grossValue)}</Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: '#86868b', opacity: 0.8 }}>
+                                Invested: {formatCurrency(totals.grossInvested)}
+                            </Typography>
                             {totals.grossValue > 0 && (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <span style={{ fontSize: '0.75rem', fontWeight: 900, color: totals.grossProfitAmt >= 0 ? '#34c759' : '#ff3b30' }}>
@@ -390,9 +391,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" width={140} height={60} sx={{ borderRadius: '1.1rem', flexShrink: 0 }} />)
                     ) : (
                         Object.keys(totals.typeStats).map((type) => {
-                                const style = getAssetStyle(type);
-                                return (
-                                    <motion.div key={type} className="apple-category-pill glass-effect" style={{ minWidth: '160px' }}>
+                            const style = getAssetStyle(type);
+                            return (
+                                <motion.div key={type} className="apple-category-pill glass-effect" style={{ minWidth: '160px' }}>
                                     <div className="pill-icon-box" style={{ background: style.bg, color: style.color }}>
                                         {style.icon}
                                     </div>
@@ -400,12 +401,15 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                             <span className="pill-cat-label" style={{ opacity: 1 }}>{type}</span>
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span className="pill-amt-val" style={{ color: style.color, fontWeight: 900, fontSize: '0.85rem' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span style={{ color: style.color, fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.02em', lineHeight: 1 }}>
                                                 {formatCurrency(totals.typeStats[type].current)}
                                             </span>
+                                            <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#86868b', opacity: 0.7 }}>
+                                                Invested: {formatCurrency(totals.typeStats[type].invested)}
+                                            </span>
                                             {totals.typeStats[type].invested > 0 && (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '2px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '3px' }}>
                                                     <span style={{ fontSize: '0.58rem', fontWeight: 900, color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30' }}>
                                                         {totals.typeStats[type].current >= totals.typeStats[type].invested ? '+' : ''}{formatCurrency(Math.abs(totals.typeStats[type].current - totals.typeStats[type].invested))}
                                                     </span>
@@ -453,7 +457,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             const style = getAssetStyle(c);
                                             return (
                                                 <div key={c} className={`cat-filter-chip ${selectedType === c ? 'active' : ''}`} onClick={() => setSelectedType(c)}>
-                                                    <span style={{color: selectedType === c ? 'white' : style.color}}>{style.icon}</span>
+                                                    <span style={{ color: selectedType === c ? 'white' : style.color }}>{style.icon}</span>
                                                     <span>{c}</span>
                                                 </div>
                                             );
@@ -485,10 +489,10 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
                             {/* CUSTOM RANGE PICKERS - DELUXE UI */}
                             {period === 'CUSTOM' && (
-                                <motion.div 
-                                    initial={{ opacity: 0, y: -10 }} 
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="filter-section-block" 
+                                    className="filter-section-block"
                                     style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(0,0,0,0.04)' }}
                                 >
                                     <div className="filter-section-label" style={{ color: '#6366f1' }}><span>SELECT RANGE AUDIT</span></div>
@@ -497,30 +501,30 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             label="START DATE"
                                             value={dateRange.start ? dayjs(dateRange.start) : null}
                                             onChange={(val) => setDateRange(prev => ({ ...prev, start: val ? val.format('YYYY-MM-DD') : '' }))}
-                                            slotProps={{ 
-                                                textField: { 
-                                                    size: 'small', 
+                                            slotProps={{
+                                                textField: {
+                                                    size: 'small',
                                                     fullWidth: true,
                                                     sx: {
                                                         '& .MuiOutlinedInput-root': { borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.01)' },
                                                         '& .MuiInputLabel-root': { fontSize: '0.65rem', fontWeight: 900, top: '-2px' }
                                                     }
-                                                } 
+                                                }
                                             }}
                                         />
                                         <DatePicker
                                             label="END DATE"
                                             value={dateRange.end ? dayjs(dateRange.end) : null}
                                             onChange={(val) => setDateRange(prev => ({ ...prev, end: val ? val.format('YYYY-MM-DD') : '' }))}
-                                            slotProps={{ 
-                                                textField: { 
-                                                    size: 'small', 
+                                            slotProps={{
+                                                textField: {
+                                                    size: 'small',
                                                     fullWidth: true,
                                                     sx: {
                                                         '& .MuiOutlinedInput-root': { borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.01)' },
                                                         '& .MuiInputLabel-root': { fontSize: '0.65rem', fontWeight: 900, top: '-2px' }
                                                     }
-                                                } 
+                                                }
                                             }}
                                         />
                                     </Stack>
@@ -532,35 +536,69 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 </div>
 
                 <div className="spending-main-content">
-                    <div className="content-meta-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', background: 'white', padding: '0.85rem 1.5rem', borderRadius: '1.25rem', border: '1px solid rgba(0,0,0,0.05)' }}>
-                        <div className="badge-status">
-                            {loading ? <Skeleton variant="text" width={120} height={20} /> : (
-                                <>
-                                    <div className="dot-pulse" style={{ background: '#6366f1'}}></div>
-                                    <span style={{ color: '#6366f1', fontWeight: 800 }}>{filteredInvestments.length}</span> ASSETS FOUND
-                                </>
-                            )}
+                    <div className="content-meta-bar" style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '1.25rem',
+                        background: 'rgba(255, 255, 255, 0.7)',
+                        backdropFilter: 'blur(20px)',
+                        padding: '0.8rem 2rem',
+                        borderRadius: '32px',
+                        border: '1px solid rgba(0,0,0,0.05)',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.08)', display: 'grid', placeItems: 'center' }}>
+                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', boxShadow: '0 0 10px rgba(99, 102, 241, 0.4)' }} />
+                                </div>
+                                <div>
+                                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 900, color: '#1d1d1f', lineHeight: 1 }}>{filteredInvestments.length}</Typography>
+                                    <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>ASSETS FOUND</Typography>
+                                </div>
+                            </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            <Button size="small" variant="outlined" onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>
+
+                        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                            <Button
+                                onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
+                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { background: '#f8fafc', borderColor: '#cbd5e1' } }}>
                                 {sortBy === 'PNL_DESC' ? '▼ P&L DESC' : sortBy === 'PNL_ASC' ? '▲ P&L ASC' : 'SORT BY P&L'}
                             </Button>
-                            {sortBy !== 'DATE_DESC' && (
-                                <Button size="small" variant="outlined" onClick={() => setSortBy('DATE_DESC')} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>
-                                    BY DATE
-                                </Button>
-                            )}
-                            <Button size="small" variant="contained" onClick={handleManualSync} disabled={syncingPrices} startIcon={<Zap size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2, bgcolor: '#34c759', '&:hover': { bgcolor: '#28a745' } }}>
-                                {syncingPrices ? 'SYNCING...' : 'SYNC ALL'}
+
+                            <Button
+                                onClick={() => setSortBy('DATE_DESC')}
+                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', background: sortBy === 'DATE_DESC' ? '#f8fafc' : 'transparent', '&:hover': { background: '#f8fafc' } }}>
+                                BY DATE
                             </Button>
-                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>CLEAR ALL</Button>
-                            <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2, bgcolor: '#6366f1' }}>EXPORT CSV</Button>
+
+                            <Button
+                                onClick={handleManualSync}
+                                disabled={syncingPrices}
+                                startIcon={<Zap size={12} />}
+                                sx={{ borderRadius: '50px', bgcolor: '#34c759', color: 'white', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { bgcolor: '#28a745' }, '&.Mui-disabled': { bgcolor: 'rgba(52, 199, 89, 0.5)', color: 'white' } }}>
+                                {syncingPrices ? '...' : 'SYNC ALL'}
+                            </Button>
+
+                            <Button
+                                onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }}
+                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { background: '#f8fafc' } }}>
+                                CLEAR ALL
+                            </Button>
+
+                            <Button
+                                onClick={handleExportCSV}
+                                startIcon={<Download size={12} />}
+                                sx={{ borderRadius: '50px', bgcolor: '#6366f1', color: 'white', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { bgcolor: '#4f46e5' } }}>
+                                EXPORT CSV
+                            </Button>
                         </div>
                     </div>
 
                     <div className="data-table-premium scroll-y-luxury">
                         {loading ? (
-                             <Box sx={{ mb: 4 }}>
+                            <Box sx={{ mb: 4 }}>
                                 {[...Array(5)].map((_, j) => (
                                     <Box key={j} sx={{ display: 'flex', alignItems: 'center', p: 2, gap: 2 }}>
                                         <Skeleton variant="rectangular" width={32} height={32} sx={{ borderRadius: '8px' }} />
@@ -568,7 +606,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                         <Skeleton variant="rectangular" width={80} height={24} sx={{ borderRadius: '50px' }} />
                                     </Box>
                                 ))}
-                             </Box>
+                            </Box>
                         ) : (() => {
                             const renderItem = (s, livePre = null) => {
                                 const catStyle = getAssetStyle(s.type);
@@ -597,8 +635,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                         <div style={{ width: '160px', textAlign: 'center' }}>
                                             <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{s.type}</span>
                                         </div>
-                                        <div style={{ width: '130px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                                            <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem' }}>{formatCurrency(live.current)}</span>
+                                        <div style={{ width: '150px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                                            <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem', lineHeight: 1.1 }}>{formatCurrency(live.current)}</span>
+                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#86868b', opacity: 0.8 }}>Cost: {formatCurrency(live.invested)}</span>
                                             {(live.isMarket || live.isFixed) && (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', fontWeight: 800, color: live.current + live.withdrawn >= live.invested ? '#34c759' : '#ff3b30', background: live.current + live.withdrawn >= live.invested ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', padding: '1px 6px', borderRadius: '4px' }}>
                                                     {live.current + live.withdrawn >= live.invested ? '▲' : '▼'} {Math.abs(((live.current + live.withdrawn - live.invested) / (live.invested || 1)) * 100).toFixed(4)}% P&L

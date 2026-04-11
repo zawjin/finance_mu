@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles, Search, Bell, User, Handshake, Globe, Banknote } from 'lucide-react';
+import { LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles, Search, Bell, User, Handshake, Globe, Banknote, Bookmark, Activity, CreditCard } from 'lucide-react';
 
 export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
     const location = useLocation();
@@ -8,8 +8,8 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
     const navigate = useNavigate();
 
     return (
-        <nav style={{ 
-            background: 'rgba(255, 255, 255, 0.8)', 
+        <nav style={{
+            background: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(30px)',
             borderBottom: '1px solid #f1f5f9',
             padding: '0.75rem 2.5rem',
@@ -31,12 +31,13 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                 </div>
 
                 {/* CLASSIC NAV LINKS */}
-                <div style={{ display: 'flex', gap: '2rem' }}>
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                     <ClassicNavLink to="/" label="DASHBOARD" icon={<LayoutDashboard size={18} />} />
                     <ClassicNavLink to="/spending" label="AUDIT LOGS" icon={<Wallet size={18} />} />
                     <ClassicNavLink to="/reserves" label="CASH FLOW" icon={<Banknote size={18} />} />
+                    
                     <ClassicNavLink to="/investments" label="ASSET LEDGER" icon={<Gem size={18} />} />
-                    <ClassicNavLink to="/debt" label="DEBT LEDGER" icon={<Handshake size={18} />} />
+                    <ClassicNavLink to="/fixed-expenses" label="FIXED EXPENSES" icon={<Bookmark size={18} />} />
                     <ClassicNavLink to="/categories" label="CONFIG" icon={<Settings size={18} />} />
                 </div>
             </div>
@@ -46,18 +47,18 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
 
 
                 <div style={{ display: 'flex', gap: '0.85rem' }}>
-                    <button 
+                    <button
                         onClick={onOpenAiModal}
-                        style={{ 
-                            background: '#1e293b', 
-                            color: '#fff', 
-                            border: 'none', 
-                            padding: '0.65rem 1.2rem', 
-                            borderRadius: '12px', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '0.6rem', 
-                            fontWeight: 900, 
+                        style={{
+                            background: '#1e293b',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '0.65rem 1.2rem',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            fontWeight: 900,
                             fontSize: '0.8rem',
                             cursor: 'pointer',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
@@ -66,21 +67,21 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                         <Sparkles size={16} color="#fb923c" /> AI ANALYST
                     </button>
 
-                    {(location.pathname === '/spending' || location.pathname === '/investments' || location.pathname === '/debt' || location.pathname === '/reserves') && (
+                    {(location.pathname === '/spending' || location.pathname === '/investments' || location.pathname === '/fixed-expenses') && (
                         <>
-                            {(location.pathname !== '/debt' && location.pathname !== '/reserves') && (
-                                <button 
+                            {(location.pathname !== '/fixed-expenses') && (
+                                <button
                                     onClick={onToggleAnalytics}
-                                    style={{ 
-                                        background: showAnalytics ? '#6366f1' : 'transparent', 
-                                        color: showAnalytics ? '#fff' : '#64748b', 
-                                        border: `1px solid ${showAnalytics ? '#6366f1' : '#e2e8f0'}`, 
-                                        padding: '0.65rem 1rem', 
-                                        borderRadius: '12px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
+                                    style={{
+                                        background: showAnalytics ? '#6366f1' : 'transparent',
+                                        color: showAnalytics ? '#fff' : '#64748b',
+                                        border: `1px solid ${showAnalytics ? '#6366f1' : '#e2e8f0'}`,
+                                        padding: '0.65rem 1rem',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontWeight: 900, 
+                                        fontWeight: 900,
                                         fontSize: '0.8rem',
                                         cursor: 'pointer',
                                         transition: '0.2s all ease'
@@ -89,23 +90,23 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                                     <BarChart2 size={18} />
                                 </button>
                             )}
-                            <button 
+                            <button
                                 onClick={onAdd}
-                                style={{ 
-                                    background: location.pathname === '/investments' ? '#6366f1' : (location.pathname === '/debt' ? '#fb923c' : (location.pathname === '/reserves' ? '#10b981' : '#0f172a')), 
-                                    color: '#fff', 
-                                    border: 'none', 
-                                    padding: '0.65rem 1.2rem', 
-                                    borderRadius: '12px', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '0.6rem', 
-                                    fontWeight: 900, 
+                                style={{
+                                    background: '#0f172a',
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '0.65rem 1.2rem',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.6rem',
+                                    fontWeight: 900,
                                     fontSize: '0.8rem',
                                     cursor: 'pointer'
                                 }}
                             >
-                                <Plus size={16} /> SYNC {location.pathname === '/investments' ? 'ASSET' : (location.pathname === '/debt' ? 'DEBT' : (location.pathname === '/reserves' ? 'ACCOUNT' : 'LOG'))}
+                                <Plus size={16} /> SYNC {location.pathname === '/investments' ? 'ASSET' : (location.pathname === '/fixed-expenses' ? 'EXPENSE' : (location.pathname === '/reserves' ? 'ACCOUNT' : 'LOG'))}
                             </button>
                         </>
                     )}
@@ -114,7 +115,7 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: '1rem' }}>
                     <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#f8fafc', display: 'grid', placeItems: 'center', color: '#64748b' }}><Bell size={20} /></div>
                     <div style={{ position: 'relative' }}>
-                        <div 
+                        <div
                             onClick={() => setProfileOpen(!profileOpen)}
                             style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #0f172a, #334155)', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer' }}
                         >
@@ -151,8 +152,8 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
 }
 
 const ClassicNavLink = ({ to, label, icon }) => (
-    <NavLink 
-        to={to} 
+    <NavLink
+        to={to}
         style={({ isActive }) => ({
             display: 'flex',
             alignItems: 'center',
@@ -176,7 +177,7 @@ const ClassicNavLink = ({ to, label, icon }) => (
 const MenuOption = ({ icon, label, onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
     return (
-        <div 
+        <div
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}

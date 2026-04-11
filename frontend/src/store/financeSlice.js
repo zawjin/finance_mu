@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../utils/api';
 
 export const fetchFinanceData = createAsyncThunk('finance/fetchData', async () => {
-    const [resSpending, resInvesting, resCategories, resAssetClasses, resSummary, resDebt, resReserves, resSettlements] = await Promise.all([
+    const [resSpending, resInvesting, resCategories, resAssetClasses, resSummary, resDebt, resReserves, resSettlements, resYearly, resLending, resCards] = await Promise.all([
         api.get('/spending'),
         api.get('/investments'),
         api.get('/categories'),
@@ -10,7 +10,10 @@ export const fetchFinanceData = createAsyncThunk('finance/fetchData', async () =
         api.get('/summary'),
         api.get('/debt').catch(() => ({ data: [] })),
         api.get('/reserves').catch(() => ({ data: [] })),
-        api.get('/bill-settlements').catch(() => ({ data: [] }))
+        api.get('/bill-settlements').catch(() => ({ data: [] })),
+        api.get('/yearly-expenses').catch(() => ({ data: [] })),
+        api.get('/private-lending').catch(() => ({ data: [] })),
+        api.get('/cards').catch(() => ({ data: [] }))
     ]);
 
     return {
@@ -21,7 +24,10 @@ export const fetchFinanceData = createAsyncThunk('finance/fetchData', async () =
         summary: resSummary.data,
         debt: resDebt.data,
         reserves: resReserves.data,
-        billSettlements: resSettlements.data
+        billSettlements: resSettlements.data,
+        yearlyExpenses: resYearly.data,
+        privateLending: resLending.data,
+        cards: resCards.data
     };
 });
 
@@ -35,6 +41,9 @@ const financeSlice = createSlice({
         debt: [],
         reserves: [],
         billSettlements: [],
+        yearlyExpenses: [],
+        privateLending: [],
+        cards: [],
         summary: null,
         loading: true,
         error: null
@@ -55,6 +64,9 @@ const financeSlice = createSlice({
                 state.debt = action.payload.debt;
                 state.reserves = action.payload.reserves;
                 state.billSettlements = action.payload.billSettlements;
+                state.yearlyExpenses = action.payload.yearlyExpenses;
+                state.privateLending = action.payload.privateLending;
+                state.cards = action.payload.cards;
             })
             .addCase(fetchFinanceData.rejected, (state, action) => {
                 state.loading = false;

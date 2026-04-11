@@ -7,7 +7,7 @@ import {
     Utensils, ShoppingBag, Heart, Zap, Briefcase, Lightbulb,
     Truck, Globe, Package, ShoppingCart, Stethoscope, BarChart2,
     TrendingUp, ArrowUpRight, Plus, Edit2, Trash2, Settings, PlusCircle, Fingerprint,
-    ShoppingBag as ShoppingBagIcon, Car, Zap as ZapIcon, Gamepad2, CreditCard, Plane, Home,
+    ShoppingBag as ShoppingBagIcon, Car, Zap as ZapIcon, Gamepad2, Plane, Home,
     Music, Coffee, Smartphone, Laptop, Tv, Film, Camera, Dumbbell, Bike, Scissors, Wrench,
     Umbrella, Wind, Sun, Moon, Cloud, Star, Shield, Key, Lock, Bell, Mail, Phone, MapPin,
     Flag, Globe as GlobeIcon, Cpu, HardDrive, Database, Book, Library, Building, Store,
@@ -31,6 +31,7 @@ import { formatCurrency } from '../utils/formatters';
 import PageHeader from '../components/ui/PageHeader';
 import Loader from '../components/ui/Loader';
 import Modal from '../components/ui/Modal';
+import BaseDialog from '../components/ui/BaseDialog';
 import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
@@ -49,7 +50,7 @@ const IconMap = {
     Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
     Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
     ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
-    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
+    Gamepad2: <Gamepad2 />, Plane: <Plane />,
     Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
     Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
     Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
@@ -126,14 +127,10 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [search, setSearch] = useState('');
     const [selectedCat, setSelectedCat] = useState('ALL');
     const [selectedSub, setSelectedSub] = useState('ALL');
-    const [period, setPeriod] = useState('ALL');
+    const [period, setPeriod] = useState('THIS MONTH');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
+    const [sortBy, setSortBy] = useState('DATE_DESC');
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
-
-    // Card Settlement State
-    const [showSettlement, setShowSettlement] = useState(false);
-    const [settleData, setSettleData] = useState({ cardId: '', sourceId: '', amount: '', targetTx: null });
-    const [settling, setSettling] = useState(false);
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
@@ -147,65 +144,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         }
     };
 
-    const handleSettleTx = async () => {
-        if (!settleData.cardId || !settleData.sourceId || !settleData.amount) return;
-        setSettling(true);
-        try {
-            const card = reserves.find(r => r._id === settleData.cardId);
-            const source = reserves.find(r => r._id === settleData.sourceId);
-            const amt = parseFloat(settleData.amount);
-
-            // 1. Deduct from Source (Bank)
-            await api.put(`/reserves/${source._id}`, {
-                ...source,
-                balance: parseFloat(source.balance) - amt,
-                last_updated: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 2. Reduce Outstanding from Card
-            await api.put(`/reserves/${card._id}`, {
-                ...card,
-                balance: parseFloat(card.balance) - amt,
-                last_updated: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 3. Log settlement
-            await api.post('/bill-settlements', {
-                card_id: card._id,
-                card_name: card.account_name,
-                source_id: source._id,
-                source_name: source.account_name,
-                amount: amt,
-                date: dayjs().format('YYYY-MM-DD')
-            });
-
-            // 4. Update the specific transaction (Partial or Full)
-            if (settleData.targetTx) {
-                const currentRecovered = parseFloat(settleData.targetTx.recovered || 0);
-                const newRecovered = currentRecovered + amt;
-                const txTotal = parseFloat(settleData.targetTx.amount || 0);
-                const isFullySettled = newRecovered >= txTotal;
-
-                await api.put(`/spending/${settleData.targetTx._id}`, { 
-                    ...settleData.targetTx, 
-                    recovered: newRecovered,
-                    is_settled: isFullySettled 
-                });
-            }
-
-            dispatch(fetchFinanceData());
-            setShowSettlement(false);
-            setSettleData({ cardId: '', sourceId: '', amount: '', targetTx: null });
-        } catch (err) {
-            console.error(err);
-            alert("Settlement failed.");
-        } finally {
-            setSettling(false);
-        }
-    };
 
     const filteredSpending = useMemo(() => {
-        return spending.filter(item => {
+        let result = spending.filter(item => {
             const matchesSearch = item.description.toLowerCase().includes(search.toLowerCase()) ||
                 item.category.toLowerCase().includes(search.toLowerCase());
             const matchesCat = selectedCat === 'ALL' || item.category === selectedCat;
@@ -230,8 +171,17 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             return matchesSearch && matchesCat && matchesSub && matchesPeriod;
         });
-    }, [spending, search, selectedCat, selectedSub, period, dateRange]);
-    
+
+        // Sort
+        result = [...result];
+        if (sortBy === 'DATE_DESC') result.sort((a, b) => b.date.localeCompare(a.date));
+        else if (sortBy === 'DATE_ASC') result.sort((a, b) => a.date.localeCompare(b.date));
+        else if (sortBy === 'AMT_DESC') result.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        else if (sortBy === 'AMT_ASC') result.sort((a, b) => (a.amount || 0) - (b.amount || 0));
+
+        return result;
+    }, [spending, search, selectedCat, selectedSub, period, dateRange, sortBy]);
+
     // Global Position (Unfiltered Persistent State)
     const globalSummary = useMemo(() => {
         let gross = 0;
@@ -253,7 +203,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             const amt = item.amount || 0;
             const rec = item.recovered || 0;
             const cat = item.category;
-            
+
             if (!catStats[cat]) catStats[cat] = { spend: 0, recovered: 0, net: 0 };
 
             grossSpend += amt;
@@ -268,9 +218,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const trendAnalysis = useMemo(() => {
         const dailyNet = {};
-        filteredSpending.forEach(s => { 
+        filteredSpending.forEach(s => {
             const amt = (s.amount || 0) - (s.recovered || 0);
-            dailyNet[s.date] = (dailyNet[s.date] || 0) + amt; 
+            dailyNet[s.date] = (dailyNet[s.date] || 0) + amt;
         });
         const dates = Object.keys(dailyNet).sort();
         let cumulative = 0;
@@ -343,8 +293,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             {/* ANALYTICS HUB - TRIPLE BOX CONVERGENCE */}
             {showAnalytics && (
-                <motion.div 
-                    initial={{ height: 0, opacity: 0 }} 
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: 'easeInOut' }}
@@ -432,21 +382,21 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     </Box>
                 </motion.div>
             )}
-            
+
             {/* PERMANENT PURGE CONFIRMATION DIALOG - POP UP MODAL */}
-            <Dialog 
-                open={!!deleteConfirmItem} 
+            <Dialog
+                open={!!deleteConfirmItem}
                 onClose={() => setDeleteConfirmItem(null)}
                 TransitionComponent={Grow}
                 transitionDuration={400}
-                PaperProps={{ 
-                    sx: { 
-                        borderRadius: '28px', 
-                        overflow: 'hidden', 
-                        width: '100%', 
-                        maxWidth: '440px', 
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)' 
-                    } 
+                PaperProps={{
+                    sx: {
+                        borderRadius: '28px',
+                        overflow: 'hidden',
+                        width: '100%',
+                        maxWidth: '440px',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+                    }
                 }}
             >
                 {deleteConfirmItem && (
@@ -456,9 +406,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         </div>
                         <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, color: '#1d1d1f' }}>CRITICAL PURGE</Typography>
                         <Typography variant="body1" sx={{ color: '#86868b', mb: 3, lineHeight: 1.6, fontSize: '0.95rem' }}>
-                            Permanently purge <strong style={{color: '#1d1d1f'}}>{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
+                            Permanently purge <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
                         </Typography>
-                        
+
                         <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.25rem', borderRadius: '18px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(0,0,0,0.04)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                                 <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>CATEGORY</span>
@@ -522,31 +472,31 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 const stats = totals.catStats[cat] || { spend: 0, recovered: 0, net: 0 };
                                 const style = getCatStyle(cat, categories);
                                 const hasActivity = stats.spend > 0;
-                                
+
                                 return (
                                     <motion.div key={cat} className="apple-category-pill glass-effect" style={{ minWidth: '160px' }}>
-                                    <div className="pill-icon-box" style={{ background: hasActivity ? style.bg : 'rgba(0,0,0,0.04)', color: hasActivity ? style.color : '#8e8e93' }}>
-                                        {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
-                                    </div>
-                                    <div className="pill-info-box">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                            <span className="pill-cat-label" style={{ opacity: hasActivity ? 1 : 0.6 }}>{cat}</span>
+                                        <div className="pill-icon-box" style={{ background: hasActivity ? style.bg : 'rgba(0,0,0,0.04)', color: hasActivity ? style.color : '#8e8e93' }}>
+                                            {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
                                         </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span className="pill-amt-val" style={{ color: hasActivity ? style.color : '#8e8e93', fontWeight: 900, fontSize: '0.85rem' }}>
-                                                {formatCurrency(stats.net)}
-                                            </span>
-                                            {(stats.recovered > 0) && (
-                                                <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.55rem', fontWeight: 800, opacity: 0.5, marginTop: '-2px' }}>
-                                                    <span style={{ color: '#ff3b30' }}>↑{formatCurrency(stats.spend)}</span>
-                                                    <span style={{ color: '#34c759' }}>↓{formatCurrency(stats.recovered)}</span>
-                                                </div>
-                                            )}
+                                        <div className="pill-info-box">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                <span className="pill-cat-label" style={{ opacity: hasActivity ? 1 : 0.6 }}>{cat}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <span className="pill-amt-val" style={{ color: hasActivity ? style.color : '#8e8e93', fontWeight: 900, fontSize: '0.85rem' }}>
+                                                    {formatCurrency(stats.net)}
+                                                </span>
+                                                {(stats.recovered > 0) && (
+                                                    <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.55rem', fontWeight: 800, opacity: 0.5, marginTop: '-2px' }}>
+                                                        <span style={{ color: '#ff3b30' }}>↑{formatCurrency(stats.spend)}</span>
+                                                        <span style={{ color: '#34c759' }}>↓{formatCurrency(stats.recovered)}</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })
+                                    </motion.div>
+                                );
+                            })
                     )}
                 </div>
             </div>
@@ -581,10 +531,10 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             const style = getCatStyle(c.name, categories);
                                             return (
                                                 <div key={c.name} className={`cat-filter-chip ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
-                                                    {getIcon(c.name, categories, { 
-                                                        color: selectedCat === c.name ? 'white' : style.color, 
+                                                    {getIcon(c.name, categories, {
+                                                        color: selectedCat === c.name ? 'white' : style.color,
                                                         fill: selectedCat === c.name ? 'white' : 'auto',
-                                                        size: 14 
+                                                        size: 14
                                                     })}
                                                     <span>{c.name.split(' ')[0]}</span>
                                                 </div>
@@ -632,6 +582,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 </div>
                             </div>
                         )}
+
+
                     </div>
                 </div>
 
@@ -645,8 +597,34 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 </>
                             )}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('ALL'); }} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>CLEAR ALL</Button>
+                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                            {/* SORT CONTROL */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#f8fafc', borderRadius: '50px', padding: '0.3rem 0.3rem 0.3rem 0.8rem', border: '1px solid rgba(0,0,0,0.06)' }}>
+                                <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#94a3b8', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>Sort</span>
+                                {[
+                                    { id: 'DATE_DESC', label: 'Latest' },
+                                    { id: 'DATE_ASC', label: 'Oldest' },
+                                    { id: 'AMT_DESC', label: '₹ High' },
+                                    { id: 'AMT_ASC', label: '₹ Low' },
+                                ].map(s => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => setSortBy(s.id)}
+                                        style={{
+                                            padding: '0.3rem 0.7rem',
+                                            borderRadius: '50px',
+                                            border: 'none',
+                                            fontWeight: 900,
+                                            fontSize: '0.65rem',
+                                            cursor: 'pointer',
+                                            background: sortBy === s.id ? '#1d1d1f' : 'transparent',
+                                            color: sortBy === s.id ? '#fff' : '#94a3b8',
+                                            transition: 'all 0.15s',
+                                        }}
+                                    >{s.label}</button>
+                                ))}
+                            </div>
+                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>CLEAR ALL</Button>
                             <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2 }}>EXPORT CSV</Button>
                         </div>
                     </div>
@@ -674,150 +652,120 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             const dates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
                             if (dates.length === 0) return <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-dim)', fontWeight: 800 }}>No entries matching criteria.</div>;
 
-                             return dates.map(date => {
+                            return dates.map(date => {
                                 const daySpend = grouped[date].reduce((sum, s) => sum + (s.amount || 0), 0);
                                 const dayRecovery = grouped[date].reduce((sum, s) => sum + (s.recovered || 0), 0);
                                 const dayNet = daySpend - dayRecovery;
- 
-                                 return (
-                                     <div key={date} className="date-group">
-                                         <div className="date-header-luxury">
-                                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                 <Calendar size={14} color="var(--primary)" fill="rgba(0,113,227,0.2)" />
-                                                 <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{date}</span>
-                                             </div>
-                                             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-                                                 {(dayRecovery > 0) && (
-                                                     <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.6 }}>
-                                                         <span style={{ color: '#ff3b30' }}>S: {formatCurrency(daySpend)}</span>
-                                                         <span style={{ color: '#34c759' }}>R: {formatCurrency(dayRecovery)}</span>
-                                                     </div>
-                                                 )}
-                                                 <div style={{ fontWeight: 900, fontSize: '0.9rem' }}>
-                                                     OUTSTANDING: <span style={{ color: dayNet > 0 ? '#ff3b30' : (dayNet < 0 ? '#34c759' : 'var(--text-dim)') }}>{formatCurrency(dayNet)}</span>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                         <div className="date-transactions">
-                                             {grouped[date].map((s, idx) => {
-                                                 const catStyle = getCatStyle(s.category, categories);
-                                                 const outstanding = (s.amount || 0) - (s.recovered || 0);
-                                                 
-                                                 const sourceAccount = reserves.find(r => r._id === s.payment_source_id);
-                                                 const isCard = s.payment_method === 'CARD' && !s.is_settled;
-                                                 
-                                                 return (
-                                                     <div key={idx} className="transaction-row-fancy">
-                                                         <div style={{ marginRight: '1rem', width: '32px', height: '32px', borderRadius: '8px', background: catStyle.bg, display: 'grid', placeItems: 'center' }}>
-                                                             {getIcon(s.category, categories)}
-                                                         </div>
-                                                         <div style={{ flex: 1 }}>
-                                                             <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1d1d1f' }}>{s.description}</div>
-                                                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+
+                                return (
+                                    <div key={date} className="date-group">
+                                        <div className="date-header-luxury">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                <Calendar size={14} color="var(--primary)" fill="rgba(0,113,227,0.2)" />
+                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{date}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                                                {(dayRecovery > 0) && (
+                                                    <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.6 }}>
+                                                        <span style={{ color: '#ff3b30' }}>S: {formatCurrency(daySpend)}</span>
+                                                        <span style={{ color: '#34c759' }}>R: {formatCurrency(dayRecovery)}</span>
+                                                    </div>
+                                                )}
+                                                <div style={{ fontWeight: 900, fontSize: '0.9rem' }}>
+                                                    OUTSTANDING: <span style={{ color: dayNet > 0 ? '#ff3b30' : (dayNet < 0 ? '#34c759' : 'var(--text-dim)') }}>{formatCurrency(dayNet)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="date-transactions">
+                                            {grouped[date].map((s, idx) => {
+                                                const catStyle = getCatStyle(s.category, categories);
+                                                const outstanding = (s.amount || 0) - (s.recovered || 0);
+
+                                                const sourceAccount = reserves.find(r => r._id === s.payment_source_id);
+
+                                                return (
+                                                    <div key={idx} className="transaction-row-fancy">
+                                                        <div style={{ marginRight: '1rem', width: '32px', height: '32px', borderRadius: '8px', background: catStyle.bg, display: 'grid', placeItems: 'center' }}>
+                                                            {getIcon(s.category, categories)}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1d1d1f' }}>{s.description}</div>
+                                                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                                                 <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 600 }}>{s.sub_category}</span>
                                                                 {sourceAccount && (
-                                                                    <span style={{ fontSize: '0.62rem', fontWeight: 900, px: 0.8, py: 0.2, bgcolor: isCard ? '#fff1f2' : '#f0f9ff', color: isCard ? '#ff3b30' : '#0369a1', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                                    <span style={{ fontSize: '0.62rem', fontWeight: 900, px: 0.8, py: 0.2, bgcolor: '#f0f9ff', color: '#0369a1', borderRadius: '4px', textTransform: 'uppercase' }}>
                                                                         via {sourceAccount.account_name}
                                                                     </span>
                                                                 )}
-                                                             </div>
-                                                         </div>
-                                                         <div style={{ width: '130px', textAlign: 'center' }}>
-                                                             <span style={{ padding: '0.35rem 0.75rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.category}</span>
-                                                         </div>
-                                                         <div style={{ width: '140px', textAlign: 'right' }}>
-                                                             <div style={{ fontWeight: 900, fontSize: '1.05rem', color: isCard ? '#ff3b30' : 'var(--text-main)' }}>{formatCurrency(outstanding)}</div>
-                                                             {s.recovered > 0 && (
-                                                                 <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.5, color: '#34c759' }}>Rec: {formatCurrency(s.recovered)}</div>
-                                                             )}
-                                                             {isCard && <Typography sx={{ fontSize: '0.58rem', fontWeight: 900, color: '#ff3b30' }}>PENDING SETTLEMENT</Typography>}
-                                                         </div>
- 
-                                                         {/* High-Fidelity Action Cluster */}
-                                                         <div className="row-action-cluster" style={{ display: 'flex', gap: '0.35rem', marginLeft: '1.5rem', opacity: 0.8 }}>
-                                                             {isCard && (
-                                                                <IconButton size="small" onClick={() => {
-                                                                    setSettleData({ cardId: s.payment_source_id, sourceId: '', amount: outstanding.toString(), targetTx: s });
-                                                                    setShowSettlement(true);
-                                                                }} sx={{ color: '#ff3b30', '&:hover': { bgcolor: '#fff1f2' } }}>
-                                                                    <ActivityIcon size={14} />
-                                                                </IconButton>
-                                                             )}
-                                                             <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: 'var(--primary)', '&:hover': { bgcolor: 'rgba(0,113,227,0.08)' } }}>
-                                                                 <Edit2 size={13} />
-                                                             </IconButton>
-                                                             <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' } }}>
-                                                                 <Trash2 size={13} />
-                                                             </IconButton>
-                                                         </div>
-                                                     </div>
-                                                 );
-                                             })}
-                                         </div>
-                                     </div>
-                                 );
-                             });
-                         })()}
-                     </div>
-                 </div>
-             </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ width: '130px', textAlign: 'center' }}>
+                                                            <span style={{ padding: '0.35rem 0.75rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.category}</span>
+                                                        </div>
+                                                        <div style={{ width: '140px', textAlign: 'right' }}>
+                                                            <div style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text-main)' }}>{formatCurrency(outstanding)}</div>
+                                                            {s.recovered > 0 && (
+                                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.5, color: '#34c759' }}>Rec: {formatCurrency(s.recovered)}</div>
+                                                            )}
 
-             {/* SETTLEMENT MODAL */}
-             <Dialog 
-                open={showSettlement} 
-                onClose={() => setShowSettlement(false)}
-                TransitionComponent={Grow}
-                PaperProps={{ sx: { borderRadius: '28px', maxWidth: '440px' } }}
+                                                        </div>
+
+                                                        {/* High-Fidelity Action Cluster */}
+                                                        <div className="row-action-cluster" style={{ display: 'flex', gap: '0.35rem', marginLeft: '1.5rem', opacity: 0.8 }}>
+                                                                <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: 'var(--primary)', '&:hover': { bgcolor: 'rgba(0,113,227,0.08)' } }}>
+                                                                    <Edit2 size={13} />
+                                                                </IconButton>
+                                                            <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30', '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' } }}>
+                                                                <Trash2 size={13} />
+                                                            </IconButton>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            });
+                        })()}
+                    </div>
+                </div>
+            </div>
+
+            {/* PERMANENT PURGE CONFIRMATION DIALOG - POP UP MODAL */}
+            <BaseDialog
+                open={!!deleteConfirmItem}
+                onClose={() => setDeleteConfirmItem(null)}
+                title="Critical Purge"
+                maxWidth="xs"
             >
-                <Box sx={{ p: 4 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, color: '#1d1d1f' }}>SETTLE TRANSACTION</Typography>
-                    <Typography variant="body2" sx={{ color: '#86868b', mb: 3 }}>
-                        Finalize payment for <b>{settleData.targetTx?.description}</b>. This will debit your bank and clear the credit card ledger item.
-                    </Typography>
-                    
-                    <Stack spacing={2.5}>
-                        <Box>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#86868b', mb: 1, textTransform: 'uppercase' }}>DEBIT FROM (BANK ACCOUNT)</Typography>
-                            <Select 
-                                fullWidth 
-                                value={settleData.sourceId}
-                                onChange={e => setSettleData({...settleData, sourceId: e.target.value})}
-                                displayEmpty
-                                sx={{ borderRadius: '16px', bgcolor: 'rgba(0,0,0,0.02)' }}
-                            >
-                                <MenuItem value="" disabled><em>Select Bank Account</em></MenuItem>
-                                {reserves.filter(r => r.account_type === 'BANK').map(r => (
-                                    <MenuItem key={r._id} value={r._id}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                            <span style={{ fontWeight: 700 }}>{r.account_name}</span>
-                                            <span style={{ fontWeight: 900, color: '#10b981', fontSize: '0.8rem' }}>{formatCurrency(r.balance)}</span>
-                                        </Box>
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </Box>
-                        
-                        <Box>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#86868b', mb: 1, textTransform: 'uppercase' }}>SETTLEMENT AMOUNT (₹)</Typography>
-                            <TextField 
-                                fullWidth 
-                                type="number"
-                                value={settleData.amount}
-                                onChange={e => setSettleData({...settleData, amount: e.target.value})}
-                                InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr:1 }}>₹</Typography> }}
-                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '16px', bgcolor: 'rgba(0,0,0,0.02)' } }}
-                            />
-                        </Box>
-                        
-                        <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
-                            <Button fullWidth onClick={() => setShowSettlement(false)} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 800, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleSettleTx} disabled={settling || !settleData.sourceId} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 900, bgcolor: '#1d1d1f', '&:hover': { bgcolor: '#000' } }}>
-                                {settling ? 'SETTLING...' : 'CONFIRM PAY'}
-                            </Button>
-                        </Stack>
-                    </Stack>
-                </Box>
-             </Dialog>
+                {deleteConfirmItem && (
+                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white' }}>
+                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                            <Trash2 size={32} />
+                        </div>
+                        <Typography variant="body1" sx={{ color: '#86868b', mb: 3, lineHeight: 1.6, fontSize: '0.95rem' }}>
+                            Permanently purge <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
+                        </Typography>
+
+                        <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.25rem', borderRadius: '18px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(0,0,0,0.04)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>CATEGORY</span>
+                                <span style={{ fontWeight: 900, fontSize: '0.7rem', letterSpacing: '0.02em' }}>{deleteConfirmItem.category}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>AUDIT AMOUNT</span>
+                                <span style={{ fontWeight: 900, fontSize: '0.9rem', color: '#ff3b30' }}>{formatCurrency(deleteConfirmItem.amount)}</span>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)', '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }, textTransform: 'none' }}>ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemove} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30', boxShadow: '0 10px 20px -5px rgba(255,59,48,0.3)', '&:hover': { bgcolor: '#e03228', transform: 'translateY(-2px)' }, textTransform: 'none', transition: '0.2s' }}>PROCEED PURGE</Button>
+                        </div>
+                    </Box>
+                )}
+            </BaseDialog>
+
         </motion.div>
     );
 }

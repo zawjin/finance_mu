@@ -1,60 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFinanceData } from './store/financeSlice';
 import api from './utils/api';
 import {
     ThemeProvider, createTheme, CssBaseline,
     Dialog, DialogTitle, DialogContent,
-    Typography, IconButton, Grow
+    Typography, IconButton, Grow, Box, Chip, Button
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { X } from 'lucide-react';
+import { X, CalendarDays, Repeat } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 
 import TopNavbar from './components/layout/TopNavbar';
 import OverviewPage from './pages/OverviewPage';
 import SpendingPage from './pages/SpendingPage';
 import InvestmentPage from './pages/InvestmentPage';
-import DebtPage from './pages/DebtPage';
+import YearlyExpensePage from './pages/YearlyExpensePage';
 import CategoryPage from './pages/CategoryPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import SiteSettingsPage from './pages/SiteSettingsPage';
 import ReservePage from './pages/ReservePage';
+import BaseDialog from './components/ui/BaseDialog';
 import ExpenseForm from './components/ui/ExpenseForm';
 import InvestmentForm from './components/ui/InvestmentForm';
 import DebtForm from './components/ui/DebtForm';
+import YearlyExpenseForm from './components/ui/YearlyExpenseForm';
+import MonthlyBillForm from './components/ui/MonthlyBillForm';
 import ReserveForm from './components/ui/ReserveForm';
+import LendingForm from './components/ui/LendingForm';
+import SettleCardTermForm from './components/ui/SettleCardTermForm';
 import AiAnalysisModal from './components/ui/AiAnalysisModal';
 
 const appleTheme = createTheme({
-    typography: { fontFamily: 'Outfit, sans-serif' },
+    typography: {
+        fontFamily: 'Outfit, sans-serif',
+        h1: { fontWeight: 900, letterSpacing: '-0.05em' },
+        h2: { fontWeight: 900, letterSpacing: '-0.04em' },
+        h3: { fontWeight: 800, letterSpacing: '-0.02em' },
+    },
     palette: {
         primary: { main: '#1d1d1f' },
-        background: { default: '#f8fafc' }
+        secondary: { main: '#0071e3' },
+        background: { default: '#f0f2f5', paper: '#ffffff' }
+    },
+    shape: { borderRadius: 24 },
+    components: {
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.04)',
+                    border: '1px solid rgba(0,0,0,0.05)'
+                }
+            }
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                    fontWeight: 800,
+                    borderRadius: 14,
+                    padding: '10px 24px'
+                }
+            }
+        }
     }
 });
 
 export default function App() {
     const dispatch = useDispatch();
-    const { categories, assetClasses } = useSelector(state => state.finance);
+    const { categories, assetClasses, reserves } = useSelector(state => state.finance);
 
     const [editingItem, setEditingItem] = useState(null);
     const [editingInvestment, setEditingInvestment] = useState(null);
     const [editingDebt, setEditingDebt] = useState(null);
+    const [editingLending, setEditingLending] = useState(null);
     const [editingReserve, setEditingReserve] = useState(null);
+    const [editingYearly, setEditingYearly] = useState(null);
+    const [settlingTerm, setSettlingTerm] = useState(null);
+    const [addingFrequency, setAddingFrequency] = useState('YEARLY');
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
     const [showAddDebtModal, setShowAddDebtModal] = useState(false);
+    const [showAddLendingModal, setShowAddLendingModal] = useState(false);
     const [showAddReserveModal, setShowAddReserveModal] = useState(false);
+    const [showAddYearlyModal, setShowAddYearlyModal] = useState(false);
     const [showAiModal, setShowAiModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
 
+    const initialized = React.useRef(false);
+
     useEffect(() => {
-        dispatch(fetchFinanceData());
+        if (!initialized.current) {
+            dispatch(fetchFinanceData());
+            initialized.current = true;
+        }
     }, [dispatch]);
 
     const handleExpenseSubmit = async (data) => {
@@ -79,6 +123,29 @@ export default function App() {
             } else {
                 await api.post('/investments', data);
             }
+
+            // Also log to Audit Log - Log specific top-up amount if provided, else log valuation for new entries
+            const auditAmount = data.recentPurchase || (editingInvestment ? 0 : data.value);
+            if (auditAmount > 0) {
+                // Determine the correct date for the audit log
+                // If it's a new top-up on an existing asset, the cash exited the bank *today*, not years ago.
+                const logDate = (editingInvestment && data.recentPurchase) ? new Date().toISOString().split('T')[0] : (data.date || new Date().toISOString().split('T')[0]);
+
+                await api.post('/spending', {
+                    date: logDate,
+                    amount: auditAmount,
+                    category: 'Investment',
+                    sub_category: data.type, // Mutual Fund, Stocks, etc.
+                    description: `${editingInvestment ? 'Top-up' : 'Added'} Asset: ${data.name} ${data.recentPurchase ? `(${data.recentPurchase} worth of units added)` : ''}`,
+                    payment_method: data.payment_method || 'BANK',
+                    // Prevent Double-Deduction: New investments deduct from Reserve via /investments POST.
+                    // Top-ups (PUTs) do not, so we pass payment_source_id to /spending to handle it.
+                    payment_source_id: editingInvestment ? (data.payment_source_id || null) : null,
+                    is_settled: true,
+                    metadata: { is_investment: true }
+                });
+            }
+
             dispatch(fetchFinanceData());
             setEditingInvestment(null);
             setShowAddInvestmentModal(false);
@@ -89,7 +156,7 @@ export default function App() {
 
     const handleDebtSubmit = async (data) => {
         try {
-            if (editingDebt) {
+            if (editingDebt && editingDebt._id) {
                 await api.put(`/debt/${editingDebt._id}`, data);
             } else {
                 await api.post('/debt', data);
@@ -102,9 +169,26 @@ export default function App() {
         }
     };
 
+    const handleLendingSubmit = async (data) => {
+        try {
+            if (editingLending && editingLending._id) {
+                await api.put(`/private-lending/${editingLending._id}`, data);
+            } else {
+                await api.post('/private-lending', data);
+            }
+
+
+            dispatch(fetchFinanceData());
+            setEditingLending(null);
+            setShowAddLendingModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const handleReserveSubmit = async (data) => {
         try {
-            if (editingReserve) {
+            if (editingReserve && editingReserve._id) {
                 await api.put(`/reserves/${editingReserve._id}`, data);
             } else {
                 await api.post('/reserves', data);
@@ -117,23 +201,85 @@ export default function App() {
         }
     };
 
+
+    const handleTermSettle = async (paymentData) => {
+        try {
+            const { card, type } = settlingTerm;
+            const endpoint = type === 'LENDING' ? '/private-lending' : '/cards';
+            const logCategory = type === 'LENDING' ? 'Investment Settlement' : 'Credit Bill';
+            const instrumentName = type === 'LENDING' ? card.borrower : card.account_name;
+
+            // 1. Update the record with new payment
+            const updatedPayments = [...(card.payments || []), paymentData];
+            await api.put(`${endpoint}/${card._id}`, { ...card, payments: updatedPayments });
+
+            // 2. Deduct from Source Reserve
+            if (paymentData.source_id) {
+                const target = reserves.find(r => r._id === paymentData.source_id);
+                if (target) {
+                    await api.put(`/reserves/${target._id}`, {
+                        ...target,
+                        balance: target.balance - paymentData.amount
+                    });
+                }
+            }
+
+            // 3. Create a Spending Log entry
+            await api.post('/spending', {
+                date: paymentData.date,
+                amount: paymentData.amount,
+                category: logCategory,
+                sub_category: instrumentName,
+                description: `Settle Term #${paymentData.term_number} for ${instrumentName}`,
+                payment_method: 'BANK',
+                payment_source_id: paymentData.source_id,
+                is_settled: true
+            });
+
+            dispatch(fetchFinanceData());
+            setSettlingTerm(null);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleYearlySubmit = async (data) => {
+        try {
+            if (editingYearly && editingYearly._id) {
+                await api.put(`/yearly-expenses/${editingYearly._id}`, data);
+            } else {
+                await api.post('/yearly-expenses', data);
+            }
+            dispatch(fetchFinanceData());
+            setEditingYearly(null);
+            setShowAddYearlyModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const handleCloseModal = () => {
         setEditingItem(null);
         setEditingInvestment(null);
         setEditingDebt(null);
+        setEditingLending(null);
         setEditingReserve(null);
+        setEditingYearly(null);
         setShowAddModal(false);
         setShowAddInvestmentModal(false);
         setShowAddDebtModal(false);
+        setShowAddLendingModal(false);
         setShowAddReserveModal(false);
+        setShowAddYearlyModal(false);
+        setSettlingTerm(null);
     };
 
     const handleGlobalAdd = () => {
         const path = window.location.pathname;
         if (path === '/investments') {
             setShowAddInvestmentModal(true);
-        } else if (path === '/debt') {
-            setShowAddDebtModal(true);
+        } else if (path === '/fixed-expenses' || path === '/monthly-bills') {
+            setShowAddYearlyModal(true);
         } else if (path === '/reserves') {
             setShowAddReserveModal(true);
         } else {
@@ -159,10 +305,12 @@ export default function App() {
                                 <AnimatePresence mode="wait">
                                     <Routes>
                                         <Route path="/" element={<OverviewPage />} />
+                                        <Route path="/overview" element={<Navigate to="/" replace />} />
                                         <Route path="/spending" element={<SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
                                         <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
-                                        <Route path="/debt" element={<DebtPage onEdit={(item) => setEditingDebt(item)} />} />
-                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} />} />
+                                        <Route path="/fixed-expenses" element={<YearlyExpensePage onEdit={(item) => setEditingYearly(item)} />} />
+                                        <Route path="/yearly-expenses" element={<Navigate to="/fixed-expenses" replace />} />
+                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} />} />
                                         <Route path="/categories" element={<CategoryPage />} />
                                         <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/settings" element={<SettingsPage />} />
@@ -171,46 +319,116 @@ export default function App() {
                                 </AnimatePresence>
                             </main>
 
-                            {/* Forms Modals */}
-                            <Dialog open={showAddModal || !!editingItem} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
-                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingItem ? 'Edit Audit Log' : 'Sync Audit Log'}</Typography>
-                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
-                                </DialogTitle>
-                                <DialogContent sx={{ p: 0 }}>
-                                    <ExpenseForm categories={categories} onSubmit={handleExpenseSubmit} onCancel={handleCloseModal} initialData={editingItem} />
-                                </DialogContent>
-                            </Dialog>
+                            {/* REFACTORED DYNAMIC MODALS */}
 
-                            <Dialog open={showAddInvestmentModal || !!editingInvestment} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
-                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingInvestment ? 'Edit Asset' : 'Sync Asset'}</Typography>
-                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
-                                </DialogTitle>
-                                <DialogContent sx={{ p: 0 }}>
-                                    <InvestmentForm assetClasses={assetClasses} onSubmit={handleInvestmentSubmit} onCancel={handleCloseModal} initialData={editingInvestment} />
-                                </DialogContent>
-                            </Dialog>
+                            <BaseDialog
+                                open={showAddModal || !!editingItem}
+                                onClose={handleCloseModal}
+                                title={editingItem ? 'Edit Audit Log' : 'Sync Audit Log'}
+                            >
+                                <ExpenseForm categories={categories} onSubmit={handleExpenseSubmit} onCancel={handleCloseModal} initialData={editingItem} />
+                            </BaseDialog>
 
-                            <Dialog open={showAddDebtModal || !!editingDebt} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
-                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingDebt ? 'Edit Debt Exposure' : 'Sync Debt Exposure'}</Typography>
-                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
-                                </DialogTitle>
-                                <DialogContent sx={{ p: 0 }}>
-                                    <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
-                                </DialogContent>
-                            </Dialog>
+                            <BaseDialog
+                                open={showAddInvestmentModal || !!editingInvestment}
+                                onClose={handleCloseModal}
+                                title={editingInvestment ? 'Edit Asset' : 'Sync Asset'}
+                            >
+                                <InvestmentForm assetClasses={assetClasses} onSubmit={handleInvestmentSubmit} onCancel={handleCloseModal} initialData={editingInvestment} />
+                            </BaseDialog>
 
-                            <Dialog open={showAddReserveModal || !!editingReserve} onClose={handleCloseModal} TransitionComponent={Grow} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: '28px' } }}>
-                                <DialogTitle sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography component="span" sx={{ fontSize: '1.5rem', fontWeight: 900 }}>{editingReserve ? 'Modify Account' : 'Register Account'}</Typography>
-                                    <IconButton onClick={handleCloseModal}><X size={20} /></IconButton>
-                                </DialogTitle>
-                                <DialogContent sx={{ p: 0 }}>
-                                    <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
-                                </DialogContent>
-                            </Dialog>
+                            <BaseDialog
+                                open={showAddDebtModal || !!editingDebt}
+                                onClose={handleCloseModal}
+                                title={editingDebt ? 'Edit Debt Exposure' : 'Sync Debt Exposure'}
+                            >
+                                <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={showAddLendingModal || !!editingLending}
+                                onClose={handleCloseModal}
+                                title={editingLending ? 'Add New Local Investment Card' : 'Add New Local Investment Card'}
+                            >
+                                <LendingForm onSubmit={handleLendingSubmit} onCancel={handleCloseModal} initialData={editingLending} />
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={showAddReserveModal || !!editingReserve}
+                                onClose={handleCloseModal}
+                                title={editingReserve ? 'Modify Account' : 'Register Account'}
+                            >
+                                <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={showAddYearlyModal || !!editingYearly}
+                                onClose={handleCloseModal}
+                                title={editingYearly ? 'Modify obligation' : 'Register obligation'}
+                                borderRadius="32px"
+                            >
+                                {!editingYearly && (
+                                    <Box sx={{
+                                        p: 3, pb: 0, display: 'flex', justifyContent: 'center',
+                                        background: 'linear-gradient(to bottom, #fff, #f8fafc)'
+                                    }}>
+                                        <Box sx={{
+                                            display: 'inline-flex', p: '5px', bgcolor: 'rgba(0,0,0,0.06)', borderRadius: '20px',
+                                            border: '1px solid rgba(0,0,0,0.03)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.03)'
+                                        }}>
+                                            <Button
+                                                onClick={() => setAddingFrequency('YEARLY')}
+                                                startIcon={<CalendarDays size={16} />}
+                                                sx={{
+                                                    borderRadius: '16px', px: 4, py: 1, fontWeight: 900, fontSize: '0.8rem',
+                                                    bgcolor: addingFrequency === 'YEARLY' ? 'white' : 'transparent',
+                                                    color: addingFrequency === 'YEARLY' ? '#1d1d1f' : '#86868b',
+                                                    boxShadow: addingFrequency === 'YEARLY' ? '0 4px 14px rgba(0,0,0,0.1)' : 'none',
+                                                    '&:hover': { bgcolor: addingFrequency === 'YEARLY' ? 'white' : 'rgba(0,0,0,0.03)' },
+                                                }}
+                                            >
+                                                YEARLY RESERVE
+                                            </Button>
+                                            <Button
+                                                onClick={() => setAddingFrequency('MONTHLY')}
+                                                startIcon={<Repeat size={16} />}
+                                                sx={{
+                                                    borderRadius: '16px', px: 4, py: 1, fontWeight: 900, fontSize: '0.8rem',
+                                                    bgcolor: addingFrequency === 'MONTHLY' ? 'white' : 'transparent',
+                                                    color: addingFrequency === 'MONTHLY' ? '#1d1d1f' : '#86868b',
+                                                    boxShadow: addingFrequency === 'MONTHLY' ? '0 4px 14px rgba(0,0,0,0.1)' : 'none',
+                                                    '&:hover': { bgcolor: addingFrequency === 'MONTHLY' ? 'white' : 'rgba(0,0,0,0.03)' },
+                                                }}
+                                            >
+                                                MONTHLY BILL
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )}
+                                {(editingYearly?.frequency === 'MONTHLY' || (!editingYearly && addingFrequency === 'MONTHLY')) ? (
+                                    <MonthlyBillForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
+                                ) : (
+                                    <YearlyExpenseForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
+                                )}
+                            </BaseDialog>
+
+                            <BaseDialog
+                                open={!!settlingTerm}
+                                onClose={handleCloseModal}
+                                title=""
+                                maxWidth="xs"
+                            >
+                                {settlingTerm && (
+                                    <SettleCardTermForm
+                                        term={settlingTerm.term}
+                                        requiredAmount={settlingTerm.requiredAmount}
+                                        alreadyPaid={settlingTerm.alreadyPaid}
+                                        reserves={reserves}
+                                        onSubmit={handleTermSettle}
+                                        onCancel={handleCloseModal}
+                                    />
+                                )}
+                            </BaseDialog>
 
                             <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />
                         </div>

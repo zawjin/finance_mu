@@ -55,8 +55,7 @@ Analyze the user's complete financial situation based on the data provided.
 Monthly Income: {INCOME}
 
 Expenses:
-- Fixed: {FIXED_EXPENSES}
-- Variable: {VARIABLE_EXPENSES}
+- all list {Audit_LIST}
 
 Debts:
 {DEBT_LIST}

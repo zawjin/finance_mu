@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { 
-    Box, TextField, Button, Grid, MenuItem, 
-    Typography, InputAdornment, IconButton
+import {
+    Box, TextField, Button, Grid, MenuItem,
+    Typography, InputAdornment, IconButton, Stack
 } from '@mui/material';
+
 import { User, DollarSign, Calendar, FileText, ChevronRight, Hash } from 'lucide-react';
 import dayjs from 'dayjs';
 
@@ -30,28 +31,34 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
         if (!formData.person) newErrors.person = 'Person/Entity is required';
         if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = 'Valid amount is required';
         if (!formData.date) newErrors.date = 'Date is required';
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
+        console.log("Submitting Debt Form:", formData);
         if (validate()) {
             onSubmit({
                 ...formData,
                 amount: parseFloat(formData.amount)
             });
+        } else {
+            console.log("Validation Errors:", errors);
+            alert("Please fill in all required fields (Person, Amount, Date).");
         }
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={{ p: 4 }}>
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
+        <Box component="form" sx={{ p: 4 }}>
+            <Stack spacing={3.5}>
+                {/* Person */}
+                <Box>
+                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Counterparty / Person</Typography>
                     <TextField
                         fullWidth
-                        label="PERSON / ENTITY"
+                        placeholder="Who is involved?"
                         name="person"
                         value={formData.person}
                         onChange={handleChange}
@@ -60,162 +67,137 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <User size={18} color="#6366f1" />
+                                    <Box sx={{ p: 1, bgcolor: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', display: 'flex' }}>
+                                        <User size={20} color="#6366f1" />
+                                    </Box>
                                 </InputAdornment>
                             ),
-                            sx: { borderRadius: '15px', fontWeight: 800 }
+                            sx: { borderRadius: '20px', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.01)', border: '1px solid rgba(0,0,0,0.03)' }
                         }}
                     />
-                </Grid>
+                </Box>
 
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="AMOUNT"
-                        name="amount"
-                        type="number"
-                        value={formData.amount}
-                        onChange={handleChange}
-                        error={!!errors.amount}
-                        helperText={errors.amount}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <DollarSign size={18} color="#6366f1" />
-                                </InputAdornment>
-                            ),
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    />
-                </Grid>
+                {/* Amount & Direction */}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Amount</Typography>
+                        <TextField
+                            fullWidth
+                            name="amount"
+                            type="number"
+                            value={formData.amount}
+                            onChange={handleChange}
+                            error={!!errors.amount}
+                            helperText={errors.amount}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Typography sx={{ fontWeight: 900, color: '#6366f1' }}>₹</Typography>
+                                    </InputAdornment>
+                                ),
+                                sx: { borderRadius: '20px', fontWeight: 900, bgcolor: 'rgba(0,0,0,0.01)' }
+                            }}
+                        />
+                    </Box>
+                    <Box sx={{ flex: 1.2 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Transaction Type</Typography>
+                        <TextField
+                            fullWidth
+                            select
+                            name="direction"
+                            value={formData.direction}
+                            onChange={handleChange}
+                            SelectProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                        >
+                            <MenuItem value="OWED_TO_ME" sx={{ fontWeight: 800, color: '#10b981' }}>RECEIVABLE (He owes me)</MenuItem>
+                            <MenuItem value="I_OWE" sx={{ fontWeight: 800, color: '#ff3b30' }}>LIABILITY (I owe him)</MenuItem>
+                        </TextField>
+                    </Box>
+                </Box>
 
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        select
-                        label="DIRECTION"
-                        name="direction"
-                        value={formData.direction}
-                        onChange={handleChange}
-                        SelectProps={{
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    >
-                        <MenuItem value="OWED_TO_ME" sx={{ fontWeight: 800 }}>RECEIVABLE (He owes me)</MenuItem>
-                        <MenuItem value="I_OWE" sx={{ fontWeight: 800 }}>LIABILITY (I owe him)</MenuItem>
-                    </TextField>
-                </Grid>
+                {/* Dates */}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Issue Date</Typography>
+                        <TextField
+                            fullWidth
+                            name="date"
+                            type="date"
+                            value={formData.date}
+                            onChange={handleChange}
+                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                        />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Payback Target</Typography>
+                        <TextField
+                            fullWidth
+                            name="dueDate"
+                            type="date"
+                            value={formData.dueDate}
+                            onChange={handleChange}
+                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                        />
+                    </Box>
+                </Box>
 
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="DATE"
-                        name="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={handleChange}
-                        error={!!errors.date}
-                        helperText={errors.date}
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Calendar size={18} color="#6366f1" />
-                                </InputAdornment>
-                            ),
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    />
-                </Grid>
+                {/* Status & Category */}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Status</Typography>
+                        <TextField
+                            fullWidth
+                            select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            SelectProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                        >
+                            <MenuItem value="ACTIVE" sx={{ fontWeight: 800 }}>ACTIVE</MenuItem>
+                            <MenuItem value="SETTLED" sx={{ fontWeight: 800 }}>SETTLED</MenuItem>
+                            <MenuItem value="PARTIAL" sx={{ fontWeight: 800 }}>PARTIAL</MenuItem>
+                        </TextField>
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Industry / Tag</Typography>
+                        <TextField
+                            fullWidth
+                            name="category"
+                            value={formData.category}
+                            onChange={handleChange}
+                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                        />
+                    </Box>
+                </Box>
 
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="DUE DATE"
-                        name="dueDate"
-                        type="date"
-                        value={formData.dueDate}
-                        onChange={handleChange}
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Calendar size={18} color="#fb923c" />
-                                </InputAdornment>
-                            ),
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    />
-                </Grid>
-
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        select
-                        label="STATUS"
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        SelectProps={{
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    >
-                        <MenuItem value="ACTIVE" sx={{ fontWeight: 800 }}>ACTIVE (Live)</MenuItem>
-                        <MenuItem value="SETTLED" sx={{ fontWeight: 800 }}>SETTLED (Paid)</MenuItem>
-                        <MenuItem value="PARTIAL" sx={{ fontWeight: 800 }}>PARTIAL (InProgress)</MenuItem>
-                    </TextField>
-                </Grid>
-
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="CATEGORY"
-                        name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Hash size={18} color="#6366f1" />
-                                </InputAdornment>
-                            ),
-                            sx: { borderRadius: '15px', fontWeight: 800 }
-                        }}
-                    />
-                </Grid>
-
-                <Grid item xs={12}>
+                {/* Memo */}
+                <Box>
+                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Audit Memo / Details</Typography>
                     <TextField
                         fullWidth
                         multiline
                         rows={2}
-                        label="MEMO / DETAILS"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
                         InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <FileText size={18} color="#6366f1" />
-                                </InputAdornment>
-                            ),
-                            sx: { borderRadius: '20px', fontWeight: 800 }
+                            sx: { borderRadius: '24px', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.01)' }
                         }}
                     />
-                </Grid>
-            </Grid>
+                </Box>
+            </Stack>
 
             {/* ACTION SECTION */}
-            <Box sx={{ mt: 5, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 6, display: 'flex', gap: 2.5 }}>
                 <Button
                     fullWidth
                     onClick={onCancel}
                     sx={{
-                        borderRadius: '18px',
-                        py: 2,
+                        borderRadius: '100px',
+                        py: 2.2,
                         fontWeight: 900,
-                        bgcolor: 'rgba(0,0,0,0.04)',
-                        color: '#1d1d1f',
+                        bgcolor: 'rgba(0,0,0,0.05)',
+                        color: '#64748b',
                         '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }
                     }}
                 >
@@ -223,21 +205,24 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                 </Button>
                 <Button
                     fullWidth
-                    type="submit"
+                    onClick={handleSubmit}
                     variant="contained"
                     sx={{
-                        borderRadius: '18px',
-                        py: 2,
+                        borderRadius: '100px',
+                        py: 2.2,
                         fontWeight: 900,
-                        bgcolor: '#0f172a',
-                        display: 'flex',
-                        gap: 1.5,
-                        '&:hover': { bgcolor: '#1e293b' }
+                        bgcolor: '#1d1d1f',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+                        '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' }
                     }}
+
                 >
-                    {initialData ? 'COMMIT UPDATE' : 'SYNC DEBT'} <ChevronRight size={18} />
+                    {initialData ? 'SAVE EXPOSURE' : 'COMMIT DEBT'}
                 </Button>
+
             </Box>
         </Box>
     );
 }
+
+
