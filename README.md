@@ -5,6 +5,11 @@ A premium personal finance management system built with **FastAPI** (Python) and
 <!-- uvicorn app.main:app --reload --port 8001 -->
 <!-- npm run dev -->
 
+uvicorn app.main:app --reload --port 8001
+
+
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
 ## Features
 - **Overview Dashboard**: Visual analytics with charts (Spending Trends & Asset Allocation).
 - **Spending Tracker**: Log daily expenses with categories.

@@ -152,7 +152,7 @@ export default function DashboardPage() {
                 </Box>
 
                 {/* Primary Metrics */}
-                <Grid container spacing={4} mb={8}>
+                <Grid container spacing={4} className="metrics-grid-primary">
                     <Grid item xs={12} md={4}>
                         <GlassPaper dark>
                             <Stack direction="row" justifyContent="space-between" alignItems="start">
@@ -161,13 +161,13 @@ export default function DashboardPage() {
                                 </Avatar>
                                 <Chip label="LIVEDATA" size="small" className="metric-badge-live" />
                             </Stack>
-                    <Box>
-                        <Typography className="metric-label-micro">Total Net Worth</Typography>
-                        <Typography variant="h2" className="metric-value-large">
-                            <Box component="span" className="currency-symbol-faint">₹</Box>
-                            {formatCurrency(financialPulse.netWorth).replace('₹', '')}
-                        </Typography>
-                    </Box>
+                            <Box>
+                                <Typography className="metric-label-micro">Total Net Worth</Typography>
+                                <Typography variant="h2" className="metric-value-large">
+                                    <Box component="span" className="currency-symbol-faint">₹</Box>
+                                    {formatCurrency(financialPulse.netWorth).replace('₹', '')}
+                                </Typography>
+                            </Box>
                         </GlassPaper>
                     </Grid>
 
@@ -235,7 +235,7 @@ export default function DashboardPage() {
                                             <Box key={lbl}>
                                                 <Stack direction="row" justifyContent="space-between" mb={1}>
                                                     <Stack direction="row" spacing={1.5} alignItems="center">
-                                                        <Box className="allocation-legend-dot" style={{ backgroundColor: allocationData.config.datasets[0].backgroundColor[idx] }} />
+                                                        <Box className={`allocation-legend-dot dot-color-${idx}`} />
                                                         <Typography variant="body2" className="allocation-lbl-text">{lbl}</Typography>
                                                     </Stack>
                                                     <Typography variant="body2" className="allocation-val-text">{formatCurrency(allocationData.config.datasets[0].data[idx])}</Typography>
@@ -243,8 +243,7 @@ export default function DashboardPage() {
                                                 <LinearProgress 
                                                     variant="determinate" 
                                                     value={(allocationData.config.datasets[0].data[idx] / allocationData.total) * 100} 
-                                                    className="allocation-progress-bar"
-                                                    style={{ '--bar-color': allocationData.config.datasets[0].backgroundColor[idx] }}
+                                                    className={`allocation-progress-bar bar-color-${idx}`}
                                                 />
                                             </Box>
                                         ))}

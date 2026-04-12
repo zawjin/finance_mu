@@ -396,14 +396,17 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         Object.keys(totals.typeStats).map((type) => {
                             const style = getAssetStyle(type);
                             return (
-                                <motion.div key={type} className="investment-category-pill">
-                                    <div className="pill-icon-box" style={{ background: style.bg, color: style.color }}>
+                                <motion.div key={type} className="investment-category-pill glass-effect">
+                                    <div 
+                                        className="pill-icon-box" 
+                                        style={{ '--pill-bg': style.bg, '--pill-color': style.color }}
+                                    >
                                         {style.icon}
                                     </div>
                                     <div className="pill-info-box">
                                         <Typography className="pill-type-label">{type}</Typography>
                                         <div className="pill-value-stack">
-                                            <span className="pill-amt-val" style={{ color: style.color }}>
+                                            <span className="pill-amt-val" style={{ '--text-color': style.color }}>
                                                 {formatCurrency(totals.typeStats[type].current)}
                                             </span>
                                             <span className="pill-cost-label">
@@ -411,10 +414,10 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             </span>
                                             {totals.typeStats[type].invested > 0 && (
                                                 <div className="pill-yield-meta">
-                                                    <span style={{ color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30' }}>
+                                                    <span className={totals.typeStats[type].current >= totals.typeStats[type].invested ? 'yield-up' : 'yield-down'}>
                                                         {totals.typeStats[type].current >= totals.typeStats[type].invested ? '+' : ''}{formatCurrency(Math.abs(totals.typeStats[type].current - totals.typeStats[type].invested))}
                                                     </span>
-                                                    <span style={{ color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30', opacity: 0.8 }}>
+                                                    <span className={`${totals.typeStats[type].current >= totals.typeStats[type].invested ? 'yield-up' : 'yield-down'} yield-pct`}>
                                                         ({totals.typeStats[type].current >= totals.typeStats[type].invested ? '▲' : '▼'}{Math.abs(((totals.typeStats[type].current - totals.typeStats[type].invested) / totals.typeStats[type].invested) * 100).toFixed(4)}%)
                                                     </span>
                                                 </div>
@@ -458,7 +461,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             const style = getAssetStyle(c);
                                             return (
                                                 <div key={c} className={`cat-filter-chip ${selectedType === c ? 'active' : ''}`} onClick={() => setSelectedType(c)}>
-                                                    <span style={{ color: selectedType === c ? 'white' : style.color }}>{style.icon}</span>
+                                                    <span className="filter-chip-icon" style={{ '--icon-color': style.color }}>{style.icon}</span>
                                                     <span>{c}</span>
                                                 </div>
                                             );
@@ -530,52 +533,42 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 </div>
 
                 <div className="spending-main-content">
-                    <div className="content-meta-bar glass-effect">
-                        <div className="meta-left-flex">
-                            <div className="badge-pulse-flex">
-                                <div className="dot-pulse-wrapper">
-                                    <div className="dot-pulse-inner" />
-                                </div>
-                                <div>
-                                    <Typography className="badge-count-text">{filteredInvestments.length}</Typography>
-                                    <Typography className="badge-label-micro">ASSETS FOUND</Typography>
-                                </div>
-                            </div>
+                    <div className="meta-status-bar">
+                        <div className="badge-status">
+                            <span className="badge-count-text">{filteredInvestments.length}</span> ASSETS FOUND
                         </div>
 
-                        <div className="action-hub-center">
-                            <Button
+                        <div className="action-hub-right">
+                            <button
                                 onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
-                                className="btn-pill-sort">
-                                {sortBy === 'PNL_DESC' ? '▼ P&L DESC' : sortBy === 'PNL_ASC' ? '▲ P&L ASC' : 'SORT BY P&L'}
-                            </Button>
+                                className={`sort-pill-btn ${sortBy === 'PNL_DESC' || sortBy === 'PNL_ASC' ? 'active' : ''}`}>
+                                {sortBy === 'PNL_DESC' ? '▼ P&L' : sortBy === 'PNL_ASC' ? '▲ P&L' : 'P&L'}
+                            </button>
 
-                            <Button
+                            <button
                                 onClick={() => setSortBy('DATE_DESC')}
-                                className={`btn-pill-sort ${sortBy === 'DATE_DESC' ? 'active' : ''}`}>
+                                className={`sort-pill-btn ${sortBy === 'DATE_DESC' ? 'active' : ''}`}>
                                 BY DATE
-                            </Button>
+                            </button>
 
-                            <Button
+                            <button
                                 onClick={handleManualSync}
                                 disabled={syncingPrices}
-                                startIcon={<Zap size={12} />}
-                                className="btn-pill-sync">
-                                {syncingPrices ? '...' : 'SYNC ALL'}
-                            </Button>
+                                className="btn-pill-sync-minimal">
+                                {syncingPrices ? '...' : <><Zap size={11} /> SYNC</>}
+                            </button>
 
-                            <Button
+                            <button
                                 onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }}
-                                className="btn-pill-sort">
-                                CLEAR ALL
-                            </Button>
+                                className="btn-clear-minimal">
+                                CLEAR
+                            </button>
 
-                            <Button
+                            <button
                                 onClick={handleExportCSV}
-                                startIcon={<Download size={12} />}
-                                className="btn-pill-export">
-                                EXPORT CSV
-                            </Button>
+                                className="btn-export-minimal">
+                                <Download size={13} /> EXPORT
+                            </button>
                         </div>
                     </div>
 
@@ -597,7 +590,10 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 const live = livePre || getLiveVal(s);
                                 return (
                                     <div key={s._id} className="transaction-row-fancy">
-                                        <div className="pill-icon-box" style={{ background: catStyle.bg, color: catStyle.color }}>
+                                        <div 
+                                            className="pill-icon-box" 
+                                            style={{ '--pill-bg': catStyle.bg, '--pill-color': catStyle.color }}
+                                        >
                                             {catStyle.icon}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>

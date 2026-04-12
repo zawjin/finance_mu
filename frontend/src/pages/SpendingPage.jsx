@@ -369,15 +369,18 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                         </Box>
                                     </Box>
                                     <Box className="stats-list-flex">
-                                        {Object.entries(totals.catStats).sort((a, b) => b[1].spend - a[1].spend).slice(0, 3).map(([cat, stats]) => (
-                                            <Box key={cat} className="stat-row-item">
-                                                <Box className="stat-label-flex">
-                                                    <div className="portal-dot" style={{ background: getCatStyle(cat, categories).color }}></div>
-                                                    <Typography className="stat-cat-text">{cat}</Typography>
+                                        {Object.entries(totals.catStats).sort((a, b) => b[1].spend - a[1].spend).slice(0, 3).map(([cat, stats]) => {
+                                            const catStyle = getCatStyle(cat, categories);
+                                            return (
+                                                <Box key={cat} className="stat-row-item">
+                                                    <Box className="stat-label-flex">
+                                                        <div className="portal-dot" style={{ '--dot-color': catStyle.color }}></div>
+                                                        <Typography className="stat-cat-text">{cat}</Typography>
+                                                    </Box>
+                                                    <Typography className="stat-val-text" style={{ '--text-color': catStyle.color }}>{formatCurrency(stats.net)}</Typography>
                                                 </Box>
-                                                <Typography className="stat-val-text" style={{ color: getCatStyle(cat, categories).color }}>{formatCurrency(stats.net)}</Typography>
-                                            </Box>
-                                        ))}
+                                            );
+                                        })}
                                     </Box>
                                 </Box>
                             </div>
@@ -520,21 +523,27 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                                 return (
                                     <motion.div key={cat} className="apple-category-pill glass-effect category-pill-wrapper">
-                                        <div className="pill-icon-box" style={{ background: hasActivity ? style.bg : 'rgba(0,0,0,0.04)', color: hasActivity ? style.color : '#8e8e93' }}>
+                                        <div 
+                                            className={`pill-icon-box ${hasActivity ? 'active' : 'inactive'}`} 
+                                            style={{ 
+                                                '--pill-bg': hasActivity ? style.bg : 'rgba(0,0,0,0.04)', 
+                                                '--pill-color': hasActivity ? style.color : '#8e8e93' 
+                                            }}
+                                        >
                                             {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
                                         </div>
                                         <div className="pill-info-box">
                                             <div className="tx-sub-flex">
-                                                <span className="pill-cat-label" style={{ opacity: hasActivity ? 1 : 0.6 }}>{cat}</span>
+                                                <span className={`pill-cat-label ${hasActivity ? 'active' : 'inactive'}`}>{cat}</span>
                                             </div>
                                             <div className="content-shell">
-                                                <span className="pill-amt-val" style={{ color: hasActivity ? style.color : '#8e8e93' }}>
+                                                <span className={`pill-amt-val ${hasActivity ? 'active' : 'inactive'}`} style={{ '--text-color': hasActivity ? style.color : '#8e8e93' }}>
                                                     {formatCurrency(stats.net)}
                                                 </span>
                                                 {(stats.recovered > 0) && (
-                                                    <div className="tx-recovery-small" style={{ marginTop: '-2px' }}>
-                                                        <span style={{ color: '#ff3b30' }}>↑{formatCurrency(stats.spend)}</span>
-                                                        <span style={{ color: '#34c759' }}>↓{formatCurrency(stats.recovered)}</span>
+                                                    <div className="tx-recovery-small">
+                                                        <span className="recovery-up">↑{formatCurrency(stats.spend)}</span>
+                                                        <span className="recovery-down">↓{formatCurrency(stats.recovered)}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -621,7 +630,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
                             <div className="portal-filter-wrap">
                                 <div 
-                                    className={`cat-filter-chip ${selectedSourceId === 'ALL' ? 'active' : ''} padding-account-all`} 
+                                    className={`portal-chip-custom ${selectedSourceId === 'ALL' ? 'active' : ''}`} 
                                     onClick={() => setSelectedSourceId('ALL')}
                                 >
                                     All Portals
@@ -629,16 +638,14 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 {reserves.map(r => (
                                     <div 
                                         key={r._id} 
-                                        className={`cat-filter-chip portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`} 
+                                        className={`portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`} 
                                         onClick={() => setSelectedSourceId(r._id)}
                                         style={{ 
-                                            border: selectedSourceId === r._id ? `1.5px solid ${r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1'}` : '1.5px solid transparent'
+                                            '--portal-color': r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
+                                            '--portal-border': selectedSourceId === r._id ? (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1') : 'transparent'
                                         }}
                                     >
-                                        <div className="portal-dot" style={{ 
-                                            background: r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
-                                            boxShadow: `0 0 10px ${r.account_type === 'BANK' ? '#6366f144' : (r.account_type === 'CREDIT_CARD' ? '#ff3b3044' : '#10b98144')}`
-                                        }} />
+                                        <div className="portal-dot" />
                                         {r.account_name}
                                     </div>
                                 ))}
@@ -663,12 +670,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 <div className="spending-main-content">
                     <div className="meta-status-bar">
                         <div className="badge-status">
-                            {loading ? <Skeleton variant="text" width={120} height={20} /> : (
-                                <>
-                                    <div className="dot-pulse"></div>
-                                    <span className="badge-count-text">{filteredSpending.length}</span> LOGS FOUND
-                                </>
-                            )}
+                            <span className="badge-count-text">{filteredSpending.length}</span> LOGS FOUND
                         </div>
                         <div className="action-hub-right">
                             {/* SORT CONTROL */}
@@ -677,8 +679,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 {[
                                     { id: 'DATE_DESC', label: 'Latest' },
                                     { id: 'DATE_ASC', label: 'Oldest' },
-                                    { id: 'AMT_DESC', label: '₹ High' },
-                                    { id: 'AMT_ASC', label: '₹ Low' },
+                                    { id: 'AMT_DESC', label: 'High' },
+                                    { id: 'AMT_ASC', label: 'Low' },
                                 ].map(s => (
                                     <button
                                         key={s.id}
@@ -687,8 +689,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     >{s.label}</button>
                                 ))}
                             </div>
-                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-pill">CLEAR ALL</Button>
-                            <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} className="btn-export-pill">EXPORT CSV</Button>
+                            <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
+                            <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> EXPORT</button>
                         </div>
                     </div>
 

@@ -1,10 +1,17 @@
 .dashboard-container {
     padding-top: 3rem;
     padding-bottom: 5rem;
+    @media (max-width: 576px) {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+    }
 }
 
 .dashboard-header-block {
     margin-bottom: 5rem;
+    @media (max-width: 576px) {
+        margin-bottom: 2.5rem;
+    }
 }
 
 .header-overline-stack {
@@ -28,9 +35,9 @@
 
 .wealth-console-title {
     font-size: 4.5rem !important;
-    @media (max-width: 600px) {
-        font-size: 3rem !important;
-    }
+    @media (max-width: 1024px) { font-size: 3.5rem !important; }
+    @media (max-width: 768px) { font-size: 2.8rem !important; }
+    @media (max-width: 576px) { font-size: 2.2rem !important; line-height: 1.1 !important; }
 }
 
 .wealth-console-desc {
@@ -49,6 +56,12 @@
     flex-direction: column;
     justify-content: space-between;
     min-height: 240px;
+
+    @media (max-width: 576px) {
+        padding: 1.75rem;
+        min-height: 180px;
+        border-radius: 24px;
+    }
 
     &:hover {
         transform: translateY(-8px);
@@ -111,6 +124,8 @@
 .metric-value-large {
     font-size: 3.5rem !important;
     color: inherit !important;
+    @media (max-width: 768px) { font-size: 2.8rem !important; }
+    @media (max-width: 576px) { font-size: 2.2rem !important; }
 }
 
 .currency-symbol-faint {
@@ -248,4 +263,43 @@
     height: 100%;
     background-color: white;
     border-radius: 4px;
+}
+
+/* Metric Grids */
+.metrics-grid-primary {
+    margin-bottom: 8rem !important;
+    @media (max-width: 768px) {
+        margin-bottom: 4rem !important;
+    }
+    @media (max-width: 576px) {
+        margin-bottom: 2rem !important;
+    }
+}
+
+/* Allocation Colors */
+.dot-color-0 { background-color: #000000 !important; }
+.dot-color-1 { background-color: #0071e3 !important; }
+.dot-color-2 { background-color: #30d158 !important; }
+.dot-color-3 { background-color: #ff375f !important; }
+.dot-color-4 { background-color: #bf5af2 !important; }
+.dot-color-5 { background-color: #ff9f0a !important; }
+
+.bar-color-0 .MuiLinearProgress-bar { background-color: #000000 !important; }
+.bar-color-1 .MuiLinearProgress-bar { background-color: #0071e3 !important; }
+.bar-color-2 .MuiLinearProgress-bar { background-color: #30d158 !important; }
+.bar-color-3 .MuiLinearProgress-bar { background-color: #ff375f !important; }
+.bar-color-4 .MuiLinearProgress-bar { background-color: #bf5af2 !important; }
+.bar-color-5 .MuiLinearProgress-bar { background-color: #ff9f0a !important; }
+
+@media (max-width: 768px) {
+    .allocation-card-main {
+        padding: 1.5rem !important;
+    }
+    .allocation-header-stack {
+        margin-bottom: 1.5rem !important;
+    }
+    .allocation-donut-wrap {
+        width: 180px;
+        height: 180px;
+    }
 }

@@ -21,6 +21,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 body {
@@ -30,6 +32,10 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 /* --- CORE APP STRUCTURE (STABLE) --- */
@@ -41,6 +47,13 @@ body {
   /* Handle mobile browser safe areas */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior-y: none;
+}
+
+/* Scroll Utilities for Native Feel */
+.scroll-momentum {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .main-content {
@@ -558,52 +571,7 @@ select {
   font-size: 0.75rem;
 }
 
-.spending-split-layout {
-  display: grid;
-  grid-template-columns: 0.4fr 0.6fr;
-  gap: 2rem;
-  align-items: flex-start;
-  padding: 1rem 0;
-}
 
-@media (max-width: 1024px) {
-  .spending-split-layout {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  .spending-control-panel {
-    position: relative !important;
-    top: 0 !important;
-    max-height: none !important;
-  }
-}
-
-.spending-control-panel {
-  position: sticky;
-  top: calc(70px + 1.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-height: calc(100vh - 70px - 3rem);
-  overflow-y: auto;
-  scrollbar-width: none;
-  /* Firefox */
-  -ms-overflow-style: none;
-  /* IE and Edge */
-}
-
-.spending-control-panel::-webkit-scrollbar {
-  display: none;
-  /* Chrome, Safari and Opera */
-}
-
-.spending-filters-compact {
-  padding: 2.5rem;
-  background: white;
-  border-radius: 28px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-}
 
 .vertical-total-card {
   padding: 1.5rem;
