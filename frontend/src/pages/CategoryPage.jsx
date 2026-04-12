@@ -24,6 +24,7 @@ import {
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 import BaseDialog from '../components/ui/BaseDialog';
+import './CategoryPage.scss';
 
 import {
     Card, Button, Typography,
@@ -221,56 +222,34 @@ export default function CategoryPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '1.5rem' }}>
 
             {/* Header Section */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 3, mb: 5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                    <Box sx={{ p: 1.5, bgcolor: 'primary.main', borderRadius: '14px', color: 'white', display: 'flex', boxShadow: '0 8px 20px rgba(0,113,227,0.15)' }}><Settings size={24} /></Box>
+            <Box className="category-header-flex">
+                <Box className="header-brand-wrap">
+                    <Box className="header-icon-square"><Settings size={24} /></Box>
                     <Box>
-                        <Typography variant="h5" fontWeight="900" letterSpacing="-0.03em" sx={{ lineHeight: 1.1 }}>Architecture Central</Typography>
-                        <Typography variant="overline" color="text.secondary" fontWeight="900" sx={{ letterSpacing: '0.1em' }}>MASTER TAXONOMY ENGINE</Typography>
+                        <Typography className="header-title-main">Architecture Central</Typography>
+                        <Typography className="header-overline-premium">MASTER TAXONOMY ENGINE</Typography>
                     </Box>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '14px', p: 0.6 }}>
-                        <Button
+                <Box className="header-actions-flex">
+                    <div className="tab-pill-group">
+                        <button
+                            className={`tab-pill-btn ${activeTab === 'categories' ? 'active' : ''}`}
                             onClick={() => setActiveTab('categories')}
-                            sx={{
-                                borderRadius: '10px',
-                                px: 3,
-                                py: 0.8,
-                                fontWeight: 900,
-                                fontSize: '0.75rem',
-                                color: activeTab === 'categories' ? '#1d1d1f' : 'text.secondary',
-                                bgcolor: activeTab === 'categories' ? 'white' : 'transparent',
-                                boxShadow: activeTab === 'categories' ? '0 4px 12px rgba(0,0,0,0.06)' : 'none',
-                                textTransform: 'none',
-                                whiteSpace: 'nowrap'
-                            }}
                         >
                             Spending Categories
-                        </Button>
-                        <Button
+                        </button>
+                        <button
+                            className={`tab-pill-btn ${activeTab === 'asset_classes' ? 'active' : ''}`}
                             onClick={() => setActiveTab('asset_classes')}
-                            sx={{
-                                borderRadius: '10px',
-                                px: 3,
-                                py: 0.8,
-                                fontWeight: 900,
-                                fontSize: '0.75rem',
-                                color: activeTab === 'asset_classes' ? '#1d1d1f' : 'text.secondary',
-                                bgcolor: activeTab === 'asset_classes' ? 'white' : 'transparent',
-                                boxShadow: activeTab === 'asset_classes' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
-                                textTransform: 'none',
-                                whiteSpace: 'nowrap'
-                            }}
                         >
                             Asset Classes
-                        </Button>
-                    </Box>
+                        </button>
+                    </div>
                     <Button
                         variant="contained"
                         startIcon={<Plus size={20} />}
                         onClick={openAddForm}
-                        sx={{ borderRadius: '14px', px: 4, py: 1.2, fontWeight: '900', fontSize: '0.8rem', textTransform: 'none', boxShadow: '0 10px 25px rgba(0,113,227,0.2)' }}
+                        className="btn-new-entry-premium"
                     >
                         New Entry
                     </Button>
@@ -278,13 +257,13 @@ export default function CategoryPage() {
             </Box>
 
             {/* List Table View - Horizontal Scroll Enabled for Mobile */}
-            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: '24px', border: '1px solid rgba(0,0,0,0.06)', overflowX: 'auto' }}>
-                <Table sx={{ minWidth: 800 }}>
-                    <TableHead sx={{ bgcolor: '#fbfcfd' }}>
+            <TableContainer component={Paper} elevation={0} className="taxonomy-table-wrapper">
+                <Table className="min-w-800">
+                    <TableHead className="taxonomy-table-head">
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2.5, pl: 4, letterSpacing: '0.05rem', fontSize: '0.7rem' }}>ENTITY CONTEXT</TableCell>
-                            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2.5, letterSpacing: '0.05rem', fontSize: '0.7rem' }}>GRANULAR NODES</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 800, color: 'text.secondary', py: 2.5, pr: 4, letterSpacing: '0.05rem', fontSize: '0.7rem' }}>OPERATIONS</TableCell>
+                            <TableCell className="th-cell cell-pl-4">ENTITY CONTEXT</TableCell>
+                            <TableCell className="th-cell">GRANULAR NODES</TableCell>
+                            <TableCell align="right" className="th-cell cell-pr-4 text-right">OPERATIONS</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -292,24 +271,24 @@ export default function CategoryPage() {
                             // Inline Skeleton Rows
                             [...Array(6)].map((_, i) => (
                                 <TableRow key={i}>
-                                    <TableCell sx={{ pl: 4, py: 2.5 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                                            <Skeleton variant="rectangular" width={48} height={48} sx={{ borderRadius: '12px' }} />
-                                            <Box sx={{ width: '100px' }}>
+                                    <TableCell className="td-cell cell-pl-4">
+                                        <Box className="skeleton-context-flex">
+                                            <Skeleton variant="rectangular" width={48} height={48} className="skeleton-icon-square" />
+                                            <Box className="w-100">
                                                 <Skeleton variant="text" width="100%" height={24} />
                                                 <Skeleton variant="text" width="60%" height={16} />
                                             </Box>
                                         </Box>
                                     </TableCell>
                                     <TableCell>
-                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                            <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: '8px' }} />
-                                            <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: '8px' }} />
-                                            <Skeleton variant="rectangular" width={60} height={24} sx={{ borderRadius: '8px' }} />
+                                        <Box className="skeleton-node-flex">
+                                            <Skeleton variant="rectangular" width={60} height={24} className="skeleton-node-pill" />
+                                            <Skeleton variant="rectangular" width={60} height={24} className="skeleton-node-pill" />
+                                            <Skeleton variant="rectangular" width={60} height={24} className="skeleton-node-pill" />
                                         </Box>
                                     </TableCell>
-                                    <TableCell align="right" sx={{ pr: 4 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                                    <TableCell align="right" className="cell-pr-4">
+                                        <Box className="skeleton-ops-flex">
                                             <Skeleton variant="circular" width={32} height={32} />
                                             <Skeleton variant="circular" width={32} height={32} />
                                         </Box>
@@ -320,39 +299,53 @@ export default function CategoryPage() {
                             sortedCategories.map((cat) => {
                                 const branding = cat.icon ? { icon: cat.icon, color: cat.color } : getSuggestedBranding(cat.name);
                                 return (
-                                    <TableRow key={cat._id || cat.name} hover>
-                                        <TableCell sx={{ py: 2.5, pl: 4 }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                                                <Avatar sx={{
-                                                    width: 48, height: 48,
-                                                    bgcolor: `${branding.color}12`,
-                                                    color: branding.color,
-                                                    border: `1.5px solid ${branding.color}20`,
-                                                    borderRadius: '16px'
-                                                }}>
+                                    <TableRow key={cat._id || cat.name} hover className="taxonomy-row-premium">
+                                        <TableCell className="td-cell cell-pl-4">
+                                            <Box className="entity-context-flex">
+                                                <Avatar 
+                                                    style={{
+                                                        backgroundColor: `${branding.color}12`,
+                                                        color: branding.color,
+                                                        borderColor: `${branding.color}20`
+                                                    }}
+                                                    className="entity-avatar-base"
+                                                >
                                                     {React.cloneElement(IconMap[branding.icon] || <Package />, { size: 24, strokeWidth: 2.5 })}
                                                 </Avatar>
                                                 <Box>
-                                                    <Typography variant="body1" sx={{ fontWeight: 900, color: 'text.primary', fontSize: '1rem' }}>
+                                                    <Typography className="entity-name-text">
                                                         {cat.name}
                                                     </Typography>
-                                                    <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', opacity: 0.7 }}>
+                                                    <Typography className="entity-meta-text">
                                                         {cat.sub_categories?.length || 0} active mappings
                                                     </Typography>
                                                 </Box>
                                             </Box>
                                         </TableCell>
                                         <TableCell>
-                                            <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap' }}>
+                                            <Box className="granular-node-flex">
                                                 {[...(cat.sub_categories || [])].slice().sort((a, b) => a.localeCompare(b)).map(s => (
-                                                    <Chip key={s} label={s} variant="outlined" size="small" sx={{ borderRadius: '8px', fontWeight: 700, fontSize: '0.72rem', bgcolor: 'white', color: 'text.secondary', borderColor: 'rgba(0,0,0,0.06)', px: 0.5 }} />
+                                                    <Chip key={s} label={s} variant="outlined" size="small" className="node-chip-nano" />
                                                 ))}
                                             </Box>
                                         </TableCell>
-                                        <TableCell align="right" sx={{ pr: 4 }}>
+                                        <TableCell align="right" className="cell-pr-4">
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                                <IconButton onClick={() => openEditForm(cat)} sx={{ color: branding.color, bgcolor: `${branding.color}08`, borderRadius: '10px' }} size="small"><Edit2 size={16} /></IconButton>
-                                                <IconButton onClick={() => handleDelete(cat._id)} sx={{ color: 'error.main', bgcolor: 'rgba(255, 59, 48, 0.06)', borderRadius: '10px' }} size="small"><Trash2 size={16} /></IconButton>
+                                                <IconButton 
+                                                    onClick={() => openEditForm(cat)} 
+                                                    style={{ color: branding.color, backgroundColor: `${branding.color}08` }} 
+                                                    className="btn-op-edit" 
+                                                    size="small"
+                                                >
+                                                    <Edit2 size={16} />
+                                                </IconButton>
+                                                <IconButton 
+                                                    onClick={() => handleDelete(cat._id)} 
+                                                    className="btn-op-delete" 
+                                                    size="small"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </IconButton>
                                             </Stack>
                                         </TableCell>
                                     </TableRow>
@@ -370,22 +363,25 @@ export default function CategoryPage() {
                 title={editingId ? 'Update Entity' : 'Create Entity'}
                 maxWidth="sm"
             >
-                <Box sx={{ p: 4 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-                        <Avatar sx={{ bgcolor: `${newColor}15`, color: newColor, border: `1.5px solid ${newColor}25`, borderRadius: '14px', width: 48, height: 48 }}>
+                <Box className="dialog-master-ledger">
+                    <Box className="dialog-branding-header">
+                        <Avatar 
+                            style={{ backgroundColor: `${newColor}15`, color: newColor, borderColor: `${newColor}25` }}
+                            className="dialog-branding-avatar"
+                        >
                             {React.cloneElement(IconMap[newIcon] || <Fingerprint />, { size: 24, strokeWidth: 2.5 })}
                         </Avatar>
                         <Box>
-                            <Typography variant="h6" fontWeight="900" sx={{ letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                            <Typography className="dialog-branding-title">
                                 {newName || 'New Entity'}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" fontWeight="700">ENTITY BRANDING</Typography>
+                            <Typography className="dialog-branding-overline">ENTITY BRANDING</Typography>
                         </Box>
                     </Box>
 
-                    <Stack spacing={3} sx={{ mb: 4 }}>
+                    <Stack spacing={3} className="margin-b-4">
                         <Box>
-                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>ENTITY NAME</Typography>
+                            <Typography className="dialog-field-label">ENTITY NAME</Typography>
                             <TextField
                                 autoFocus
                                 placeholder="e.g. Healthcare..."
@@ -393,42 +389,27 @@ export default function CategoryPage() {
                                 variant="outlined"
                                 value={newName}
                                 onChange={e => setNewName(e.target.value)}
-                                InputProps={{ sx: { borderRadius: '16px', fontWeight: 900, fontSize: '1rem', border: '1.5px solid rgba(0,0,0,0.06)', '&:hover': { border: '1.5px solid var(--primary)' } } }}
+                                className="dialog-input-premium"
                             />
                         </Box>
 
                         <Box>
-                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>BRAND COLOR</Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                            <Typography className="dialog-field-label">BRAND COLOR</Typography>
+                            <div className="color-swatch-grid">
                                 {UI_COLORS.map(c => (
-                                    <Box
+                                    <div
                                         key={c}
+                                        className={`color-swatch-item ${newColor === c ? 'active' : ''}`}
                                         onClick={() => { setNewColor(c); setAutoSuggestEnabled(false); }}
-                                        sx={{
-                                            width: 26, height: 26, borderRadius: '8px', cursor: 'pointer', bgcolor: c,
-                                            border: newColor === c ? '2.5px solid white' : 'none',
-                                            boxShadow: newColor === c ? `0 0 0 2.5px ${c}` : 'none',
-                                            transition: '0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                            '&:hover': { transform: 'scale(1.2)' }
-                                        }}
+                                        style={{ backgroundColor: c, color: c }}
                                     />
                                 ))}
-                            </Box>
+                            </div>
                         </Box>
 
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="overline" sx={{ fontWeight: 900, mb: 1.5, color: 'text.secondary', letterSpacing: '0.12em', display: 'block' }}>ICON ARCHETYPE SELECTION</Typography>
-                            <Box sx={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(40px, 1fr))',
-                                gap: 1.5,
-                                maxHeight: '180px',
-                                overflowY: 'auto',
-                                p: 2,
-                                border: '1px solid rgba(0,0,0,0.06)',
-                                borderRadius: '16px',
-                                bgcolor: 'rgba(0,0,0,0.02)'
-                            }}>
+                        <Box className="margin-b-4">
+                            <Typography className="dialog-field-label">ICON ARCHETYPE SELECTION</Typography>
+                            <div className="icon-archetype-grid">
                                 {UI_ICONS.map(icon => (
                                     <IconButton
                                         key={icon}
@@ -445,54 +426,63 @@ export default function CategoryPage() {
                                         {React.cloneElement(IconMap[icon], { size: 20, strokeWidth: 2.5 })}
                                     </IconButton>
                                 ))}
-                            </Box>
+                            </div>
                         </Box>
 
-                        <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="overline" sx={{ fontWeight: 900, color: 'text.secondary', letterSpacing: '0.1em' }}>SUB-NODES ({newSubs.length})</Typography>
-                            <Button variant="text" size="small" startIcon={<PlusCircle size={16} />} onClick={() => setNewSubs(['', ...newSubs])} sx={{ fontWeight: 800, textTransform: 'none', color: newColor }}>Add Node</Button>
+                        <Box className="sub-node-header">
+                            <Typography className="sub-node-label">SUB-NODES ({newSubs.length})</Typography>
+                            <Button 
+                                variant="text" 
+                                size="small" 
+                                startIcon={<PlusCircle size={16} />} 
+                                onClick={() => setNewSubs(['', ...newSubs])} 
+                                style={{ color: newColor }}
+                                className="btn-add-node-nano"
+                            >
+                                Add Node
+                            </Button>
                         </Box>
 
-                        <Box sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)', bgcolor: 'rgba(0,0,0,0.01)' }}>
-                            <Stack divider={<Divider sx={{ opacity: 0.4 }} />}>
-                                {newSubs.length === 0 ? (
-                                    <Box sx={{ p: 3, textAlign: 'center', opacity: 0.4 }}><Typography variant="caption" fontWeight="800">NO NODES DEFINED</Typography></Box>
-                                ) : (
-                                    newSubs.map((sub, idx) => (
-                                        <Box key={idx} sx={{ p: 1.5, display: 'flex', alignItems: 'center', gap: 2, '&:hover': { bgcolor: 'white' } }}>
-                                            <TextField
-                                                fullWidth
-                                                size="small"
-                                                variant="standard"
-                                                placeholder="Label..."
-                                                value={sub}
-                                                onChange={(e) => {
-                                                    const updated = [...newSubs];
-                                                    updated[idx] = e.target.value;
-                                                    setNewSubs(updated);
-                                                }}
-                                                InputProps={{ disableUnderline: true, sx: { fontWeight: 800, fontSize: '0.9rem', color: 'text.primary' } }}
-                                            />
-                                            <IconButton size="small" onClick={() => {
+                        <div className="sub-node-list-box">
+                            {newSubs.length === 0 ? (
+                                <Box sx={{ p: 3, textAlign: 'center', opacity: 0.4 }}><Typography variant="caption" fontWeight="800">NO NODES DEFINED</Typography></Box>
+                            ) : (
+                                newSubs.map((sub, idx) => (
+                                    <div key={idx} className="sub-node-row">
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            variant="standard"
+                                            placeholder="Label..."
+                                            value={sub}
+                                            onChange={(e) => {
                                                 const updated = [...newSubs];
-                                                updated.splice(idx, 1);
+                                                updated[idx] = e.target.value;
                                                 setNewSubs(updated);
-                                            }} sx={{ color: 'text.secondary' }}><Trash2 size={16} /></IconButton>
-                                        </Box>
-                                    ))
-                                )}
-                            </Stack>
-                        </Box>
+                                            }}
+                                            className="sub-node-input-raw"
+                                            InputProps={{ disableUnderline: true }}
+                                        />
+                                        <IconButton size="small" onClick={() => {
+                                            const updated = [...newSubs];
+                                            updated.splice(idx, 1);
+                                            setNewSubs(updated);
+                                        }} sx={{ color: 'text.secondary' }}><Trash2 size={16} /></IconButton>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </Stack>
 
-                    <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
-                        <Button fullWidth onClick={closeForm} sx={{ py: 1.5, borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>CANCEL</Button>
+                    <Stack direction="row" spacing={2} className="margin-t-5">
+                        <Button fullWidth onClick={closeForm} className="btn-abort-pill">CANCEL</Button>
                         <Button
                             fullWidth
                             variant="contained"
                             onClick={handleSave}
                             disabled={!newName}
-                            sx={{ py: 1.5, borderRadius: '50px', textTransform: 'none', fontWeight: 900, bgcolor: newColor, boxShadow: `0 8px 24px ${newColor}25` }}
+                            style={{ backgroundColor: newColor, boxShadow: `0 8px 24px ${newColor}25` }}
+                            className="btn-finalize-pill"
                         >
                             {editingId ? "Update Identity" : "Finalize Infrastructure"}
                         </Button>

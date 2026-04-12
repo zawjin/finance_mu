@@ -13,6 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { Autocomplete } from '@mui/material';
 import api from '../../utils/api';
 import { useSelector } from 'react-redux';
+import './Forms.scss';
 export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
     const [formData, setFormData] = useState({
@@ -282,42 +283,13 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
     const currentValOfInvestment = parseFloat(formData.quantity) * parseFloat(formData.current_price) || 0;
     const profitPercent = costOfInvestment > 0 ? ((currentValOfInvestment - costOfInvestment) / costOfInvestment) * 100 : 0;
 
-    const globalInputStyle = {
-        '& .MuiOutlinedInput-root': {
-            borderRadius: '14px',
-            backgroundColor: 'rgba(0,0,0,0.015)',
-            minHeight: '52px',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '& fieldset': { borderColor: 'rgba(0,0,0,0.06)', borderWidth: '1px' },
-            '&:hover': {
-                backgroundColor: 'rgba(0,0,0,0.025)',
-                '& fieldset': { borderColor: 'rgba(0,0,0,0.12)' }
-            },
-            '&.Mui-focused': {
-                backgroundColor: '#ffffff',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
-                '& fieldset': { borderColor: '#1d1d1f', borderWidth: '1.5px' }
-            }
-        },
-        '& .MuiOutlinedInput-input': {
-            fontWeight: 700, color: '#1d1d1f', fontSize: '0.92rem',
-            letterSpacing: '-0.01em', paddingLeft: '4px'
-        },
-        '& .MuiInputAdornment-root': { color: '#86868b' }
-    };
-
-    const labelStyle = {
-        fontSize: '0.68rem', fontWeight: 900, color: '#86868b',
-        marginBottom: '0.6rem', marginLeft: '0.4rem', display: 'block',
-        letterSpacing: '0.12em', textTransform: 'uppercase'
-    };
 
     return (
-        <Box sx={{ p: 4, pt: 1, bgcolor: '#ffffff' }}>
+        <Box className="form-container-premium">
             <Stack spacing={2.5}>
                 {/* VALUATION / OPENING BALANCE */}
                 <Box>
-                    <Typography sx={labelStyle}>{isEPF ? 'OPENING BALANCE (PREVIOUS CORPUS)' : 'ASSET VALUATION'}</Typography>
+                    <Typography className="form-label-premium">{isEPF ? 'OPENING BALANCE (PREVIOUS CORPUS)' : 'ASSET VALUATION'}</Typography>
                     <TextField
                         fullWidth
                         placeholder="0.00"
@@ -333,14 +305,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
-                        sx={globalInputStyle}
+                        className="form-input-premium"
                     />
                 </Box>
 
                 {/* MARKET ASSET FIELDS */}
                 {isMarketAsset && (
-                    <Box sx={{ p: 2.5, borderRadius: '16px', bgcolor: 'rgba(0,113,227,0.03)', border: '1px solid rgba(0,113,227,0.1)' }}>
-                        <Typography sx={{ ...labelStyle, color: '#0071e3', mb: 2 }}>MARKET METRICS (AUTO-CALCS VALUATION)</Typography>
+                    <Box className="market-metrics-wrap">
+                        <Typography className="metrics-label-blue">MARKET METRICS (AUTO-CALCS VALUATION)</Typography>
                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={2}>
                             <TextField
                                 fullWidth
@@ -357,14 +329,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                                 size="small"
                                                 onClick={handleFetchPrice}
                                                 disabled={!formData.ticker || fetchingPrice}
-                                                sx={{ minWidth: '32px', height: '32px', p: 0, borderRadius: '8px', bgcolor: 'rgba(0,113,227,0.1)', '&:hover': { bgcolor: 'rgba(0,113,227,0.2)' } }}
+                                                className="btn-price-fetch"
                                             >
                                                 {fetchingPrice ? <CircularProgress size={14} /> : <Zap size={14} color="#0071e3" />}
                                             </Button>
                                         </InputAdornment>
                                     )
                                 }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                             <TextField
                                 fullWidth
@@ -377,7 +349,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, quantity: val });
                                 }}
                                 InputProps={{ startAdornment: <InputAdornment position="start"><Hash size={16} style={{ color: '#0071e3' }} /></InputAdornment> }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         </Stack>
                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -392,7 +364,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, buy_price: val });
                                 }}
                                 InputProps={{ startAdornment: <InputAdornment position="start"><DollarSign size={16} style={{ color: '#ff3b30' }} /></InputAdornment> }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                             <TextField
                                 fullWidth
@@ -405,21 +377,21 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, current_price: val });
                                 }}
                                 InputProps={{ startAdornment: <InputAdornment position="start"><DollarSign size={16} style={{ color: '#34c759' }} /></InputAdornment> }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         </Stack>
 
                         {costOfInvestment > 0 && (
-                            <Box sx={{ mt: 3, p: 2, borderRadius: '12px', bgcolor: 'rgba(0,113,227,0.03)', border: '1px solid rgba(0,113,227,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box className="profit-margin-card">
                                 <Box>
-                                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#0071e3', letterSpacing: '0.05em' }}>PROFIT MARGIN</Typography>
-                                    <Typography sx={{ fontWeight: 900, fontSize: '1.2rem', color: profitPercent >= 0 ? '#34c759' : '#ff3b30' }}>
+                                    <Typography className="margin-label">PROFIT MARGIN</Typography>
+                                    <Typography className={`margin-value ${profitPercent >= 0 ? 'positive' : 'negative'}`}>
                                         {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}%
                                     </Typography>
                                 </Box>
                                 <Box sx={{ textAlign: 'right' }}>
-                                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: 'text.secondary', letterSpacing: '0.05em' }}>TOTAL VALUE</Typography>
-                                    <Typography sx={{ fontWeight: 800, fontSize: '1rem', color: '#1d1d1f' }}>
+                                    <Typography className="total-val-label">TOTAL VALUE</Typography>
+                                    <Typography className="total-val-text">
                                         ₹{(currentValOfInvestment).toLocaleString()}
                                     </Typography>
                                 </Box>
@@ -430,13 +402,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* EPF CONTRIBUTION CONSOLE */}
                 {isEPF && (
-                    <Box sx={{
-                        p: 3, borderRadius: '28px',
-                        background: 'linear-gradient(135deg, rgba(99,102,241,0.03), rgba(99,102,241,0.06))',
-                        border: '1px solid rgba(99,102,241,0.15)',
-                        boxShadow: 'inset 0 0 40px rgba(99,102,241,0.02)'
-                    }}>
-                        <Typography sx={{ ...labelStyle, color: '#6366f1', mb: 2.5, ml: 0 }}>EPF ACCUMULATION CONSOLE (MONTHLY)</Typography>
+                    <Box className="epf-console-wrap">
+                        <Typography className="console-label-purple">EPF ACCUMULATION CONSOLE (MONTHLY)</Typography>
 
                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={3}>
                             <TextField
@@ -445,7 +412,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 size="small"
                                 value={formData.epf_employee}
                                 onChange={e => setFormData({ ...formData, epf_employee: e.target.value })}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                             <TextField
                                 label="Employer Contrib (₹)"
@@ -453,7 +420,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 size="small"
                                 value={formData.epf_employer}
                                 onChange={e => setFormData({ ...formData, epf_employer: e.target.value })}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         </Stack>
 
@@ -462,15 +429,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                             fullWidth
                             onClick={() => handleAddContribution()}
                             startIcon={<Zap size={18} />}
-                            sx={{
-                                minHeight: '52px', borderRadius: '16px',
-                                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                                boxShadow: '0 8px 20px rgba(99,102,241,0.2)',
-                                color: '#ffffff',
-                                fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(99,102,241,0.3)' },
-                                textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)',
-                                mb: 3
-                            }}
+                            className="btn-commit-monthly"
+                            sx={{ mb: 3 }}
                         >
                             Commit Monthly EPF Cycle
                         </Button>
@@ -478,14 +438,10 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         {/* CONTRIBUTION HISTORY */}
                         <Stack spacing={1.2}>
                             {formData.contributions.map((c, idx) => (
-                                <Box key={idx} sx={{
-                                    p: 1.5, bgcolor: '#ffffff', borderRadius: '14px',
-                                    border: '1px solid rgba(99,102,241,0.1)',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                                }}>
+                                <Box key={idx} className="hist-item-card">
                                     <Box>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem' }}>+ ₹{c.amount.toLocaleString()}</Typography>
-                                        <Typography sx={{ fontSize: '0.62rem', color: '#86868b', fontWeight: 800 }}>{dayjs(c.date).format('MMM YYYY')} • {c.details}</Typography>
+                                        <Typography className="hist-amt">+ ₹{c.amount.toLocaleString()}</Typography>
+                                        <Typography className="hist-meta">{dayjs(c.date).format('MMM YYYY')} • {c.details}</Typography>
                                     </Box>
                                     <IconButton size="small" onClick={() => handleRemoveContribution(idx)} sx={{ color: '#ff3b30' }}>
                                         <X size={14} />
@@ -498,7 +454,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* NAME */}
                 <Box>
-                    <Typography sx={labelStyle}>ASSET NAME</Typography>
+                    <Typography className="form-label-premium">ASSET NAME</Typography>
                     <TextField
                         fullWidth
                         placeholder="e.g. HDFC Liquid Fund..."
@@ -511,13 +467,13 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><LayoutGrid size={18} style={{ color: '#ff9500' }} /></InputAdornment>
                         }}
-                        sx={globalInputStyle}
+                        className="form-input-premium"
                     />
                 </Box>
 
                 {/* TYPE */}
                 <Box>
-                    <Typography sx={labelStyle}>ASSET CLASS</Typography>
+                    <Typography className="form-label-premium">ASSET CLASS</Typography>
                     <Select
                         fullWidth
                         size="small"
@@ -526,7 +482,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         error={!!errors.type}
                         displayEmpty
                         startAdornment={<InputAdornment position="start" sx={{ mr: 1, ml: -0.5 }}><Tag size={18} style={{ color: '#5856d6' }} /></InputAdornment>}
-                        sx={globalInputStyle['& .MuiOutlinedInput-root']}
+                        className="form-input-premium"
                         IconComponent={ChevronDown}
                     >
                         <MenuItem value="" disabled>Select Class</MenuItem>
@@ -544,7 +500,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* SUB CATEGORY */}
                 <Box>
-                    <Typography sx={labelStyle}>{isMF ? 'SEARCH MUTUAL FUND SCHEME' : 'ASSET NODE (SUB-CLASS)'}</Typography>
+                    <Typography className="form-label-premium">{isMF ? 'SEARCH MUTUAL FUND SCHEME' : 'ASSET NODE (SUB-CLASS)'}</Typography>
                     <Autocomplete
                         fullWidth
                         freeSolo
@@ -580,7 +536,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                         </React.Fragment>
                                     ),
                                 }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         )}
                         sx={{
@@ -594,14 +550,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* TIMESTAMP */}
                 <Box>
-                    <Typography sx={labelStyle}>ACQUISITION TIMESTAMP</Typography>
+                    <Typography className="form-label-premium">ACQUISITION TIMESTAMP</Typography>
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
                         slotProps={{
                             textField: {
                                 fullWidth: true, size: 'small', error: !!errors.date,
-                                helperText: errors.date, sx: globalInputStyle,
+                                helperText: errors.date, className: "form-input-premium",
                                 InputProps: {
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>,
                                     sx: { pl: '12px' }
@@ -613,7 +569,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* DETAILS */}
                 <Box>
-                    <Typography sx={labelStyle}>METADATA / DETAILS</Typography>
+                    <Typography className="form-label-premium">METADATA / DETAILS</Typography>
                     <TextField
                         fullWidth
                         placeholder="Additional details..."
@@ -624,19 +580,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         InputProps={{
                             startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#32ade6' }} /></InputAdornment>
                         }}
-                        sx={globalInputStyle}
+                        className="form-input-premium"
                     />
                 </Box>
 
                 {/* WITHDRAWALS - ONLY IN EDIT MODE */}
                 {initialData && (
-                    <Box sx={{
-                        mt: 2, p: 3, borderRadius: '28px',
-                        background: 'linear-gradient(135deg, rgba(255,149,0,0.03), rgba(255,149,0,0.06))',
-                        border: '1px solid rgba(255,149,0,0.15)',
-                        boxShadow: 'inset 0 0 40px rgba(255,149,0,0.02)'
-                    }}>
-                        <Typography sx={{ ...labelStyle, color: '#ff9500', mb: 2.5, ml: 0 }}>CAPITAL EXIT REGISTRY (QUICK SETTLE)</Typography>
+                    <Box className="exit-registry-wrap">
+                        <Typography className="exit-label-orange">CAPITAL EXIT REGISTRY (QUICK SETTLE)</Typography>
 
                         <Stack spacing={1.5} mb={3.5}>
                             {formData.withdrawals.map((w, idx) => (
@@ -678,7 +629,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                                 setNewWithdrawal({ ...newWithdrawal, quantity: qty, amount: qty ? calculatedAmt : '' });
                                             }
                                         }}
-                                        sx={globalInputStyle}
+                                        className="form-input-premium"
                                         InputProps={{ startAdornment: <Hash size={16} style={{ color: '#ff9500', marginRight: '8px' }} /> }}
                                     />
                                 )}
@@ -688,7 +639,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     size="small"
                                     value={newWithdrawal.amount}
                                     onChange={e => setNewWithdrawal({ ...newWithdrawal, amount: e.target.value })}
-                                    sx={globalInputStyle}
+                                    className="form-input-premium"
                                     InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#ff9500' }}>₹</Typography> }}
                                 />
                             </Stack>
@@ -699,27 +650,20 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     size="small"
                                     value={newWithdrawal.details}
                                     onChange={e => setNewWithdrawal({ ...newWithdrawal, details: e.target.value })}
-                                    sx={globalInputStyle}
+                                    className="form-input-premium"
                                     InputProps={{ startAdornment: <FileText size={16} style={{ color: '#86868b', marginRight: '8px' }} /> }}
                                 />
                                 <DatePicker
                                     value={newWithdrawal.date}
                                     onChange={val => setNewWithdrawal({ ...newWithdrawal, date: val })}
-                                    slotProps={{ textField: { fullWidth: true, size: 'small', sx: globalInputStyle } }}
+                                    slotProps={{ textField: { fullWidth: true, size: 'small', className: "form-input-premium" } }}
                                 />
                             </Stack>
                             <Button
                                 variant="contained"
                                 fullWidth
                                 onClick={handleAddWithdrawal}
-                                sx={{
-                                    minHeight: '52px', borderRadius: '16px',
-                                    background: 'linear-gradient(135deg, #ff9500, #ffb347)',
-                                    boxShadow: '0 8px 20px rgba(255,149,0,0.2)',
-                                    color: '#ffffff',
-                                    fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(255,149,0,0.3)' },
-                                    textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
-                                }}
+                                className="btn-commit-exit"
                             >
                                 Commit Capital Exit
                             </Button>
@@ -729,13 +673,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
                 {/* COST AVERAGING MANAGER (BUY MORE TRADING) */}
                 {isMarketAsset && initialData && (
-                    <Box sx={{
-                        mt: 2, p: 3, borderRadius: '28px',
-                        background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))',
-                        border: '1px solid rgba(52,199,89,0.15)',
-                        boxShadow: 'inset 0 0 40px rgba(52,199,89,0.02)'
-                    }}>
-                        <Typography sx={{ ...labelStyle, color: '#34c759', mb: 2.5, ml: 0 }}>PORTFOLIO AVERAGING CONSOLE (ADD UNITS)</Typography>
+                    <Box className="averaging-console-wrap">
+                        <Typography className="avg-label-green">PORTFOLIO AVERAGING CONSOLE (ADD UNITS)</Typography>
                         <Stack spacing={2}>
                             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
                                 <TextField
@@ -747,7 +686,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                         const qty = e.target.value;
                                         if (qty === '' || /^\d*\.?\d*$/.test(qty)) setNewPurchase({ ...newPurchase, quantity: qty });
                                     }}
-                                    sx={globalInputStyle}
+                                    className="form-input-premium"
                                     InputProps={{ startAdornment: <Hash size={16} style={{ color: '#34c759', marginRight: '8px' }} /> }}
                                 />
                                 <TextField
@@ -756,7 +695,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     size="small"
                                     value={newPurchase.price}
                                     onChange={e => setNewPurchase({ ...newPurchase, price: e.target.value })}
-                                    sx={globalInputStyle}
+                                    className="form-input-premium"
                                     InputProps={{ startAdornment: <Typography sx={{ fontWeight: 900, mr: 1, color: '#34c759' }}>₹</Typography> }}
                                 />
                             </Stack>
@@ -764,14 +703,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 variant="contained"
                                 fullWidth
                                 onClick={handleMergePurchase}
-                                sx={{
-                                    minHeight: '52px', borderRadius: '16px',
-                                    background: 'linear-gradient(135deg, #34c759, #28a745)',
-                                    boxShadow: '0 8px 20px rgba(52,199,89,0.2)',
-                                    color: '#ffffff',
-                                    fontWeight: 900, '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 28px rgba(52,199,89,0.3)' },
-                                    textTransform: 'none', transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
-                                }}
+                                className="btn-commit-average"
                             >
                                 Prorate & Merge into Average Buy Price
                             </Button>
@@ -779,26 +711,18 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                     </Box>
                 )}
 
-                {/* PAYMENT METHOD */}
+                {/* FUNDING METHOD */}
                 <Box>
-                    <Typography sx={labelStyle}>FUNDING METHOD</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    <Typography className="form-label-premium">FUNDING METHOD</Typography>
+                    <Box className="payment-method-pill-group">
                         {PAYMENT_METHODS.map(m => (
                             <Box
                                 key={m.key}
                                 onClick={() => setFormData({ ...formData, payment_method: m.key, payment_source_id: '' })}
-                                sx={{
-                                    display: 'flex', alignItems: 'center', gap: 0.8,
-                                    px: 1.5, py: 0.9, borderRadius: '12px', cursor: 'pointer',
-                                    border: '1.5px solid',
-                                    borderColor: formData.payment_method === m.key ? m.color : 'rgba(0,0,0,0.07)',
-                                    bgcolor: formData.payment_method === m.key ? `${m.color}15` : '#fafafa',
-                                    transition: '0.15s',
-                                    '&:hover': { borderColor: m.color, bgcolor: `${m.color}08` }
-                                }}
+                                className={`method-pill ${formData.payment_method === m.key ? `active method-${m.key.toLowerCase()}` : `method-${m.key.toLowerCase()}`}`}
                             >
-                                <Box sx={{ color: formData.payment_method === m.key ? m.color : '#86868b', display: 'flex' }}>{m.icon}</Box>
-                                <Typography sx={{ fontWeight: 800, fontSize: '0.78rem', color: formData.payment_method === m.key ? m.color : '#86868b' }}>{m.label}</Typography>
+                                <Box className="pill-icon">{m.icon}</Box>
+                                <Typography className="pill-label">{m.label}</Typography>
                             </Box>
                         ))}
                     </Box>
@@ -838,41 +762,19 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 )}
             </Stack>
 
-            <Box sx={{
-                display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3,
-                borderTop: '1px solid rgba(0,0,0,0.06)'
-            }}>
+            <Box className="form-actions-row">
                 <Button
                     onClick={onCancel}
-                    variant="text"
-                    sx={{
-                        borderRadius: '16px', px: 4,
-                        fontWeight: 800, textTransform: 'none',
-                        color: '#86868b', '&:hover': { bgcolor: 'rgba(0,0,0,0.04)', color: '#1d1d1f' },
-                        transition: '0.2s all ease'
-                    }}
+                    className="btn-dismiss-premium"
                 >
                     Dismiss
                 </Button>
                 <Button
                     variant="contained"
                     onClick={handleFormSubmit}
-                    sx={{
-                        borderRadius: '16px', px: 6, py: 1.5,
-                        fontWeight: 900, textTransform: 'none',
-                        bgcolor: '#1d1d1f', color: '#ffffff',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        '&:hover': {
-                            bgcolor: '#000',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 12px 32px rgba(0,0,0,0.2)'
-                        },
-                        '&:active': { transform: 'translateY(0)' },
-                        transition: '0.3s all cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
+                    className="btn-submit-premium"
                 >
-                    {initialData ? 'Synchronize Updates' : 'Commit New Asset'}
+                    {initialData ? 'Update Asset' : 'Commit Asset'}
                 </Button>
             </Box>
         </Box>

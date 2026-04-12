@@ -6,6 +6,7 @@ import {
 
 import { User, DollarSign, Calendar, FileText, ChevronRight, Hash } from 'lucide-react';
 import dayjs from 'dayjs';
+import './Forms.scss';
 
 export default function DebtForm({ onSubmit, initialData, onCancel }) {
     const [formData, setFormData] = useState({
@@ -51,11 +52,11 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
     };
 
     return (
-        <Box component="form" sx={{ p: 4 }}>
+        <Box component="form" className="form-container-premium">
             <Stack spacing={3.5}>
                 {/* Person */}
                 <Box>
-                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Counterparty / Person</Typography>
+                    <Typography className="form-label-premium">Counterparty / Person</Typography>
                     <TextField
                         fullWidth
                         placeholder="Who is involved?"
@@ -67,12 +68,12 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <Box sx={{ p: 1, bgcolor: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', display: 'flex' }}>
+                                    <Box className="form-icon-highlight">
                                         <User size={20} color="#6366f1" />
                                     </Box>
                                 </InputAdornment>
                             ),
-                            sx: { borderRadius: '20px', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.01)', border: '1px solid rgba(0,0,0,0.03)' }
+                            className: "form-input-premium"
                         }}
                     />
                 </Box>
@@ -80,7 +81,7 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                 {/* Amount & Direction */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Box sx={{ flex: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Amount</Typography>
+                        <Typography className="form-label-premium">Amount</Typography>
                         <TextField
                             fullWidth
                             name="amount"
@@ -95,19 +96,19 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                                         <Typography sx={{ fontWeight: 900, color: '#6366f1' }}>₹</Typography>
                                     </InputAdornment>
                                 ),
-                                sx: { borderRadius: '20px', fontWeight: 900, bgcolor: 'rgba(0,0,0,0.01)' }
+                                className: "form-input-premium"
                             }}
                         />
                     </Box>
                     <Box sx={{ flex: 1.2 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Transaction Type</Typography>
+                        <Typography className="form-label-premium">Transaction Type</Typography>
                         <TextField
                             fullWidth
                             select
                             name="direction"
                             value={formData.direction}
                             onChange={handleChange}
-                            SelectProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                            className="form-input-premium"
                         >
                             <MenuItem value="OWED_TO_ME" sx={{ fontWeight: 800, color: '#10b981' }}>RECEIVABLE (He owes me)</MenuItem>
                             <MenuItem value="I_OWE" sx={{ fontWeight: 800, color: '#ff3b30' }}>LIABILITY (I owe him)</MenuItem>
@@ -118,25 +119,25 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                 {/* Dates */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Box sx={{ flex: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Issue Date</Typography>
+                        <Typography className="form-label-premium">Issue Date</Typography>
                         <TextField
                             fullWidth
                             name="date"
                             type="date"
                             value={formData.date}
                             onChange={handleChange}
-                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                            className="form-input-premium"
                         />
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Payback Target</Typography>
+                        <Typography className="form-label-premium">Payback Target</Typography>
                         <TextField
                             fullWidth
                             name="dueDate"
                             type="date"
                             value={formData.dueDate}
                             onChange={handleChange}
-                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                            className="form-input-premium"
                         />
                     </Box>
                 </Box>
@@ -144,14 +145,14 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                 {/* Status & Category */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Box sx={{ flex: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Status</Typography>
+                        <Typography className="form-label-premium">Status</Typography>
                         <TextField
                             fullWidth
                             select
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
-                            SelectProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                            className="form-input-premium"
                         >
                             <MenuItem value="ACTIVE" sx={{ fontWeight: 800 }}>ACTIVE</MenuItem>
                             <MenuItem value="SETTLED" sx={{ fontWeight: 800 }}>SETTLED</MenuItem>
@@ -159,20 +160,20 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         </TextField>
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Industry / Tag</Typography>
+                        <Typography className="form-label-premium">Industry / Tag</Typography>
                         <TextField
                             fullWidth
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                            InputProps={{ sx: { borderRadius: '20px', fontWeight: 800 } }}
+                            className="form-input-premium"
                         />
                     </Box>
                 </Box>
 
                 {/* Memo */}
                 <Box>
-                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#64748b', ml: 1, mb: 1.5, display: 'block', textTransform: 'uppercase' }}>Audit Memo / Details</Typography>
+                    <Typography className="form-label-premium">Audit Memo / Details</Typography>
                     <TextField
                         fullWidth
                         multiline
@@ -180,42 +181,25 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        InputProps={{
-                            sx: { borderRadius: '24px', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.01)' }
-                        }}
+                        className="form-input-premium"
                     />
                 </Box>
             </Stack>
 
             {/* ACTION SECTION */}
-            <Box sx={{ mt: 6, display: 'flex', gap: 2.5 }}>
+            <Box className="form-actions-row">
                 <Button
-                    fullWidth
                     onClick={onCancel}
-                    sx={{
-                        borderRadius: '100px',
-                        py: 2.2,
-                        fontWeight: 900,
-                        bgcolor: 'rgba(0,0,0,0.05)',
-                        color: '#64748b',
-                        '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }
-                    }}
+                    className="btn-dismiss-premium"
+                    sx={{ flex: 1 }}
                 >
                     ABORT
                 </Button>
                 <Button
-                    fullWidth
                     onClick={handleSubmit}
                     variant="contained"
-                    sx={{
-                        borderRadius: '100px',
-                        py: 2.2,
-                        fontWeight: 900,
-                        bgcolor: '#1d1d1f',
-                        boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
-                        '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' }
-                    }}
-
+                    className="btn-submit-premium"
+                    sx={{ flex: 1 }}
                 >
                     {initialData ? 'SAVE EXPOSURE' : 'COMMIT DEBT'}
                 </Button>

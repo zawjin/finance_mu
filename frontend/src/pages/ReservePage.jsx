@@ -8,6 +8,7 @@ import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 import { formatCurrency } from '../utils/formatters';
 import dayjs from 'dayjs';
+import './ReservePage.scss';
 
 // Micro Components
 import ReservesSummaryHeader from '../components/reserve/ReservesSummaryHeader';
@@ -286,12 +287,23 @@ const handleRevertSettlement = async (item) => {
         }
     };
 
+    const handleRemoveDebt = async () => {
+        if (!deleteConfirmDebt) return;
+        try {
+            await api.delete(`/debt/${deleteConfirmDebt._id}`);
+            dispatch(fetchFinanceData());
+            setDeleteConfirmDebt(null);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
 
     const getTypeStyle = (type) => {
-        if (type === 'BANK') return { bg: 'rgba(99,102,241,0.12)', color: '#6366f1', icon: <Landmark size={18} color="#6366f1" /> };
-        if (type === 'WALLET') return { bg: 'rgba(16,185,129,0.12)', color: '#10b981', icon: <Wallet size={18} color="#10b981" /> };
-        return { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', icon: <Banknote size={18} color="#f59e0b" /> };
+        if (type === 'BANK') return { className: 'type-style-bank', icon: <Landmark size={18} /> };
+        if (type === 'WALLET') return { className: 'type-style-wallet', icon: <Wallet size={18} /> };
+        return { className: 'type-style-cash', icon: <Banknote size={18} /> };
     };
 
     const totalBank = reserves ? reserves.filter(r => r.account_type === 'BANK').reduce((s, r) => s + parseFloat(r.balance || 0), 0) : 0;
@@ -309,12 +321,12 @@ const handleRevertSettlement = async (item) => {
                 maxWidth="xs"
             >
                 {deleteConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography sx={{ color: '#86868b', mb: 3 }}>Remove {deleteConfirmItem.account_name} from tracking?</Typography>
-                        <Stack direction="row" spacing={2}>
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', bgcolor: '#f1f5f9', color: '#1d1d1f' }}>ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} sx={{ borderRadius: '50px', bgcolor: '#ff3b30' }}>DELETE</Button>
-                        </Stack>
+                    <Box className="dialog-content-premium text-center">
+                        <Typography className="dialog-desc-text">Remove {deleteConfirmItem.account_name} from tracking?</Typography>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-pill">ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-delete-pill">DELETE</Button>
+                        </div>
                     </Box>
                 )}
             </BaseDialog>
@@ -331,7 +343,7 @@ const handleRevertSettlement = async (item) => {
             />
 
             {/* ── TAB SWITCHER ── */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', background: '#f1f5f9', padding: '6px', borderRadius: '18px', width: 'fit-content' }}>
+            <div className="tab-group-container">
                 {[
                     { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },
                     { id: 'balance-sheet', label: 'Balance Sheet', icon: <BarChart3 size={15} /> },
@@ -341,20 +353,7 @@ const handleRevertSettlement = async (item) => {
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.6rem 1.4rem',
-                            borderRadius: '12px',
-                            border: 'none',
-                            fontWeight: 900,
-                            fontSize: '0.78rem',
-                            cursor: 'pointer',
-                            letterSpacing: '0.03em',
-                            transition: 'all 0.2s ease',
-                            background: activeTab === tab.id ? '#fff' : 'transparent',
-                            color: activeTab === tab.id ? '#1d1d1f' : '#94a3b8',
-                            boxShadow: activeTab === tab.id ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                        }}
+                        className={`tab-btn-luxury ${activeTab === tab.id ? 'active' : ''}`}
                     >
                         {tab.icon} {tab.label}
                     </button>
@@ -415,14 +414,14 @@ const handleRevertSettlement = async (item) => {
 
             <Dialog open={!!deleteConfirmDebt} onClose={() => setDeleteConfirmDebt(null)} TransitionComponent={Grow}>
                 {deleteConfirmDebt && (
-                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white', borderRadius: '32px', maxWidth: '440px' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-purge-wrap">
+                        <div className="dialog-purge-icon-box">
                             <Trash2 size={32} />
                         </div>
-                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>PURGE DEBT LOG</Typography>
-                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-                            <Button fullWidth onClick={() => setDeleteConfirmDebt(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.05)', color: '#1d1d1f' }}>ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemoveDebt} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30' }}>PROCEED</Button>
+                        <Typography className="dialog-title-purge">PURGE DEBT LOG</Typography>
+                        <div className="dialog-action-flex margin-t-2">
+                            <Button fullWidth onClick={() => setDeleteConfirmDebt(null)} className="btn-purge-abort">ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemoveDebt} className="btn-purge-confirm">PROCEED</Button>
                         </div>
                     </Box>
                 )}
@@ -430,15 +429,15 @@ const handleRevertSettlement = async (item) => {
 
             <Dialog open={!!deleteConfirmLending} onClose={() => setDeleteConfirmLending(null)} TransitionComponent={Grow}>
                 {deleteConfirmLending && (
-                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white', borderRadius: '32px', maxWidth: '440px' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-purge-wrap">
+                        <div className="dialog-purge-icon-box">
                             <Trash2 size={32} />
                         </div>
-                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>DELETE LENDING RECORD</Typography>
-                        <Typography sx={{ color: '#86868b', fontWeight: 600 }}>This will permanently remove the record for {deleteConfirmLending.borrower}.</Typography>
-                        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-                            <Button fullWidth onClick={() => setDeleteConfirmLending(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: 'rgba(0,0,0,0.05)', color: '#1d1d1f' }}>CANCEL</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemoveLending} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30' }}>DELETE</Button>
+                        <Typography className="dialog-title-purge">DELETE LENDING RECORD</Typography>
+                        <Typography className="dialog-desc-purge">This will permanently remove the record for {deleteConfirmLending.borrower}.</Typography>
+                        <div className="dialog-action-flex margin-t-2">
+                            <Button fullWidth onClick={() => setDeleteConfirmLending(null)} className="btn-purge-abort">CANCEL</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemoveLending} className="btn-purge-confirm">DELETE</Button>
                         </div>
                     </Box>
                 )}

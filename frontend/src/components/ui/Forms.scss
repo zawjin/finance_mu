@@ -1,0 +1,415 @@
+.form-container-premium {
+    padding: 2rem 2.5rem !important;
+    background-color: #ffffff;
+}
+
+.form-label-premium {
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    color: #86868b !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+}
+
+.form-input-premium {
+    & .MuiOutlinedInput-root {
+        border-radius: 12px !important;
+        background-color: rgba(0,0,0,0.01) !important;
+        min-height: 48px !important;
+        padding-left: 12px !important;
+        transition: all 0.2s ease !important;
+
+        & fieldset { 
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+
+        &:hover fieldset { 
+            border-color: rgba(0,0,0,0.16) !important;
+        }
+
+        &.Mui-focused fieldset { 
+            border-color: #1d1d1f !important;
+            border-width: 1.5px !important;
+        }
+    }
+
+    & .MuiOutlinedInput-input {
+        font-weight: 600 !important;
+        color: #1d1d1f !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+.payment-method-pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.method-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 1.5px solid rgba(0,0,0,0.07);
+    background-color: #fafafa;
+    transition: all 0.2s cubic-bezier(0.12, 0.8, 0.12, 1);
+
+    &:hover {
+        border-color: rgba(0,0,0,0.15);
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    &.active {
+        &.method-cash { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.08); .pill-icon, .pill-label { color: #f59e0b; } }
+        &.method-bank { border-color: #6366f1; background-color: rgba(99, 102, 241, 0.08); .pill-icon, .pill-label { color: #6366f1; } }
+        &.method-wallet { border-color: #10b981; background-color: rgba(16, 185, 129, 0.08); .pill-icon, .pill-label { color: #10b981; } }
+        &.method-card { border-color: #ff3b30; background-color: rgba(255, 59, 48, 0.08); .pill-icon, .pill-label { color: #ff3b30; } }
+        &.method-upi { border-color: #0071e3; background-color: rgba(0, 113, 227, 0.08); .pill-icon, .pill-label { color: #0071e3; } }
+        &.method-gift { border-color: #ff9500; background-color: rgba(255, 149, 0, 0.08); .pill-icon, .pill-label { color: #ff9500; } }
+        &.method-other { border-color: #86868b; background-color: rgba(134, 134, 139, 0.08); .pill-icon, .pill-label { color: #86868b; } }
+    }
+
+    /* Hover states for inactive pills */
+    &:not(.active):hover {
+        &.method-cash { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.04); }
+        &.method-bank { border-color: #6366f1; background-color: rgba(99, 102, 241, 0.04); }
+        &.method-wallet { border-color: #10b981; background-color: rgba(16, 185, 129, 0.04); }
+        &.method-card { border-color: #ff3b30; background-color: rgba(255, 59, 48, 0.04); }
+        &.method-upi { border-color: #0071e3; background-color: rgba(0, 113, 227, 0.04); }
+        &.method-gift { border-color: #ff9500; background-color: rgba(255, 149, 0, 0.04); }
+        &.method-other { border-color: #86868b; background-color: rgba(134, 134, 139, 0.04); }
+    }
+
+    .pill-icon {
+        display: flex;
+    }
+
+    .pill-label {
+        font-weight: 800;
+        font-size: 0.78rem;
+    }
+}
+
+.form-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px solid rgba(0,0,0,0.04);
+}
+
+.btn-dismiss-premium {
+    border-radius: 12px !important;
+    padding: 0.6rem 2rem !important;
+    font-weight: 800 !important;
+    text-transform: none !important;
+    color: #86868b !important;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.04) !important;
+    }
+}
+
+.btn-submit-premium {
+    border-radius: 12px !important;
+    padding: 0.8rem 2.5rem !important;
+    font-weight: 900 !important;
+    text-transform: none !important;
+    background-color: #1d1d1f !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+        background-color: #000 !important;
+        transform: translateY(-1px);
+    }
+}
+
+/* ACCOUNT FORM SPECIFICS */
+.acc-type-pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.acc-type-pill {
+    flex: 1 1 100px;
+    padding: 1.5rem 1rem;
+    border-radius: 18px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid rgba(0,0,0,0.04);
+    background-color: #fff;
+    transition: all 0.2s cubic-bezier(0.12, 0.8, 0.12, 1);
+
+    &:hover {
+        background-color: rgba(99, 102, 241, 0.02);
+    }
+
+    &.active {
+        border-color: #6366f1;
+        background-color: rgba(99, 102, 241, 0.05);
+
+        .pill-icon-wrap {
+            color: #6366f1;
+        }
+
+        .pill-label-text {
+            color: #6366f1;
+        }
+    }
+
+    .pill-icon-wrap {
+        color: #86868b;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pill-label-text {
+        font-weight: 900;
+        font-size: 0.7rem;
+        color: #1d1d1f;
+        text-transform: uppercase;
+    }
+}
+
+.btn-form-abort {
+    border-radius: 50px !important;
+    padding: 1rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    background-color: rgba(0,0,0,0.1) !important;
+    color: #1d1d1f !important;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.15) !important;
+    }
+}
+
+.btn-form-submit {
+    border-radius: 50px !important;
+    padding: 1rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+
+    &:hover {
+        background-color: #4f46e5 !important;
+    }
+}
+
+/* INVESTMENT FORM SPECIFICS */
+.market-metrics-wrap {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-color: rgba(0, 113, 227, 0.03);
+    border: 1px solid rgba(0, 113, 227, 0.1);
+}
+
+.metrics-label-blue {
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    color: #0071e3 !important;
+    margin-bottom: 1rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.btn-price-fetch {
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    background-color: rgba(0, 113, 227, 0.1) !important;
+    
+    &:hover {
+        background-color: rgba(0, 113, 227, 0.2) !important;
+    }
+}
+
+.profit-margin-card {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: rgba(0, 113, 227, 0.03);
+    border: 1px solid rgba(0, 113, 227, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .margin-label {
+        font-size: 0.65rem;
+        font-weight: 900;
+        color: #0071e3;
+        letter-spacing: 0.05em;
+    }
+
+    .margin-value {
+        font-weight: 900;
+        font-size: 1.2rem;
+        
+        &.positive { color: #34c759; }
+        &.negative { color: #ff3b30; }
+    }
+
+    .total-val-label {
+        font-size: 0.65rem;
+        font-weight: 900;
+        color: #86868b;
+        letter-spacing: 0.05em;
+    }
+
+    .total-val-text {
+        font-weight: 800;
+        font-size: 1rem;
+        color: #1d1d1f;
+    }
+}
+
+.epf-console-wrap {
+    padding: 1.5rem;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.06));
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    box-shadow: inset 0 0 40px rgba(99, 102, 241, 0.02);
+}
+
+.console-label-purple {
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    color: #6366f1 !important;
+    margin-bottom: 1.25rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.btn-commit-monthly {
+    min-height: 52px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    text-transform: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    &:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 12px 28px rgba(99, 102, 241, 0.3) !important;
+    }
+}
+
+.hist-item-card {
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid rgba(99,102,241,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .hist-amt {
+        font-weight: 900;
+        font-size: 0.85rem;
+    }
+
+    .hist-meta {
+        font-size: 0.62rem;
+        color: #86868b;
+        font-weight: 800;
+    }
+}
+
+.exit-registry-wrap {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255,149,0,0.03), rgba(255,149,0,0.06));
+    border: 1px solid rgba(255,149,0,0.15);
+    box-shadow: inset 0 0 40px rgba(255,149,0,0.02);
+}
+
+.exit-label-orange {
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    color: #ff9500 !important;
+    margin-bottom: 1.25rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.btn-commit-exit {
+    min-height: 52px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #ff9500, #ffb347) !important;
+    box-shadow: 0 8px 20px rgba(255,149,0,0.2) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    text-transform: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    &:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 12px 28px rgba(255,149,0,0.3) !important;
+    }
+}
+
+.averaging-console-wrap {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06));
+    border: 1px solid rgba(52,199,89,0.15);
+    box-shadow: inset 0 0 40px rgba(52,199,89,0.02);
+}
+
+.avg-label-green {
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    color: #34c759 !important;
+    margin-bottom: 1.25rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.btn-commit-average {
+    min-height: 52px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #34c759, #28a745) !important;
+    box-shadow: 0 8px 20px rgba(52,199,89,0.2) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    text-transform: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    &:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 12px 28px rgba(52,199,89,0.3) !important;
+    }
+}
+
+/* DEBT FORM SPECIFICS */
+.form-icon-highlight {
+    padding: 0.5rem;
+    background-color: rgba(99, 102, 241, 0.1);
+    border-radius: 12px;
+    display: flex;
+}
+
+/* SPACING UTILITIES */
+.margin-v-md {
+    margin-top: 1.5rem !important;
+}
+
+.margin-v-lg {
+    margin-top: 2.5rem !important;
+}

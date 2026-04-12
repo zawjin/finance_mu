@@ -47,7 +47,7 @@ export default function LocalInvestmentTab({
     }, [filteredInvestments]);
 
     return (
-        <div style={{ paddingBottom: '5rem' }}>
+        <div className="chit-fund-viewport">
 
 
             <Box>

@@ -14,6 +14,7 @@ import BaseDialog from '../components/ui/BaseDialog';
 import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import './InvestmentPage.scss';
 
 // Charting
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
@@ -271,31 +272,31 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: 'easeInOut' }}
-                    style={{ marginBottom: '2.5rem', overflow: 'hidden' }}
+                    className="investment-analytics-container"
                 >
-                    <Box sx={{ p: 4, borderRadius: '32px', bgcolor: 'white', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                    <Box className="analytics-card-premium">
                         <div className="analytics-hub">
                             {/* DOUGHNUT - Responsive Flex */}
                             <div className="analytic-box-super">
-                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(99,102,241,0.02)', border: '1px solid rgba(99,102,241,0.05)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, color: '#6366f1', display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box className="analytic-box-allocation">
+                                    <Typography className="analytic-subtitle-primary">
                                         <PieChart size={14} /> ASSET ALLOCATION
                                     </Typography>
-                                    <Box sx={{ height: 210, position: 'relative', display: 'grid', placeItems: 'center', mb: 3 }}>
+                                    <Box className="donut-chart-box">
                                         <Doughnut data={chartConfig.doughnut} options={{ plugins: { legend: { display: false } }, maintainAspectRatio: false }} />
-                                        <Box sx={{ position: 'absolute', textAlign: 'center' }}>
-                                            <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block', mb: -0.5 }}>AUM</Typography>
-                                            <Typography variant="body1" sx={{ fontWeight: 900, fontSize: '1.2rem', letterSpacing: '-0.02em' }}>{formatCurrency(totals.grossValue)}</Typography>
+                                        <Box className="chart-center-label">
+                                            <Typography className="aum-label">AUM</Typography>
+                                            <Typography className="aum-value">{formatCurrency(totals.grossValue)}</Typography>
                                         </Box>
                                     </Box>
-                                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1.2 }}>
+                                    <Box className="architecture-list-flex">
                                         {Object.entries(totals.typeStats).sort((a, b) => b[1].current - a[1].current).map(([type, stats]) => (
-                                            <Box key={type} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-                                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: getAssetStyle(type).color }}></div>
-                                                    <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.68rem', opacity: 0.8 }}>{type}</Typography>
+                                            <Box key={type} className="architecture-meta-row">
+                                                <Box className="architecture-label-flex">
+                                                    <div className="dot-indicator" style={{ background: getAssetStyle(type).color }}></div>
+                                                    <Typography className="architecture-type-text">{type}</Typography>
                                                 </Box>
-                                                <Typography variant="caption" sx={{ fontWeight: 900, color: getAssetStyle(type).color }}>{formatCurrency(stats.current)}</Typography>
+                                                <Typography className="architecture-val-text" style={{ color: getAssetStyle(type).color }}>{formatCurrency(stats.current)}</Typography>
                                             </Box>
                                         ))}
                                     </Box>
@@ -304,13 +305,13 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
                             {/* LINE CHART - Responsive Flex */}
                             <div className="analytic-box-super">
-                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box className="analytic-box-trajectory">
+                                    <div className="trajectory-header">
+                                        <Typography className="analytic-subtitle-secondary">
                                             <TrendingUp size={14} color="#6366f1" /> TRAJECTORY
                                         </Typography>
                                     </div>
-                                    <Box sx={{ flex: 1, minHeight: 440 }}>
+                                    <Box className="chart-container-fluid">
                                         <Line
                                             data={chartConfig.trajectory}
                                             options={{
@@ -337,46 +338,46 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 maxWidth="xs"
             >
                 {deleteConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-purge-wrap">
+                        <div className="dialog-purge-icon-square">
                             <Trash2 size={32} />
                         </div>
-                        <Typography variant="body1" sx={{ color: '#86868b', mb: 3 }}>
-                            Permanently remove <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.name}</strong> from the portfolio?
+                        <Typography className="dialog-desc-audit">
+                            Permanently remove <strong className="text-dark">{deleteConfirmItem.name}</strong> from the portfolio?
                         </Typography>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30' }}>PROCEED</Button>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-action">ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-confirm-purge">PROCEED</Button>
                         </div>
                     </Box>
                 )}
             </BaseDialog>
 
             {/* FINANCIAL SUMMARY CORE - LEGACY DESIGN RESTORED */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                <div className="glass-effect" style={{ padding: '1.25rem', borderRadius: '1.5rem', border: '1.5px solid rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(99,102,241,0.03)' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#6366f1', color: 'white', display: 'grid', placeItems: 'center' }}><Activity size={20} /></div>
-                    <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                            <Typography variant="caption" sx={{ fontWeight: 900, color: '#6366f1', display: 'block', mb: -0.4, opacity: 0.8 }}>TOTAL ASSETS UNDER MANAGEMENT</Typography>
+            <div className="investment-summary-grid">
+                <div className="summary-card-investment">
+                    <div className="pill-icon-box bg-primary color-white"><Activity size={20} /></div>
+                    <div className="flex-1">
+                        <div className="summary-header-flex">
+                            <Typography className="summary-label-primary">TOTAL ASSETS UNDER MANAGEMENT</Typography>
                             {totals.grossWithdrawn > 0 && (
-                                <Typography variant="caption" sx={{ fontWeight: 900, color: '#fb923c', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fb923c' }} />
+                                <Box className="realized-badge">
+                                    <div className="realized-dot" />
                                     REALIZED: {formatCurrency(totals.grossWithdrawn)}
-                                </Typography>
+                                </Box>
                             )}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-                            <Typography variant="h5" sx={{ fontWeight: 900 }}>{formatCurrency(totals.grossValue)}</Typography>
-                            <Typography variant="caption" sx={{ fontWeight: 800, color: '#86868b', opacity: 0.8 }}>
+                        <div className="summary-value-flex">
+                            <Typography className="summary-value-main">{formatCurrency(totals.grossValue)}</Typography>
+                            <Typography className="summary-label-secondary">
                                 Invested: {formatCurrency(totals.grossInvested)}
                             </Typography>
                             {totals.grossValue > 0 && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 900, color: totals.grossProfitAmt >= 0 ? '#34c759' : '#ff3b30' }}>
+                                <Box className="pnl-chips-flex">
+                                    <span className={`pnl-chip ${totals.grossProfitAmt >= 0 ? 'positive' : 'negative'}`}>
                                         {totals.grossProfitAmt >= 0 ? '+' : ''}{formatCurrency(Math.abs(totals.grossProfitAmt))}
                                     </span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 900, color: totals.grossProfitPct >= 0 ? '#34c759' : '#ff3b30', background: totals.grossProfitPct >= 0 ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', padding: '0.15rem 0.5rem', borderRadius: '6px' }}>
+                                    <span className={`pnl-chip ${totals.grossProfitPct >= 0 ? 'positive' : 'negative'}`}>
                                         {totals.grossProfitPct >= 0 ? '▲ +' : '▼ '}{Math.abs(totals.grossProfitPct).toFixed(totals.grossProfitPct < 0.1 ? 4 : 2)}% net profit
                                     </span>
                                 </Box>
@@ -387,35 +388,33 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             </div>
 
             {/* CATEGORY SUMMARY PILLS - ORIGINAL LARGE DESIGN RESTORED */}
-            <div style={{ width: '100%', overflow: 'hidden', marginBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
+            <div className="category-pills-row">
+                <div className="scroll-container">
                     {loading ? (
-                        [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" width={140} height={60} sx={{ borderRadius: '1.1rem', flexShrink: 0 }} />)
+                        [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" width={140} height={60} className="skeleton-pill-box" />)
                     ) : (
                         Object.keys(totals.typeStats).map((type) => {
                             const style = getAssetStyle(type);
                             return (
-                                <motion.div key={type} className="apple-category-pill glass-effect" style={{ minWidth: '160px' }}>
+                                <motion.div key={type} className="investment-category-pill">
                                     <div className="pill-icon-box" style={{ background: style.bg, color: style.color }}>
                                         {style.icon}
                                     </div>
                                     <div className="pill-info-box">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                            <span className="pill-cat-label" style={{ opacity: 1 }}>{type}</span>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            <span style={{ color: style.color, fontWeight: 900, fontSize: '1rem', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                                        <Typography className="pill-type-label">{type}</Typography>
+                                        <div className="pill-value-stack">
+                                            <span className="pill-amt-val" style={{ color: style.color }}>
                                                 {formatCurrency(totals.typeStats[type].current)}
                                             </span>
-                                            <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#86868b', opacity: 0.7 }}>
+                                            <span className="pill-cost-label">
                                                 Invested: {formatCurrency(totals.typeStats[type].invested)}
                                             </span>
                                             {totals.typeStats[type].invested > 0 && (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '3px' }}>
-                                                    <span style={{ fontSize: '0.58rem', fontWeight: 900, color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30' }}>
+                                                <div className="pill-yield-meta">
+                                                    <span style={{ color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30' }}>
                                                         {totals.typeStats[type].current >= totals.typeStats[type].invested ? '+' : ''}{formatCurrency(Math.abs(totals.typeStats[type].current - totals.typeStats[type].invested))}
                                                     </span>
-                                                    <span style={{ fontSize: '0.58rem', fontWeight: 900, color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30', opacity: 0.8 }}>
+                                                    <span style={{ color: totals.typeStats[type].current >= totals.typeStats[type].invested ? '#34c759' : '#ff3b30', opacity: 0.8 }}>
                                                         ({totals.typeStats[type].current >= totals.typeStats[type].invested ? '▲' : '▼'}{Math.abs(((totals.typeStats[type].current - totals.typeStats[type].invested) / totals.typeStats[type].invested) * 100).toFixed(4)}%)
                                                     </span>
                                                 </div>
@@ -430,28 +429,28 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             </div>
 
             <div className="spending-split-layout">
-                <div className="filters-sidebar-card glass-effect" style={{ padding: '1.75rem' }}>
-                    <div style={{ position: 'sticky', top: '1rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
-                            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: '#6366f1', color: 'white', display: 'grid', placeItems: 'center' }}>
-                                <Filter size={15} fill="white" style={{ opacity: 0.8 }} />
+                <div className="filters-sidebar-card glass-effect">
+                    <div className="sidebar-sticky-wrap">
+                        <div className="filter-header-flex">
+                            <div className="filter-icon-box bg-primary">
+                                <Filter size={15} fill="white" className="icon-opacity" />
                             </div>
-                            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>Portfolio Filters</span>
+                            <span className="filter-header-title">Portfolio Filters</span>
                         </div>
 
                         <div className="filter-section-block">
                             <div className="filter-section-label"><span>SEARCH ASSETS</span></div>
-                            <div style={{ position: 'relative' }}>
-                                <Search size={15} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)', pointerEvents: 'none', zIndex: 1 }} />
-                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class..." style={{ paddingLeft: '2.75rem' }} />
+                            <div className="search-input-wrapper">
+                                <Search size={15} className="search-icon-fixed" />
+                                <input className="filter-search-input padding-l-2-75" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class..." />
                             </div>
                         </div>
 
-                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                        <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>ASSET CLASS</span></div>
                             <div className="category-filter-grid">
                                 {loading ? (
-                                    [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} sx={{ borderRadius: '10px' }} />)
+                                    [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
                                 ) : (
                                     <>
                                         <div className={`cat-filter-chip ${selectedType === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedType('ALL')}>All</div>
@@ -469,7 +468,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                             </div>
                         </div>
 
-                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                        <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>TIME HORIZON</span></div>
                             <div className="time-horizon-grid">
                                 {[
@@ -494,10 +493,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="filter-section-block"
-                                    style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(0,0,0,0.04)' }}
+                                    className="filter-section-block custom-range-block"
                                 >
-                                    <div className="filter-section-label" style={{ color: '#6366f1' }}><span>SELECT RANGE AUDIT</span></div>
+                                    <div className="filter-section-label color-primary"><span>SELECT RANGE AUDIT</span></div>
                                     <Stack spacing={1.5}>
                                         <DatePicker
                                             label="START DATE"
@@ -507,10 +505,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                                 textField: {
                                                     size: 'small',
                                                     fullWidth: true,
-                                                    sx: {
-                                                        '& .MuiOutlinedInput-root': { borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.01)' },
-                                                        '& .MuiInputLabel-root': { fontSize: '0.65rem', fontWeight: 900, top: '-2px' }
-                                                    }
+                                                    className: "datepicker-premium"
                                                 }
                                             }}
                                         />
@@ -522,10 +517,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                                 textField: {
                                                     size: 'small',
                                                     fullWidth: true,
-                                                    sx: {
-                                                        '& .MuiOutlinedInput-root': { borderRadius: '14px', bgcolor: 'rgba(0,0,0,0.01)' },
-                                                        '& .MuiInputLabel-root': { fontSize: '0.65rem', fontWeight: 900, top: '-2px' }
-                                                    }
+                                                    className: "datepicker-premium"
                                                 }
                                             }}
                                         />
@@ -538,42 +530,29 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 </div>
 
                 <div className="spending-main-content">
-                    <div className="content-meta-bar" style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: '1.5rem',
-                        marginBottom: '1.25rem',
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(20px)',
-                        padding: '1rem 2rem',
-                        borderRadius: '32px',
-                        border: '1px solid rgba(0,0,0,0.05)',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.08)', display: 'grid', placeItems: 'center' }}>
-                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', boxShadow: '0 0 10px rgba(99, 102, 241, 0.4)' }} />
+                    <div className="content-meta-bar glass-effect">
+                        <div className="meta-left-flex">
+                            <div className="badge-pulse-flex">
+                                <div className="dot-pulse-wrapper">
+                                    <div className="dot-pulse-inner" />
                                 </div>
                                 <div>
-                                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 900, color: '#1d1d1f', lineHeight: 1 }}>{filteredInvestments.length}</Typography>
-                                    <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>ASSETS FOUND</Typography>
+                                    <Typography className="badge-count-text">{filteredInvestments.length}</Typography>
+                                    <Typography className="badge-label-micro">ASSETS FOUND</Typography>
                                 </div>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div className="action-hub-center">
                             <Button
                                 onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
-                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { background: '#f8fafc', borderColor: '#cbd5e1' } }}>
+                                className="btn-pill-sort">
                                 {sortBy === 'PNL_DESC' ? '▼ P&L DESC' : sortBy === 'PNL_ASC' ? '▲ P&L ASC' : 'SORT BY P&L'}
                             </Button>
 
                             <Button
                                 onClick={() => setSortBy('DATE_DESC')}
-                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', background: sortBy === 'DATE_DESC' ? '#f8fafc' : 'transparent', '&:hover': { background: '#f8fafc' } }}>
+                                className={`btn-pill-sort ${sortBy === 'DATE_DESC' ? 'active' : ''}`}>
                                 BY DATE
                             </Button>
 
@@ -581,20 +560,20 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 onClick={handleManualSync}
                                 disabled={syncingPrices}
                                 startIcon={<Zap size={12} />}
-                                sx={{ borderRadius: '50px', bgcolor: '#34c759', color: 'white', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { bgcolor: '#28a745' }, '&.Mui-disabled': { bgcolor: 'rgba(52, 199, 89, 0.5)', color: 'white' } }}>
+                                className="btn-pill-sync">
                                 {syncingPrices ? '...' : 'SYNC ALL'}
                             </Button>
 
                             <Button
                                 onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }}
-                                sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { background: '#f8fafc' } }}>
+                                className="btn-pill-sort">
                                 CLEAR ALL
                             </Button>
 
                             <Button
                                 onClick={handleExportCSV}
                                 startIcon={<Download size={12} />}
-                                sx={{ borderRadius: '50px', bgcolor: '#6366f1', color: 'white', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { bgcolor: '#4f46e5' } }}>
+                                className="btn-pill-export">
                                 EXPORT CSV
                             </Button>
                         </div>
@@ -617,16 +596,16 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 const catStyle = getAssetStyle(normalizedType);
                                 const live = livePre || getLiveVal(s);
                                 return (
-                                    <div key={s._id} className="transaction-row-fancy" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-                                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: catStyle.bg, color: catStyle.color, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '0.5rem' }}>
+                                    <div key={s._id} className="transaction-row-fancy">
+                                        <div className="pill-icon-box" style={{ background: catStyle.bg, color: catStyle.color }}>
                                             {catStyle.icon}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '2px' }}>
-                                                <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.9rem' }}>{s.name}</span>
-                                                {s.ticker && <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#6366f1', background: 'rgba(99,102,241,0.1)', padding: '1px 6px', borderRadius: '4px' }}>{s.ticker}</span>}
+                                            <div className="asset-header-flex">
+                                                <span className="asset-name-text">{s.name}</span>
+                                                {s.ticker && <span className="asset-ticker-tag">{s.ticker}</span>}
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem', fontSize: '0.72rem', color: '#86868b', fontWeight: 600 }}>
+                                            <div className="asset-meta-flex">
                                                 <span>{dayjs(s.date).format('YYYY-MM-DD')} • {s.sub}</span>
                                                 {s.quantity && (
                                                     <span>
@@ -634,28 +613,28 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                                     </span>
                                                 )}
                                                 {s.buy_price && s.current_price && <span>• Avg: ₹{s.buy_price} → CMP: ₹{s.current_price}</span>}
-                                                {live.isFixed && <span style={{ color: '#34c759', fontWeight: 900 }}>(+6.5% Yield)</span>}
+                                                {live.isFixed && <span className="yield-profit-label">(+6.5% Yield)</span>}
                                             </div>
                                         </div>
-                                        <div style={{ width: '160px', textAlign: 'center' }}>
-                                            <span style={{ padding: '0.4rem 0.8rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.62rem', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>{normalizedType}</span>
+                                        <div className="tx-category-col">
+                                            <span className="type-badge-pill" style={{ background: catStyle.bg, color: catStyle.color }}>{normalizedType}</span>
                                         </div>
-                                        <div style={{ width: '150px', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                                            <span style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '0.95rem', lineHeight: 1.1 }}>{formatCurrency(live.current)}</span>
-                                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#86868b', opacity: 0.8 }}>Cost: {formatCurrency(live.invested)}</span>
+                                        <div className="tx-amount-col">
+                                            <span className="tx-val-main">{formatCurrency(live.current)}</span>
+                                            <span className="tx-cost-label">Cost: {formatCurrency(live.invested)}</span>
                                             {(live.isMarket || live.isFixed) && (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', fontWeight: 800, color: live.current + live.withdrawn >= live.invested ? '#34c759' : '#ff3b30', background: live.current + live.withdrawn >= live.invested ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', padding: '1px 6px', borderRadius: '4px' }}>
+                                                <div className={`asset-pnl-indicator ${live.current + live.withdrawn >= live.invested ? 'positive' : 'negative'}`}>
                                                     {live.current + live.withdrawn >= live.invested ? '▲' : '▼'} {Math.abs(((live.current + live.withdrawn - live.invested) / (live.invested || 1)) * 100).toFixed(4)}% P&L
                                                 </div>
                                             )}
                                             {live.withdrawn > 0 && (
-                                                <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#ff9500', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9500' }} />
+                                                <div className="exited-indicator">
+                                                    <div className="dot" />
                                                     Exited: {formatCurrency(live.withdrawn)}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="row-action-cluster" style={{ display: 'flex', gap: '0.2rem', marginLeft: '1rem', opacity: 0.6 }}>
+                                        <div className="row-action-cluster">
                                             <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: '#6366f1' }}><Edit2 size={12} /></IconButton>
                                             <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30' }}><Trash2 size={12} /></IconButton>
                                         </div>
@@ -675,12 +654,12 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
                                 return months.map(month => (
                                     <div key={month} className="date-group">
-                                        <div className="date-header-luxury">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        <div className="group-header-luxury">
+                                            <div className="group-title-flex">
                                                 <Calendar size={14} color="#6366f1" />
-                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{month.toUpperCase()}</span>
+                                                <span className="group-date-label">{month.toUpperCase()}</span>
                                             </div>
-                                            <div style={{ fontWeight: 900, fontSize: '0.9rem', color: '#6366f1' }}>
+                                            <div className="group-acquired-label">
                                                 ACQUIRED: {formatCurrency(grouped[month].reduce((sum, s) => sum + getLiveVal(s).current, 0))}
                                             </div>
                                         </div>
@@ -703,10 +682,10 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
                                 return (
                                     <div className="date-group">
-                                        <div className="date-header-luxury">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        <div className="group-header-luxury">
+                                            <div className="group-title-flex">
                                                 <Activity size={14} color="#34c759" />
-                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>SORTED BY P&L PERCENTAGE ({sortBy === 'PNL_DESC' ? 'Highest First' : 'Lowest First'})</span>
+                                                <span className="group-date-label">SORTED BY P&L PERCENTAGE ({sortBy === 'PNL_DESC' ? 'Highest First' : 'Lowest First'})</span>
                                             </div>
                                         </div>
                                         <div className="investment-items-luxury">

@@ -27,6 +27,7 @@ import {
 } from 'chart.js';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
+import './OverviewPage.scss';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
@@ -35,11 +36,7 @@ const MaterialGlassCard = ({ children, dark = false, sx = {} }) => (
     <Paper
         elevation={0}
         className={dark ? 'dark-glass-elite' : 'elevated-glass'}
-        sx={{
-            p: 0,
-            transition: 'all 0.3s ease',
-            ...sx
-        }}
+        sx={sx}
     >
         {children}
     </Paper>
@@ -199,7 +196,7 @@ export default function OverviewPage() {
     }, [spendingData, trendAnalysis]);
 
     if (loading && !summary) return (
-        <Box sx={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box className="overview-loading-viewport">
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
                 <ActivitySquare size={48} color="#663399" />
             </motion.div>
@@ -207,38 +204,30 @@ export default function OverviewPage() {
     );
 
     return (
-        <Box component="main" sx={{
-            width: '100%',
-            minHeight: '100vh',
-            bgcolor: '#f1f3f4',
-            py: 4,
-            px: { xs: 2, md: 4 },
-            overflowX: 'hidden',
-            boxSizing: 'border-box'
-        }}>
+        <Box component="main" className="overview-container">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
 
                 {/* Header */}
-                <Box mb={4}>
-                    <Typography variant="h4" sx={{ color: '#444', fontWeight: 600, mb: 0.5 }}>Financial Console</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ opacity: 0.7 }}>Central Intelligence Pipeline</Typography>
+                <Box className="console-header">
+                    <Typography variant="h4" className="header-title">Financial Console</Typography>
+                    <Typography variant="body2" color="text.secondary" className="header-subtitle">Central Intelligence Pipeline</Typography>
                 </Box>
 
                 {/* Stats Grid */}
                 <Grid container spacing={3} mb={5}>
                     {[
-                        { label: 'NET WORTH', val: financialPulse.netWorth, icon: <ActivitySquare />, bg: 'rgba(102, 51, 153, 0.1)', color: '#663399' },
-                        { label: 'LIQUIDITY', val: financialPulse.grossLiquidity, icon: <BankIcon />, bg: 'rgba(76, 175, 80, 0.1)', color: '#4caf50' },
-                        { label: 'LIABILITY', val: financialPulse.grossLiabilities, icon: <Flame />, bg: 'rgba(244, 67, 54, 0.1)', color: '#f44336' },
-                        { label: 'YIELD', val: `${financialPulse.profitMargin.toFixed(2)}%`, icon: <Zap />, bg: 'rgba(255, 193, 7, 0.1)', color: '#ffc107' }
+                        {label: 'NET WORTH', val: financialPulse.netWorth, icon: <ActivitySquare />, bg: 'rgba(102, 51, 153, 0.1)', color: '#663399'},
+                        {label: 'LIQUIDITY', val: financialPulse.grossLiquidity, icon: <BankIcon />, bg: 'rgba(76, 175, 80, 0.1)', color: '#4caf50'},
+                        {label: 'LIABILITY', val: financialPulse.grossLiabilities, icon: <Flame />, bg: 'rgba(244, 67, 54, 0.1)', color: '#f44336'},
+                        {label: 'YIELD', val: `${financialPulse.profitMargin.toFixed(2)}%`, icon: <Zap />, bg: 'rgba(255, 193, 7, 0.1)', color: '#ffc107'}
                     ].map((card, i) => (
                         <Grid item xs={12} sm={6} md={3} key={i}>
                             <MaterialGlassCard>
-                                <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                                    <Avatar sx={{ bgcolor: card.bg, color: card.color, width: 56, height: 56 }}>{card.icon}</Avatar>
+                                <Box className="stats-card-inner">
+                                    <Avatar className="avatar-stats-card" style={{ backgroundColor: card.bg, color: card.color }}>{card.icon}</Avatar>
                                     <Box>
-                                        <Typography variant="caption" sx={{ fontWeight: 800, color: '#aaa', letterSpacing: '0.05em' }}>{card.label}</Typography>
-                                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#111' }}>{typeof card.val === 'number' ? formatCurrency(card.val) : card.val}</Typography>
+                                        <Typography variant="caption" className="stats-label">{card.label}</Typography>
+                                        <Typography variant="h5" className="stats-value">{typeof card.val === 'number' ? formatCurrency(card.val) : card.val}</Typography>
                                     </Box>
                                 </Box>
                             </MaterialGlassCard>
@@ -251,34 +240,36 @@ export default function OverviewPage() {
                     <Grid container spacing={2.5}>
                         {/* 1. Architecture */}
                         <Grid item xs={12} md={2.5}>
-                            <MaterialGlassCard sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant="overline" sx={{ fontWeight: 900, color: '#663399', mb: 3, display: 'block' }}>Architecture</Typography>
-                                <Box sx={{ flex: 1, position: 'relative', display: 'grid', placeItems: 'center', mb: 3 }}>
-                                    <Doughnut data={chartConfig.doughnut} options={{ plugins: { legend: { display: false } }, maintainAspectRatio: false, cutout: '72%' }} />
-                                    <Box sx={{ position: 'absolute', textAlign: 'center' }}>
-                                        <Typography sx={{ fontWeight: 800, color: '#aaa', fontSize: '0.45rem' }}>BURN</Typography>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '0.75rem' }}>₹{(spendingData.total / 1000).toFixed(1)}k</Typography>
-                                    </Box>
-                                </Box>
-                                <Stack spacing={1}>
-                                    {spendingData.config.labels.slice(0, 2).map((lbl, idx) => (
-                                        <Box key={lbl} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: '#888' }}>{lbl}</Typography>
-                                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900 }}>{formatCurrency(spendingData.config.datasets[0].data[idx])}</Typography>
+                            <MaterialGlassCard className="h-full flex-col">
+                                <Box p={3} className="flex-1 flex-col">
+                                    <Typography className="analytic-overline-purple">Architecture</Typography>
+                                    <Box className="donut-chart-box">
+                                        <Doughnut data={chartConfig.doughnut} options={{ plugins: { legend: { display: false } }, maintainAspectRatio: false, cutout: '72%' }} />
+                                        <Box className="chart-center-label">
+                                            <Typography className="micro-label-grey">BURN</Typography>
+                                            <Typography className="micro-val-bold">₹{(spendingData.total / 1000).toFixed(1)}k</Typography>
                                         </Box>
-                                    ))}
-                                </Stack>
+                                    </Box>
+                                    <Stack spacing={1}>
+                                        {spendingData.config.labels.slice(0, 2).map((lbl, idx) => (
+                                            <Box key={lbl} className="architecture-meta-row">
+                                                <Typography className="arch-meta-label">{lbl}</Typography>
+                                                <Typography className="arch-meta-val">{formatCurrency(spendingData.config.datasets[0].data[idx])}</Typography>
+                                            </Box>
+                                        ))}
+                                    </Stack>
+                                </Box>
                             </MaterialGlassCard>
                         </Grid>
 
                         {/* 2. Trajectory */}
                         <Grid item xs={12} md={3.5}>
-                            <MaterialGlassCard sx={{ p: 3, height: '100%' }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                    <Typography variant="overline" sx={{ fontWeight: 900, color: '#4caf50' }}>Trajectory</Typography>
-                                    <Typography sx={{ fontWeight: 900, color: '#4caf50', fontSize: '0.9rem' }}>{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
+                            <MaterialGlassCard className="p-3 h-full">
+                                <Box className="trajectory-header">
+                                    <Typography className="analytic-overline-green">Trajectory</Typography>
+                                    <Typography className="trajectory-val-primary">{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
                                 </Box>
-                                <Box sx={{ height: 200 }}>
+                                <Box className="chart-viewport-std">
                                     <Line data={chartConfig.trajectory} options={{ plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { font: { weight: '800', size: 10 }, color: '#aaa' } } }, maintainAspectRatio: false }} />
                                 </Box>
                             </MaterialGlassCard>
@@ -286,12 +277,12 @@ export default function OverviewPage() {
 
                         {/* 3. Velocity */}
                         <Grid item xs={12} md={3.5}>
-                            <MaterialGlassCard sx={{ p: 3, height: '100%' }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                    <Typography variant="overline" sx={{ fontWeight: 900, color: '#663399' }}>Velocity</Typography>
-                                    <Typography sx={{ fontWeight: 900, color: '#663399', fontSize: '0.9rem' }}>{formatCurrency(trendAnalysis.daily.reduce((a, b) => a + b, 0) / (trendAnalysis.daily.length || 1))}/day</Typography>
+                            <MaterialGlassCard className="p-3 h-full">
+                                <Box className="trajectory-header">
+                                    <Typography className="analytic-overline-purple">Velocity</Typography>
+                                    <Typography className="trajectory-val-secondary">{formatCurrency(trendAnalysis.daily.reduce((a, b) => a + b, 0) / (trendAnalysis.daily.length || 1))}/day</Typography>
                                 </Box>
-                                <Box sx={{ height: 200 }}>
+                                <Box className="chart-viewport-std">
                                     <Bar data={chartConfig.velocity} options={{ plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(0,0,0,0.03)' }, ticks: { font: { weight: '800', size: 10 }, color: '#aaa' } } }, maintainAspectRatio: false }} />
                                 </Box>
                             </MaterialGlassCard>
@@ -299,17 +290,19 @@ export default function OverviewPage() {
 
                         {/* 4. Yearly Obligations */}
                         <Grid item xs={12} md={2.5}>
-                            <MaterialGlassCard sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'rgba(0,0,0,0.02)' }}>
-                                <Typography variant="overline" sx={{ fontWeight: 900, color: '#1d1d1f', mb: 1, display: 'block' }}>Yearly Obligations</Typography>
-                                <Typography variant="caption" sx={{ color: '#86868b', fontWeight: 800, mb: 3, display: 'block' }}>Fixed overhead accrual</Typography>
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                    <Box mb={4}>
-                                        <Typography variant="h5" sx={{ fontWeight: 900, color: '#1d1d1f' }}>{formatCurrency(financialPulse.totalYearly)}</Typography>
-                                        <Typography sx={{ fontWeight: 800, color: '#aaa', fontSize: '0.6rem' }}>ANNUAL TOTAL</Typography>
-                                    </Box>
-                                    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(102, 51, 153, 0.05)', border: '1px solid rgba(102, 51, 153, 0.1)', mb: 2 }}>
-                                        <Typography sx={{ fontWeight: 900, color: '#663399', fontSize: '0.9rem' }}>{formatCurrency(financialPulse.monthlyObligation)}</Typography>
-                                        <Typography sx={{ fontWeight: 800, color: '#aaa', fontSize: '0.45rem', textTransform: 'uppercase' }}>MONTHLY SIP</Typography>
+                            <MaterialGlassCard className="h-full flex-col">
+                                <Box className="yearly-obligation-inner">
+                                    <Typography className="analytic-overline-dark">Yearly Obligations</Typography>
+                                    <Typography variant="caption" className="yearly-meta-desc">Fixed overhead accrual</Typography>
+                                    <Box className="flex-1-center-col">
+                                        <Box className="margin-b-4">
+                                            <Typography variant="h5" className="yearly-total-val">{formatCurrency(financialPulse.totalYearly)}</Typography>
+                                            <Typography className="yearly-micro-label">ANNUAL TOTAL</Typography>
+                                        </Box>
+                                        <Box className="sip-highlight-box">
+                                            <Typography className="sip-val-primary">{formatCurrency(financialPulse.monthlyObligation)}</Typography>
+                                            <Typography className="sip-micro-label">MONTHLY SIP</Typography>
+                                        </Box>
                                     </Box>
                                 </Box>
                             </MaterialGlassCard>
@@ -321,25 +314,25 @@ export default function OverviewPage() {
                 <Grid container spacing={3} mb={5}>
                     {/* 1. Asset Distribution (4/12 = 33%) */}
                     <Grid item xs={12} md={4} xl={4}>
-                        <MaterialGlassCard sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: '0.9rem' }}>Asset Distribution</Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 3 }}>Portfolio weight</Typography>
-                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                <Box sx={{ position: 'relative', width: '100%', maxWidth: 160, mx: 'auto', mb: 4 }}>
+                        <MaterialGlassCard className="p-3 h-full flex-col">
+                            <Typography className="quad-card-title">Asset Distribution</Typography>
+                            <Typography variant="caption" color="text.secondary" className="margin-b-3-block text-dim">Portfolio weight</Typography>
+                            <Box className="flex-1-center-col">
+                                <Box className="donut-viewport-mini">
                                     <Doughnut data={allocationData.config} options={{ cutout: '75%', plugins: { legend: { display: false } } }} />
-                                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Typography variant="h6" sx={{ fontWeight: 800 }}>{allocationData.topPct}%</Typography>
-                                        <Typography sx={{ fontWeight: 800, opacity: 0.5, fontSize: '0.55rem' }}>ACTIVE</Typography>
+                                    <Box className="chart-center-label">
+                                        <Typography variant="h6" className="font-bold-800">{allocationData.topPct}%</Typography>
+                                        <Typography className="micro-label-faint">ACTIVE</Typography>
                                     </Box>
                                 </Box>
                                 <Stack spacing={1.5}>
                                     {allocationData.config.labels.slice(0, 3).map((lbl, idx) => (
                                         <Box key={lbl}>
-                                            <Stack direction="row" justifyContent="space-between" mb={0.4}>
-                                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#666' }}>{lbl}</Typography>
-                                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 800 }}>{formatCurrency(allocationData.config.datasets[0].data[idx])}</Typography>
+                                            <Stack direction="row" justifyContent="space-between" className="margin-b-0-4">
+                                                <Typography className="quad-meta-label">{lbl}</Typography>
+                                                <Typography className="quad-meta-val">{formatCurrency(allocationData.config.datasets[0].data[idx])}</Typography>
                                             </Stack>
-                                            <LinearProgress variant="determinate" value={(allocationData.config.datasets[0].data[idx] / allocationData.total) * 100} sx={{ height: 4, borderRadius: 2, bgcolor: '#f1f1f1', '& .MuiLinearProgress-bar': { bgcolor: allocationData.config.datasets[0].backgroundColor[idx] } }} />
+                                            <LinearProgress variant="determinate" value={(allocationData.config.datasets[0].data[idx] / allocationData.total) * 100} className="quad-progress-bar" style={{ '--bar-color': allocationData.config.datasets[0].backgroundColor[idx] }} />
                                         </Box>
                                     ))}
                                 </Stack>
@@ -349,25 +342,25 @@ export default function OverviewPage() {
 
                     {/* 2. Audit Distribution (4/12 = 33%) */}
                     <Grid item xs={12} md={4} xl={4}>
-                        <MaterialGlassCard sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: '0.9rem' }}>Audit Distribution</Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 3 }}>Spending density</Typography>
-                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                <Box sx={{ position: 'relative', width: '100%', maxWidth: 160, mx: 'auto', mb: 4 }}>
+                        <MaterialGlassCard className="p-3 h-full flex-col">
+                            <Typography className="quad-card-title">Audit Distribution</Typography>
+                            <Typography variant="caption" color="text.secondary" className="margin-b-3-block text-dim">Spending density</Typography>
+                            <Box className="flex-1-center-col">
+                                <Box className="donut-viewport-mini">
                                     <Doughnut data={spendingData.config} options={{ cutout: '75%', plugins: { legend: { display: false } } }} />
-                                    <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Typography variant="h6" sx={{ fontWeight: 800 }}>₹{(spendingData.total / 1000).toFixed(1)}k</Typography>
-                                        <Typography sx={{ fontWeight: 800, opacity: 0.5, fontSize: '0.55rem' }}>BURN</Typography>
+                                    <Box className="chart-center-label">
+                                        <Typography variant="h6" className="font-bold-800">₹{(spendingData.total / 1000).toFixed(1)}k</Typography>
+                                        <Typography className="micro-label-faint">BURN</Typography>
                                     </Box>
                                 </Box>
                                 <Stack spacing={1.5}>
                                     {spendingData.config.labels.slice(0, 3).map((lbl, idx) => (
                                         <Box key={lbl}>
-                                            <Stack direction="row" justifyContent="space-between" mb={0.4}>
-                                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#666' }}>{lbl}</Typography>
-                                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 800 }}>{formatCurrency(spendingData.config.datasets[0].data[idx])}</Typography>
+                                            <Stack direction="row" justifyContent="space-between" className="margin-b-0-4">
+                                                <Typography className="quad-meta-label">{lbl}</Typography>
+                                                <Typography className="quad-meta-val">{formatCurrency(spendingData.config.datasets[0].data[idx])}</Typography>
                                             </Stack>
-                                            <LinearProgress variant="determinate" value={(spendingData.config.datasets[0].data[idx] / spendingData.total) * 100} sx={{ height: 4, borderRadius: 2, bgcolor: '#f1f1f1', '& .MuiLinearProgress-bar': { bgcolor: spendingData.config.datasets[0].backgroundColor[idx] } }} />
+                                            <LinearProgress variant="determinate" value={(spendingData.config.datasets[0].data[idx] / spendingData.total) * 100} className="quad-progress-bar" style={{ '--bar-color': spendingData.config.datasets[0].backgroundColor[idx] }} />
                                         </Box>
                                     ))}
                                 </Stack>
@@ -377,42 +370,44 @@ export default function OverviewPage() {
 
                     {/* 3. Integrated Liquidity Edge (4/12 = 33.3%) */}
                     <Grid item xs={12} md={4} xl={4}>
-                        <MaterialGlassCard sx={{ height: '100%' }}>
-                            <Box p={3} sx={{ borderBottom: '1px solid #f1f1f1' }}>
-                                <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>Unified Ledger</Typography>
-                                <Typography variant="caption" color="text.secondary">Real-time balances & debt exposure</Typography>
+                        <MaterialGlassCard className="h-full">
+                            <Box className="ledger-header">
+                                <Typography className="quad-card-title">Unified Ledger</Typography>
+                                <Typography variant="caption" className="text-dim">Real-time balances & debt exposure</Typography>
                             </Box>
                             <Box p={2}>
                                 <Grid container spacing={2}>
                                     {/* Accounts Column - 100% on Mobile, 50% on Tablet/Desktop */}
-                                    <Grid item xs={6} sx={{ borderRight: '1.5px dashed #f1f1f1' }}>
-                                        <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, display: 'block', color: '#663399', px: 1 }}>Accounts</Typography>
+                                    <Grid item xs={6} className="ledger-col-divider">
+                                        <Typography variant="overline" className="ledger-section-title color-purple">Accounts</Typography>
                                         {reserves?.filter(r => r.account_type !== 'CREDIT_CARD').slice(0, 5).map((r) => (
-                                            <Box key={r._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, px: 2, borderRadius: '12px', mb: 0.5, '&:hover': { bgcolor: '#f8f9fa' } }}>
+                                            <Box key={r._id} className="ledger-row-fancy">
                                                 <Stack direction="row" spacing={1.5} alignItems="center">
-                                                    <Avatar sx={{ bgcolor: 'rgba(102, 51, 153, 0.1)', color: '#663399', width: 32, height: 32, borderRadius: '8px' }}><BankIcon size={16} /></Avatar>
+                                                    <Avatar className="avatar-ledger-purple"><BankIcon size={16} /></Avatar>
                                                     <Box>
-                                                        <Typography sx={{ fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60px' }}>{r.account_name}</Typography>
-                                                        <Typography sx={{ fontSize: '0.5rem', fontWeight: 800, color: '#aaa' }}>{r.account_type.split('_')[0]}</Typography>
+                                                        <Typography className="ledger-entity-name">{r.account_name}</Typography>
+                                                        <Typography className="ledger-sub-type">{r.account_type.split('_')[0]}</Typography>
                                                     </Box>
                                                 </Stack>
-                                                <Typography sx={{ fontWeight: 900, fontSize: '0.75rem' }}>{formatCurrency(r.balance)}</Typography>
+                                                <Typography className="ledger-val-amount">{formatCurrency(r.balance)}</Typography>
                                             </Box>
                                         ))}
                                     </Grid>
                                     {/* Debt Column - 100% on Mobile, 50% on Tablet/Desktop */}
                                     <Grid item xs={6}>
-                                        <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, display: 'block', color: '#f44336', px: 1 }}>Exposure</Typography>
+                                        <Typography variant="overline" className="ledger-section-title color-red">Exposure</Typography>
                                         {debt?.filter(d => d.status !== 'SETTLED').slice(0, 5).map((d) => (
-                                            <Box key={d._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, px: 2, borderRadius: '12px', mb: 0.5, '&:hover': { bgcolor: '#f8f9fa' } }}>
+                                            <Box key={d._id} className="ledger-row-fancy">
                                                 <Stack direction="row" spacing={1.5} alignItems="center">
-                                                    <Avatar sx={{ bgcolor: d.direction === 'OWED_TO_ME' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)', color: d.direction === 'OWED_TO_ME' ? '#4caf50' : '#f44336', width: 32, height: 32, borderRadius: '8px' }}>{d.direction === 'OWED_TO_ME' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}</Avatar>
+                                                    <Avatar className={d.direction === 'OWED_TO_ME' ? 'avatar-ledger-green' : 'avatar-ledger-red'}>
+                                                        {d.direction === 'OWED_TO_ME' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                                                    </Avatar>
                                                     <Box>
-                                                        <Typography sx={{ fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60px' }}>{d.person}</Typography>
-                                                        <Typography sx={{ fontSize: '0.5rem', fontWeight: 800, color: '#aaa' }}>{d.direction === 'OWED_TO_ME' ? 'Rec' : 'Liab'}</Typography>
+                                                        <Typography className="ledger-entity-name">{d.person}</Typography>
+                                                        <Typography className="ledger-sub-type">{d.direction === 'OWED_TO_ME' ? 'Rec' : 'Liab'}</Typography>
                                                     </Box>
                                                 </Stack>
-                                                <Typography sx={{ fontWeight: 900, fontSize: '0.75rem' }}>{formatCurrency(d.amount)}</Typography>
+                                                <Typography className="ledger-val-amount">{formatCurrency(d.amount)}</Typography>
                                             </Box>
                                         ))}
                                     </Grid>
@@ -424,23 +419,23 @@ export default function OverviewPage() {
 
                 {/* Audit Logs */}
                 <MaterialGlassCard>
-                    <Box p={4} sx={{ borderBottom: '1px solid #f1f1f1' }}>
+                    <Box className="ledger-header">
                         <Typography variant="h6" sx={{ fontWeight: 700 }}>Neural Audit Logs</Typography>
                         <Typography variant="caption" color="text.secondary">Synchronized History</Typography>
                     </Box>
-                    <Box p={2}>
+                    <Box className="audit-logs-viewport">
                         {spending?.slice(0, 8).map((tx) => (
-                            <Box key={tx._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, px: 3, borderRadius: '15px', mb: 0.5, '&:hover': { bgcolor: '#f8f9fa' } }}>
+                            <Box key={tx._id} className="audit-row-premium">
                                 <Stack direction="row" spacing={2.5} alignItems="center">
-                                    <Avatar sx={{ bgcolor: '#fff', border: '1.5px solid #eee', borderRadius: '12px', color: '#663399', width: 46, height: 46 }}><Briefcase size={22} /></Avatar>
+                                    <Avatar className="avatar-audit-log"><Briefcase size={22} /></Avatar>
                                     <Box>
-                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{tx.description}</Typography>
-                                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#aaa' }}>{tx.category} • {tx.sub_category}</Typography>
+                                        <Typography className="audit-desc-text">{tx.description}</Typography>
+                                        <Typography variant="caption" className="audit-sub-label">{tx.category} • {tx.sub_category}</Typography>
                                     </Box>
                                 </Stack>
-                                <Box sx={{ textAlign: 'right' }}>
-                                    <Typography sx={{ fontWeight: 900, fontSize: '1rem' }}>{formatCurrency(tx.amount)}</Typography>
-                                    <Typography variant="caption" sx={{ fontWeight: 700, color: '#ccc' }}>{dayjs(tx.date).format('DD MMM, YYYY')}</Typography>
+                                <Box className="text-right">
+                                    <Typography className="audit-val-text">{formatCurrency(tx.amount)}</Typography>
+                                    <Typography variant="caption" className="audit-date-label">{dayjs(tx.date).format('DD MMM, YYYY')}</Typography>
                                 </Box>
                             </Box>
                         ))}

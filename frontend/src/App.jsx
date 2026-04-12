@@ -408,7 +408,7 @@ export default function App() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <CssBaseline />
                 <Router>
-                    <div className="app-shell" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+                    <div className="app-shell">
                         <TopNavbar
                             onAdd={handleGlobalAdd}
                             onOpenAiModal={() => setShowAiModal(true)}
@@ -417,7 +417,7 @@ export default function App() {
                         />
 
                         <div className="content-shell">
-                            <main className="main-content" style={{ padding: '1.5rem 3.5rem 3.5rem 3.5rem' }}>
+                            <main className="main-content">
                                 <AnimatePresence mode="wait">
                                     <Routes>
                                         <Route path="/" element={<OverviewPage />} />
@@ -484,42 +484,24 @@ export default function App() {
                                 borderRadius="32px"
                             >
                                 {!editingYearly && (
-                                    <Box sx={{
-                                        p: 3, pb: 0, display: 'flex', justifyContent: 'center',
-                                        background: 'linear-gradient(to bottom, #fff, #f8fafc)'
-                                    }}>
-                                        <Box sx={{
-                                            display: 'inline-flex', p: '5px', bgcolor: 'rgba(0,0,0,0.06)', borderRadius: '20px',
-                                            border: '1px solid rgba(0,0,0,0.03)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.03)'
-                                        }}>
+                                    <div className="modal-switcher-wrap">
+                                        <div className="switcher-pill-group">
                                             <Button
                                                 onClick={() => setAddingFrequency('YEARLY')}
                                                 startIcon={<CalendarDays size={16} />}
-                                                sx={{
-                                                    borderRadius: '16px', px: 4, py: 1, fontWeight: 900, fontSize: '0.8rem',
-                                                    bgcolor: addingFrequency === 'YEARLY' ? 'white' : 'transparent',
-                                                    color: addingFrequency === 'YEARLY' ? '#1d1d1f' : '#86868b',
-                                                    boxShadow: addingFrequency === 'YEARLY' ? '0 4px 14px rgba(0,0,0,0.1)' : 'none',
-                                                    '&:hover': { bgcolor: addingFrequency === 'YEARLY' ? 'white' : 'rgba(0,0,0,0.03)' },
-                                                }}
+                                                className={`switcher-btn ${addingFrequency === 'YEARLY' ? 'active' : 'inactive'}`}
                                             >
                                                 YEARLY RESERVE
                                             </Button>
                                             <Button
                                                 onClick={() => setAddingFrequency('MONTHLY')}
                                                 startIcon={<Repeat size={16} />}
-                                                sx={{
-                                                    borderRadius: '16px', px: 4, py: 1, fontWeight: 900, fontSize: '0.8rem',
-                                                    bgcolor: addingFrequency === 'MONTHLY' ? 'white' : 'transparent',
-                                                    color: addingFrequency === 'MONTHLY' ? '#1d1d1f' : '#86868b',
-                                                    boxShadow: addingFrequency === 'MONTHLY' ? '0 4px 14px rgba(0,0,0,0.1)' : 'none',
-                                                    '&:hover': { bgcolor: addingFrequency === 'MONTHLY' ? 'white' : 'rgba(0,0,0,0.03)' },
-                                                }}
+                                                className={`switcher-btn ${addingFrequency === 'MONTHLY' ? 'active' : 'inactive'}`}
                                             >
                                                 MONTHLY BILL
                                             </Button>
-                                        </Box>
-                                    </Box>
+                                        </div>
+                                    </div>
                                 )}
                                 {(editingYearly?.frequency === 'MONTHLY' || (!editingYearly && addingFrequency === 'MONTHLY')) ? (
                                     <MonthlyBillForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />

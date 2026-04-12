@@ -1,0 +1,34 @@
+.dialog-base-title {
+    padding: 2rem 2.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+    background: #fff !important;
+}
+
+.dialog-title-text {
+    font-size: 1.6rem !important;
+    font-weight: 900 !important;
+    color: #1d1d1f !important;
+    letter-spacing: -0.04em !important;
+}
+
+.dialog-close-btn {
+    background-color: rgba(0,0,0,0.03) !important;
+    color: #1d1d1f !important;
+    
+    &:hover {
+        background-color: rgba(0,0,0,0.06) !important;
+    }
+}
+
+.dialog-base-content {
+    padding: 0 !important;
+}
+
+/* Common form styles for consistent modal appearance */
+.form-header-premium {
+    padding: 2rem 2.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}

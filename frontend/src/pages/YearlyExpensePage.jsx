@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import './YearlyExpensePage.scss';
 
 export default function YearlyExpensePage({ onEdit }) {
     const dispatch = useDispatch();
@@ -160,68 +161,56 @@ export default function YearlyExpensePage({ onEdit }) {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
 
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box className="expense-header-flex">
                 <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 900, color: '#1d1d1f', letterSpacing: '-0.02em' }}>Fixed Expenses</Typography>
-                    <Typography sx={{ color: '#86868b', fontWeight: 700 }}>Consolidated tracking for routine and reserve commitments</Typography>
+                    <Typography className="page-title-main">Fixed Expenses</Typography>
+                    <Typography className="page-subtitle-main">Consolidated tracking for routine and reserve commitments</Typography>
                 </Box>
-                <Box sx={{ bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '14px', p: 0.5, display: 'flex' }}>
+                <div className="expense-tab-system">
                     <Button
                         onClick={() => setActiveTab('YEARLY')}
-                        sx={{
-                            borderRadius: '12px', px: 3, fontWeight: 900, fontSize: '0.8rem',
-                            bgcolor: activeTab === 'YEARLY' ? 'white' : 'transparent',
-                            color: activeTab === 'YEARLY' ? '#1d1d1f' : '#86868b',
-                            boxShadow: activeTab === 'YEARLY' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
-                            '&:hover': { bgcolor: activeTab === 'YEARLY' ? 'white' : 'rgba(0,0,0,0.02)' }
-                        }}
+                        className={`tab-btn ${activeTab === 'YEARLY' ? 'active' : ''}`}
                     >
                         YEARLY RESERVES
                     </Button>
                     <Button
                         onClick={() => setActiveTab('MONTHLY')}
-                        sx={{
-                            borderRadius: '12px', px: 3, fontWeight: 900, fontSize: '0.8rem',
-                            bgcolor: activeTab === 'MONTHLY' ? 'white' : 'transparent',
-                            color: activeTab === 'MONTHLY' ? '#1d1d1f' : '#86868b',
-                            boxShadow: activeTab === 'MONTHLY' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
-                            '&:hover': { bgcolor: activeTab === 'MONTHLY' ? 'white' : 'rgba(0,0,0,0.02)' }
-                        }}
+                        className={`tab-btn ${activeTab === 'MONTHLY' ? 'active' : ''}`}
                     >
                         MONTHLY BILLS
                     </Button>
-                </Box>
+                </div>
             </Box>
 
             {/* KPI ROW */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="expense-kpi-grid">
                 {/* YEARLY CARD */}
-                <Box sx={{ p: 3, borderRadius: '24px', background: 'linear-gradient(135deg, #1e1b4b, #4c1d95)', color: 'white', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', right: -20, bottom: -20, opacity: 0.1 }}><CalendarDays size={140} /></div>
-                    <Typography variant="caption" sx={{ fontWeight: 900, letterSpacing: '0.1em', opacity: 0.8 }}>YEARLY OBLIGATIONS</Typography>
+                <div className="expense-card-luxury yearly-gradient">
+                    <div className="bg-icon-watermark"><CalendarDays size={140} /></div>
+                    <Typography className="card-caption-premium">YEARLY OBLIGATIONS</Typography>
                     
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                        <Typography sx={{ fontSize: '2.25rem', fontWeight: 900, letterSpacing: '-0.04em' }}>
+                    <Box className="card-main-stat-wrap">
+                        <Typography className="main-stat-text">
                             {formatCurrency(totalYearlyCost)}
-                            <span style={{ fontSize: '1rem', opacity: 0.6, ml: 1 }}>/ year</span>
+                            <span className="stat-unit-text">/ year</span>
                         </Typography>
-                        <Box sx={{ textAlign: 'right', p: 1.2, px: 2, borderRadius: '14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>MONTHLY SIP</Typography>
-                            <Typography sx={{ fontSize: '1.1rem', fontWeight: 900 }}>{formatCurrency(monthlyObligation)}<span style={{ fontSize: '0.7rem', opacity: 0.5 }}>/mo</span></Typography>
-                        </Box>
+                        <div className="expense-card-sip-box">
+                            <Typography className="sip-label">MONTHLY SIP</Typography>
+                            <Typography className="sip-value">{formatCurrency(monthlyObligation)}<span className="sip-unit">/mo</span></Typography>
+                        </div>
                     </Box>
 
-                    <Box sx={{ mt: 1, p: 2, background: 'rgba(255,255,255,0.08)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7 }}>SETTLED</Typography>
-                            <Typography sx={{ fontSize: '1.1rem', fontWeight: 900 }}>{formatCurrency(yearlyPaid)}</Typography>
+                    <div className="expense-card-stat-group">
+                        <Box className="flex-1">
+                            <Typography className="stat-mini-label">SETTLED</Typography>
+                            <Typography className="stat-mini-value">{formatCurrency(yearlyPaid)}</Typography>
                         </Box>
-                        <Box sx={{ width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
-                        <Box sx={{ flex: 1 }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7 }}>REMAINING</Typography>
-                            <Typography sx={{ fontSize: '1.1rem', fontWeight: 900 }}>{formatCurrency(yearlyRemaining)}</Typography>
+                        <Box className="stat-divider" />
+                        <Box className="flex-1">
+                            <Typography className="stat-mini-label">REMAINING</Typography>
+                            <Typography className="stat-mini-value">{formatCurrency(yearlyRemaining)}</Typography>
                         </Box>
-                    </Box>
+                    </div>
 
                     {/* TOP UP SECTION */}
                     {activeTab === 'YEARLY' && (() => {
@@ -230,59 +219,59 @@ export default function YearlyExpensePage({ onEdit }) {
                         const topupNeeded = Math.max(0, yearlyRemaining - fundBalance);
                         
                         return (
-                            <Box sx={{ mt: 2, p: 2, background: 'rgba(255,255,255,0.06)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                            <Box className="expense-fund-console">
+                                <Box className="fund-info-row">
                                     <Box>
-                                        <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.6 }}>AVAILABLE FUND</Typography>
-                                        <Typography sx={{ fontSize: '1rem', fontWeight: 900 }}>{formatCurrency(fundBalance)}</Typography>
+                                        <Typography className="fund-mini-label">AVAILABLE FUND</Typography>
+                                        <Typography className="fund-mini-value">{formatCurrency(fundBalance)}</Typography>
                                     </Box>
                                     <Button 
                                         size="small" 
                                         onClick={() => setTopUpModal(true)}
-                                        sx={{ borderRadius: '12px', fontSize: '0.7rem', fontWeight: 900, bgcolor: 'white', color: '#4c1d95', px: 2, '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}
+                                        className="btn-topup-luxury"
                                     >
                                         TOP UP
                                     </Button>
                                 </Box>
                                 {topupNeeded > 0 && (
-                                    <Box sx={{ p: 1, px: 1.5, bgcolor: 'rgba(255,59,48,0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <div className="expense-topup-alert">
                                         <AlertCircle size={14} color="#ff3b30" />
-                                        <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, color: '#ff8a84' }}> Deficiency: {formatCurrency(topupNeeded)} needed </Typography>
-                                    </Box>
+                                        <Typography className="deficiency-text"> Deficiency: {formatCurrency(topupNeeded)} needed </Typography>
+                                    </div>
                                 )}
                             </Box>
                         );
                     })()}
-                </Box>
+                </div>
 
                 {/* MONTHLY CARD */}
-                <Box sx={{ p: 3, borderRadius: '24px', background: 'linear-gradient(135deg, #0f172a, #334155)', color: 'white', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', right: -20, bottom: -20, opacity: 0.1 }}><Activity size={140} /></div>
-                    <Typography variant="caption" sx={{ fontWeight: 900, letterSpacing: '0.1em', opacity: 0.8 }}>MONTHLY OBLIGATIONS</Typography>
-                    <Typography sx={{ fontSize: '2.25rem', fontWeight: 900, letterSpacing: '-0.04em' }}>
+                <div className="expense-card-luxury monthly-gradient">
+                    <div className="bg-icon-watermark"><Activity size={140} /></div>
+                    <Typography className="card-caption-premium">MONTHLY OBLIGATIONS</Typography>
+                    <Typography className="main-stat-text">
                         {formatCurrency(totalMonthlyCost)}
-                        <span style={{ fontSize: '1rem', opacity: 0.6, ml: 1 }}>/ month</span>
+                        <span className="stat-unit-text">/ month</span>
                     </Typography>
 
-                    <Box sx={{ mt: 3, p: 2, background: 'rgba(255,255,255,0.08)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7 }}>SETTLED</Typography>
-                            <Typography sx={{ fontSize: '1.1rem', fontWeight: 900 }}>{formatCurrency(monthlyPaid)}</Typography>
+                    <div className="expense-card-stat-group flex-end-margin">
+                        <Box className="flex-1">
+                            <Typography className="stat-mini-label">SETTLED</Typography>
+                            <Typography className="stat-mini-value">{formatCurrency(monthlyPaid)}</Typography>
                         </Box>
-                        <Box sx={{ width: '1px', bgcolor: 'rgba(255,255,255,0.1)' }} />
-                        <Box sx={{ flex: 1 }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7 }}>REMAINING</Typography>
-                            <Typography sx={{ fontSize: '1.1rem', fontWeight: 900 }}>{formatCurrency(monthlyRemaining)}</Typography>
+                        <Box className="stat-divider" />
+                        <Box className="flex-1">
+                            <Typography className="stat-mini-label">REMAINING</Typography>
+                            <Typography className="stat-mini-value">{formatCurrency(monthlyRemaining)}</Typography>
                         </Box>
-                    </Box>
-                </Box>
+                    </div>
+                </div>
             </div>
 
             {/* LIST SECTION */}
-            <Box className="glass-effect" sx={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)' }}>
-                <div style={{ padding: '1.25rem 2rem', background: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography sx={{ fontWeight: 900, color: '#1d1d1f' }}>{activeTab} OBLIGATIONS</Typography>
-                    <Chip label={`${activeTab === 'YEARLY' ? yearlyExpensesList.length : monthlyExpensesList.length} ITEMS`} size="small" sx={{ fontWeight: 900, bgcolor: 'rgba(0,0,0,0.05)' }} />
+            <Box className="glass-effect main-list-wrapper">
+                <div className="list-header-premium">
+                    <Typography className="list-header-title">{activeTab} OBLIGATIONS</Typography>
+                    <Chip label={`${activeTab === 'YEARLY' ? yearlyExpensesList.length : monthlyExpensesList.length} ITEMS`} size="small" className="list-count-chip" />
                 </div>
 
                 <Box sx={{ p: 2 }}>
@@ -292,30 +281,24 @@ export default function YearlyExpensePage({ onEdit }) {
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -10 }}
+                            className="ob-list-container"
                         >
                             {(activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).length === 0 ? (
-                                <Box sx={{ p: 10, textAlign: 'center', opacity: 0.5 }}>
-                                    <AlertCircle size={48} style={{ margin: '0 auto 1rem', color: '#86868b' }} />
-                                    <Typography sx={{ fontWeight: 800 }}>No {activeTab.toLowerCase()} expenses found.</Typography>
+                                <Box className="empty-state-box">
+                                    <AlertCircle size={48} className="empty-icon" />
+                                    <Typography className="empty-text">No {activeTab.toLowerCase()} expenses found.</Typography>
                                 </Box>
                             ) : (
                                 (activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).map(item => {
                                     const isPaid = activeTab === 'YEARLY' ? item.last_paid_year === currentYear : item.last_paid_period === currentMonthPeriod;
                                     return (
-                                        <Box
-                                            key={item._id}
-                                            sx={{
-                                                display: 'flex', alignItems: 'center', gap: 2, p: 2, mb: 1,
-                                                bgcolor: 'white', borderRadius: '18px', border: '1px solid rgba(0,0,0,0.06)',
-                                                boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-                                            }}
-                                        >
-                                            <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: 'rgba(0,0,0,0.03)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                                        <div key={item._id} className="ob-item-row">
+                                            <div className="ob-item-icon">
                                                 {getIconForCategory(item.category)}
-                                            </Box>
-                                            <Box sx={{ flex: 1 }}>
-                                                <Typography sx={{ fontWeight: 900, color: '#1d1d1f' }}>{item.name}</Typography>
-                                                <Typography sx={{ fontSize: '0.75rem', color: '#86868b', fontWeight: 700 }}>
+                                            </div>
+                                            <Box className="flex-1">
+                                                <Typography className="item-name-text">{item.name}</Typography>
+                                                <Typography className="item-meta-text">
                                                     {item.category} • {activeTab === 'YEARLY' 
                                                         ? `Next Pay: ${item.due_month} ${currentYear + (item.last_paid_year === currentYear ? 1 : 0)}` 
                                                         : `Next Due: ${dayjs().date() <= parseInt(item.due_month) 
@@ -324,14 +307,14 @@ export default function YearlyExpensePage({ onEdit }) {
                                                     }
                                                 </Typography>
                                             </Box>
-                                            <Box sx={{ textAlign: 'right', mr: 2 }}>
-                                                <Typography sx={{ fontWeight: 900, fontSize: '1.1rem' }}>{formatCurrency(item.amount)}</Typography>
+                                            <Box className="item-price-wrap">
+                                                <Typography className="item-price-text">{formatCurrency(item.amount)}</Typography>
                                             </Box>
-                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Box className="item-actions-stack">
                                                 {isPaid ? (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'rgba(16,185,129,0.1)', borderRadius: '10px', px: 1 }}>
-                                                        <Typography sx={{ color: '#10b981', fontWeight: 900, fontSize: '0.7rem', px: 1 }}>PAID</Typography>
-                                                        <IconButton size="small" onClick={() => setUndoConfirmItem(item)} sx={{ color: '#10b981' }}><RotateCcw size={14} /></IconButton>
+                                                    <Box className="paid-status-box">
+                                                        <Typography className="paid-label">PAID</Typography>
+                                                        <IconButton size="small" onClick={() => setUndoConfirmItem(item)} className="undo-pay-btn"><RotateCcw size={14} /></IconButton>
                                                     </Box>
                                                 ) : (() => {
                                                     const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
@@ -350,11 +333,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                                                     setPaySourceId(''); 
                                                                 }
                                                             }} 
-                                                            sx={{ 
-                                                                borderRadius: '10px', fontWeight: 900, 
-                                                                bgcolor: isInsufficient ? 'rgba(0,0,0,0.1) !important' : (activeTab === 'YEARLY' ? '#10b981' : '#0ea5e9'), 
-                                                                boxShadow: 'none' 
-                                                            }}
+                                                            className={`btn-pay-status ${isInsufficient ? 'insufficient' : (activeTab === 'YEARLY' ? 'yearly' : 'monthly')}`}
                                                         >
                                                             {isInsufficient ? 'LOW BAL' : 'PAY'}
                                                         </Button>
@@ -363,7 +342,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                                 <IconButton size="small" onClick={() => onEdit(item)} sx={{ color: '#86868b' }}><Edit2 size={16} /></IconButton>
                                                 <IconButton size="small" onClick={() => setDeleteConfirmItem(item)} sx={{ color: '#ff3b30' }}><Trash2 size={16} /></IconButton>
                                             </Box>
-                                        </Box>
+                                        </div>
                                     );
                                 })
                             )}
@@ -373,40 +352,40 @@ export default function YearlyExpensePage({ onEdit }) {
             </Box>
 
             {/* AUDIT LOG */}
-            <Box className="glass-effect" sx={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)', mt: 4, mb: 10 }}>
-                <Box sx={{ p: 2.5, px: 4, bgcolor: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 1, borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+            <div className="audit-log-section">
+                <Box className="audit-log-header">
                     <ReceiptText size={20} color="#6366f1" />
-                    <Typography sx={{ fontWeight: 900, color: '#1d1d1f' }}>RECENT SETTLEMENTS</Typography>
+                    <Typography className="audit-header-text">RECENT SETTLEMENTS</Typography>
                 </Box>
                 <Table>
-                    <TableHead sx={{ bgcolor: 'rgba(0,0,0,0.01)' }}>
+                    <TableHead className="audit-table-head">
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 900, color: '#86868b', fontSize: '0.7rem', pl: 4 }}>DATE</TableCell>
-                            <TableCell sx={{ fontWeight: 900, color: '#86868b', fontSize: '0.7rem' }}>DESCRIPTION</TableCell>
-                            <TableCell sx={{ fontWeight: 900, color: '#86868b', fontSize: '0.7rem', textAlign: 'right', pr: 4 }}>AMOUNT</TableCell>
+                            <TableCell className="audit-th-cell cell-pl-4">DATE</TableCell>
+                            <TableCell className="audit-th-cell">DESCRIPTION</TableCell>
+                            <TableCell className="audit-th-cell text-right cell-pr-4">AMOUNT</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {spending?.filter(s => s.metadata?.is_fixed || s.category === 'Fixed Expense' || s.category === 'Monthly Bill').length === 0 ? (
-                            <TableRow><TableCell colSpan={3} sx={{ textAlign: 'center', p: 4, color: '#86868b', fontWeight: 700 }}>No recent logs</TableCell></TableRow>
+                            <TableRow><TableCell colSpan={3} className="audit-empty-cell">No recent logs</TableCell></TableRow>
                         ) : (
                             spending?.filter(s => s.metadata?.is_fixed || s.category === 'Fixed Expense' || s.category === 'Monthly Bill').sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10).map(log => (
                                 <TableRow key={log._id}>
-                                    <TableCell sx={{ fontWeight: 800, pl: 4 }}>{dayjs(log.date).format('MMM DD')}</TableCell>
-                                    <TableCell sx={{ fontWeight: 800 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <TableCell className="audit-td-cell cell-pl-4">{dayjs(log.date).format('MMM DD')}</TableCell>
+                                    <TableCell className="audit-td-cell">
+                                        <Box className="flex-center-gap-1">
                                             {log.description}
-                                            <Chip label="FIXED" size="small" sx={{ height: 16, fontSize: '0.6rem', fontWeight: 900, bgcolor: 'rgba(0,0,0,0.05)', color: '#86868b' }} />
+                                            <Chip label="FIXED" size="small" className="fixed-chip-nano" />
                                         </Box>
-                                        <Typography sx={{ fontSize: '0.65rem', color: '#86868b', fontWeight: 700 }}>{log.category}</Typography>
+                                        <Typography className="audit-cat-text">{log.category}</Typography>
                                     </TableCell>
-                                    <TableCell sx={{ fontWeight: 900, textAlign: 'right', pr: 4, color: '#ff3b30' }}>-{formatCurrency(log.amount)}</TableCell>
+                                    <TableCell className="audit-td-amount cell-pr-4">-{formatCurrency(log.amount)}</TableCell>
                                 </TableRow>
                             ))
                         )}
                     </TableBody>
                 </Table>
-            </Box>
+            </div>
 
             {/* PAY DIALOG */}
             <BaseDialog
@@ -416,38 +395,38 @@ export default function YearlyExpensePage({ onEdit }) {
                 maxWidth="xs"
             >
                 {payModalItem && (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', color: '#10b981', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-content-premium">
+                        <div className="dialog-icon-wrap wallet-bg">
                             <Wallet size={32} />
                         </div>
-                        <Typography sx={{ color: '#86868b', mb: 3 }}>Deduct <strong>{formatCurrency(payModalItem.amount)}</strong> for {payModalItem.name}?</Typography>
+                        <Typography className="dialog-desc-text">Deduct <strong>{formatCurrency(payModalItem.amount)}</strong> for {payModalItem.name}?</Typography>
 
-                        <FormControl fullWidth sx={{ mb: 3, textAlign: 'left' }}>
-                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', mb: 1 }}>PAY FROM ACCOUNT</Typography>
+                        <FormControl fullWidth className="dialog-form-control">
+                            <Typography className="dialog-field-label">PAY FROM ACCOUNT</Typography>
                             {activeTab === 'YEARLY' ? (() => {
                                 const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
                                 const bal = nipponFund ? parseFloat(nipponFund.value || 0) : 0;
                                 const isInsufficient = bal < payModalItem.amount;
                                 
                                 return (
-                                    <Box sx={{ p: 2, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', bgcolor: 'rgba(0,0,0,0.02)' }}>
-                                        <Typography sx={{ fontWeight: 800, fontSize: '0.85rem' }}>📈 {nipponFund?.name || 'Nippon Fund'}</Typography>
-                                        <Typography sx={{ fontSize: '0.75rem', color: isInsufficient ? '#ff3b30' : '#10b981', fontWeight: 800 }}>
+                                    <Box className="asset-info-tile">
+                                        <Typography className="asset-title-text">📈 {nipponFund?.name || 'Nippon Fund'}</Typography>
+                                        <Typography className={`asset-bal-text ${isInsufficient ? 'error' : 'success'}`}>
                                             Available: {formatCurrency(bal)} {isInsufficient && '(Insufficient)'}
                                         </Typography>
                                     </Box>
                                 );
                             })() : (
-                                <Select value={paySourceId} onChange={e => setPaySourceId(e.target.value)} displayEmpty sx={{ borderRadius: '16px' }}>
+                                <Select value={paySourceId} onChange={e => setPaySourceId(e.target.value)} displayEmpty className="dialog-select-premium">
                                     <MenuItem value="" disabled>Select Source</MenuItem>
                                     {reserves?.map(r => {
                                         const isInsufficient = parseFloat(r.balance || 0) < payModalItem.amount && r.account_type !== 'CREDIT_CARD';
                                         return (
                                             <MenuItem key={r._id} value={r._id} disabled={isInsufficient}>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', opacity: isInsufficient ? 0.5 : 1 }}>
-                                                    <Typography sx={{ fontWeight: 800, fontSize: '0.85rem' }}>🏦 {r.account_name}</Typography>
-                                                    <Typography sx={{ color: isInsufficient ? '#ff3b30' : '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>
-                                                        {formatCurrency(r.balance || 0)} {isInsufficient && <span style={{fontSize: '0.6rem'}}>LOW</span>}
+                                                <Box className="select-item-flex">
+                                                    <Typography className="select-item-title">🏦 {r.account_name}</Typography>
+                                                    <Typography className={`select-item-bal ${isInsufficient ? 'error' : 'success'}`}>
+                                                        {formatCurrency(r.balance || 0)} {isInsufficient && <span className="nano-text">LOW</span>}
                                                     </Typography>
                                                 </Box>
                                             </MenuItem>
@@ -457,10 +436,10 @@ export default function YearlyExpensePage({ onEdit }) {
                                         const isInsufficient = parseFloat(i.value || 0) < payModalItem.amount;
                                         return (
                                             <MenuItem key={i._id} value={i._id} disabled={isInsufficient}>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', opacity: isInsufficient ? 0.5 : 1 }}>
-                                                    <Typography sx={{ fontWeight: 800, fontSize: '0.85rem' }}>📈 {i.name}</Typography>
-                                                    <Typography sx={{ color: isInsufficient ? '#ff3b30' : '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>
-                                                        {formatCurrency(i.value || 0)} {isInsufficient && <span style={{fontSize: '0.6rem'}}>LOW</span>}
+                                                <Box className="select-item-flex">
+                                                    <Typography className="select-item-title">📈 {i.name}</Typography>
+                                                    <Typography className={`select-item-bal ${isInsufficient ? 'error' : 'success'}`}>
+                                                        {formatCurrency(i.value || 0)} {isInsufficient && <span className="nano-text">LOW</span>}
                                                     </Typography>
                                                 </Box>
                                             </MenuItem>
@@ -470,14 +449,14 @@ export default function YearlyExpensePage({ onEdit }) {
                             )}
                         </FormControl>
 
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Button fullWidth onClick={() => setPayModalItem(null)} sx={{ borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>CANCEL</Button>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setPayModalItem(null)} className="btn-abort-pill">CANCEL</Button>
                             <Button 
                                 fullWidth 
                                 variant="contained" 
                                 onClick={handleConfirmPay} 
                                 disabled={!paySourceId || (activeTab === 'YEARLY' && (investments?.find(i => i.name === 'Nippon india corparate bond')?.value || 0) < payModalItem.amount)} 
-                                sx={{ borderRadius: '50px', fontWeight: 900, bgcolor: activeTab === 'YEARLY' ? '#10b981' : '#0ea5e9' }}
+                                className={`btn-confirm-pill ${activeTab === 'YEARLY' ? 'yearly' : 'monthly'}`}
                             >
                                 CONFIRM
                             </Button>
@@ -494,11 +473,11 @@ export default function YearlyExpensePage({ onEdit }) {
                 maxWidth="xs"
             >
                 {deleteConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography sx={{ color: '#86868b', mb: 3 }}>Are you sure you want to stop tracking <strong>{deleteConfirmItem.name}</strong>?</Typography>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>CANCEL</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} sx={{ borderRadius: '50px', fontWeight: 900, bgcolor: '#ff3b30' }}>DELETE</Button>
+                    <Box className="dialog-content-premium">
+                        <Typography className="dialog-desc-text">Are you sure you want to stop tracking <strong>{deleteConfirmItem.name}</strong>?</Typography>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-pill">CANCEL</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-delete-pill">DELETE</Button>
                         </div>
                     </Box>
                 )}
@@ -512,14 +491,14 @@ export default function YearlyExpensePage({ onEdit }) {
                 maxWidth="xs"
             >
                 {undoConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                         <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,158,11,0.1)', color: '#f59e0b', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-content-premium">
+                         <div className="dialog-icon-wrap undo-bg">
                             <RotateCcw size={32} />
                         </div>
-                        <Typography sx={{ color: '#86868b', mb: 3 }}>Undo recent payment for <strong>{undoConfirmItem.name}</strong>?</Typography>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Button fullWidth onClick={() => setUndoConfirmItem(null)} sx={{ borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>KEEP PAID</Button>
-                            <Button fullWidth variant="contained" onClick={() => handleUndoPay(undoConfirmItem)} sx={{ borderRadius: '50px', fontWeight: 900, bgcolor: '#f59e0b' }}>UNDO NOW</Button>
+                        <Typography className="dialog-desc-text">Undo recent payment for <strong>{undoConfirmItem.name}</strong>?</Typography>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setUndoConfirmItem(null)} className="btn-abort-pill">KEEP PAID</Button>
+                            <Button fullWidth variant="contained" onClick={() => handleUndoPay(undoConfirmItem)} className="btn-undo-pill">UNDO NOW</Button>
                         </div>
                     </Box>
                 )}
@@ -532,8 +511,8 @@ export default function YearlyExpensePage({ onEdit }) {
                 title="Top-Up Nippon Fund"
                 maxWidth="xs"
             >
-                <Box sx={{ p: 4, textAlign: 'center' }}>
-                     <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(139,92,246,0.1)', color: '#8b5cf6', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                <Box className="dialog-content-premium">
+                     <div className="dialog-icon-wrap topup-bg">
                         <TrendingUp size={32} />
                     </div>
                     
@@ -544,9 +523,9 @@ export default function YearlyExpensePage({ onEdit }) {
                         
                         return (
                             <>
-                                <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: '18px' }}>
-                                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b' }}>MINIMUM TOP-UP REQUIRED</Typography>
-                                    <Typography sx={{ fontSize: '1.5rem', fontWeight: 900, color: topupNeeded > 0 ? '#ff3b30' : '#10b981' }}>
+                                <Box className="mini-info-card">
+                                    <Typography className="mini-info-label">MINIMUM TOP-UP REQUIRED</Typography>
+                                    <Typography className={`mini-info-value ${topupNeeded > 0 ? 'error' : 'success'}`}>
                                         {formatCurrency(topupNeeded)}
                                     </Typography>
                                 </Box>
@@ -559,17 +538,17 @@ export default function YearlyExpensePage({ onEdit }) {
                                     onChange={e => setTopUpAmount(e.target.value)}
                                     autoFocus
                                     InputProps={{ startAdornment: <InputAdornment position="start">₹</InputAdornment> }}
-                                    sx={{ mb: 3, '& .MuiOutlinedInput-root': { borderRadius: '16px' } }}
+                                    className="dialog-input-premium"
                                 />
 
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <Button fullWidth onClick={() => setTopUpModal(false)} sx={{ borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)' }}>CANCEL</Button>
+                                <div className="dialog-action-flex">
+                                    <Button fullWidth onClick={() => setTopUpModal(false)} className="btn-abort-pill">CANCEL</Button>
                                     <Button 
                                         fullWidth 
                                         variant="contained" 
                                         onClick={handleTopUp} 
                                         disabled={!topUpAmount || parseFloat(topUpAmount) <= 0}
-                                        sx={{ borderRadius: '50px', fontWeight: 900, bgcolor: '#8b5cf6' }}
+                                        className="btn-add-fund-pill"
                                     >
                                         ADD FUNDS
                                     </Button>

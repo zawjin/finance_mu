@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, Typography, IconButton, Grow, Box } from '@mui/material';
 import { X } from 'lucide-react';
+import './BaseDialog.scss';
 
 export default function BaseDialog({ open, onClose, title, children, maxWidth = "sm", borderRadius = "28px", extraHeader }) {
     return (
@@ -12,28 +13,21 @@ export default function BaseDialog({ open, onClose, title, children, maxWidth = 
             maxWidth={maxWidth} 
             PaperProps={{ sx: { borderRadius, overflow: 'hidden' } }}
         >
-            <DialogTitle sx={{ 
-                p: 4, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(0,0,0,0.04)',
-                background: '#fff'
-            }}>
+            <DialogTitle className="dialog-base-title">
                 <Box sx={{ flex: 1 }}>
-                    <Typography component="span" sx={{ fontSize: '1.6rem', fontWeight: 900, color: '#1d1d1f', letterSpacing: '-0.04em' }}>
+                    <Typography component="span" className="dialog-title-text">
                         {title}
                     </Typography>
                     {extraHeader}
                 </Box>
                 <IconButton 
                     onClick={onClose} 
-                    sx={{ bgcolor: 'rgba(0,0,0,0.03)', '&:hover': { bgcolor: 'rgba(0,0,0,0.06)' } }}
+                    className="dialog-close-btn"
                 >
                     <X size={20} />
                 </IconButton>
             </DialogTitle>
-            <DialogContent sx={{ p: 0 }}>
+            <DialogContent className="dialog-base-content">
                 {children}
             </DialogContent>
         </Dialog>

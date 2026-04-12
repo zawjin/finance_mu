@@ -32,6 +32,7 @@ import PageHeader from '../components/ui/PageHeader';
 import Loader from '../components/ui/Loader';
 import Modal from '../components/ui/Modal';
 import BaseDialog from '../components/ui/BaseDialog';
+import './SpendingPage.scss';
 import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
@@ -106,8 +107,12 @@ const getIcon = (catName, categories = [], options = {}) => {
         color: color,
         fill: fillValue,
         strokeWidth: options.strokeWidth || 2.5,
-        style: options.style || { filter: `drop-shadow(0 2px 4px ${color}15)` }
+        style: options.style || {}
     };
+
+    if (!options.style) {
+        props.className = "icon-filter-shadow";
+    }
 
     const IconComponent = IconMap[iconName] || <Package />;
     return React.cloneElement(IconComponent, props);
@@ -346,31 +351,31 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.4, ease: 'easeInOut' }}
-                    style={{ marginBottom: '2.5rem', overflow: 'hidden' }}
+                    className="spending-analytics-container"
                 >
-                    <Box sx={{ p: 4, borderRadius: '32px', bgcolor: 'white', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                    <Box className="glass-effect analytics-card-premium">
                         <div className="analytics-hub">
                             {/* BOX 1: ARCHITECTURE - 20% on Desktop, 100% on Mobile */}
                             <div className="analytic-box-super">
-                                <Box sx={{ p: 3, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box className="analytic-inner-card">
+                                    <Typography className="analytic-subtitle">
                                         <PieChart size={14} color="var(--primary)" /> ARCHITECTURE
                                     </Typography>
-                                    <Box sx={{ height: 180, position: 'relative', display: 'grid', placeItems: 'center', mb: 3 }}>
+                                    <Box className="doughnut-chart-wrap">
                                         <Doughnut data={chartConfig.doughnut} options={{ plugins: { legend: { display: false } }, maintainAspectRatio: false }} />
-                                        <Box sx={{ position: 'absolute', textAlign: 'center' }}>
-                                            <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block' }}>BURN</Typography>
-                                            <Typography variant="body1" sx={{ fontWeight: 900, fontSize: '0.85rem' }}>{formatCurrency(totals.grossSpend)}</Typography>
+                                        <Box className="analytics-chart-overlay">
+                                            <Typography className="overlay-label">BURN</Typography>
+                                            <Typography className="overlay-value">{formatCurrency(totals.grossSpend)}</Typography>
                                         </Box>
                                     </Box>
-                                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                    <Box className="stats-list-flex">
                                         {Object.entries(totals.catStats).sort((a, b) => b[1].spend - a[1].spend).slice(0, 3).map(([cat, stats]) => (
-                                            <Box key={cat} sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: 'white', p: 1.25, borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getCatStyle(cat, categories).color }}></div>
-                                                    <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.65rem' }}>{cat}</Typography>
+                                            <Box key={cat} className="stat-row-item">
+                                                <Box className="stat-label-flex">
+                                                    <div className="portal-dot" style={{ background: getCatStyle(cat, categories).color }}></div>
+                                                    <Typography className="stat-cat-text">{cat}</Typography>
                                                 </Box>
-                                                <Typography variant="caption" sx={{ fontWeight: 900, color: getCatStyle(cat, categories).color, fontSize: '0.65rem' }}>{formatCurrency(stats.net)}</Typography>
+                                                <Typography className="stat-val-text" style={{ color: getCatStyle(cat, categories).color }}>{formatCurrency(stats.net)}</Typography>
                                             </Box>
                                         ))}
                                     </Box>
@@ -379,17 +384,17 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                             {/* BOX 2: TRAJECTORY - 40% on Desktop, 100% on Mobile */}
                             <div className="analytic-box-super">
-                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box className="analytic-inner-card-large">
+                                    <div className="purge-row-flex margin-b-2-5">
+                                        <Typography className="analytic-subtitle">
                                             <TrendingUp size={14} color="#34c759" /> TRAJECTORY
                                         </Typography>
-                                        <Box sx={{ textAlign: 'right' }}>
-                                            <Typography variant="h6" sx={{ fontWeight: 900, color: '#34c759', lineHeight: 1 }}>{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
-                                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>CUMULATIVE</Typography>
+                                        <Box className="text-right">
+                                            <Typography className="analytic-value-success">{formatCurrency(trendAnalysis.cumulative.slice(-1)[0] || 0)}</Typography>
+                                            <Typography className="analytic-label-secondary">CUMULATIVE</Typography>
                                         </Box>
                                     </div>
-                                    <Box sx={{ flex: 1, minHeight: 320 }}>
+                                    <Box className="chart-container-fluid">
                                         <Line
                                             data={chartConfig.trajectory}
                                             options={{
@@ -407,11 +412,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                             {/* BOX 3: VELOCITY - 40% on Desktop, 100% on Mobile */}
                             <div className="analytic-box-super">
-                                <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box className="analytic-inner-card-large">
+                                    <Typography className="analytic-subtitle">
                                         <Activity size={14} color="#0071e3" /> VELOCITY
                                     </Typography>
-                                    <Box sx={{ flex: 1, minHeight: 320 }}>
+                                    <Box className="chart-container-fluid">
                                         <Bar
                                             data={chartConfig.bar}
                                             options={{
@@ -437,76 +442,68 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 onClose={() => setDeleteConfirmItem(null)}
                 TransitionComponent={Grow}
                 transitionDuration={400}
-                PaperProps={{
-                    sx: {
-                        borderRadius: '28px',
-                        overflow: 'hidden',
-                        width: '100%',
-                        maxWidth: '440px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
-                    }
-                }}
+                className="dialog-purge-backdrop"
             >
                 {deleteConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="dialog-purge-wrap">
+                        <div className="dialog-purge-icon-square">
                             <Trash2 size={32} />
                         </div>
-                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, color: '#1d1d1f' }}>CRITICAL PURGE</Typography>
-                        <Typography variant="body1" sx={{ color: '#86868b', mb: 3, lineHeight: 1.6, fontSize: '0.95rem' }}>
-                            Permanently purge <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
+                        <Typography className="dialog-title-critical">CRITICAL PURGE</Typography>
+                        <Typography className="dialog-desc-audit">
+                            Permanently purge <strong className="text-dark">{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
                         </Typography>
 
-                        <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.25rem', borderRadius: '18px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(0,0,0,0.04)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>CATEGORY</span>
-                                <span style={{ fontWeight: 900, fontSize: '0.7rem', letterSpacing: '0.02em' }}>{deleteConfirmItem.category}</span>
+                        <div className="dialog-audit-snippet">
+                            <div className="snippet-row">
+                                <span className="snippet-label">CATEGORY</span>
+                                <span className="snippet-value-upper">{deleteConfirmItem.category}</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>AUDIT AMOUNT</span>
-                                <span style={{ fontWeight: 900, fontSize: '0.9rem', color: '#ff3b30' }}>{formatCurrency(deleteConfirmItem.amount)}</span>
+                            <div className="snippet-row">
+                                <span className="snippet-label">AUDIT AMOUNT</span>
+                                <span className="snippet-value-danger">{formatCurrency(deleteConfirmItem.amount)}</span>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.05)', '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }, textTransform: 'none' }}>ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} sx={{ borderRadius: '50px', p: '0.9rem', fontWeight: 800, bgcolor: '#ff3b30', boxShadow: '0 10px 20px -5px rgba(255,59,48,0.3)', '&:hover': { bgcolor: '#e03228', transform: 'translateY(-2px)' }, textTransform: 'none', transition: '0.2s' }}>PROCEED PURGE</Button>
+                        <div className="dialog-action-flex">
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-action">ABORT</Button>
+                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-confirm-purge">PROCEED PURGE</Button>
                         </div>
                     </Box>
                 )}
             </Dialog>
 
             {/* FINANCIAL SUMMARY CORE */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
-                <div className="glass-effect" style={{ padding: '1.25rem', borderRadius: '1.5rem', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center' }}><Download size={20} style={{ transform: 'rotate(180deg)' }} /></div>
+            <div className="summary-grid">
+                <div className="summary-card-premium">
+                    <div className="summary-icon-wrapper debit"><Download size={20} /></div>
                     <div>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block', mb: -0.5 }}>GROSS DEBIT</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 900 }}>{formatCurrency(totals.grossSpend)}</Typography>
+                        <Typography className="summary-label-mini">GROSS DEBIT</Typography>
+                        <Typography className="summary-value-main">{formatCurrency(totals.grossSpend)}</Typography>
                     </div>
                 </div>
-                <div className="glass-effect" style={{ padding: '1.25rem', borderRadius: '1.5rem', border: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(52,199,89,0.1)', color: '#34c759', display: 'grid', placeItems: 'center' }}><Download size={20} /></div>
+                <div className="summary-card-premium">
+                    <div className="summary-icon-wrapper recovery"><Download size={20} style={{ transform: 'none' }} /></div>
                     <div>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'text.secondary', display: 'block', mb: -0.5 }}>TOTAL RECOVERY</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 900, color: '#34c759' }}>{formatCurrency(totals.grossRecovered)}</Typography>
+                        <Typography className="summary-label-mini">TOTAL RECOVERY</Typography>
+                        <Typography className="summary-value-success">{formatCurrency(totals.grossRecovered)}</Typography>
                     </div>
                 </div>
-                <div className="glass-effect" style={{ padding: '1.25rem', borderRadius: '1.5rem', border: '1.5px solid rgba(0,113,227,0.1)', display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(0,113,227,0.03)' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'var(--primary)', color: 'white', display: 'grid', placeItems: 'center' }}><Activity size={20} /></div>
+                <div className="summary-card-premium outstanding">
+                    <div className="summary-icon-wrapper primary"><Activity size={20} /></div>
                     <div>
-                        <Typography variant="caption" sx={{ fontWeight: 900, color: 'var(--primary)', display: 'block', mb: -0.4, opacity: 0.8 }}>OUTSTANDING</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 900 }}>{formatCurrency(totals.net)}</Typography>
+                        <Typography className="summary-label-primary">OUTSTANDING</Typography>
+                        <Typography className="summary-value-main">{formatCurrency(totals.net)}</Typography>
                     </div>
                 </div>
             </div>
 
             {/* CATEGORY SUMMARY PILLS */}
-            <div style={{ width: '100%', overflow: 'hidden', marginBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
+            <div className="category-scroll-container">
+                <div className="category-scroll-track">
                     {loading ? (
                         [...Array(6)].map((_, i) => (
-                            <Skeleton key={i} variant="rectangular" width={140} height={60} sx={{ borderRadius: '1.1rem', flexShrink: 0 }} />
+                            <Skeleton key={i} variant="rectangular" width={140} height={60} className="skeleton-pill-box" />
                         ))
                     ) : (
                         [...categories]
@@ -522,20 +519,20 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 const hasActivity = stats.spend > 0;
 
                                 return (
-                                    <motion.div key={cat} className="apple-category-pill glass-effect" style={{ minWidth: '160px' }}>
+                                    <motion.div key={cat} className="apple-category-pill glass-effect category-pill-wrapper">
                                         <div className="pill-icon-box" style={{ background: hasActivity ? style.bg : 'rgba(0,0,0,0.04)', color: hasActivity ? style.color : '#8e8e93' }}>
                                             {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
                                         </div>
                                         <div className="pill-info-box">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <div className="tx-sub-flex">
                                                 <span className="pill-cat-label" style={{ opacity: hasActivity ? 1 : 0.6 }}>{cat}</span>
                                             </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                <span className="pill-amt-val" style={{ color: hasActivity ? style.color : '#8e8e93', fontWeight: 900, fontSize: '0.85rem' }}>
+                                            <div className="content-shell">
+                                                <span className="pill-amt-val" style={{ color: hasActivity ? style.color : '#8e8e93' }}>
                                                     {formatCurrency(stats.net)}
                                                 </span>
                                                 {(stats.recovered > 0) && (
-                                                    <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.55rem', fontWeight: 800, opacity: 0.5, marginTop: '-2px' }}>
+                                                    <div className="tx-recovery-small" style={{ marginTop: '-2px' }}>
                                                         <span style={{ color: '#ff3b30' }}>↑{formatCurrency(stats.spend)}</span>
                                                         <span style={{ color: '#34c759' }}>↓{formatCurrency(stats.recovered)}</span>
                                                     </div>
@@ -550,28 +547,28 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             </div>
 
             <div className="spending-split-layout">
-                <div className="filters-sidebar-card glass-effect" style={{ padding: '1.75rem' }}>
-                    <div style={{ position: 'sticky', top: '1rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
-                            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--primary)', color: 'white', display: 'grid', placeItems: 'center' }}>
-                                <Filter size={15} fill="white" style={{ opacity: 0.8 }} />
+                <div className="filters-sidebar-card glass-effect">
+                    <div className="sidebar-sticky-wrap">
+                        <div className="filter-header-flex">
+                            <div className="filter-icon-box">
+                                <Filter size={15} fill="white" />
                             </div>
-                            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>Audit Filters</span>
+                            <span className="filter-header-title">Audit Filters</span>
                         </div>
 
                         <div className="filter-section-block">
                             <div className="filter-section-label"><span>SEARCH LEDGER</span></div>
-                            <div style={{ position: 'relative' }}>
-                                <Search size={15} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-dim)', pointerEvents: 'none', zIndex: 1 }} />
-                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Description, category..." style={{ paddingLeft: '2.75rem' }} />
+                            <div className="search-input-wrapper">
+                                <Search size={15} className="search-icon-fixed" />
+                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Description, category..." />
                             </div>
                         </div>
 
-                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                        <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>CATEGORY ENTITY</span></div>
                             <div className="category-filter-grid">
                                 {loading ? (
-                                    [...Array(6)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} sx={{ borderRadius: '10px' }} />)
+                                    [...Array(6)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
                                 ) : (
                                     <>
                                         <div className={`cat-filter-chip ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>All</div>
@@ -591,7 +588,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     </>
                                 )}
                                 {selectedCat !== 'ALL' && (
-                                    <div style={{ marginTop: '0.85rem', display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                    <div className="sub-cat-scroll-wrap">
                                         <span className={`sub-cat-pill ${selectedSub === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedSub('ALL')}>All Nodes</span>
                                         {(categories.find(c => c.name === selectedCat)?.sub_categories || []).slice().sort().map(sub => (
                                             <span key={sub} className={`sub-cat-pill ${selectedSub === sub ? 'active' : ''}`} onClick={() => setSelectedSub(sub)}>{sub}</span>
@@ -601,7 +598,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             </div>
                         </div>
 
-                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                        <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>TIME HORIZON</span></div>
                             <div className="time-horizon-grid">
                                 {[
@@ -620,36 +617,25 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             </div>
                         </div>
 
-                        <div className="filter-section-block" style={{ marginTop: '1.75rem' }}>
+                        <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
-                            <div className="category-filter-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                            <div className="portal-filter-wrap">
                                 <div 
-                                    className={`cat-filter-chip ${selectedSourceId === 'ALL' ? 'active' : ''}`} 
+                                    className={`cat-filter-chip ${selectedSourceId === 'ALL' ? 'active' : ''} padding-account-all`} 
                                     onClick={() => setSelectedSourceId('ALL')}
-                                    style={{ padding: '0.6rem 1.2rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.75rem' }}
                                 >
                                     All Portals
                                 </div>
                                 {reserves.map(r => (
                                     <div 
                                         key={r._id} 
-                                        className={`cat-filter-chip ${selectedSourceId === r._id ? 'active' : ''}`} 
+                                        className={`cat-filter-chip portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`} 
                                         onClick={() => setSelectedSourceId(r._id)}
                                         style={{ 
-                                            padding: '0.6rem 1rem', 
-                                            borderRadius: '12px', 
-                                            fontWeight: 800, 
-                                            fontSize: '0.75rem',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.6rem',
                                             border: selectedSourceId === r._id ? `1.5px solid ${r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1'}` : '1.5px solid transparent'
                                         }}
                                     >
-                                        <div style={{ 
-                                            width: '8px', 
-                                            height: '8px', 
-                                            borderRadius: '2px', 
+                                        <div className="portal-dot" style={{ 
                                             background: r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
                                             boxShadow: `0 0 10px ${r.account_type === 'BANK' ? '#6366f144' : (r.account_type === 'CREDIT_CARD' ? '#ff3b3044' : '#10b98144')}`
                                         }} />
@@ -660,12 +646,12 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         </div>
 
                         {period === 'CUSTOM' && (
-                            <div className="filter-section-block" style={{ marginTop: '1.5rem' }}>
+                            <div className="filter-section-block margin-t-1-5">
                                 <div className="filter-section-label"><CalendarDays size={13} /><span>DATE RANGE</span></div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                    <DatePicker label="FROM" value={dateRange.start ? dayjs(dateRange.start) : null} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, start: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, sx: { '& .MuiOutlinedInput-root': { borderRadius: '10px' }, '& .MuiOutlinedInput-input': { fontWeight: 800, fontSize: '0.75rem' } } } }} />
-                                    <div style={{ width: '8px', height: '2px', background: 'rgba(0,0,0,0.1)', flexShrink: 0 }}></div>
-                                    <DatePicker label="TO" value={dateRange.end ? dayjs(dateRange.end) : null} minDate={dateRange.start ? dayjs(dateRange.start) : undefined} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, end: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, sx: { '& .MuiOutlinedInput-root': { borderRadius: '10px' }, '& .MuiOutlinedInput-input': { fontWeight: 800, fontSize: '0.75rem' } } } }} />
+                                <div className="date-range-inputs">
+                                    <DatePicker label="FROM" value={dateRange.start ? dayjs(dateRange.start) : null} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, start: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, className: "datepicker-nano" } }} />
+                                    <div className="datepicker-divider"></div>
+                                    <DatePicker label="TO" value={dateRange.end ? dayjs(dateRange.end) : null} minDate={dateRange.start ? dayjs(dateRange.start) : undefined} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, end: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, className: "datepicker-nano" } }} />
                                 </div>
                             </div>
                         )}
@@ -675,19 +661,19 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 </div>
 
                 <div className="spending-main-content">
-                    <div className="content-meta-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', background: 'white', padding: '0.85rem 1.5rem', borderRadius: '1.25rem', border: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div className="meta-status-bar">
                         <div className="badge-status">
                             {loading ? <Skeleton variant="text" width={120} height={20} /> : (
                                 <>
                                     <div className="dot-pulse"></div>
-                                    <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{filteredSpending.length}</span> LOGS FOUND
+                                    <span className="badge-count-text">{filteredSpending.length}</span> LOGS FOUND
                                 </>
                             )}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                        <div className="action-hub-right">
                             {/* SORT CONTROL */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#f8fafc', borderRadius: '50px', padding: '0.3rem 0.3rem 0.3rem 0.8rem', border: '1px solid rgba(0,0,0,0.06)' }}>
-                                <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#94a3b8', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>Sort</span>
+                            <div className="sort-group-premium">
+                                <span className="sort-label-mini">Sort</span>
                                 {[
                                     { id: 'DATE_DESC', label: 'Latest' },
                                     { id: 'DATE_ASC', label: 'Oldest' },
@@ -697,22 +683,12 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     <button
                                         key={s.id}
                                         onClick={() => setSortBy(s.id)}
-                                        style={{
-                                            padding: '0.3rem 0.7rem',
-                                            borderRadius: '50px',
-                                            border: 'none',
-                                            fontWeight: 900,
-                                            fontSize: '0.65rem',
-                                            cursor: 'pointer',
-                                            background: sortBy === s.id ? '#1d1d1f' : 'transparent',
-                                            color: sortBy === s.id ? '#fff' : '#94a3b8',
-                                            transition: 'all 0.15s',
-                                        }}
+                                        className={`sort-pill-btn ${sortBy === s.id ? 'active' : ''}`}
                                     >{s.label}</button>
                                 ))}
                             </div>
-                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem' }}>CLEAR ALL</Button>
-                            <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} sx={{ borderRadius: '50px', textTransform: 'none', fontWeight: 800, fontSize: '0.7rem', px: 2 }}>EXPORT CSV</Button>
+                            <Button size="small" variant="outlined" onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-pill">CLEAR ALL</Button>
+                            <Button size="small" variant="contained" onClick={handleExportCSV} startIcon={<Download size={14} />} className="btn-export-pill">EXPORT CSV</Button>
                         </div>
                     </div>
 
@@ -747,19 +723,19 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 return (
                                     <div key={date} className="date-group">
                                         <div className="date-header-luxury">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div className="table-header-flex">
                                                 <Calendar size={14} color="var(--primary)" fill="rgba(0,113,227,0.2)" />
-                                                <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>{date}</span>
+                                                <span className="table-header-title">{date}</span>
                                             </div>
-                                            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                                            <div className="day-totals-flex">
                                                 {(dayRecovery > 0) && (
-                                                    <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', fontWeight: 800, opacity: 0.6 }}>
-                                                        <span style={{ color: '#ff3b30' }}>S: {formatCurrency(daySpend)}</span>
-                                                        <span style={{ color: '#34c759' }}>R: {formatCurrency(dayRecovery)}</span>
+                                                    <div className="day-stats-small">
+                                                        <span className="text-danger">S: {formatCurrency(daySpend)}</span>
+                                                        <span className="text-success">R: {formatCurrency(dayRecovery)}</span>
                                                     </div>
                                                 )}
-                                                <div style={{ fontWeight: 900, fontSize: '0.9rem' }}>
-                                                    OUTSTANDING: <span style={{ color: dayNet > 0 ? '#ff3b30' : (dayNet < 0 ? '#34c759' : 'var(--text-dim)') }}>{formatCurrency(dayNet)}</span>
+                                                <div className="outstanding-label-wrap">
+                                                    OUTSTANDING: <span className={dayNet > 0 ? 'text-danger' : (dayNet < 0 ? 'text-success' : 'text-dim')}>{formatCurrency(dayNet)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -772,33 +748,32 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                                                 return (
                                                     <div key={idx} className="transaction-row-fancy">
-                                                        <div style={{ marginRight: '1rem', width: '32px', height: '32px', borderRadius: '8px', background: catStyle.bg, display: 'grid', placeItems: 'center' }}>
+                                                        <div className="tx-icon-box" style={{ background: catStyle.bg }}>
                                                             {getIcon(s.category, categories)}
                                                         </div>
-                                                        <div style={{ flex: 1 }}>
-                                                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1d1d1f' }}>{s.description}</div>
-                                                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                                                <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 600 }}>{s.sub_category}</span>
+                                                        <div className="tx-main-info">
+                                                            <div className="tx-desc-text">{s.description}</div>
+                                                            <div className="tx-sub-flex">
+                                                                <span className="tx-sub-label">{s.sub_category}</span>
                                                                 {sourceAccount && (
-                                                                    <span style={{ fontSize: '0.62rem', fontWeight: 900, px: 0.8, py: 0.2, bgcolor: isUnsettled ? '#fff1f2' : '#f0f9ff', color: isUnsettled ? '#ff3b30' : '#0369a1', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                                                    <span className={`tx-portal-tag ${isUnsettled ? 'unsettled' : 'settled'}`}>
                                                                         via {sourceAccount.account_name}
                                                                     </span>
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <div style={{ width: '130px', textAlign: 'center' }}>
-                                                            <span style={{ padding: '0.35rem 0.75rem', background: catStyle.bg, color: catStyle.color, borderRadius: '50px', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.category}</span>
+                                                        <div className="tx-cat-badge-wrap">
+                                                            <span className="tx-cat-badge-pill" style={{ background: catStyle.bg, color: catStyle.color }}>{s.category}</span>
                                                         </div>
-                                                        <div style={{ width: '140px', textAlign: 'right' }}>
-                                                            <div style={{ fontWeight: 900, fontSize: '1.05rem', color: 'var(--text-main)' }}>{formatCurrency(outstanding)}</div>
+                                                        <div className="tx-amount-col">
+                                                            <div className="tx-amount-main">{formatCurrency(outstanding)}</div>
                                                             {s.recovered > 0 && (
-                                                                <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.5, color: '#34c759' }}>Rec: {formatCurrency(s.recovered)}</div>
+                                                                <div className="tx-recovery-small">Rec: {formatCurrency(s.recovered)}</div>
                                                             )}
-
                                                         </div>
 
                                                         {/* High-Fidelity Action Cluster */}
-                                                        <div className="row-action-cluster" style={{ display: 'flex', gap: '0.35rem', marginLeft: '1.5rem', opacity: 0.8 }}>
+                                                        <div className="row-action-cluster tx-action-cluster">
                                                             {isUnsettled && (
                                                                 <IconButton size="small" onClick={() => {
                                                                     setSettleData({ cardId: s.payment_source_id, sourceId: '', amount: outstanding.toString(), targetTx: s });
@@ -834,22 +809,22 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 maxWidth="xs"
             >
                 {deleteConfirmItem && (
-                    <Box sx={{ p: 4, textAlign: 'center', bgcolor: 'white' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(255,59,48,0.1)', color: '#ff3b30', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' }}>
+                    <Box className="purge-dialog-body">
+                        <div className="purge-icon-circle">
                             <Trash2 size={32} />
                         </div>
                         <Typography variant="body1" sx={{ color: '#86868b', mb: 3, lineHeight: 1.6, fontSize: '0.95rem' }}>
                             Permanently purge <strong style={{ color: '#1d1d1f' }}>{deleteConfirmItem.description}</strong> from the primary ledger? This action is irreversible.
                         </Typography>
 
-                        <div style={{ background: 'rgba(0,0,0,0.02)', padding: '1.25rem', borderRadius: '18px', marginBottom: '2rem', textAlign: 'left', border: '1px solid rgba(0,0,0,0.04)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>CATEGORY</span>
-                                <span style={{ fontWeight: 900, fontSize: '0.7rem', letterSpacing: '0.02em' }}>{deleteConfirmItem.category}</span>
+                        <div className="purge-audit-card">
+                            <div className="purge-row-flex">
+                                <span className="purge-label-micro">CATEGORY</span>
+                                <span className="purge-val-micro">{deleteConfirmItem.category}</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ opacity: 0.6, fontSize: '0.7rem', fontWeight: 800 }}>AUDIT AMOUNT</span>
-                                <span style={{ fontWeight: 900, fontSize: '0.9rem', color: '#ff3b30' }}>{formatCurrency(deleteConfirmItem.amount)}</span>
+                            <div className="purge-row-flex last">
+                                <span className="purge-label-micro">AUDIT AMOUNT</span>
+                                <span className="purge-val-micro" style={{ color: '#ff3b30' }}>{formatCurrency(deleteConfirmItem.amount)}</span>
                             </div>
                         </div>
 
@@ -910,7 +885,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 }
 
 const TableWrapper = ({ children }) => (
-    <div style={{ background: 'white', borderRadius: '1.5rem', border: '1px solid rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+    <div className="table-wrapper-luxury">
         {children}
     </div>
 );

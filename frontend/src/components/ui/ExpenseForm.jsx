@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useSelector } from 'react-redux';
+import './Forms.scss';
 
 export default function ExpenseForm({ categories, onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
@@ -80,34 +81,15 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         return true;
     });
 
-    const globalInputStyle = {
-        '& .MuiOutlinedInput-root': {
-            borderRadius: '12px',
-            backgroundColor: 'rgba(0,0,0,0.01)',
-            minHeight: '48px',
-            paddingLeft: '12px', // Standardized left padding
-            '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' },
-            '&:hover fieldset': { borderColor: 'rgba(0,0,0,0.16)' },
-            '&.Mui-focused fieldset': { borderColor: '#1d1d1f', borderWidth: '1.5px' }
-        },
-        '& .MuiOutlinedInput-input': { fontWeight: 600, color: '#1d1d1f', fontSize: '0.95rem' }
-    };
-
-    const labelStyle = {
-        fontSize: '0.75rem', fontWeight: 800, color: 'text.secondary',
-        marginBottom: '0.5rem', display: 'block', letterSpacing: '0.05em'
-    };
-
-    const iconStyle = { color: 'rgba(0,0,0,0.4)', strokeWidth: 2.5 };
 
     return (
-        <Box sx={{ p: 4, pt: 1, bgcolor: '#ffffff' }}>
+        <Box className="form-container-premium">
             <Stack spacing={2.5}>
                 {/* RECOVERY TRACK - ONLY IN EDIT MODE */}
                 {initialData && (
                     <Stack spacing={2}>
                         <Box>
-                            <Typography sx={labelStyle}>RECOVERED PORTION (Adjustment)</Typography>
+                            <Typography className="form-label-premium">RECOVERED PORTION (Adjustment)</Typography>
                             <TextField
                                 fullWidth
                                 placeholder="e.g. Someone returned 50.00..."
@@ -121,11 +103,11 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CheckCircle2 size={18} style={{ color: '#34c759' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#34c759', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                                 }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         </Box>
                         <Box>
-                            <Typography sx={labelStyle}>ADJUSTMENT Comment</Typography>
+                            <Typography className="form-label-premium">ADJUSTMENT Comment</Typography>
                             <TextField
                                 fullWidth
                                 placeholder="Specific details about this recovery..."
@@ -136,7 +118,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#5ac8fa' }} /></InputAdornment>
                                 }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         </Box>
                     </Stack>
@@ -144,7 +126,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
 
                 {/* VALUATION */}
                 <Box>
-                    <Typography sx={labelStyle}>VALUATION</Typography>
+                    <Typography className="form-label-premium">VALUATION</Typography>
                     <TextField
                         fullWidth
                         placeholder="0.00"
@@ -158,15 +140,15 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         error={!!errors.amount}
                         helperText={errors.amount}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
+                            startAdornment: <InputAdornment position="start"><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
-                        sx={globalInputStyle}
+                        className="form-input-premium"
                     />
                 </Box>
 
                 {/* DESCRIPTION */}
                 <Box>
-                    <Typography sx={labelStyle}>ENTRY DESCRIPTION</Typography>
+                    <Typography className="form-label-premium">ENTRY DESCRIPTION</Typography>
                     <TextField
                         fullWidth
                         placeholder="e.g. AWS Billing..."
@@ -177,25 +159,24 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         error={!!errors.description}
                         helperText={errors.description}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#ff9500' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start"><FileText size={18} style={{ color: '#ff9500' }} /></InputAdornment>
                         }}
-                        sx={globalInputStyle}
+                        className="form-input-premium"
                     />
                 </Box>
 
                 {/* TIMESTAMP */}
                 <Box>
-                    <Typography sx={labelStyle}>LEDGER TIMESTAMP</Typography>
+                    <Typography className="form-label-premium">LEDGER TIMESTAMP</Typography>
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
                         slotProps={{
                             textField: {
                                 fullWidth: true, size: 'small', error: !!errors.date,
-                                helperText: errors.date, sx: globalInputStyle,
+                                helperText: errors.date, className: "form-input-premium",
                                 InputProps: {
-                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>,
-                                    sx: { pl: '12px' }
+                                    startAdornment: <InputAdornment position="start"><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>
                                 }
                             }
                         }}
@@ -204,7 +185,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
 
                 {/* CATEGORY */}
                 <Box>
-                    <Typography sx={labelStyle}>CATEGORY ENTITY</Typography>
+                    <Typography className="form-label-premium">CATEGORY ENTITY</Typography>
                     <Select
                         fullWidth
                         size="small"
@@ -212,8 +193,8 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         onChange={e => setFormData({ ...formData, category: e.target.value, sub: '' })}
                         error={!!errors.category}
                         displayEmpty
-                        startAdornment={<InputAdornment position="start" sx={{ mr: 1, ml: -0.5 }}><LayoutGrid size={18} style={{ color: '#5856d6' }} /></InputAdornment>}
-                        sx={globalInputStyle['& .MuiOutlinedInput-root']}
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><LayoutGrid size={18} style={{ color: '#5856d6' }} /></InputAdornment>}
+                        className="form-input-premium"
                         IconComponent={ChevronDown}
                     >
                         <MenuItem value="" disabled>Select Segment</MenuItem>
@@ -231,7 +212,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
 
                 {/* GRANULAR MAPPING (Architecturally Stabilized) */}
                 <Box>
-                    <Typography sx={labelStyle}>GRANULAR MAPPING</Typography>
+                    <Typography className="form-label-premium">GRANULAR MAPPING</Typography>
                     <Autocomplete
                         fullWidth
                         freeSolo
@@ -248,12 +229,12 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                 InputProps={{
                                     ...params.InputProps,
                                     startAdornment: (
-                                        <InputAdornment position="start" sx={{ mr: 1.5, ml: -0.5 }}>
+                                        <InputAdornment position="start" sx={{ ml: -0.5 }}>
                                             <Tag size={18} style={{ color: '#32ade6' }} />
                                         </InputAdornment>
                                     )
                                 }}
-                                sx={globalInputStyle}
+                                className="form-input-premium"
                             />
                         )}
                         sx={{
@@ -267,24 +248,16 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
 
                 {/* PAYMENT METHOD */}
                 <Box>
-                    <Typography sx={labelStyle}>PAYMENT METHOD</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    <Typography className="form-label-premium">PAYMENT METHOD</Typography>
+                    <Box className="payment-method-pill-group">
                         {PAYMENT_METHODS.map(m => (
                             <Box
                                 key={m.key}
                                 onClick={() => setFormData({ ...formData, payment_method: m.key, payment_source_id: '' })}
-                                sx={{
-                                    display: 'flex', alignItems: 'center', gap: 0.8,
-                                    px: 1.5, py: 0.9, borderRadius: '12px', cursor: 'pointer',
-                                    border: '1.5px solid',
-                                    borderColor: formData.payment_method === m.key ? m.color : 'rgba(0,0,0,0.07)',
-                                    bgcolor: formData.payment_method === m.key ? `${m.color}15` : '#fafafa',
-                                    transition: '0.15s',
-                                    '&:hover': { borderColor: m.color, bgcolor: `${m.color}08` }
-                                }}
+                                className={`method-pill ${formData.payment_method === m.key ? `active method-${m.key.toLowerCase()}` : `method-${m.key.toLowerCase()}`}`}
                             >
-                                <Box sx={{ color: formData.payment_method === m.key ? m.color : '#86868b', display: 'flex' }}>{m.icon}</Box>
-                                <Typography sx={{ fontWeight: 800, fontSize: '0.78rem', color: formData.payment_method === m.key ? m.color : '#86868b' }}>{m.label}</Typography>
+                                <Box className="pill-icon">{m.icon}</Box>
+                                <Typography className="pill-label">{m.label}</Typography>
                             </Box>
                         ))}
                     </Box>
@@ -293,14 +266,14 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 {/* SOURCE ACCOUNT (only for Cash/Bank/Wallet) */}
                 {showSourcePicker && (
                     <Box>
-                        <Typography sx={labelStyle}>SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>DEBIT FROM</span></Typography>
+                        <Typography className="form-label-premium">SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>DEBIT FROM</span></Typography>
                         <Select
                             fullWidth
                             size="small"
                             value={formData.payment_source_id}
                             onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
                             displayEmpty
-                            sx={{ ...globalInputStyle['& .MuiOutlinedInput-root'], borderRadius: '12px' }}
+                            className="form-input-premium"
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (manual only)</em></MenuItem>
                             {filteredReserves.map(r => {
@@ -326,15 +299,15 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 {/* TARGET ACCOUNT (For Settlements/Transfers) */}
                 {formData.category === 'Financial' || formData.payment_method === 'BANK' ? (
                     <Box>
-                        <Typography sx={labelStyle}>TARGET SETTLEMENT — <span style={{ color: '#6366f1' }}>CREDIT TO / PAY OFF</span></Typography>
+                        <Typography className="form-label-premium">TARGET SETTLEMENT — <span style={{ color: '#6366f1' }}>CREDIT TO / PAY OFF</span></Typography>
                         <Select
                             fullWidth
                             size="small"
                             value={formData.target_account_id}
                             onChange={e => setFormData({ ...formData, target_account_id: e.target.value })}
                             displayEmpty
-                            sx={{ ...globalInputStyle['& .MuiOutlinedInput-root'], borderRadius: '12px' }}
-                            startAdornment={<InputAdornment position="start" sx={{ mr: 1, ml: -0.5 }}><CreditCard size={18} style={{ color: '#6366f1' }} /></InputAdornment>}
+                            className="form-input-premium"
+                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><CreditCard size={18} style={{ color: '#6366f1' }} /></InputAdornment>}
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>None (Standard Expense)</em></MenuItem>
                             {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => (
@@ -353,29 +326,17 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 ) : null}
             </Stack>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 5, pt: 3, borderTop: '1.5px solid rgba(0,0,0,0.04)' }}>
+            <Box className="form-actions-row">
                 <Button
                     onClick={onCancel}
-                    variant="text"
-                    sx={{
-                        borderRadius: '12px', px: 4,
-                        fontWeight: 800, textTransform: 'none',
-                        color: 'text.secondary', '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' }
-                    }}
+                    className="btn-dismiss-premium"
                 >
                     Dismiss
                 </Button>
                 <Button
                     variant="contained"
                     onClick={handleFormSubmit}
-                    sx={{
-                        borderRadius: '12px', px: 5, py: 1.2,
-                        fontWeight: 900, textTransform: 'none',
-                        bgcolor: '#1d1d1f', color: '#ffffff',
-                        boxShadow: 'none',
-                        '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' },
-                        transition: '0.2s all ease-in-out'
-                    }}
+                    className="btn-submit-premium"
                 >
                     {initialData ? 'Update Entry' : 'Complete Entry'}
                 </Button>

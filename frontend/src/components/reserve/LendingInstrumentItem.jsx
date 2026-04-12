@@ -43,45 +43,30 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: idx * 0.05, duration: 0.4, ease: "easeOut" }}
-            style={{ width: '100%', marginBottom: '4rem' }}
+            className="chit-card-wrapper"
         >
-            <Box sx={{
-                bgcolor: 'white',
-                borderRadius: '32px',
-                overflow: 'hidden',
-                border: '1px solid rgba(0,0,0,0.06)',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.04)',
-                position: 'relative'
-            }}>
+            <Box className="chit-card-premium">
                 {/* PREMIUM ADAPTIVE HEADER */}
-                    <Box sx={{
-                        p: 4,
-                        background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)`,
-                        borderBottom: '1px solid rgba(0,0,0,0.03)',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start',
-                        gap: 2
-                    }}>
+                <Box 
+                    className="chit-header-premium"
+                    style={{ background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)` }}
+                >
                     <Box>
-                        <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '1.8rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                        <Typography className="chit-borrower-name">
                             {lending.borrower}
                         </Typography>
-                        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 1.5 }}>
+                        <Stack direction="row" spacing={1.5} alignItems="center" className="margin-t-15">
                             <Chip
                                 label={`${planType} ${planType === '1L' ? 'LITE' : planType === '5L' ? 'STANDARD' : planType === '10L' ? 'PREMIUM' : 'ULTRA'}`}
                                 size="small"
-                                sx={{
-                                    bgcolor: planColor, color: '#fff',
-                                    fontWeight: 900, fontSize: '0.65rem', height: '22px',
-                                    boxShadow: `0 4px 12px ${planColor}33`
-                                }}
+                                className="chit-plan-chip"
+                                style={{ backgroundColor: planColor, boxShadow: `0 4px 12px ${planColor}33` }}
                             />
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            <Typography className="chit-asset-label">
                                 Chit Fund Asset
                             </Typography>
-                            <Box sx={{ width: '4px', height: '4px', borderRadius: '50%', bgcolor: '#d2d2d7' }} />
-                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#1d1d1f' }}>
+                            <Box className="chit-meta-dot" />
+                            <Typography className="chit-term-label">
                                 Term: 20 Months
                             </Typography>
                         </Stack>
@@ -89,22 +74,13 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
 
                     <Stack spacing={1.5} alignItems="flex-end">
                         <Stack direction="row" spacing={1}>
-                            <IconButton onClick={() => onEdit(lending)} sx={{
-                                color: '#1d1d1f', bgcolor: '#fff', border: '1px solid rgba(0,0,0,0.08)',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                                '&:hover': { bgcolor: '#f5f5f7' }
-                            }}>
+                            <IconButton onClick={() => onEdit(lending)} className="chit-action-btn btn-edit">
                                 <Edit2 size={16} />
                             </IconButton>
                             <IconButton 
                                 onClick={() => onDelete(lending)} 
                                 disabled={progress >= 100}
-                                sx={{
-                                    color: '#ff3b30', bgcolor: '#fff', border: '1px solid rgba(255,59,48,0.1)',
-                                    boxShadow: '0 2px 8px rgba(255,59,48,0.04)',
-                                    '&:hover': { bgcolor: '#fff1f0' },
-                                    '&.Mui-disabled': { color: '#d2d2d7', border: '1px solid #e2e2e7', bgcolor: '#f5f5f7', opacity: 0.6 }
-                                }}
+                                className="chit-action-btn btn-delete"
                             >
                                 <Trash2 size={16} />
                             </IconButton>
@@ -113,50 +89,39 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                 </Box>
 
                 {/* FULL WIDTH COLLECTION PROGRESS BAR - CINEMATIC BELT */}
-                <Box sx={{ 
-                    width: '100%', px: 4, py: 2, 
-                    background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)`,
-                    borderBottom: '1px solid rgba(0,0,0,0.03)'
-                }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b', letterSpacing: '0.1em' }}>CAPITAL RECOVERY PROGRESS</Typography>
+                <Box 
+                    className="chit-progress-belt"
+                    style={{ background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)` }}
+                >
+                    <Box className="chit-progress-meta">
+                        <div className="flex-center-gap-08">
+                            <Typography className="chit-progress-label">CAPITAL RECOVERY PROGRESS</Typography>
                             <Chip 
                                 label={`${progress.toFixed(1)}% RECLAIMED`}
                                 size="small"
-                                sx={{ 
-                                    height: '20px', fontSize: '0.6rem', fontWeight: 900, 
-                                    bgcolor: 'rgba(16,185,129,0.1)', color: '#10b981',
-                                    borderRadius: '6px'
-                                }}
+                                className="chit-reclaimed-chip"
                             />
                         </div>
-                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 900, color: '#1d1d1f' }}>
+                        <Typography className="chit-progress-val">
                             {formatCurrency(totalPaid)} Collected / {formatCurrency(multiplier * 475000)} Expected
                         </Typography>
                     </Box>
-                    <div style={{ 
-                        width: '100%', height: '14px', background: 'rgba(0,0,0,0.04)', 
-                        borderRadius: '20px', overflow: 'hidden', position: 'relative' 
-                    }}>
+                    <div className="chit-progress-track">
                         <div 
+                            className="chit-progress-fill"
                             style={{ 
                                 width: `${progress}%`, 
-                                height: '100%', 
-                                background: `linear-gradient(90deg, ${planColor} 0%, #10b981 100%)`,
-                                transition: 'width 1.5s cubic-bezier(1, 0, 0, 1)',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                                borderRadius: '20px'
+                                background: `linear-gradient(90deg, ${planColor} 0%, #10b981 100%)`
                             }} 
                         />
                     </div>
                 </Box>
 
                 <div className="responsive-table-container">
-                    <Box sx={{ bgcolor: '#1d1d1f', px: 3, py: 1.5, display: 'grid', gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px', alignItems: 'center', minWidth: '950px' }}>
+                    <Box className="chit-table-header">
                         {['TERM', 'MONTH', 'EXPECTED', 'CUMULATIVE', 'INTEREST', 'MATURITY PROJ', 'STATUS', 'ACTION'].map(h => (
-                            <Box key={h} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em' }}>{h}</Typography>
+                            <Box key={h} className="chit-th-item">
+                                <Typography className="chit-th-text">{h}</Typography>
                                 {h === 'ACTION' && <HandCoins size={12} color="rgba(255,255,255,0.4)" />}
                             </Box>
                         ))}
@@ -164,7 +129,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                 </div>
 
                 <div className="responsive-table-container">
-                    <Box sx={{ maxHeight: '600px', overflowY: 'auto', minWidth: '950px' }}>
+                    <Box className="chit-table-body scroll-y-luxury">
                         {scheduleData.map((val, i) => {
                             const termNum = i + 1;
                             const cumul = scheduleData.slice(0, i + 1).reduce((a, b) => a + b, 0);
@@ -176,17 +141,14 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                             const totalTermPaid = termPayments.reduce((acc, p) => acc + p.amount, 0);
 
                             let status = 'UNPAID';
-                            let statusColor = '#fef3c7'; // Amber
-                            let textColor = '#92400e';
+                            let statusClass = 'status-amber';
 
                             if (totalTermPaid >= requiredAmount) {
                                 status = 'PAID';
-                                statusColor = '#dcfce7'; // green
-                                textColor = '#166534';
+                                statusClass = 'status-green';
                             } else if (totalTermPaid > 0) {
                                 status = 'PARTIAL';
-                                statusColor = '#e0f2fe'; // blue
-                                textColor = '#075985';
+                                statusClass = 'status-blue';
                             }
 
                             const nextToPayIndex = scheduleData.findIndex((_, idx) => {
@@ -200,59 +162,39 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                             const rowMonth = monthDate.format('MMM YYYY');
 
                             return (
-                                <Box key={i} sx={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px',
-                                    px: 3, py: 1.8, alignItems: 'center',
-                                    borderBottom: '1px solid rgba(0,0,0,0.04)',
-                                    bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                                    transition: '0.1s', '&:hover': { bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0,0,0,0.01)' }
-                                }}>
-                                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8' }}>{termNum}</Typography>
-                                    <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#6366f1', textTransform: 'uppercase' }}>{rowMonth}</Typography>
-                                    <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#1d1d1f' }}>₹{val.toLocaleString()}</Typography>
-                                    <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#64748b' }}>₹{cumul.toLocaleString()}</Typography>
-                                    <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#94a3b8' }}>₹{dividend.toLocaleString()}</Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Typography sx={{
-                                            fontWeight: 900, fontSize: '0.9rem',
-                                            color: isLast ? '#10b981' : '#1d1d1f'
-                                        }}>
+                                <Box key={i} className={`chit-row-layout ${status === 'PAID' ? 'row-paid' : ''}`}>
+                                    <Typography className="chit-td-term">{termNum}</Typography>
+                                    <Typography className="chit-td-month">{rowMonth}</Typography>
+                                    <Typography className="chit-td-expected">₹{val.toLocaleString()}</Typography>
+                                    <Typography className="chit-td-cumul">₹{cumul.toLocaleString()}</Typography>
+                                    <Typography className="chit-td-dividend">₹{dividend.toLocaleString()}</Typography>
+                                    <Box className="flex-center-gap-1">
+                                        <Typography className={`chit-td-rowval ${isLast ? 'color-green' : 'color-dark'}`}>
                                             ₹{rowValue.toLocaleString()}
                                         </Typography>
                                         {isLast && <CheckCircle2 size={16} color="#10b981" />}
                                     </Box>
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                    <Box className="flex-col-gap-05">
                                         <Chip
                                             label={status}
                                             size="small"
-                                            icon={status === 'PAID' ? <CheckCircle2 size={12} color="#166534" /> : undefined}
-                                            sx={{
-                                                height: 18, fontSize: '0.55rem', fontWeight: 900,
-                                                bgcolor: statusColor, color: textColor,
-                                                borderRadius: '6px', width: 'fit-content',
-                                                '& .MuiChip-icon': { ml: 0.5, mr: -0.5 }
-                                            }}
+                                            icon={status === 'PAID' ? <CheckCircle2 size={12} /> : undefined}
+                                            className={`chit-status-chip ${statusClass}`}
                                         />
                                         {totalTermPaid > 0 && totalTermPaid < requiredAmount && (
-                                            <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#ef4444' }}>
+                                            <Typography className="chit-pending-label">
                                                 ₹{(requiredAmount - totalTermPaid).toLocaleString()} PENDING
                                             </Typography>
                                         )}
                                     </Box>
                                     <Box>
                                         {status === 'PAID' ? (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <div className="flex-center-gap-05">
                                                 <CheckCircle2 size={20} color="#10b981" />
                                                 <IconButton 
                                                     size="small" 
                                                     onClick={() => onRevert(lending, termNum)}
-                                                    sx={{ 
-                                                        color: '#f59e0b', 
-                                                        background: 'rgba(245,158,11,0.05)',
-                                                        '&:hover': { background: 'rgba(245,158,11,0.15)', transform: 'rotate(-45deg)' },
-                                                        transition: 'all 0.3s ease'
-                                                    }}
+                                                    className="btn-revert-chit"
                                                 >
                                                     <RotateCcw size={14} />
                                                 </IconButton>
@@ -270,16 +212,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                                     requiredAmount,
                                                     alreadyPaid: totalTermPaid
                                                 })}
-                                                sx={{
-                                                    fontSize: '0.6rem', fontWeight: 900,
-                                                    bgcolor: '#1d1d1f', py: 0.6, px: 2,
-                                                    borderRadius: '20px', minWidth: 'unset',
-                                                    textTransform: 'uppercase',
-                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                                                    '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' },
-                                                    '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.05)', color: 'rgba(0,0,0,0.2)', boxShadow: 'none' },
-                                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                                                }}
+                                                className="btn-pay-chit"
                                             >
                                                 PAY
                                             </Button>
@@ -291,23 +224,20 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                     </Box>
                 </div>
 
-                <Box sx={{
-                    px: 3, py: 2.5, bgcolor: '#f8fafc', borderTop: '1px solid rgba(0,0,0,0.08)',
-                    display: 'grid', gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px', alignItems: 'center'
-                }}>
-                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#ef4444', letterSpacing: '0.05em' }}>TOTALS</Typography>
+                <Box className="chit-footer-belt">
+                    <Typography className="chit-footer-label">TOTALS</Typography>
                     <Box />
-                    <Typography sx={{ fontWeight: 900, fontSize: '0.9rem', color: '#1d1d1f' }}>
+                    <Typography className="chit-footer-val">
                         ₹{scheduleData.reduce((a, b) => a + b, 0).toLocaleString()}
                     </Typography>
-                    <Typography sx={{ fontWeight: 900, fontSize: '0.9rem', color: '#64748b' }}>
+                    <Typography className="chit-footer-paid">
                         ₹{(lending.payments || []).reduce((acc, p) => acc + p.amount, 0).toLocaleString()}
                     </Typography>
-                    <Typography sx={{ fontWeight: 900, fontSize: '0.9rem', color: '#64748b' }}>
+                    <Typography className="chit-footer-div">
                         ₹{(dividend * 20).toLocaleString()}
                     </Typography>
-                    <Box sx={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                        <Typography sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#10b981' }}>
+                    <Box className="chit-footer-total-col">
+                        <Typography className="chit-footer-grand">
                             ₹{(multiplier * 475000).toLocaleString()}
                         </Typography>
                         <CheckCircle2 size={20} color="#10b981" />

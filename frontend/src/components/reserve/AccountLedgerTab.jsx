@@ -5,10 +5,10 @@ import { formatCurrency } from '../../utils/formatters';
 
 export default function AccountLedgerTab({ reserves, loading, spending, totalBank, totalCash, totalWallet, onEdit, onDelete, onAddFunds, onPayBill, onDeleteTransaction }) {
     const getTypeStyle = (type) => {
-        if (type === 'BANK') return { bg: 'rgba(99,102,241,0.12)', color: '#6366f1', icon: <Landmark size={18} color="#6366f1" /> };
-        if (type === 'WALLET') return { bg: 'rgba(16,185,129,0.12)', color: '#10b981', icon: <Wallet size={18} color="#10b981" /> };
-        if (type === 'CREDIT_CARD') return { bg: 'rgba(255,59,48,0.12)', color: '#ff3b30', icon: <CreditCard size={18} color="#ff3b30" /> };
-        return { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', icon: <Banknote size={18} color="#f59e0b" /> };
+        if (type === 'BANK') return { className: 'type-style-bank', icon: <Landmark size={18} /> };
+        if (type === 'WALLET') return { className: 'type-style-wallet', icon: <Wallet size={18} /> };
+        if (type === 'CREDIT_CARD') return { className: 'type-style-red', icon: <CreditCard size={18} /> };
+        return { className: 'type-style-cash', icon: <Banknote size={18} /> };
     };
 
     // Filter accounting history per account (Top-ups and Bill Pays only)
@@ -22,76 +22,64 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
 
     return (
         <>
-            <div style={{ width: '100%', overflow: 'hidden', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1' }}><Landmark size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">BANK</span>
-                            <span className="pill-amt-val" style={{ color: '#6366f1' }}>{formatCurrency(totalBank)}</span>
-                        </div>
+        <div className="ledger-pill-scroll-wrap">
+            <div className="ledger-pill-scroll">
+                <div className="apple-category-pill glass-effect min-w-180">
+                    <div className="pill-icon-box type-style-bank"><Landmark size={18} /></div>
+                    <div className="pill-info-box">
+                        <span className="pill-cat-label">BANK</span>
+                        <span className="pill-amt-val color-blue">{formatCurrency(totalBank)}</span>
                     </div>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}><Banknote size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">CASH</span>
-                            <span className="pill-amt-val" style={{ color: '#f59e0b' }}>{formatCurrency(totalCash)}</span>
-                        </div>
+                </div>
+                <div className="apple-category-pill glass-effect min-w-180">
+                    <div className="pill-icon-box type-style-cash"><Banknote size={18} /></div>
+                    <div className="pill-info-box">
+                        <span className="pill-cat-label">CASH</span>
+                        <span className="pill-amt-val color-amber">{formatCurrency(totalCash)}</span>
                     </div>
-                    <div className="apple-category-pill glass-effect" style={{ minWidth: '180px' }}>
-                        <div className="pill-icon-box" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}><Wallet size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">WALLETS</span>
-                            <span className="pill-amt-val" style={{ color: '#10b981' }}>{formatCurrency(totalWallet)}</span>
-                        </div>
+                </div>
+                <div className="apple-category-pill glass-effect min-w-180">
+                    <div className="pill-icon-box type-style-wallet"><Wallet size={18} /></div>
+                    <div className="pill-info-box">
+                        <span className="pill-cat-label">WALLETS</span>
+                        <span className="pill-amt-val color-green">{formatCurrency(totalWallet)}</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div className="spending-split-layout" style={{ marginBottom: '2.5rem' }}>
-                <div className="spending-main-content" style={{ gridColumn: '1 / -1' }}>
+            <div className="spending-split-layout margin-b-25">
+                <div className="spending-main-content grid-col-all">
                     <div className="data-table-premium scroll-y-luxury">
                         {loading ? (
-                            <Skeleton variant="rectangular" width="100%" height={200} sx={{ borderRadius: '28px' }} />
+                            <Skeleton variant="rectangular" width="100%" height={200} className="radius-28" />
                         ) : (
                             <div className="date-group">
                                 <div className="date-header-luxury">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div className="flex-center-gap-1">
                                         <Activity size={14} color="#1d1d1f" />
-                                        <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>ACCOUNT LEDGER PORTALS</span>
+                                        <span className="ledger-portal-label">ACCOUNT LEDGER PORTALS</span>
                                     </div>
                                 </div>
                                 <div className="investment-items-luxury">
                                     {(reserves || []).map(r => {
                                         const style = getTypeStyle(r.account_type);
                                         return (
-                                            <div key={r._id} style={{ marginBottom: '1.5rem' }}>
+                                            <div key={r._id} className="margin-b-15">
                                                 {/* Main Account Card */}
-                                                <div className="transaction-row-fancy" style={{ 
-                                                    padding: '1.2rem 1.5rem', 
-                                                    borderRadius: '20px',
-                                                    background: 'rgba(255,255,255,0.7)',
-                                                    backdropFilter: 'blur(10px)',
-                                                    border: '1px solid rgba(255,255,255,0.5)',
-                                                    boxShadow: '0 4px 15px rgba(0,0,0,0.02)'
-                                                }}>
-                                                    <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: style.bg, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
+                                                <div className="transaction-row-fancy account-card-glass">
+                                                    <div className={`account-icon-box ${style.className}`}>
                                                         {style.icon}
                                                     </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: r.account_type === 'CREDIT_CARD' ? '0.2rem' : '0' }}>
-                                                            <span style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '1.05rem' }}>{r.account_name}</span>
-                                                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                                                                <span style={{ px: 1, py: 0.2, fontSize: '0.62rem', fontWeight: 900, background: style.bg, color: style.color, borderRadius: '4px', textTransform: 'uppercase' }}>{r.account_type}</span>
+                                                    <div className="flex-1">
+                                                        <div className={`account-name-row ${r.account_type === 'CREDIT_CARD' ? 'margin-b-02' : 'margin-b-0'}`}>
+                                                            <span className="account-main-name">{r.account_name}</span>
+                                                            <div className="flex-gap-04">
+                                                                <span className={`account-type-badge ${style.className}`}>{r.account_type}</span>
                                                                 {r.account_type === 'CREDIT_CARD' && (
-                                                                    <div style={{ 
-                                                                        display: 'flex', alignItems: 'center', gap: '0.35rem',
-                                                                        padding: '0.2rem 0.5rem',
-                                                                        fontSize: '0.65rem', fontWeight: 900,
-                                                                        borderRadius: '5px',
-                                                                        background: (() => {
+                                                                    <div className={`due-date-badge ${(() => {
                                                                             const rawDue = r.due_date;
-                                                                            if (!rawDue) return 'rgba(0,0,0,0.04)';
+                                                                            if (!rawDue) return 'due-faint';
                                                                             const today = new Date().getDate();
                                                                             const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
                                                                             let diff = due - today;
@@ -99,21 +87,8 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                                                 const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
                                                                                 diff = daysInMonth - today + due;
                                                                             }
-                                                                            return diff <= 5 ? 'rgba(255,59,48,0.1)' : 'rgba(99,102,241,0.08)';
-                                                                        })(),
-                                                                        color: (() => {
-                                                                            const rawDue = r.due_date;
-                                                                            if (!rawDue) return '#86868b';
-                                                                            const today = new Date().getDate();
-                                                                            const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
-                                                                            let diff = due - today;
-                                                                            if (diff < 0) {
-                                                                                const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-                                                                                diff = daysInMonth - today + due;
-                                                                            }
-                                                                            return diff <= 5 ? '#ff3b30' : '#6366f1';
-                                                                        })()
-                                                                    }}>
+                                                                            return diff <= 5 ? 'due-urgent' : 'due-normal';
+                                                                        })()}`}>
                                                                         <Calendar size={11} fill="currentColor" opacity={0.4} />
                                                                         {(() => {
                                                                             const rawDue = r.due_date;
@@ -134,49 +109,45 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
 
                                                         {/* PROGRESS BAR */}
                                                         {r.account_type === 'CREDIT_CARD' && (r.credit_limit || 0) > 0 && (
-                                                            <div style={{ width: '90%', height: '8px', background: 'rgba(0,0,0,0.04)', borderRadius: '10px', overflow: 'hidden', position: 'relative', marginTop: '0.4rem' }}>
-                                                                <div style={{ 
-                                                                    width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`, 
-                                                                    height: '100%', 
-                                                                    background: (r.balance / r.credit_limit) > 0.7 ? '#ff3b30' : '#6366f1'
-                                                                }} />
+                                                            <div className="account-progress-track">
+                                                                <div 
+                                                                    className="account-progress-fill"
+                                                                    style={{ 
+                                                                        width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`, 
+                                                                        backgroundColor: (r.balance / r.credit_limit) > 0.7 ? '#ff3b30' : '#6366f1'
+                                                                    }} 
+                                                                />
                                                             </div>
                                                         )}
                                                     </div>
 
-                                                    <div style={{ 
-                                                        textAlign: 'right', 
-                                                        display: 'flex', 
-                                                        alignItems: 'center', 
-                                                        gap: '1.25rem',
-                                                        marginTop: '0.5rem'
-                                                    }}>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                                                            <Typography style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '1.15rem' }}>{formatCurrency(r.balance)}</Typography>
+                                                    <div className="account-actions-col">
+                                                        <div className="account-val-stack">
+                                                            <Typography className="account-main-val">{formatCurrency(r.balance)}</Typography>
                                                             {r.account_type === 'CREDIT_CARD' && (
-                                                                <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b' }}>
+                                                                <span className="account-avail-label">
                                                                     AVAIL: {formatCurrency((r.credit_limit || 0) - (r.balance || 0))}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        <div className="flex-gap-05">
                                                             {r.account_type === 'CREDIT_CARD' ? (
                                                                 <Button 
                                                                     size="small" variant="contained" 
                                                                     onClick={() => onPayBill(r)}
                                                                     startIcon={<CreditCard size={14} />}
-                                                                    sx={{ fontSize: '0.65rem', fontWeight: 900, borderRadius: '8px', bgcolor: '#ff3b30', height: '32px' }}
+                                                                    className="btn-pay-bill-small"
                                                                 >PAY BILL</Button>
                                                             ) : (
                                                                 <Button 
                                                                     size="small" variant="contained" 
                                                                     onClick={() => onAddFunds(r)}
                                                                     startIcon={<Plus size={14} />}
-                                                                    sx={{ fontSize: '0.65rem', fontWeight: 900, borderRadius: '8px', bgcolor: '#34c759', height: '32px' }}
+                                                                    className="btn-add-money-small"
                                                                 >ADD MONEY</Button>
                                                             )}
-                                                            <IconButton size="small" onClick={() => onEdit(r)} sx={{ bgcolor: 'rgba(0,0,0,0.03)' }}><Edit2 size={13} /></IconButton>
-                                                            <IconButton size="small" onClick={() => onDelete(r)} sx={{ bgcolor: 'rgba(255,59,48,0.03)', color: '#ff3b30' }}><Trash2 size={13} /></IconButton>
+                                                            <IconButton size="small" onClick={() => onEdit(r)} className="bg-faint-grey"><Edit2 size={13} /></IconButton>
+                                                            <IconButton size="small" onClick={() => onDelete(r)} className="bg-faint-red"><Trash2 size={13} /></IconButton>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -191,26 +162,19 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
             </div>
 
             {/* UNIFIED ACCOUNT ACTIVITY LOG - SEPARATE CARD AT THE BOTTOM */}
-            <div className="spending-split-layout" style={{ marginTop: '1rem' }}>
-                <div className="spending-main-content" style={{ gridColumn: '1 / -1' }}>
-                    <div className="data-table-premium" style={{ 
-                        borderRadius: '28px', 
-                        padding: '1.5rem',
-                        background: 'rgba(255,255,255,0.7)',
-                        backdropFilter: 'blur(15px)',
-                        border: '1px solid rgba(255,255,255,0.5)',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.04)'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', px: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <div className="spending-split-layout margin-t-1">
+                <div className="spending-main-content grid-col-all">
+                    <div className="ledger-activity-card">
+                        <div className="ledger-activity-header">
+                            <div className="ledger-activity-title">
                                 <History size={18} color="#6366f1" />
-                                <span style={{ fontWeight: 900, fontSize: '1rem', color: '#1d1d1f' }}>CONSOLIDATED LEDGER ACTIVITY</span>
+                                <span className="ledger-activity-text">CONSOLIDATED LEDGER ACTIVITY</span>
                             </div>
-                            <div style={{ height: '1px', flex: 1, background: 'rgba(0,0,0,0.04)', margin: '0 1.5rem' }} />
-                            <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>TOP-UPS & BILL SETTLEMENTS</span>
+                            <div className="ledger-activity-divider" />
+                            <span className="ledger-activity-meta">TOP-UPS & BILL SETTLEMENTS</span>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                        <div className="flex-col-gap-02">
                             {(() => {
                                 const unifiedHistory = (spending || [])
                                     .filter(s => 
@@ -222,7 +186,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
 
                                 if (unifiedHistory.length === 0) {
                                     return (
-                                        <div style={{ textAlign: 'center', padding: '3rem', color: '#86868b', fontWeight: 800 }}>
+                                        <div className="ledger-empty-msg">
                                             No high-value ledger movements detected.
                                         </div>
                                     );
@@ -232,50 +196,41 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                     const sourceAcc = reserves.find(r => r._id === item.payment_source_id);
                                     const targetAcc = reserves.find(r => r._id === item.target_account_id);
                                     return (
-                                        <div key={item._id} className="transaction-row-fancy" style={{ padding: '1rem 1.2rem', background: 'transparent', borderBottom: '1px solid rgba(0,0,0,0.02)' }}>
-                                            <div style={{ 
-                                                width: '38px', height: '38px', borderRadius: '12px', 
-                                                background: item.amount < 0 ? 'rgba(52,199,89,0.08)' : 'rgba(255,59,48,0.08)',
-                                                display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem'
-                                            }}>
+                                        <div key={item._id} className="transaction-row-fancy ledger-activity-row">
+                                            <div className={`ledger-activity-icon-box ${item.amount < 0 ? 'bg-green-soft' : 'bg-red-soft'}`}>
                                                 {item.amount < 0 ? <TrendingUp size={16} color="#34c759" /> : <TrendingDown size={16} color="#ff3b30" />}
                                             </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 800, color: '#1d1d1f', fontSize: '0.92rem' }}>{item.description}</div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.1rem' }}>
-                                                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#86868b' }}>{new Date(item.date).toLocaleDateString()}</span>
+                                            <div className="flex-1">
+                                                <div className="ledger-activity-desc">{item.description}</div>
+                                                <div className="ledger-activity-meta-row">
+                                                    <span className="ledger-activity-date">{new Date(item.date).toLocaleDateString()}</span>
                                                     {sourceAcc && (
                                                         <>
-                                                            <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: '#d1d1d6' }} />
-                                                            <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#6366f1' }}>FROM: {sourceAcc.account_name}</span>
+                                                            <div className="ledger-activity-dot" />
+                                                            <span className="ledger-activity-from">FROM: {sourceAcc.account_name}</span>
                                                         </>
                                                     )}
                                                     {targetAcc && (
                                                         <>
-                                                            <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: '#d1d1d6' }} />
-                                                            <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#34c759' }}>TO: {targetAcc.account_name}</span>
+                                                            <div className="ledger-activity-dot" />
+                                                            <span className="ledger-activity-to">TO: {targetAcc.account_name}</span>
                                                         </>
                                                     )}
                                                 </div>
                                             </div>
-                                            <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ fontWeight: 950, color: item.amount < 0 ? '#34c759' : '#ff3b30', fontSize: '1.05rem', letterSpacing: '-0.02em' }}>
+                                            <div className="ledger-activity-actions">
+                                                <div className="text-right">
+                                                    <div className={`ledger-activity-amt ${item.amount < 0 ? 'color-green' : 'color-red'}`}>
                                                         {item.amount < 0 ? '+' : '-'}{formatCurrency(Math.abs(item.amount))}
                                                     </div>
-                                                    <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                    <div className="ledger-activity-type">
                                                         {item.amount < 0 ? 'Top-Up' : (item.category === 'Transfer' ? 'Movement' : 'Settlement')}
                                                     </div>
                                                 </div>
                                                 <IconButton 
                                                     size="small" 
                                                     onClick={() => onDeleteTransaction(item)}
-                                                    sx={{ 
-                                                        color: '#ff3b30', 
-                                                        bgcolor: 'rgba(255,59,48,0.03)',
-                                                        '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' },
-                                                        transition: '0.2s'
-                                                    }}
+                                                    className="btn-delete-activity"
                                                 >
                                                     <Trash2 size={13} />
                                                 </IconButton>
@@ -289,7 +244,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                 </div>
             </div>
 
-            <div style={{ height: '4rem' }} />
+            <div className="ledger-spacer" />
         </>
     );
 }
