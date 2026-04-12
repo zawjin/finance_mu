@@ -54,14 +54,15 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                 position: 'relative'
             }}>
                 {/* PREMIUM ADAPTIVE HEADER */}
-                <Box sx={{
-                    p: 4,
-                    background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)`,
-                    borderBottom: '1px solid rgba(0,0,0,0.03)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start'
-                }}>
+                    <Box sx={{
+                        p: 4,
+                        background: `linear-gradient(135deg, ${planColor}08 0%, ${planColor}03 100%)`,
+                        borderBottom: '1px solid rgba(0,0,0,0.03)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        gap: 2
+                    }}>
                     <Box>
                         <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '1.8rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                             {lending.borrower}
@@ -151,140 +152,144 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                     </div>
                 </Box>
 
-                <Box sx={{ bgcolor: '#1d1d1f', px: 3, py: 1.5, display: 'grid', gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px', alignItems: 'center' }}>
-                    {['TERM', 'MONTH', 'EXPECTED', 'CUMULATIVE', 'INTEREST', 'MATURITY PROJ', 'STATUS', 'ACTION'].map(h => (
-                        <Box key={h} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em' }}>{h}</Typography>
-                            {h === 'ACTION' && <HandCoins size={12} color="rgba(255,255,255,0.4)" />}
-                        </Box>
-                    ))}
-                </Box>
+                <div className="responsive-table-container">
+                    <Box sx={{ bgcolor: '#1d1d1f', px: 3, py: 1.5, display: 'grid', gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px', alignItems: 'center', minWidth: '950px' }}>
+                        {['TERM', 'MONTH', 'EXPECTED', 'CUMULATIVE', 'INTEREST', 'MATURITY PROJ', 'STATUS', 'ACTION'].map(h => (
+                            <Box key={h} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em' }}>{h}</Typography>
+                                {h === 'ACTION' && <HandCoins size={12} color="rgba(255,255,255,0.4)" />}
+                            </Box>
+                        ))}
+                    </Box>
+                </div>
 
-                <Box sx={{ maxHeight: '600px', overflowY: 'auto' }}>
-                    {scheduleData.map((val, i) => {
-                        const termNum = i + 1;
-                        const cumul = scheduleData.slice(0, i + 1).reduce((a, b) => a + b, 0);
-                        const isLast = i === scheduleData.length - 1;
-                        const requiredAmount = val;
-                        const rowValue = isLast ? (multiplier * 475000) : (cumul + dividend);
+                <div className="responsive-table-container">
+                    <Box sx={{ maxHeight: '600px', overflowY: 'auto', minWidth: '950px' }}>
+                        {scheduleData.map((val, i) => {
+                            const termNum = i + 1;
+                            const cumul = scheduleData.slice(0, i + 1).reduce((a, b) => a + b, 0);
+                            const isLast = i === scheduleData.length - 1;
+                            const requiredAmount = val;
+                            const rowValue = isLast ? (multiplier * 475000) : (cumul + dividend);
 
-                        const termPayments = (lending.payments || []).filter(p => p.term_number === termNum);
-                        const totalTermPaid = termPayments.reduce((acc, p) => acc + p.amount, 0);
+                            const termPayments = (lending.payments || []).filter(p => p.term_number === termNum);
+                            const totalTermPaid = termPayments.reduce((acc, p) => acc + p.amount, 0);
 
-                        let status = 'UNPAID';
-                        let statusColor = '#fef3c7'; // Amber
-                        let textColor = '#92400e';
+                            let status = 'UNPAID';
+                            let statusColor = '#fef3c7'; // Amber
+                            let textColor = '#92400e';
 
-                        if (totalTermPaid >= requiredAmount) {
-                            status = 'PAID';
-                            statusColor = '#dcfce7'; // green
-                            textColor = '#166534';
-                        } else if (totalTermPaid > 0) {
-                            status = 'PARTIAL';
-                            statusColor = '#e0f2fe'; // blue
-                            textColor = '#075985';
-                        }
+                            if (totalTermPaid >= requiredAmount) {
+                                status = 'PAID';
+                                statusColor = '#dcfce7'; // green
+                                textColor = '#166534';
+                            } else if (totalTermPaid > 0) {
+                                status = 'PARTIAL';
+                                statusColor = '#e0f2fe'; // blue
+                                textColor = '#075985';
+                            }
 
-                        const nextToPayIndex = scheduleData.findIndex((_, idx) => {
-                            const tp = (lending.payments || []).filter(p => p.term_number === (idx + 1));
-                            const ttp = tp.reduce((a, b) => a + b.amount, 0);
-                            return ttp < (scheduleData[idx] || 0);
-                        });
+                            const nextToPayIndex = scheduleData.findIndex((_, idx) => {
+                                const tp = (lending.payments || []).filter(p => p.term_number === (idx + 1));
+                                const ttp = tp.reduce((a, b) => a + b.amount, 0);
+                                return ttp < (scheduleData[idx] || 0);
+                            });
 
-                        const canPay = i === nextToPayIndex;
-                        const monthDate = dayjs(lending.start_date).add(i, 'month');
-                        const rowMonth = monthDate.format('MMM YYYY');
+                            const canPay = i === nextToPayIndex;
+                            const monthDate = dayjs(lending.start_date).add(i, 'month');
+                            const rowMonth = monthDate.format('MMM YYYY');
 
-                        return (
-                            <Box key={i} sx={{
-                                display: 'grid',
-                                gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px',
-                                px: 3, py: 1.8, alignItems: 'center',
-                                borderBottom: '1px solid rgba(0,0,0,0.04)',
-                                bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                                transition: '0.1s', '&:hover': { bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0,0,0,0.01)' }
-                            }}>
-                                <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8' }}>{termNum}</Typography>
-                                <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#6366f1', textTransform: 'uppercase' }}>{rowMonth}</Typography>
-                                <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#1d1d1f' }}>₹{val.toLocaleString()}</Typography>
-                                <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#64748b' }}>₹{cumul.toLocaleString()}</Typography>
-                                <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#94a3b8' }}>₹{dividend.toLocaleString()}</Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Typography sx={{
-                                        fontWeight: 900, fontSize: '0.9rem',
-                                        color: isLast ? '#10b981' : '#1d1d1f'
-                                    }}>
-                                        ₹{rowValue.toLocaleString()}
-                                    </Typography>
-                                    {isLast && <CheckCircle2 size={16} color="#10b981" />}
-                                </Box>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                    <Chip
-                                        label={status}
-                                        size="small"
-                                        icon={status === 'PAID' ? <CheckCircle2 size={12} color="#166534" /> : undefined}
-                                        sx={{
-                                            height: 18, fontSize: '0.55rem', fontWeight: 900,
-                                            bgcolor: statusColor, color: textColor,
-                                            borderRadius: '6px', width: 'fit-content',
-                                            '& .MuiChip-icon': { ml: 0.5, mr: -0.5 }
-                                        }}
-                                    />
-                                    {totalTermPaid > 0 && totalTermPaid < requiredAmount && (
-                                        <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#ef4444' }}>
-                                            ₹{(requiredAmount - totalTermPaid).toLocaleString()} PENDING
+                            return (
+                                <Box key={i} sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px',
+                                    px: 3, py: 1.8, alignItems: 'center',
+                                    borderBottom: '1px solid rgba(0,0,0,0.04)',
+                                    bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                                    transition: '0.1s', '&:hover': { bgcolor: status === 'PAID' ? 'rgba(16, 185, 129, 0.16)' : 'rgba(0,0,0,0.01)' }
+                                }}>
+                                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8' }}>{termNum}</Typography>
+                                    <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: '#6366f1', textTransform: 'uppercase' }}>{rowMonth}</Typography>
+                                    <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#1d1d1f' }}>₹{val.toLocaleString()}</Typography>
+                                    <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#64748b' }}>₹{cumul.toLocaleString()}</Typography>
+                                    <Typography sx={{ fontWeight: 800, fontSize: '0.8rem', color: '#94a3b8' }}>₹{dividend.toLocaleString()}</Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Typography sx={{
+                                            fontWeight: 900, fontSize: '0.9rem',
+                                            color: isLast ? '#10b981' : '#1d1d1f'
+                                        }}>
+                                            ₹{rowValue.toLocaleString()}
                                         </Typography>
-                                    )}
-                                </Box>
-                                <Box>
-                                    {status === 'PAID' ? (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <CheckCircle2 size={20} color="#10b981" />
-                                            <IconButton 
-                                                size="small" 
-                                                onClick={() => onRevert(lending, termNum)}
-                                                sx={{ 
-                                                    color: '#f59e0b', 
-                                                    background: 'rgba(245,158,11,0.05)',
-                                                    '&:hover': { background: 'rgba(245,158,11,0.15)', transform: 'rotate(-45deg)' },
-                                                    transition: 'all 0.3s ease'
+                                        {isLast && <CheckCircle2 size={16} color="#10b981" />}
+                                    </Box>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                        <Chip
+                                            label={status}
+                                            size="small"
+                                            icon={status === 'PAID' ? <CheckCircle2 size={12} color="#166534" /> : undefined}
+                                            sx={{
+                                                height: 18, fontSize: '0.55rem', fontWeight: 900,
+                                                bgcolor: statusColor, color: textColor,
+                                                borderRadius: '6px', width: 'fit-content',
+                                                '& .MuiChip-icon': { ml: 0.5, mr: -0.5 }
+                                            }}
+                                        />
+                                        {totalTermPaid > 0 && totalTermPaid < requiredAmount && (
+                                            <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: '#ef4444' }}>
+                                                ₹{(requiredAmount - totalTermPaid).toLocaleString()} PENDING
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                    <Box>
+                                        {status === 'PAID' ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <CheckCircle2 size={20} color="#10b981" />
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => onRevert(lending, termNum)}
+                                                    sx={{ 
+                                                        color: '#f59e0b', 
+                                                        background: 'rgba(245,158,11,0.05)',
+                                                        '&:hover': { background: 'rgba(245,158,11,0.15)', transform: 'rotate(-45deg)' },
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                >
+                                                    <RotateCcw size={14} />
+                                                </IconButton>
+                                            </div>
+                                        ) : (
+                                            <Button
+                                                size="small"
+                                                variant="contained"
+                                                disabled={!canPay}
+                                                startIcon={<HandCoins size={12} />}
+                                                onClick={() => onSettle({
+                                                    card: lending,
+                                                    type: 'LENDING',
+                                                    term: termNum,
+                                                    requiredAmount,
+                                                    alreadyPaid: totalTermPaid
+                                                })}
+                                                sx={{
+                                                    fontSize: '0.6rem', fontWeight: 900,
+                                                    bgcolor: '#1d1d1f', py: 0.6, px: 2,
+                                                    borderRadius: '20px', minWidth: 'unset',
+                                                    textTransform: 'uppercase',
+                                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                                                    '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' },
+                                                    '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.05)', color: 'rgba(0,0,0,0.2)', boxShadow: 'none' },
+                                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                                                 }}
                                             >
-                                                <RotateCcw size={14} />
-                                            </IconButton>
-                                        </div>
-                                    ) : (
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            disabled={!canPay}
-                                            startIcon={<HandCoins size={12} />}
-                                            onClick={() => onSettle({
-                                                card: lending,
-                                                type: 'LENDING',
-                                                term: termNum,
-                                                requiredAmount,
-                                                alreadyPaid: totalTermPaid
-                                            })}
-                                            sx={{
-                                                fontSize: '0.6rem', fontWeight: 900,
-                                                bgcolor: '#1d1d1f', py: 0.6, px: 2,
-                                                borderRadius: '20px', minWidth: 'unset',
-                                                textTransform: 'uppercase',
-                                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                                                '&:hover': { bgcolor: '#000', transform: 'translateY(-1px)' },
-                                                '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.05)', color: 'rgba(0,0,0,0.2)', boxShadow: 'none' },
-                                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                                            }}
-                                        >
-                                            PAY
-                                        </Button>
-                                    )}
+                                                PAY
+                                            </Button>
+                                        )}
+                                    </Box>
                                 </Box>
-                            </Box>
-                        );
-                    })}
-                </Box>
+                            );
+                        })}
+                    </Box>
+                </div>
 
                 <Box sx={{
                     px: 3, py: 2.5, bgcolor: '#f8fafc', borderTop: '1px solid rgba(0,0,0,0.08)',

@@ -3,7 +3,7 @@ import { Box, Typography, Skeleton, Button, IconButton } from '@mui/material';
 import { Landmark, Banknote, Wallet, Activity, Edit2, Trash2, Calendar, CreditCard, ArrowRightLeft, TrendingUp, TrendingDown, History, Plus } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
-export default function AccountLedgerTab({ reserves, loading, spending, totalBank, totalCash, totalWallet, onEdit, onDelete, onAddFunds, onPayBill }) {
+export default function AccountLedgerTab({ reserves, loading, spending, totalBank, totalCash, totalWallet, onEdit, onDelete, onAddFunds, onPayBill, onDeleteTransaction }) {
     const getTypeStyle = (type) => {
         if (type === 'BANK') return { bg: 'rgba(99,102,241,0.12)', color: '#6366f1', icon: <Landmark size={18} color="#6366f1" /> };
         if (type === 'WALLET') return { bg: 'rgba(16,185,129,0.12)', color: '#10b981', icon: <Wallet size={18} color="#10b981" /> };
@@ -144,7 +144,13 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                         )}
                                                     </div>
 
-                                                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                                                    <div style={{ 
+                                                        textAlign: 'right', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        gap: '1.25rem',
+                                                        marginTop: '0.5rem'
+                                                    }}>
                                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                                                             <Typography style={{ fontWeight: 900, color: '#1d1d1f', fontSize: '1.15rem' }}>{formatCurrency(r.balance)}</Typography>
                                                             {r.account_type === 'CREDIT_CARD' && (
@@ -252,13 +258,27 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                     )}
                                                 </div>
                                             </div>
-                                            <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontWeight: 950, color: item.amount < 0 ? '#34c759' : '#ff3b30', fontSize: '1.05rem', letterSpacing: '-0.02em' }}>
-                                                    {item.amount < 0 ? '+' : '-'}{formatCurrency(Math.abs(item.amount))}
+                                            <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontWeight: 950, color: item.amount < 0 ? '#34c759' : '#ff3b30', fontSize: '1.05rem', letterSpacing: '-0.02em' }}>
+                                                        {item.amount < 0 ? '+' : '-'}{formatCurrency(Math.abs(item.amount))}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                        {item.amount < 0 ? 'Top-Up' : (item.category === 'Transfer' ? 'Movement' : 'Settlement')}
+                                                    </div>
                                                 </div>
-                                                <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                    {item.amount < 0 ? 'Top-Up' : (item.category === 'Transfer' ? 'Movement' : 'Settlement')}
-                                                </div>
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => onDeleteTransaction(item)}
+                                                    sx={{ 
+                                                        color: '#ff3b30', 
+                                                        bgcolor: 'rgba(255,59,48,0.03)',
+                                                        '&:hover': { bgcolor: 'rgba(255,59,48,0.08)' },
+                                                        transition: '0.2s'
+                                                    }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </IconButton>
                                             </div>
                                         </div>
                                     );

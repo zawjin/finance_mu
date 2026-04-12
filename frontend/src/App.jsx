@@ -13,7 +13,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { X, CalendarDays, Repeat } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
-
+import './App.scss';
 import TopNavbar from './components/layout/TopNavbar';
 import OverviewPage from './pages/OverviewPage';
 import SpendingPage from './pages/SpendingPage';

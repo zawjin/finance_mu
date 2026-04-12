@@ -349,9 +349,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     style={{ marginBottom: '2.5rem', overflow: 'hidden' }}
                 >
                     <Box sx={{ p: 4, borderRadius: '32px', bgcolor: 'white', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
-                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'stretch', width: '100%' }}>
-                            {/* BOX 1: ARCHITECTURE - 20% */}
-                            <div style={{ flex: '0 0 calc(20% - 1rem)', maxWidth: 'calc(20% - 1rem)' }}>
+                        <div className="analytics-hub">
+                            {/* BOX 1: ARCHITECTURE - 20% on Desktop, 100% on Mobile */}
+                            <div className="analytic-box-super">
                                 <Box sx={{ p: 3, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <PieChart size={14} color="var(--primary)" /> ARCHITECTURE
@@ -377,8 +377,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 </Box>
                             </div>
 
-                            {/* BOX 2: TRAJECTORY - 40% */}
-                            <div style={{ flex: '0 0 calc(40% - 0.75rem)', maxWidth: 'calc(40% - 0.75rem)' }}>
+                            {/* BOX 2: TRAJECTORY - 40% on Desktop, 100% on Mobile */}
+                            <div className="analytic-box-super">
                                 <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -405,8 +405,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 </Box>
                             </div>
 
-                            {/* BOX 3: VELOCITY - 40% */}
-                            <div style={{ flex: '0 0 calc(40% - 0.75rem)', maxWidth: 'calc(40% - 0.75rem)' }}>
+                            {/* BOX 3: VELOCITY - 40% on Desktop, 100% on Mobile */}
+                            <div className="analytic-box-super">
                                 <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Activity size={14} color="#0071e3" /> VELOCITY

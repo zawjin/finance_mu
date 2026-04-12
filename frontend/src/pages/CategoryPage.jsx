@@ -221,27 +221,29 @@ export default function CategoryPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '1.5rem' }}>
 
             {/* Header Section */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ p: 1.2, bgcolor: 'primary.main', borderRadius: '12px', color: 'white', display: 'flex' }}><Settings size={22} /></Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 3, mb: 5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
+                    <Box sx={{ p: 1.5, bgcolor: 'primary.main', borderRadius: '14px', color: 'white', display: 'flex', boxShadow: '0 8px 20px rgba(0,113,227,0.15)' }}><Settings size={24} /></Box>
                     <Box>
-                        <Typography variant="h5" fontWeight="900" letterSpacing="-0.02em">Architecture Central</Typography>
-                        <Typography variant="caption" color="text.secondary" fontWeight="700">MASTER TAXONOMY ENGINE</Typography>
+                        <Typography variant="h5" fontWeight="900" letterSpacing="-0.03em" sx={{ lineHeight: 1.1 }}>Architecture Central</Typography>
+                        <Typography variant="overline" color="text.secondary" fontWeight="900" sx={{ letterSpacing: '0.1em' }}>MASTER TAXONOMY ENGINE</Typography>
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '12px', p: 0.5 }}>
+                    <Box sx={{ display: 'flex', bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '14px', p: 0.6 }}>
                         <Button
                             onClick={() => setActiveTab('categories')}
                             sx={{
                                 borderRadius: '10px',
                                 px: 3,
-                                py: 0.5,
-                                fontWeight: 800,
+                                py: 0.8,
+                                fontWeight: 900,
+                                fontSize: '0.75rem',
                                 color: activeTab === 'categories' ? '#1d1d1f' : 'text.secondary',
                                 bgcolor: activeTab === 'categories' ? 'white' : 'transparent',
-                                boxShadow: activeTab === 'categories' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-                                textTransform: 'none'
+                                boxShadow: activeTab === 'categories' ? '0 4px 12px rgba(0,0,0,0.06)' : 'none',
+                                textTransform: 'none',
+                                whiteSpace: 'nowrap'
                             }}
                         >
                             Spending Categories
@@ -251,12 +253,14 @@ export default function CategoryPage() {
                             sx={{
                                 borderRadius: '10px',
                                 px: 3,
-                                py: 0.5,
-                                fontWeight: 800,
+                                py: 0.8,
+                                fontWeight: 900,
+                                fontSize: '0.75rem',
                                 color: activeTab === 'asset_classes' ? '#1d1d1f' : 'text.secondary',
                                 bgcolor: activeTab === 'asset_classes' ? 'white' : 'transparent',
-                                boxShadow: activeTab === 'asset_classes' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-                                textTransform: 'none'
+                                boxShadow: activeTab === 'asset_classes' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
+                                textTransform: 'none',
+                                whiteSpace: 'nowrap'
                             }}
                         >
                             Asset Classes
@@ -264,18 +268,18 @@ export default function CategoryPage() {
                     </Box>
                     <Button
                         variant="contained"
-                        startIcon={<Plus size={18} />}
+                        startIcon={<Plus size={20} />}
                         onClick={openAddForm}
-                        sx={{ borderRadius: '12px', px: 3, fontWeight: '800', textTransform: 'none', boxShadow: 'none' }}
+                        sx={{ borderRadius: '14px', px: 4, py: 1.2, fontWeight: '900', fontSize: '0.8rem', textTransform: 'none', boxShadow: '0 10px 25px rgba(0,113,227,0.2)' }}
                     >
                         New Entry
                     </Button>
                 </Box>
             </Box>
 
-            {/* List Table View */}
-            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: '24px', border: '1px solid rgba(0,0,0,0.06)' }}>
-                <Table>
+            {/* List Table View - Horizontal Scroll Enabled for Mobile */}
+            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: '24px', border: '1px solid rgba(0,0,0,0.06)', overflowX: 'auto' }}>
+                <Table sx={{ minWidth: 800 }}>
                     <TableHead sx={{ bgcolor: '#fbfcfd' }}>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2.5, pl: 4, letterSpacing: '0.05rem', fontSize: '0.7rem' }}>ENTITY CONTEXT</TableCell>

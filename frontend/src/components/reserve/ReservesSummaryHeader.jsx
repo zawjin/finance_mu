@@ -9,6 +9,7 @@ export default function ReservesSummaryHeader({
     onEdit,
     onEditDebt,
     onEditLending,
+    onTransfer,
     localInvestments
 }) {
     return (
@@ -20,6 +21,8 @@ export default function ReservesSummaryHeader({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1.25rem',
                 background: 'linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06))'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

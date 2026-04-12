@@ -16,7 +16,7 @@ export default function DebtLedgerTab({
 }) {
     return (
         <div style={{ paddingBottom: '5rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
                 <div className="glass-effect" style={{ padding: '1.5rem', borderRadius: '1.5rem', border: '1px solid rgba(255,59,48,0.1)', background: 'rgba(255,59,48,0.02)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.4rem' }}>
                         <TrendingDown size={18} color="#ff3b30" />
@@ -40,7 +40,7 @@ export default function DebtLedgerTab({
                 </div>
             </div>
 
-            <div style={{ background: 'white', borderRadius: '24px', padding: '1.25rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '2rem', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+            <div style={{ background: 'white', borderRadius: '24px', padding: '1.25rem', border: '1px solid rgba(0,0,0,0.06)', marginBottom: '2rem', display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, position: 'relative' }}>
                     <Search size={18} style={{ position: 'absolute', left: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: '#86868b', zIndex: 1 }} />
                     <input
@@ -73,8 +73,8 @@ export default function DebtLedgerTab({
                     </div>
                     <div className="investment-items-luxury">
                         {filteredDebt.map(item => (
-                            <div key={item._id} className="transaction-row-fancy" style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: item.direction === 'OWED_TO_ME' ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', color: item.direction === 'OWED_TO_ME' ? '#34c759' : '#ff3b30', display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
+                            <div key={item._id} className="transaction-row-fancy" style={{ padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(0,0,0,0.03)', flexWrap: 'wrap', gap: '1rem' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: item.direction === 'OWED_TO_ME' ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)', color: item.direction === 'OWED_TO_ME' ? '#34c759' : '#ff3b30', display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '0.5rem' }}>
                                     {item.direction === 'OWED_TO_ME' ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
                                 </div>
                                 <div style={{ flex: 1 }}>
@@ -88,7 +88,7 @@ export default function DebtLedgerTab({
                                     <Typography sx={{ fontWeight: 900, color: '#1d1d1f', fontSize: '1.1rem' }}>{formatCurrency(item.amount)}</Typography>
                                     <Typography sx={{ color: '#86868b', fontSize: '0.7rem', fontWeight: 900 }}>{item.date}</Typography>
                                 </div>
-                                <div style={{ borderLeft: '1px solid rgba(0,0,0,0.05)', paddingLeft: '1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <div style={{ borderLeft: { xs: 'none', sm: '1px solid rgba(0,0,0,0.05)' }, borderTop: { xs: '1px solid rgba(0,0,0,0.05)', sm: 'none' }, paddingLeft: { xs: 0, sm: '1.5rem' }, paddingTop: { xs: '1rem', sm: 0 }, display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto' }}>
                                     <Select
                                         size="small"
                                         value={item.status}

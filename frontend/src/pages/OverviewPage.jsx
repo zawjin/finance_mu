@@ -384,7 +384,7 @@ export default function OverviewPage() {
                             </Box>
                             <Box p={2}>
                                 <Grid container spacing={2}>
-                                    {/* Accounts Column */}
+                                    {/* Accounts Column - 100% on Mobile, 50% on Tablet/Desktop */}
                                     <Grid item xs={6} sx={{ borderRight: '1.5px dashed #f1f1f1' }}>
                                         <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, display: 'block', color: '#663399', px: 1 }}>Accounts</Typography>
                                         {reserves?.filter(r => r.account_type !== 'CREDIT_CARD').slice(0, 5).map((r) => (
@@ -400,7 +400,7 @@ export default function OverviewPage() {
                                             </Box>
                                         ))}
                                     </Grid>
-                                    {/* Debt Column */}
+                                    {/* Debt Column - 100% on Mobile, 50% on Tablet/Desktop */}
                                     <Grid item xs={6}>
                                         <Typography variant="overline" sx={{ fontWeight: 900, mb: 2, display: 'block', color: '#f44336', px: 1 }}>Exposure</Typography>
                                         {debt?.filter(d => d.status !== 'SETTLED').slice(0, 5).map((d) => (

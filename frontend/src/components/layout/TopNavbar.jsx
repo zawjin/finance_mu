@@ -30,15 +30,22 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                     FRIDAY
                 </div>
 
-                {/* CLASSIC NAV LINKS */}
-                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                    <ClassicNavLink to="/" label="DASHBOARD" icon={<LayoutDashboard size={18} />} />
-                    <ClassicNavLink to="/spending" label="AUDIT LOGS" icon={<Wallet size={18} />} />
-                    <ClassicNavLink to="/reserves" label="CASH FLOW" icon={<Banknote size={18} />} />
-                    
-                    <ClassicNavLink to="/investments" label="ASSET LEDGER" icon={<Gem size={18} />} />
-                    <ClassicNavLink to="/fixed-expenses" label="FIXED EXPENSES" icon={<Bookmark size={18} />} />
-                    <ClassicNavLink to="/categories" label="CONFIG" icon={<Settings size={18} />} />
+                {/* NAV LINKS - RESPONSIVE SCROLLABLE ON MOBILE */}
+                <div style={{ 
+                    display: 'flex', 
+                    gap: '1.5rem', 
+                    alignItems: 'center',
+                    overflowX: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                }}>
+                    <ClassicNavLink to="/" label="DASHBOARD" icon={<LayoutDashboard size={16} />} />
+                    <ClassicNavLink to="/spending" label="AUDIT" icon={<Wallet size={16} />} />
+                    <ClassicNavLink to="/reserves" label="CASH" icon={<Banknote size={16} />} />
+                    <ClassicNavLink to="/investments" label="ASSETS" icon={<Gem size={16} />} />
+                    <ClassicNavLink to="/fixed-expenses" label="FIXED" icon={<Bookmark size={16} />} />
+                    <ClassicNavLink to="/categories" label="CONFIG" icon={<Settings size={16} />} />
                 </div>
             </div>
 

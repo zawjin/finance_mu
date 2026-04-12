@@ -14,8 +14,8 @@ export default function BalanceSheetTab({ filteredRows, bsTotals }) {
                             <span style={{ fontWeight: 800, fontSize: '0.85rem' }}>MONTHLY BALANCE SHEET</span>
                         </div>
                     </div>
-                    <div style={{ padding: '0 1.5rem' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <div className="responsive-table-container" style={{ padding: '0 1.5rem' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                                     <th style={{ textAlign: 'left', padding: '1.25rem 0.5rem', fontSize: '0.7rem', fontWeight: 900, color: '#86868b' }}>MONTH</th>

@@ -274,9 +274,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     style={{ marginBottom: '2.5rem', overflow: 'hidden' }}
                 >
                     <Box sx={{ p: 4, borderRadius: '32px', bgcolor: 'white', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
-                        <div style={{ display: 'flex', gap: '2rem', alignItems: 'stretch', width: '100%' }}>
-                            {/* DOUGHNUT */}
-                            <div style={{ flex: '0 0 320px' }}>
+                        <div className="analytics-hub">
+                            {/* DOUGHNUT - Responsive Flex */}
+                            <div className="analytic-box-super">
                                 <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(99,102,241,0.02)', border: '1px solid rgba(99,102,241,0.05)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <Typography variant="subtitle2" sx={{ fontWeight: 900, mb: 4, color: '#6366f1', display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <PieChart size={14} /> ASSET ALLOCATION
@@ -302,8 +302,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 </Box>
                             </div>
 
-                            {/* LINE CHART */}
-                            <div style={{ flex: 1 }}>
+                            {/* LINE CHART - Responsive Flex */}
+                            <div className="analytic-box-super">
                                 <Box sx={{ p: 4, borderRadius: '24px', bgcolor: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.04)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -540,12 +540,14 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 <div className="spending-main-content">
                     <div className="content-meta-bar" style={{
                         display: 'flex',
+                        flexWrap: 'wrap',
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        gap: '1.5rem',
                         marginBottom: '1.25rem',
                         background: 'rgba(255, 255, 255, 0.7)',
                         backdropFilter: 'blur(20px)',
-                        padding: '0.8rem 2rem',
+                        padding: '1rem 2rem',
                         borderRadius: '32px',
                         border: '1px solid rgba(0,0,0,0.05)',
                         boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
@@ -562,7 +564,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                             <Button
                                 onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
                                 sx={{ borderRadius: '50px', border: '1px solid #e2e8f0', color: '#1d1d1f', px: 2, py: 0.7, fontWeight: 900, fontSize: '0.65rem', textTransform: 'none', '&:hover': { background: '#f8fafc', borderColor: '#cbd5e1' } }}>
@@ -615,8 +617,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 const catStyle = getAssetStyle(normalizedType);
                                 const live = livePre || getLiveVal(s);
                                 return (
-                                    <div key={s._id} className="transaction-row-fancy">
-                                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: catStyle.bg, color: catStyle.color, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '1rem' }}>
+                                    <div key={s._id} className="transaction-row-fancy" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: catStyle.bg, color: catStyle.color, display: 'grid', placeItems: 'center', flexShrink: 0, marginRight: '0.5rem' }}>
                                             {catStyle.icon}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>

@@ -266,6 +266,17 @@ const handleRevertSettlement = async (item) => {
         }
     };
 
+    const handleRemoveSpending = async (item) => {
+        if (!window.confirm(`Permanently delete transaction: ${item.description}?`)) return;
+        try {
+            await api.delete(`/spending/${item._id}`);
+            dispatch(fetchFinanceData());
+        } catch (err) {
+            console.error(err);
+            alert("Delete failed.");
+        }
+    };
+
     const handleDebtStatusUpdate = async (item, newStatus) => {
         try {
             await api.put(`/debt/${item._id}`, { ...item, status: newStatus });
@@ -363,6 +374,7 @@ const handleRevertSettlement = async (item) => {
                     onDelete={(item) => setDeleteConfirmItem(item)}
                     onAddFunds={onAddFunds}
                     onPayBill={onTransfer}
+                    onDeleteTransaction={handleRemoveSpending}
                 />
             )}
 

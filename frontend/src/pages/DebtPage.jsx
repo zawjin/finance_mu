@@ -69,8 +69,8 @@ export default function DebtPage({ onEdit }) {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
 
-            {/* NET EXPOSURE GAUGE */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '2.5rem' }}>
+            {/* NET EXPOSURE GAUGE - Responsive Fluid Grid */}
+            <div className="stats-grid" style={{ marginBottom: '2.5rem' }}>
                 <Box className="glass-effect" sx={{ p: 4, borderRadius: '32px', border: '1.5px solid rgba(0,0,0,0.04)', bgcolor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(30px)', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', right: -20, top: -20, opacity: 0.03 }}><TrendingUp size={160} /></div>
                     <Typography variant="caption" sx={{ fontWeight: 900, color: '#34c759', display: 'flex', alignItems: 'center', gap: 1, mb: 1, letterSpacing: '0.1em' }}><ArrowUpRight size={14} /> TOTAL RECEIVABLES</Typography>
@@ -128,13 +128,13 @@ export default function DebtPage({ onEdit }) {
 
                 {/* LEDGER TABLE */}
                 <div className="ledger-content-hub">
-                    <Box className="glass-effect" sx={{ borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)' }}>
+                    <Box className="glass-effect" sx={{ borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.06)', overflowX: 'auto' }}>
                         <div style={{ padding: '1.75rem 2.5rem', background: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>TRANSACTION LEDGER</Typography>
                             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>Showing {filteredDebt.length} events</Typography>
                         </div>
 
-                        <Table>
+                        <Table sx={{ minWidth: 900 }}>
                             <TableHead sx={{ bgcolor: 'rgba(0,0,0,0.01)' }}>
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 900, color: '#86868b', fontSize: '0.75rem', pl: 5 }}>PERSON / ENTITY</TableCell>
