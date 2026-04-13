@@ -12,7 +12,7 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 async def get_llama_insights(prompt_text: str):
     print(prompt_text)
     payload = {
-        "model": "qwen:14b",
+        "model": "llama3:latest",
         "prompt": prompt_text,
         "stream": False
     }

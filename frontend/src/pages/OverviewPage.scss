@@ -1,254 +1,820 @@
-.overview-container {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #f1f3f4;
-    padding: 2rem 1rem;
-    overflow-x: hidden;
-    box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-    @media (min-width: 900px) {
-        padding: 3rem 2rem;
-    }
+// ─── Design Tokens ───────────────────────────────────────────────
+$brand:       #4f46e5;
+$brand-light: #6366f1;
+$brand-bg:    rgba(79, 70, 229, 0.08);
+$success:     #10b981;
+$success-bg:  rgba(16, 185, 129, 0.05);
+$danger:      #f43f5e;
+$danger-bg:   rgba(244, 63, 94, 0.05);
+$warning:     #f59e0b;
+$warning-bg:  rgba(245, 158, 11, 0.05);
+$text-primary:   #0f172a;
+$text-secondary: #475569;
+$text-muted:     #94a3b8;
+$surface:     #ffffff;
+$surface-2:   #f8fafc;
+$border:      rgba(0, 0, 0, 0.04);
+$shadow-sm:   0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.01);
+$shadow-md:   0 12px 24px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.02);
+$shadow-lg:   0 20px 48px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.04);
+$radius-sm:   14px;
+$radius-md:   20px;
+$radius-lg:   24px;
+$radius-xl:   32px;
+
+// ─── Root Container ───────────────────────────────────────────────
+.ov-root {
+  width: 100%;
+  min-height: 100vh;
+  background: #f0f4f8;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(99,102,241,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(16,185,129,0.04) 0%, transparent 50%);
+  padding: 0 0 6rem;
+  font-family: 'Inter', 'Outfit', sans-serif;
+  overflow-x: hidden;
+
+  * { box-sizing: border-box; }
 }
 
-.console-header {
-    margin-bottom: 2.5rem;
-    
-    .header-title {
-        color: #1d1d1f;
-        font-weight: 800;
-        margin-bottom: 0.25rem;
-        font-size: 2.2rem;
-    }
+// ─── Hero Banner ──────────────────────────────────────────────────
+.ov-hero {
+  position: relative;
+  padding: 2rem 1.25rem 1.5rem;
+  overflow: hidden;
 
-    .header-subtitle {
-        color: #86868b;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-        font-size: 0.75rem;
+  @media (min-width: 768px) {
+    padding: 2.5rem 2rem 2rem;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &__greeting {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: $brand;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: $text-primary;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 0.25rem;
+
+    @media (min-width: 768px) {
+      font-size: 2.2rem;
     }
+  }
+
+  &__subtitle {
+    font-size: 0.8rem;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+
+  &__date {
+    font-size: 0.72rem;
+    color: $text-muted;
+    font-weight: 600;
+    text-align: right;
+  }
 }
 
-/* Glass Components */
-.elevated-glass {
-    background: rgba(255, 255, 255, 0.75) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    border-radius: 24px !important;
-    overflow: hidden !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+// ─── Period Filter Bar ─────────────────────────────────────────────
+.ov-period-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
 
-    &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04) !important;
+.ov-period-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1.5px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.7);
+  color: $text-secondary;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+
+  .pill-icon { font-size: 0.8rem; }
+  .pill-text { letter-spacing: 0.01em; }
+
+  &:hover {
+    border-color: $brand;
+    color: $brand;
+    background: rgba(99,102,241,0.06);
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background: $brand;
+    border-color: $brand;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    transform: translateY(-1px);
+  }
+}
+
+// ─── Net Worth Highlight Card ─────────────────────────────────────
+.ov-networth {
+  margin: 0 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+  border-radius: $radius-xl;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(99,102,241,0.35), 0 4px 12px rgba(0,0,0,0.15);
+
+  @media (min-width: 768px) {
+    margin: 0 2rem 2rem;
+    padding: 2.25rem 2.5rem;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30%; left: -10%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(129,140,248,0.15) 0%, transparent 70%);
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__value {
+    font-size: 2.8rem;
+    font-weight: 950;
+    color: #ffffff;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+      font-size: 4.2rem;
     }
+  }
+
+  &__pills {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px;
+    padding: 0.4rem 0.8rem;
+    backdrop-filter: blur(8px);
+
+    .pill-val {
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.8rem;
+    }
+    .pill-lbl {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.55);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    &.positive .pill-val { color: #6ee7b7; }
+    &.negative .pill-val { color: #fca5a5; }
+  }
 }
 
-.dark-glass-elite {
-    background: linear-gradient(135deg, #000 0%, #1d1d1f 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 24px !important;
-    color: white !important;
+// ─── Section Title ─────────────────────────────────────────────────
+.ov-section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 1.25rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $border;
+  }
 }
 
-/* Loading */
-.overview-loading-viewport {
-    height: 80vh;
+// ─── Stat Cards Row ────────────────────────────────────────────────
+.ov-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  padding: 0 1.25rem;
+  margin-bottom: 1.75rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 2rem;
+    gap: 1.25rem;
+  }
+}
+
+.ov-stat-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.1rem 1.15rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 0.85rem;
+  }
+
+  &__label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  &__value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $text-primary;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  &__change {
+    font-size: 0.62rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+
+    &.positive { color: $success; }
+    &.negative { color: $danger; }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 0 $radius-lg 0 100%;
+    opacity: 0.4;
+  }
+
+  &.brand::before   { background: $brand-bg; }
+  &.success::before { background: $success-bg; }
+  &.danger::before  { background: $danger-bg; }
+  &.warning::before { background: $warning-bg; }
 }
 
-/* Stats Section */
-.stats-card-inner {
-    padding: 2rem;
+// ─── Charts Section ─────────────────────────────────────────────────
+.ov-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  padding: 0 1.25rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1.2fr 1fr;
+    padding: 0 2rem;
+  }
+
+  @media (min-width: 1400px) {
+    grid-template-columns: 1.3fr 1fr 0.9fr;
+  }
+}
+
+.ov-chart-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.4rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $text-primary;
+    letter-spacing: -0.03em;
+    margin-top: 0.15rem;
+  }
+
+  &__badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50px;
+    
+    &.positive { background: $success-bg; color: $success; }
+    &.negative { background: $danger-bg; color: $danger; }
+    &.neutral  { background: $brand-bg; color: $brand; }
+  }
+
+  &__canvas {
+    height: 160px;
+    position: relative;
+
+    @media (min-width: 768px) {
+      height: 180px;
+    }
+  }
+
+  &__donut-wrap {
+    position: relative;
+    height: 140px;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-}
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
 
-.avatar-stats-card {
-    width: 64px !important;
-    height: 64px !important;
-    border-radius: 18px !important;
-}
-
-.stats-label {
-    font-weight: 900 !important;
-    color: #86868b !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    display: block !important;
-    margin-bottom: 0.1rem !important;
-    font-size: 0.6rem !important;
-}
-
-.stats-value {
-    font-weight: 900 !important;
-    color: #1d1d1f !important;
-    font-size: 1.25rem !important;
-}
-
-/* Analytics Hub */
-.h-full { height: 100% !important; }
-.flex-col { display: flex !important; flex-direction: column !important; }
-.flex-1 { flex: 1 !important; }
-.flex-1-center-col { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
-
-.analytic-overline-purple { font-weight: 900 !important; color: #663399 !important; margin-bottom: 2rem !important; display: block !important; text-transform: uppercase !important; font-size: 0.65rem !important; letter-spacing: 0.05em !important; }
-.analytic-overline-green { font-weight: 900 !important; color: #4caf50 !important; margin-bottom: 2rem !important; display: block !important; text-transform: uppercase !important; font-size: 0.65rem !important; letter-spacing: 0.05em !important; }
-.analytic-overline-dark { font-weight: 900 !important; color: #1d1d1f !important; margin-bottom: 0.5rem !important; display: block !important; text-transform: uppercase !important; font-size: 0.65rem !important; letter-spacing: 0.05em !important; }
-
-.donut-chart-box {
-    position: relative;
-    display: grid;
-    place-items: center;
-    margin-bottom: 2rem;
-    height: 140px;
-}
-
-.chart-center-label {
+  &__donut-center {
     position: absolute;
-    text-align: center;
-    pointer-events: none;
     inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
+    pointer-events: none;
 
-.micro-label-grey { font-weight: 800 !important; color: #aaa !important; font-size: 0.45rem !important; }
-.micro-val-bold { font-weight: 900 !important; font-size: 0.75rem !important; color: #1d1d1f !important; }
-
-.architecture-meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.arch-meta-label { font-size: 0.65rem !important; font-weight: 800 !important; color: #86868b !important; }
-.arch-meta-val { font-size: 0.65rem !important; font-weight: 900 !important; color: #1d1d1f !important; }
-
-.trajectory-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.trajectory-val-primary { font-weight: 900 !important; color: #4caf50 !important; font-size: 0.9rem !important; }
-.trajectory-val-secondary { font-weight: 900 !important; color: #663399 !important; font-size: 0.9rem !important; }
-
-.chart-viewport-std { height: 200px; }
-
-.yearly-obligation-inner {
-    padding: 2rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(0, 0, 0, 0.015);
-}
-
-.yearly-meta-desc { color: #86868b !important; font-weight: 800 !important; margin-bottom: 2.5rem !important; display: block !important; font-size: 0.6rem !important; }
-.yearly-total-val { font-weight: 900 !important; color: #1d1d1f !important; margin-bottom: 0.1rem !important; }
-.yearly-micro-label { font-weight: 800 !important; color: #aaa !important; font-size: 0.6rem !important; text-transform: uppercase !important; }
-
-.sip-highlight-box {
-    padding: 1rem;
-    border-radius: 16px;
-    background-color: rgba(102, 51, 153, 0.05);
-    border: 1px solid rgba(102, 51, 153, 0.08);
-    display: flex;
-    flex-direction: column;
-}
-
-.sip-val-primary { font-weight: 900 !important; color: #663399 !important; font-size: 0.9rem !important; }
-.sip-micro-label { font-weight: 800 !important; color: #aaa !important; font-size: 0.45rem !important; text-transform: uppercase !important; }
-
-/* Quadrant Sections */
-.quad-card-title { font-weight: 800 !important; font-size: 0.95rem !important; color: #1d1d1f !important; margin-bottom: 0.25rem !important; }
-.margin-b-3-block { display: block !important; margin-bottom: 1.5rem !important; }
-.text-dim { color: #86868b !important; font-size: 0.65rem !important; font-weight: 800 !important; }
-
-.donut-viewport-mini {
-    position: relative;
-    width: 100%;
-    max-width: 180px;
-    margin: 0 auto 2.5rem;
-}
-
-.font-bold-800 { font-weight: 800 !important; color: #1d1d1f !important; }
-.micro-label-faint { font-weight: 900 !important; opacity: 0.5 !important; font-size: 0.55rem !important; color: #86868b !important; }
-
-.margin-b-0-4 { margin-bottom: 0.4rem !important; }
-.quad-meta-label { font-size: 0.7rem !important; font-weight: 700 !important; color: #555 !important; }
-.quad-meta-val { font-size: 0.72rem !important; font-weight: 800 !important; color: #1d1d1f !important; }
-
-.quad-progress-bar {
-    height: 4px !important;
-    border-radius: 2px !important;
-    background-color: #f1f1f1 !important;
-    & .MuiLinearProgress-bar {
-        background-color: var(--bar-color) !important;
-        border-radius: 2px !important;
+    .center-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: $text-primary;
+      letter-spacing: -0.02em;
     }
-}
+    .center-lbl {
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  }
 
-/* Ledger */
-.ledger-header {
-    padding: 2rem;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-}
-
-.ledger-col-divider { border-right: 1.5px dashed rgba(0,0,0,0.05) !important; }
-.ledger-section-title { font-weight: 900 !important; margin-bottom: 1.5rem !important; display: block !important; text-transform: uppercase !important; font-size: 0.65rem !important; letter-spacing: 0.05em !important; }
-.color-purple { color: #663399 !important; }
-.color-red { color: #f44336 !important; }
-
-.ledger-row-fancy {
+  &__legend {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    margin-bottom: 0.25rem;
-    transition: background-color 0.2s;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
 
-    &:hover { background-color: rgba(0,0,0,0.02); }
-}
-
-.avatar-ledger-purple { background-color: rgba(102, 51, 153, 0.08) !important; color: #663399 !important; width: 34px !important; height: 34px !important; border-radius: 10px !important; }
-.avatar-ledger-green { background-color: rgba(76, 175, 80, 0.08) !important; color: #4caf50 !important; width: 34px !important; height: 34px !important; border-radius: 10px !important; }
-.avatar-ledger-red { background-color: rgba(244, 67, 54, 0.08) !important; color: #f44336 !important; width: 34px !important; height: 34px !important; border-radius: 10px !important; }
-
-.ledger-entity-name { font-weight: 800 !important; font-size: 0.75rem !important; color: #1d1d1f !important; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ledger-sub-type { font-size: 0.55rem !important; font-weight: 800 !important; color: #aaa !important; text-transform: uppercase !important; }
-.ledger-val-amount { font-weight: 900 !important; font-size: 0.8rem !important; color: #1d1d1f !important; }
-
-/* Audit Log */
-.audit-logs-viewport { padding: 1.5rem; }
-
-.audit-row-premium {
+  &__legend-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.75rem;
-    border-radius: 18px;
-    margin-bottom: 0.5rem;
-    transition: all 0.2s;
+    justify-content: space-between;
+    gap: 0.5rem;
 
-    &:hover { background-color: rgba(0,0,0,0.015); transform: translateX(4px); }
+    .leg-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .leg-label {
+      flex: 1;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: $text-secondary;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .leg-val {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: $text-primary;
+    }
+  }
 }
 
-.avatar-audit-log { background-color: #fff !important; border: 1.5px solid #eee !important; border-radius: 14px !important; color: #663399 !important; width: 48px !important; height: 48px !important; }
+// ─── Allocations Section ───────────────────────────────────────────
+.ov-alloc-section {
+  padding: 0 1.25rem;
+  margin-bottom: 1.75rem;
 
-.audit-desc-text { font-weight: 800 !important; font-size: 0.95rem !important; color: #1d1d1f !important; }
-.audit-sub-label { font-weight: 700 !important; color: #86868b !important; }
-.text-right { text-align: right !important; }
-.audit-val-text { font-weight: 900 !important; font-size: 1.1rem !important; color: #1d1d1f !important; line-height: 1.1 !important; }
-.audit-date-label { font-weight: 700 !important; color: #ccc !important; font-size: 0.65rem !important; }
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+}
 
-.margin-b-4 { margin-bottom: 2rem !important; }
+.ov-alloc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.ov-alloc-card {
+  background: $surface;
+  border-radius: $radius-md;
+  padding: 1.1rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+
+  &__label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  &__val {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: $text-primary;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  &__bar-bg {
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// ─── Ledger Section ────────────────────────────────────────────────
+.ov-ledger-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  margin-bottom: 1.75rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+    gap: 1.25rem;
+  }
+}
+
+.ov-ledger-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  overflow: hidden;
+
+  &__head {
+    padding: 1.1rem 1.25rem 0.85rem;
+    border-bottom: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__total {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: $text-primary;
+  }
+
+  &__body {
+    padding: 0.5rem 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.25rem;
+    transition: background 0.15s;
+    gap: 0.75rem;
+
+    &:hover { background: $surface-2; }
+  }
+
+  &__icon {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__amount {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: $text-primary;
+    text-align: right;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Recent Transactions ───────────────────────────────────────────
+.ov-tx-section {
+  padding: 0 1.25rem;
+  margin-bottom: 1.75rem;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+}
+
+.ov-tx-card {
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  overflow: hidden;
+
+  &__head {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__more {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: $brand;
+    cursor: pointer;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    transition: background 0.15s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: $surface-2; }
+  }
+
+  &__icon {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__desc {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.1rem;
+  }
+
+  &__sub {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: $text-muted;
+  }
+
+  &__right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__amount {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: $text-primary;
+    letter-spacing: -0.01em;
+  }
+
+  &__date {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: $text-muted;
+  }
+}
+
+// ─── Obligations Card ──────────────────────────────────────────────
+.ov-obligations {
+  margin: 0 1.25rem 1.75rem;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: $radius-lg;
+  padding: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    margin: 0 2rem 1.75rem;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #92400e;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  &__total {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #78350f;
+    letter-spacing: -0.03em;
+  }
+
+  &__sub {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a16207;
+    margin-top: 0.2rem;
+  }
+
+  &__sip {
+    text-align: right;
+
+    .sip-lbl {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #a16207;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .sip-val {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #92400e;
+      letter-spacing: -0.02em;
+      display: block;
+    }
+  }
+}
+
+// ─── Loading State ─────────────────────────────────────────────────
+.ov-loading {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  .loading-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+}
+
+// ─── Utility ───────────────────────────────────────────────────────
+.ov-p { padding: 0 1.25rem; @media (min-width: 768px) { padding: 0 2rem; } }

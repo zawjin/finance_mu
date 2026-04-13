@@ -194,8 +194,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const filteredSpending = useMemo(() => {
         let result = spending.filter(item => {
-            // EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT
-            if (item.category === 'Investment') return false;
+            // DO NOT EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT
+            // This allows Top-ups to be seen in the transaction history
 
             const matchesSearch = item.description.toLowerCase().includes(search.toLowerCase()) ||
                 item.category.toLowerCase().includes(search.toLowerCase());
@@ -239,7 +239,6 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         let gross = 0;
         let recovered = 0;
         spending.forEach(item => {
-            if (item.category === 'Investment') return;
             gross += item.amount || 0;
             recovered += item.recovered || 0;
         });

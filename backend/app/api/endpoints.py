@@ -184,24 +184,96 @@ async def get_investments():
 
 @router.post("/investments")
 async def add_investment(item: InvestmentItem):
-    result = await db.investments.insert_one(item.dict(exclude={"id"}))
-    # Auto-deduct from reserve if a payment source is linked
+    # 1. Store the main investment record
+    today = datetime.now().strftime("%Y-%m-%d")
+    update_data = item.dict(exclude={"id", "recentPurchase"})
+    update_data["last_updated"] = today # Set initial updated date
+    
+    # Track initial purchase
+    primary_purchase = {
+        "amount": float(item.value),
+        "date": item.date,
+        "description": "Initial Acquisition",
+        "quantity": item.quantity
+    }
+    update_data["purchases"] = [primary_purchase]
+    
+    result = await db.investments.insert_one(update_data)
+    asset_id = str(result.inserted_id)
+    
+    # 2. AUDIT TRAILING
+    spending_log = {
+        "date": item.date,
+        "amount": float(item.value),
+        "category": "Investments",
+        "sub_category": item.type,
+        "description": f"Initial Acquisition: {item.name}",
+        "payment_method": item.payment_method or "OTHER",
+        "payment_source_id": item.payment_source_id,
+        "is_settled": True,
+        "metadata": {"is_investment": True, "asset_id": asset_id, "is_initial": True}
+    }
+    await db.spending.insert_one(spending_log)
+    
+    # 3. RESERVE ADJUSTMENT
     if item.payment_source_id:
         try:
-            target_reserve = await db.reserves.find_one({"_id": ObjectId(item.payment_source_id)})
-            if target_reserve:
-                adjustment = -float(item.value)
-                await db.reserves.update_one(
-                    {"_id": ObjectId(item.payment_source_id)},
-                    {"$inc": {"balance": round(adjustment, 2)}}
-                )
+            await db.reserves.update_one(
+                {"_id": ObjectId(item.payment_source_id)},
+                {"$inc": {"balance": -round(float(item.value), 2)}}
+            )
         except Exception as e:
-            print(f"Reserve deduction error: {e}")
-    return {"id": str(result.inserted_id)}
+            print(f"New Investment Reserve Adjustment Error: {e}")
+            
+    return {"id": asset_id}
 
 @router.put("/investments/{item_id}")
 async def update_investment(item_id: str, item: InvestmentItem):
-    await db.investments.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    today = datetime.now().strftime("%Y-%m-%d")
+    # Exclude purchases from $set — they are managed via $push to avoid overwriting
+    update_data = item.dict(exclude={"id", "recentPurchase", "recentPurchaseQty", "purchases"})
+    update_data["last_updated"] = today
+
+    # TRACK TOP-UP: If there's a recent purchase amount, push it to history
+    if item.recentPurchase and item.recentPurchase > 0:
+        new_purchase = {
+            "amount": float(item.recentPurchase),
+            "date": today,
+            "details": "Top-up Addition",
+            "quantity": item.recentPurchaseQty
+        }
+        # $push does NOT overwrite the existing purchases[] list
+        await db.investments.update_one(
+            {"_id": ObjectId(item_id)},
+            {"$push": {"purchases": new_purchase}}
+        )
+
+        # Spending audit log
+        spending_log = {
+            "date": today,
+            "amount": float(item.recentPurchase),
+            "category": "Investments",
+            "sub_category": item.type,
+            "description": f"Portfolio Top-up: {item.name}",
+            "payment_method": item.payment_method or "OTHER",
+            "payment_source_id": item.payment_source_id,
+            "is_settled": True,
+            "metadata": {"is_investment": True, "asset_id": item_id}
+        }
+        await db.spending.insert_one(spending_log)
+
+        # Deduct from reserve if linked
+        if item.payment_source_id:
+            try:
+                await db.reserves.update_one(
+                    {"_id": ObjectId(item.payment_source_id)},
+                    {"$inc": {"balance": -round(float(item.recentPurchase), 2)}}
+                )
+            except Exception as e:
+                print(f"Investment Top-up Reserve Adjustment Error: {e}")
+
+    # $set only updates qty, buy_price, value etc — purchases[] is untouched
+    await db.investments.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
     return {"status": "ok"}
 
 @router.delete("/investments/{item_id}")

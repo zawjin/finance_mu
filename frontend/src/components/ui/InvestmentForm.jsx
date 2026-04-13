@@ -179,7 +179,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 contributions: formData.contributions, // Ensure EPF contribs are passed
                 payment_method: formData.payment_method || null,
                 payment_source_id: formData.payment_source_id || null,
-                recentPurchase: formData._recentPurchaseAmt || null, // Pass top-up amount
+                recentPurchase: formData._recentPurchaseAmt || null, 
+                recentPurchaseQty: formData._recentPurchaseQty || null,
                 ...(isMarketAsset && {
                     quantity: parseFloat(formData.quantity) || null,
                     buy_price: parseFloat(formData.buy_price) || null,
@@ -236,7 +237,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 quantity: finalQty.toFixed(4).replace(/\.0000$/, ''),
                 buy_price: finalAvgPrice.toFixed(2),
                 value: (finalQty * currentPrice).toFixed(2),
-                _recentPurchaseAmt: (prev._recentPurchaseAmt || 0) + addAmt
+                _recentPurchaseAmt: (prev._recentPurchaseAmt || 0) + addAmt,
+                _recentPurchaseQty: (prev._recentPurchaseQty || 0) + addQty
             };
         });
 

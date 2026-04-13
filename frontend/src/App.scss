@@ -1,56 +1,84 @@
+// ─── Native App Reset ──────────────────────────────────────────────
+:root {
+  --app-bg: #f8fafc;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; // No blue highlight on tap
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--app-bg);
+  overflow-x: hidden;
+  height: 100%;
+  // Smoother scrolling for native feel
+  -webkit-overflow-scrolling: touch;
+}
+
 .app-shell {
-    background: #f8fafc;
-    min-height: 100vh;
+  background: var(--app-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-shell {
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-content {
-    padding: 1.5rem 3.5rem 3.5rem 3.5rem;
+  padding: 1.5rem 3.5rem 3.5rem 3.5rem;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 
-    @media (max-width: 768px) {
-        padding: 1rem 1.5rem 5.5rem 1.5rem;
-    }
+  @media (max-width: 768px) {
+    padding: 1rem 1rem 6rem 1rem; // Extra bottom space for mobile thumb reach
+  }
 }
 
+// ─── Shared UI Elements ───────────────────────────────────────────
+
 .modal-switcher-wrap {
-    padding: 1.5rem 1.5rem 0;
-    display: flex;
-    justify-content: center;
-    background: linear-gradient(to bottom, #fff, #f8fafc);
+  padding: 1.25rem 1.25rem 0;
+  display: flex;
+  justify-content: center;
+  background: #ffffff;
 }
 
 .switcher-pill-group {
-    display: inline-flex;
-    padding: 5px;
-    background-color: rgba(0,0,0,0.06);
-    border-radius: 20px;
-    border: 1px solid rgba(0,0,0,0.03);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+  display: inline-flex;
+  padding: 4px;
+  background-color: #f1f5f9;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.03);
 }
 
 .switcher-btn {
-    border-radius: 16px !important;
-    padding: 8px 32px !important;
-    font-weight: 900 !important;
-    font-size: 0.8rem !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 12px !important;
+  padding: 8px 24px !important;
+  font-weight: 800 !important;
+  font-size: 0.75rem !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #64748b !important;
 
-    &.active {
-        background-color: white !important;
-        color: #1d1d1f !important;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
+  &.active {
+    background-color: white !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+  }
+
+  &.inactive {
+    background-color: transparent !important;
+    &:hover {
+      background-color: rgba(0,0,0,0.02) !important;
     }
-
-    &.inactive {
-        background-color: transparent !important;
-        color: #86868b !important;
-
-        &:hover {
-            background-color: rgba(0,0,0,0.03) !important;
-        }
-    }
+  }
 }

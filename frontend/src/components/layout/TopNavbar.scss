@@ -12,14 +12,18 @@
     z-index: 1000;
     height: 70px;
     width: 100%;
+    // Hardware acceleration for zero flicker
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
 
     @media (max-width: 576px) {
         padding: 0 1rem;
+        padding-top: max(0.75rem, env(safe-area-inset-top)); // Support for notches
         height: auto;
-        min-height: 110px; // Height to accommodate two rows
+        min-height: 110px;
         flex-direction: column;
         justify-content: flex-start;
-        padding-top: 0.75rem;
         padding-bottom: 0.5rem;
     }
 
@@ -95,9 +99,11 @@
 
     @media (max-width: 576px) {
         width: 100%;
-        padding: 0.25rem 0;
+        padding: 0.5rem 0;
         mask-image: linear-gradient(to right, black 85%, transparent 100%);
         order: 2;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 1rem;
     }
 
     @media (min-width: 577px) and (max-width: 1024px) {
@@ -112,7 +118,7 @@
 
     @media (max-width: 576px) {
         position: fixed !important;
-        bottom: 2rem !important;
+        bottom: calc(1.5rem + env(safe-area-inset-bottom)) !important; // Handle home indicators
         right: 1.5rem !important;
         top: auto !important;
         flex-direction: column-reverse;
@@ -123,6 +129,7 @@
         background: transparent !important;
         box-shadow: none !important;
         width: auto !important;
+        touch-action: manipulation;
     }
 }
 
@@ -145,16 +152,17 @@
     @media (max-width: 576px) {
         margin-left: 0;
         position: fixed !important;
-        top: 0.75rem !important;
+        top: max(0.75rem, env(safe-area-inset-top)) !important;
         right: 1rem !important;
         pointer-events: auto !important;
         background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        padding: 0.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(15px);
+        padding: 0.4rem;
+        border-radius: 100px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         border: 1px solid rgba(0, 0, 0, 0.05);
         z-index: 2001;
+        touch-action: manipulation;
     }
 }
 
@@ -297,6 +305,12 @@
 
     &.inactive {
         color: #94a3b8;
+    }
+
+    @media (max-width: 576px) {
+        padding: 0.75rem 0.25rem;
+        scroll-snap-align: start;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .nav-link-icon-wrap {

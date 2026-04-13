@@ -129,19 +129,28 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             const withdrawals = item.withdrawals || [];
 
             const isItemDateMatch = (p) => {
-                if (p === 'TODAY') return itemDate.isSame(now, 'day');
-                if (p === 'YESTERDAY') return itemDate.isSame(now.subtract(1, 'day'), 'day');
-                if (p === 'THIS WEEK') return itemDate.isAfter(now.startOf('week').subtract(1, 'ms'));
-                if (p === 'THIS MONTH') return itemDate.isSame(now, 'month');
-                if (p === 'LAST MONTH') return itemDate.isSame(now.subtract(1, 'month'), 'month');
-                if (p === 'THIS YEAR') return itemDate.isSame(now, 'year');
-                if (p === 'CUSTOM') {
-                    let matches = true;
-                    if (dateRange.start) matches = matches && itemDate.isAfter(dayjs(dateRange.start).subtract(1, 'day'));
-                    if (dateRange.end) matches = matches && itemDate.isBefore(dayjs(dateRange.end).add(1, 'day'));
-                    return matches;
-                }
-                return true; // ALL case
+                const updatedDate = item.last_updated ? dayjs(item.last_updated) : null;
+                const checkDate = (d, period) => {
+                    if (period === 'TODAY') return d.isSame(now, 'day');
+                    if (period === 'YESTERDAY') return d.isSame(now.subtract(1, 'day'), 'day');
+                    if (period === 'THIS WEEK') return d.isAfter(now.startOf('week').subtract(1, 'ms'));
+                    if (period === 'THIS MONTH') return d.isSame(now, 'month');
+                    if (period === 'LAST MONTH') return d.isSame(now.subtract(1, 'month'), 'month');
+                    if (period === 'THIS YEAR') return d.isSame(now, 'year');
+                    if (period === 'CUSTOM') {
+                        let matches = true;
+                        if (dateRange.start) matches = matches && d.isAfter(dayjs(dateRange.start).subtract(1, 'day'));
+                        if (dateRange.end) matches = matches && d.isBefore(dayjs(dateRange.end).add(1, 'day'));
+                        return matches;
+                    }
+                    return false;
+                };
+
+                // Match if either original date OR last_updated date falls in period
+                const originalMatches = checkDate(itemDate, p);
+                const updateMatches = updatedDate ? checkDate(updatedDate, p) : false;
+
+                return originalMatches || updateMatches;
             };
 
             const isWithdrawalDateMatch = (p) => {
@@ -169,6 +178,26 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         });
     }, [investments, search, selectedType, period, dateRange]);
 
+    // Helper to check if a specific date matches the current UI period filter
+    const isMatch = (dateStr) => {
+        if (period === 'ALL') return true;
+        const d = dayjs(dateStr).startOf('day');
+        const now = dayjs().startOf('day');
+        if (period === 'TODAY') return d.isSame(now, 'day');
+        if (period === 'YESTERDAY') return d.isSame(now.subtract(1, 'day'), 'day');
+        if (period === 'THIS WEEK') return d.isAfter(now.startOf('week').subtract(1, 'ms'));
+        if (period === 'THIS MONTH') return d.isSame(now, 'month');
+        if (period === 'LAST MONTH') return d.isSame(now.subtract(1, 'month'), 'month');
+        if (period === 'THIS YEAR') return d.isSame(now, 'year');
+        if (period === 'CUSTOM') {
+            let m = true;
+            if (dateRange.start) m = m && d.isAfter(dayjs(dateRange.start).subtract(1, 'day'));
+            if (dateRange.end) m = m && d.isBefore(dayjs(dateRange.end).add(1, 'day'));
+            return m;
+        }
+        return true;
+    };
+
     // Analytics
     const totals = useMemo(() => {
         let grossValue = 0;
@@ -177,40 +206,98 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         const typeStats = {};
 
         filteredInvestments.forEach(item => {
-            const { current, invested, withdrawn } = getLiveVal(item);
             const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
-
             if (!typeStats[type]) typeStats[type] = { current: 0, invested: 0 };
 
-            grossValue += current;
-            grossInvested += invested;
-            grossWithdrawn += withdrawn;
+            if (period === 'ALL') {
+                // ALL TIME: show full live portfolio value
+                const { current, invested, withdrawn } = getLiveVal(item);
+                grossValue += current;
+                grossInvested += invested;
+                grossWithdrawn += withdrawn;
+                typeStats[type].current += current;
+                typeStats[type].invested += invested;
+            } else {
+                // PERIOD SPECIFIC: ONLY sum actual transaction records for this window.
+                // NEVER fall back to total asset value — that inflates period view incorrectly.
+                let periodSpent = 0;
+                (item.purchases || []).forEach(p => {
+                    if (isMatch(p.date)) periodSpent += (parseFloat(p.amount) || 0);
+                });
 
-            typeStats[type].current += current;
-            typeStats[type].invested += invested;
+                // Only fall back for pure legacy items: no purchases array AND first acquired in this period
+                if (periodSpent === 0 && (!item.purchases || item.purchases.length === 0) && isMatch(item.date)) {
+                    periodSpent = parseFloat(item.value) || 0;
+                }
+
+                let periodWithdrawn = 0;
+                (item.withdrawals || []).forEach(w => {
+                    if (isMatch(w.date)) periodWithdrawn += (parseFloat(w.amount) || 0);
+                });
+
+                const netInflow = periodSpent - periodWithdrawn;
+                grossValue += netInflow;
+                grossInvested += periodSpent;
+                grossWithdrawn += periodWithdrawn;
+                typeStats[type].current += netInflow;
+                typeStats[type].invested += periodSpent;
+            }
         });
 
         const grossProfitAmt = (grossValue + grossWithdrawn) - grossInvested;
         const grossProfitPct = grossInvested > 0 ? (grossProfitAmt / grossInvested) * 100 : 0;
 
         return { grossValue, grossInvested, grossWithdrawn, grossProfitAmt, grossProfitPct, typeStats };
-    }, [filteredInvestments]);
+    }, [filteredInvestments, period, dateRange]);
 
     const trendAnalysis = useMemo(() => {
         const dailyNet = {};
+
         filteredInvestments.forEach(s => {
-            dailyNet[s.date] = (dailyNet[s.date] || 0) + s.value;
+            // 1. Process all historical purchases (ADDITIONS)
+            const purchases = s.purchases || [];
+            let hasInitial = false;
+            
+            if (purchases.length > 0) {
+                purchases.forEach(p => {
+                    if (isMatch(p.date)) {
+                        dailyNet[p.date] = (dailyNet[p.date] || 0) + (parseFloat(p.amount) || 0);
+                    }
+                    if (p.description === 'Initial Acquisition') hasInitial = true;
+                });
+            }
+
+            // Fallback for missing initial (Legacy items OR items where purchases didn't track the start)
+            if (!hasInitial && isMatch(s.date)) {
+                // If we have top-ups in 'purchases', the 'initial' value was (Total - Top-ups)
+                const topUpsSum = purchases.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+                const initialVal = (parseFloat(s.value) || 0) - topUpsSum;
+                if (initialVal >= 0) {
+                    dailyNet[s.date] = (dailyNet[s.date] || 0) + initialVal;
+                }
+            }
+
+            // 2. Process all historical withdrawals (EXITS)
+            (s.withdrawals || []).forEach(w => {
+                if (isMatch(w.date)) {
+                    dailyNet[w.date] = (dailyNet[w.date] || 0) - (parseFloat(w.amount) || 0);
+                }
+            });
         });
+
         const dates = Object.keys(dailyNet).sort();
         let cumulative = 0;
-        const cumulativeData = dates.map(d => { cumulative += dailyNet[d]; return cumulative; });
+        const cumulativeData = dates.map(d => { 
+            cumulative += dailyNet[d]; 
+            return cumulative; 
+        });
 
         return {
             labels: dates.map(d => dayjs(d).format('MMM DD, YYYY')),
             daily: dates.map(d => dailyNet[d]),
             cumulative: cumulativeData
         };
-    }, [filteredInvestments]);
+    }, [filteredInvestments, period, dateRange]);
 
     const chartConfig = useMemo(() => {
         const typeLabels = Object.keys(totals.typeStats);
@@ -397,8 +484,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                             const style = getAssetStyle(type);
                             return (
                                 <motion.div key={type} className="investment-category-pill glass-effect">
-                                    <div 
-                                        className="pill-icon-box" 
+                                    <div
+                                        className="pill-icon-box"
                                         style={{ '--pill-bg': style.bg, '--pill-color': style.color }}
                                     >
                                         {style.icon}
@@ -590,8 +677,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 const live = livePre || getLiveVal(s);
                                 return (
                                     <div key={s._id} className="transaction-row-fancy">
-                                        <div 
-                                            className="pill-icon-box" 
+                                        <div
+                                            className="pill-icon-box"
                                             style={{ '--pill-bg': catStyle.bg, '--pill-color': catStyle.color }}
                                         >
                                             {catStyle.icon}
@@ -603,6 +690,11 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             </div>
                                             <div className="asset-meta-flex">
                                                 <span>{dayjs(s.date).format('YYYY-MM-DD')} • {s.sub}</span>
+                                                {s.last_updated && s.last_updated !== s.date && (
+                                                    <span className="updated-tag" style={{ color: '#6366f1', fontWeight: 800 }}>
+                                                        • Updated: {dayjs(s.last_updated).format('YYYY-MM-DD')}
+                                                    </span>
+                                                )}
                                                 {s.quantity && (
                                                     <span>
                                                         • Qty: {live.netQty < s.quantity ? `${live.netQty} / ${s.quantity}` : s.quantity}
@@ -654,6 +746,55 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             <div className="group-title-flex">
                                                 <Calendar size={14} color="#6366f1" />
                                                 <span className="group-date-label">{month.toUpperCase()}</span>
+                                                {(() => {
+                                                    const latest = grouped[month].reduce((max, s) => {
+                                                        const cur = s.last_updated || s.date;
+                                                        return !max || dayjs(cur).isAfter(dayjs(max)) ? cur : max;
+                                                    }, null);
+                                                    
+                                                    const groupItems = grouped[month];
+                                                    
+                                                    const totalAdds = groupItems.reduce((sum, s) => {
+                                                        const periodPurchases = (s.purchases || []).filter(p => isMatch(p.date));
+                                                        let count = periodPurchases.length;
+                                                        // Fallback: If no purchase entries, but the item itself was updated in this period
+                                                        if (count === 0 && (isMatch(s.date) || isMatch(s.last_updated))) count = 1;
+                                                        return sum + count;
+                                                    }, 0);
+
+                                                    const totalWithdraws = groupItems.reduce((sum, s) => {
+                                                        return sum + (s.withdrawals || []).filter(w => isMatch(w.date)).length;
+                                                    }, 0);
+
+                                                    const totalAddUnits = groupItems.reduce((sum, s) => {
+                                                        const periodPurchases = (s.purchases || []).filter(p => isMatch(p.date));
+                                                        const pQty = periodPurchases.reduce((sq, p) => sq + (parseFloat(p.quantity) || 0), 0);
+                                                        
+                                                        // Fallback: If no purchase entries but item was updated/added in this period
+                                                        if (pQty === 0 && (isMatch(s.date) || isMatch(s.last_updated))) {
+                                                            // For legacy/simple updates, we assume the current 'recent' qty or total qty
+                                                            return sum + (parseFloat(s.recentPurchaseQty) || parseFloat(s.quantity) || 0);
+                                                        }
+                                                        return sum + pQty;
+                                                    }, 0);
+
+                                                    const totalWithdrawUnits = groupItems.reduce((sum, s) => {
+                                                        return sum + (s.withdrawals || []).filter(w => isMatch(w.date)).reduce((sq, w) => sq + (parseFloat(w.quantity) || 0), 0);
+                                                    }, 0);
+
+                                                    return (
+                                                        <div className="group-meta-info-cluster">
+                                                            {latest && (
+                                                                <span className="group-activity-tag">
+                                                                    • LAST ACTY: {dayjs(latest).format('MMM DD')}
+                                                                </span>
+                                                            )}
+                                                            <span className="group-tx-stats-tag">
+                                                                • {totalAdds} ADDS ({totalAddUnits.toFixed(2)} Units) | {totalWithdraws} WITHDRAWS ({totalWithdrawUnits.toFixed(2)} Units)
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                             <div className="group-acquired-label">
                                                 ACQUIRED: {formatCurrency(grouped[month].reduce((sum, s) => sum + getLiveVal(s).current, 0))}

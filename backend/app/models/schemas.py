@@ -14,6 +14,7 @@ class SpendingItem(BaseModel):
     payment_source_id: Optional[str] = None  # Reserve account _id if debited
     target_account_id: Optional[str] = None  # Reserve account _id if credited/settled (e.g. Card Payment)
     is_settled: bool = True  # Tracks if card transactions are paid off
+    metadata: Optional[dict] = {} # For tagging (e.g. is_investment: True)
 
 class YearlyExpenseItem(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
@@ -50,6 +51,10 @@ class InvestmentItem(BaseModel):
     withdrawals: List[WithdrawalItem] = []
     payment_method: Optional[str] = None  # CASH, BANK, WALLET, GIFT, UPI, CARD, OTHER
     payment_source_id: Optional[str] = None  # Reserve account _id if debited
+    recentPurchase: Optional[float] = None # For top-ups
+    recentPurchaseQty: Optional[float] = None # Units added
+    last_updated: Optional[str] = None # ISO Format YYYY-MM-DD
+    purchases: List[WithdrawalItem] = [] # Historical top-ups
 
 class CategorySchema(BaseModel):
     name: str

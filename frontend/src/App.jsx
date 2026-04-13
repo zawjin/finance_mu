@@ -128,28 +128,6 @@ export default function App() {
                 await api.post('/investments', data);
             }
 
-            // Also log to Audit Log - Log specific top-up amount if provided, else log valuation for new entries
-            const auditAmount = data.recentPurchase || (editingInvestment ? 0 : data.value);
-            if (auditAmount > 0) {
-                // Determine the correct date for the audit log
-                // If it's a new top-up on an existing asset, the cash exited the bank *today*, not years ago.
-                const logDate = (editingInvestment && data.recentPurchase) ? new Date().toISOString().split('T')[0] : (data.date || new Date().toISOString().split('T')[0]);
-
-                await api.post('/spending', {
-                    date: logDate,
-                    amount: auditAmount,
-                    category: 'Investment',
-                    sub_category: data.type, // Mutual Fund, Stocks, etc.
-                    description: `${editingInvestment ? 'Top-up' : 'Added'} Asset: ${data.name} ${data.recentPurchase ? `(${data.recentPurchase} worth of units added)` : ''}`,
-                    payment_method: data.payment_method || 'BANK',
-                    // Prevent Double-Deduction: New investments deduct from Reserve via /investments POST.
-                    // Top-ups (PUTs) do not, so we pass payment_source_id to /spending to handle it.
-                    payment_source_id: editingInvestment ? (data.payment_source_id || null) : null,
-                    is_settled: true,
-                    metadata: { is_investment: true }
-                });
-            }
-
             dispatch(fetchFinanceData());
             setEditingInvestment(null);
             setShowAddInvestmentModal(false);
