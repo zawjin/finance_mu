@@ -149,7 +149,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         try {
             const amount = parseFloat(settleData.amount);
             const tx = settleData.targetTx;
-            
+
             // 1. Deduct from Source Reserve
             if (settleData.sourceId) {
                 const target = reserves.find(r => r._id === settleData.sourceId);
@@ -194,8 +194,13 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const filteredSpending = useMemo(() => {
         let result = spending.filter(item => {
-            // DO NOT EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT
-            // This allows Top-ups to be seen in the transaction history
+            // EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT AS REQUESTED
+            const investmentCategories = [
+                'investment', 'investments', 'investment settlement', 'stocks', 
+                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                'chit fund', 'local investment', 'transfer', 'inflow'
+            ];
+            if (investmentCategories.includes((item.category || '').toLowerCase())) return false;
 
             const matchesSearch = item.description.toLowerCase().includes(search.toLowerCase()) ||
                 item.category.toLowerCase().includes(search.toLowerCase());
@@ -509,6 +514,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         ))
                     ) : (
                         [...categories]
+                            .filter(c => ![
+                                'investment', 'investments', 'investment settlement', 'stocks', 
+                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                                'chit fund', 'local investment', 'transfer', 'inflow'
+                            ].includes((c.name || '').toLowerCase()))
                             .sort((a, b) => {
                                 const statsA = totals.catStats[a.name] || { net: 0 };
                                 const statsB = totals.catStats[b.name] || { net: 0 };
@@ -522,11 +532,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                                 return (
                                     <motion.div key={cat} className="apple-category-pill glass-effect category-pill-wrapper">
-                                        <div 
-                                            className={`pill-icon-box ${hasActivity ? 'active' : 'inactive'}`} 
-                                            style={{ 
-                                                '--pill-bg': hasActivity ? style.bg : 'rgba(0,0,0,0.04)', 
-                                                '--pill-color': hasActivity ? style.color : '#8e8e93' 
+                                        <div
+                                            className={`pill-icon-box ${hasActivity ? 'active' : 'inactive'}`}
+                                            style={{
+                                                '--pill-bg': hasActivity ? style.bg : 'rgba(0,0,0,0.04)',
+                                                '--pill-color': hasActivity ? style.color : '#8e8e93'
                                             }}
                                         >
                                             {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
@@ -580,19 +590,27 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 ) : (
                                     <>
                                         <div className={`cat-filter-chip ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>All</div>
-                                        {categories.slice().sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-                                            const style = getCatStyle(c.name, categories);
-                                            return (
-                                                <div key={c.name} className={`cat-filter-chip ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
-                                                    {getIcon(c.name, categories, {
-                                                        color: selectedCat === c.name ? 'white' : style.color,
-                                                        fill: selectedCat === c.name ? 'white' : 'auto',
-                                                        size: 14
-                                                    })}
-                                                    <span>{c.name.split(' ')[0]}</span>
-                                                </div>
-                                            );
-                                        })}
+                                        {categories
+                                            .filter(c => ![
+                                                'investment', 'investments', 'investment settlement', 'stocks', 
+                                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                                                'chit fund', 'local investment', 'transfer', 'inflow'
+                                            ].includes((c.name || '').toLowerCase()))
+                                            .slice()
+                                            .sort((a, b) => a.name.localeCompare(b.name))
+                                            .map(c => {
+                                                const style = getCatStyle(c.name, categories);
+                                                return (
+                                                    <div key={c.name} className={`cat-filter-chip ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
+                                                        {getIcon(c.name, categories, {
+                                                            color: selectedCat === c.name ? 'white' : style.color,
+                                                            fill: selectedCat === c.name ? 'white' : 'auto',
+                                                            size: 14
+                                                        })}
+                                                        <span>{c.name.split(' ')[0]}</span>
+                                                    </div>
+                                                );
+                                            })}
                                     </>
                                 )}
                                 {selectedCat !== 'ALL' && (
@@ -628,18 +646,18 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
                             <div className="portal-filter-wrap">
-                                <div 
-                                    className={`portal-chip-custom ${selectedSourceId === 'ALL' ? 'active' : ''}`} 
+                                <div
+                                    className={`portal-chip-custom ${selectedSourceId === 'ALL' ? 'active' : ''}`}
                                     onClick={() => setSelectedSourceId('ALL')}
                                 >
                                     All Portals
                                 </div>
                                 {reserves.map(r => (
-                                    <div 
-                                        key={r._id} 
-                                        className={`portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`} 
+                                    <div
+                                        key={r._id}
+                                        className={`portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`}
                                         onClick={() => setSelectedSourceId(r._id)}
-                                        style={{ 
+                                        style={{
                                             '--portal-color': r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
                                             '--portal-border': selectedSourceId === r._id ? (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1') : 'transparent'
                                         }}

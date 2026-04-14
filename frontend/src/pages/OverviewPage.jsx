@@ -121,7 +121,12 @@ export default function OverviewPage() {
         let total = 0;
 
         (spending || []).forEach(s => {
-            if (s.metadata?.is_investment) return;
+            const investmentCategories = [
+                'investment', 'investments', 'investment settlement', 'stocks', 
+                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                'chit fund', 'local investment', 'transfer', 'inflow'
+            ];
+            if (s.metadata?.is_investment || investmentCategories.includes((s.category || '').toLowerCase())) return;
             if (!inPeriod(s.date, periodStart)) return;
             const amt = parseFloat(s.amount || 0) - parseFloat(s.recovered || 0);
             const cat = s.category || 'Other';
@@ -153,7 +158,12 @@ export default function OverviewPage() {
         const dailyNet = {};
 
         (spending || []).forEach(s => {
-            if (s.metadata?.is_investment) return;
+            const investmentCategories = [
+                'investment', 'investments', 'investment settlement', 'stocks', 
+                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                'chit fund', 'local investment', 'transfer', 'inflow'
+            ];
+            if (s.metadata?.is_investment || investmentCategories.includes((s.category || '').toLowerCase())) return;
             if (!inPeriod(s.date, periodStart)) return;
             const amt = parseFloat(s.amount || 0) - parseFloat(s.recovered || 0);
             dailyNet[s.date] = (dailyNet[s.date] || 0) + amt;
@@ -641,7 +651,15 @@ export default function OverviewPage() {
                         </div>
                         {(() => {
                             const filtered = (spending || [])
-                                .filter(tx => inPeriod(tx.date, periodStart))
+                                .filter(tx => {
+                                    const investmentCategories = [
+                                        'investment', 'investments', 'investment settlement', 'stocks', 
+                                        'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                                        'chit fund', 'local investment', 'transfer', 'inflow'
+                                    ];
+                                    if (tx.metadata?.is_investment || investmentCategories.includes((tx.category || '').toLowerCase())) return false;
+                                    return inPeriod(tx.date, periodStart);
+                                })
                                 .slice(0, 8);
 
                             if (filtered.length === 0) return (
