@@ -190,9 +190,9 @@ export default function App() {
     const handleAddFundsSubmit = async (data) => {
         try {
             const acc = reserves.find(r => r._id === data.account_id);
-            // 1. Credit Balance
-            await api.put(`/reserves/${acc._id}`, { ...acc, balance: acc.balance + data.amount });
-            // 2. Log as Inflow (Negative amount in spending signifies inflow)
+            // Log as Inflow (Negative amount in spending signifies inflow)
+            // The backend auto-reconciles: for non-card source, balance += -amount.
+            // Since amount is negative, balance += abs(amount).
             await api.post('/spending', {
                 date: data.date,
                 amount: -Math.abs(data.amount),
@@ -200,7 +200,7 @@ export default function App() {
                 sub_category: 'Direct Deposit',
                 description: data.description,
                 payment_method: acc.account_type,
-                target_account_id: acc._id,
+                payment_source_id: acc._id,
                 is_settled: true
             });
             dispatch(fetchFinanceData());
@@ -215,12 +215,7 @@ export default function App() {
             const fromAcc = reserves.find(r => r._id === data.from_id);
             const toAcc = reserves.find(r => r._id === data.to_id);
 
-            // 1. Debit Source
-            await api.put(`/reserves/${fromAcc._id}`, { ...fromAcc, balance: fromAcc.balance - data.amount });
-            // 2. Credit Destination
-            await api.put(`/reserves/${toAcc._id}`, { ...toAcc, balance: toAcc.balance + data.amount });
-
-            // 3. Create Audit Log (Spending)
+            // Create Audit Log (Spending) - Backend handles the reserve adjustments
             await api.post('/spending', {
                 date: data.date,
                 amount: data.amount,
@@ -251,18 +246,7 @@ export default function App() {
             const updatedPayments = [...(card.payments || []), paymentData];
             await api.put(`${endpoint}/${card._id}`, { ...card, payments: updatedPayments });
 
-            // 2. Deduct from Source Reserve
-            if (paymentData.source_id) {
-                const target = reserves.find(r => r._id === paymentData.source_id);
-                if (target) {
-                    await api.put(`/reserves/${target._id}`, {
-                        ...target,
-                        balance: target.balance - paymentData.amount
-                    });
-                }
-            }
-
-            // 3. Create a Spending Log entry
+            // 2. Create a Spending Log entry - Backend handles Reserve deduction
             await api.post('/spending', {
                 date: paymentData.date,
                 amount: paymentData.amount,
@@ -274,7 +258,7 @@ export default function App() {
                 is_settled: true
             });
 
-            // 4. Create an Investment Portfolio entry
+            // 3. Create an Investment Portfolio entry
             await api.post('/investments', {
                 type: 'Chit Fund',
                 name: 'Chit fund',
@@ -303,18 +287,8 @@ export default function App() {
             const updatedPayments = (lending.payments || []).filter(p => p.term_number !== termNumber);
             await api.put(`/private-lending/${lending._id}`, { ...lending, payments: updatedPayments });
 
-            // 2. Revert Reserve Balance if possible
-            if (paymentToRevert.source_id) {
-                const target = (reserves || []).find(r => r._id === paymentToRevert.source_id);
-                if (target) {
-                    await api.put(`/reserves/${target._id}`, {
-                        ...target,
-                        balance: target.balance + paymentToRevert.amount
-                    });
-                }
-            }
-
-            // 3. Purge associated Spending & Investment logs (Best effort search)
+            // 2. Purge associated Spending & Investment logs
+            // Backend handle reserve revert when spending log is deleted
             const instrumentName = lending.borrower;
             const searchSpending = `Settle Term #${termNumber} for ${instrumentName}`;
             const searchInvest = `Term #${termNumber} settlement for ${instrumentName}`;

@@ -1,23 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
-    LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles, Search, Bell,
-    User, Handshake, Globe, Banknote, Bookmark, Activity, CreditCard,
-    Home, FileText, BookOpen, Menu, X, ChevronLeft
+    LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles,
+    User, Globe, Banknote, Bookmark, Activity,
+    X, ArrowLeft, Zap, ChevronRight, Home, TrendingUp,
+    Shield, Calculator, CreditCard
 } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 import './TopNavbar.scss';
+
+const NAV_ITEMS = [
+    { to: '/',               label: 'Dashboard',     icon: <LayoutDashboard size={22} />, color: '#6366f1', bg: '#eef2ff' },
+    { to: '/spending',       label: 'Audit Ledger',  icon: <Wallet size={22} />,          color: '#0ea5e9', bg: '#e0f2fe' },
+    { to: '/reserves',       label: 'Cash Reserves', icon: <Banknote size={22} />,        color: '#10b981', bg: '#d1fae5' },
+    { to: '/investments',    label: 'Assets',        icon: <Gem size={22} />,             color: '#f59e0b', bg: '#fef3c7' },
+    { to: '/fixed-expenses', label: 'Fixed Costs',   icon: <Bookmark size={22} />,        color: '#8b5cf6', bg: '#ede9fe' },
+    { to: '/health',         label: 'Health',        icon: <Activity size={22} />,        color: '#ef4444', bg: '#fee2e2' },
+];
+
+const TOOL_ITEMS = [
+    { type: 'action', label: 'AI Analyst',    icon: <Sparkles size={18} />,    color: '#f97316', bg: '#fff7ed', action: 'ai' },
+    { type: 'link',   to: '/salary-calculation', label: 'Salary Calc',  icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
+    { type: 'link',   to: '/categories',         label: 'Config',       icon: <Settings size={18} />,   color: '#8b5cf6', bg: '#ede9fe' },
+    { type: 'link',   to: '/profile',            label: 'Profile',      icon: <User size={18} />,       color: '#10b981', bg: '#d1fae5' },
+    { type: 'link',   to: '/site-settings',      label: 'Site Config',  icon: <Globe size={18} />,      color: '#64748b', bg: '#f1f5f9' },
+];
+
+const PAGE_TITLE_MAP = {
+    '/':                    { title: 'Dashboard',       sub: 'Financial Overview' },
+    '/spending':            { title: 'Audit Ledger',    sub: 'Transaction History' },
+    '/reserves':            { title: 'Cash Reserves',   sub: 'Liquidity Management' },
+    '/investments':         { title: 'Asset Portfolio', sub: 'Investment Tracker' },
+    '/fixed-expenses':      { title: 'Fixed Costs',     sub: 'Recurring Obligations' },
+    '/health':              { title: 'Health Connect',  sub: 'Habit Tracker' },
+    '/categories':          { title: 'Configuration',   sub: 'Categories & Settings' },
+    '/salary-calculation':  { title: 'Salary Calc',     sub: 'Take-Home Calculator' },
+    '/profile':             { title: 'Profile',         sub: 'Account Settings' },
+    '/settings':            { title: 'Settings',        sub: 'Preferences' },
+    '/site-settings':       { title: 'Site Settings',   sub: 'App Configuration' },
+};
 
 export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
     const location = useLocation();
     const [profileOpen, setProfileOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
+    const profileRef = useRef(null);
+    const sheetRef = useRef(null);
 
-    const isMobile = () => window.innerWidth <= 768; // Simple check for conditional rendering if needed, but CSS is better
+    // Live financial stats for the bottom sheet header
+    const { reserves, summary } = useSelector(state => state.finance);
+    const totalLiquidity = (reserves || [])
+        .filter(r => r.account_type !== 'CREDIT_CARD')
+        .reduce((s, r) => s + parseFloat(r.balance || 0), 0);
+    const totalAssets = summary?.total_investment || 0;
+
+    const currentPage = PAGE_TITLE_MAP[location.pathname] || { title: 'Friday', sub: 'Financial Intelligence' };
+    const showAddBtn = ['/spending', '/investments', '/fixed-expenses', '/health', '/reserves'].includes(location.pathname);
+    const showAnalyticsBtn = ['/spending', '/investments', '/health'].includes(location.pathname);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 8);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setProfileOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Close on route change
+    useEffect(() => setDrawerOpen(false), [location.pathname]);
+
+    // Lock body scroll when sheet is open
+    useEffect(() => {
+        if (drawerOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [drawerOpen]);
 
     return (
         <>
-            {/* DESKTOP NAVBAR (Untouched as requested) */}
+            {/* ─── DESKTOP NAVBAR ─── */}
             <nav className="top-navbar-root desktop-nav-only">
                 <div className="nav-brand-wrap">
                     <div onClick={() => window.location.href = '/'} className="nav-logo-brand">
@@ -25,13 +100,13 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                         FRIDAY
                     </div>
                     <div className="nav-links-scrollable">
-                        <ClassicNavLink to="/" label="DASHBOARD" icon={<LayoutDashboard size={16} />} />
-                        <ClassicNavLink to="/spending" label="AUDIT" icon={<Wallet size={16} />} />
-                        <ClassicNavLink to="/reserves" label="CASH" icon={<Banknote size={16} />} />
-                        <ClassicNavLink to="/investments" label="ASSETS" icon={<Gem size={16} />} />
-                        <ClassicNavLink to="/fixed-expenses" label="FIXED" icon={<Bookmark size={16} />} />
-                        <ClassicNavLink to="/health" label="HEALTH" icon={<Activity size={16} />} />
-                        <ClassicNavLink to="/categories" label="CONFIG" icon={<Settings size={16} />} />
+                        <ClassicNavLink to="/"               label="DASHBOARD" icon={<LayoutDashboard size={16} />} />
+                        <ClassicNavLink to="/spending"        label="AUDIT"     icon={<Wallet size={16} />} />
+                        <ClassicNavLink to="/reserves"        label="CASH"      icon={<Banknote size={16} />} />
+                        <ClassicNavLink to="/investments"     label="ASSETS"    icon={<Gem size={16} />} />
+                        <ClassicNavLink to="/fixed-expenses"  label="FIXED"     icon={<Bookmark size={16} />} />
+                        <ClassicNavLink to="/health"          label="HEALTH"    icon={<Activity size={16} />} />
+                        <ClassicNavLink to="/categories"      label="CONFIG"    icon={<Settings size={16} />} />
                     </div>
                 </div>
 
@@ -40,27 +115,25 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                         <button onClick={onOpenAiModal} className="btn-ai-analyst">
                             <Sparkles size={16} color="#fb923c" /> AI ANALYST
                         </button>
-                        {(location.pathname === '/spending' || location.pathname === '/investments' || location.pathname === '/fixed-expenses' || location.pathname === '/health') && (
+                        {showAddBtn && (
                             <>
-                                {location.pathname !== '/fixed-expenses' && (
+                                {showAnalyticsBtn && (
                                     <button onClick={onToggleAnalytics} className={`btn-toggle-analytics ${showAnalytics ? 'active' : 'inactive'}`}><BarChart2 size={18} /></button>
                                 )}
                                 <button onClick={onAdd} className="btn-sync-global"><Plus size={16} /> SYNC</button>
                             </>
                         )}
                     </div>
-
                     <div className="nav-profile-group">
-
-                        <div className="pos-rel">
+                        <div className="pos-rel" ref={profileRef}>
                             <div onClick={() => setProfileOpen(!profileOpen)} className="profile-trigger-avatar">S</div>
                             {profileOpen && (
                                 <div className="dropdown-menu-glass">
-                                    <MenuOption icon={<User size={16} />} label="Profile" onClick={() => { setProfileOpen(false); navigate('/profile'); }} />
-                                    <MenuOption icon={<Settings size={16} />} label="Settings" onClick={() => { setProfileOpen(false); navigate('/settings'); }} />
+                                    <MenuOption icon={<User size={16} />}     label="Profile"       onClick={() => { setProfileOpen(false); navigate('/profile'); }} />
+                                    <MenuOption icon={<Settings size={16} />} label="Settings"      onClick={() => { setProfileOpen(false); navigate('/settings'); }} />
                                     <MenuOption icon={<Banknote size={16} />} label="S Calculation" onClick={() => { setProfileOpen(false); navigate('/salary-calculation'); }} />
-                                    <MenuOption icon={<Settings size={16} />} label="Config" onClick={() => { setProfileOpen(false); navigate('/categories'); }} />
-                                    <MenuOption icon={<Globe size={16} />} label="Site Settings" onClick={() => { setProfileOpen(false); navigate('/site-settings'); }} />
+                                    <MenuOption icon={<Settings size={16} />} label="Config"        onClick={() => { setProfileOpen(false); navigate('/categories'); }} />
+                                    <MenuOption icon={<Globe size={16} />}    label="Site Settings" onClick={() => { setProfileOpen(false); navigate('/site-settings'); }} />
                                 </div>
                             )}
                         </div>
@@ -68,102 +141,166 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                 </div>
             </nav>
 
-            {/* MOBILE PRO NAVIGATION (Strictly for mobile) */}
+            {/* ─── MOBILE NAVIGATION ─── */}
             <div className="mobile-pro-container">
-                {/* PRO SLIDE DRAWER (MODERN NATIVE STYLE) */}
-                <div className={`pro-slide-drawer ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)}>
-                    <div className="drawer-panel-pro" onClick={e => e.stopPropagation()}>
-                        <div className="drawer-profile-box">
-                            <div className="profile-avatar-pro">S</div>
-                            <div className="profile-info-pro">
-                                <div className="profile-name-pro">Shajin Va</div>
-                                <div className="profile-sub-pro">Friday Financial Intelligence</div>
-                            </div>
-                        </div>
 
-                        <div className="drawer-scroll-section">
-                            <div className="drawer-section-label">MAIN SERVICES</div>
-                            <div className="drawer-links-pro">
-                                <DrawerLinkPro to="/" label="Dashboard" icon={<LayoutDashboard size={20} />} onClick={() => setDrawerOpen(false)} />
-                                <DrawerLinkPro to="/spending" label="Audit Ledger" icon={<Activity size={20} />} onClick={() => setDrawerOpen(false)} />
-                                <DrawerLinkPro to="/reserves" label="Cash Reserves" icon={<Banknote size={20} />} onClick={() => setDrawerOpen(false)} />
-                                <DrawerLinkPro to="/investments" label="Asset Portfolio" icon={<Gem size={20} />} onClick={() => setDrawerOpen(false)} />
+                {/* ── SMART MOBILE HEADER ── */}
+                <header className={`mobile-header ${scrolled ? 'scrolled' : ''}`}>
+                    <div className="mh-left">
+                        {location.pathname !== '/' ? (
+                            <button className="mh-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+                                <ArrowLeft size={20} />
+                            </button>
+                        ) : (
+                            <div className="mh-logo">
+                                <div className="mh-logo-inner"></div>
                             </div>
-
-                            <div className="drawer-section-label">TOOLS & ANALYSIS</div>
-                            <div className="drawer-links-pro">
-                                <DrawerLinkPro to="/health" label="Health Connect" icon={<Activity size={20} />} onClick={() => setDrawerOpen(false)} />
-                                <DrawerLinkPro to="/salary-calculation" label="Salary Calculator" icon={<Banknote size={20} />} onClick={() => setDrawerOpen(false)} />
-                                <DrawerLinkPro to="/categories" label="Configuration" icon={<Settings size={20} />} onClick={() => setDrawerOpen(false)} />
-                            </div>
-
-                            <div className="drawer-section-label">ACCOUNT</div>
-                            <div className="drawer-links-pro">
-                                <DrawerLinkPro to="/profile" label="Settings" icon={<User size={20} />} onClick={() => setDrawerOpen(false)} />
-                            </div>
-                        </div>
-
-                        <div className="drawer-footer-pro">
-                            <div className="logout-btn-pro"><X size={18} /> Logout Session</div>
+                        )}
+                        <div className="mh-title-group">
+                            <span className="mh-title">{currentPage.title}</span>
+                            <span className="mh-sub">{currentPage.sub}</span>
                         </div>
                     </div>
-                </div>
 
-                {/* REFINED TOP TAB BAR (CUTE & PRO) */}
-                <div className="pro-bottom-nav">
-                    <button onClick={() => window.history.back()} className="pro-tab-item">
-                        <ChevronLeft size={22} />
-                    </button>
-                    <ProTab to="/" icon={<Home size={22} />} active={location.pathname === '/'} />
-
-                    <div className="pro-fab-wrap">
-                        <button onClick={onAdd} className="pro-fab-btn">
-                            <Plus size={24} strokeWidth={3} />
+                    <div className="mh-right">
+                        {showAnalyticsBtn && (
+                            <button
+                                onClick={onToggleAnalytics}
+                                className={`mh-icon-btn ${showAnalytics ? 'active' : ''}`}
+                                aria-label="Toggle analytics"
+                            >
+                                <BarChart2 size={18} />
+                            </button>
+                        )}
+                        {showAddBtn && (
+                            <button onClick={onAdd} className="mh-add-btn" aria-label="Add entry">
+                                <Plus size={20} strokeWidth={2.5} />
+                            </button>
+                        )}
+                        <button
+                            onClick={() => setDrawerOpen(true)}
+                            className={`mh-menu-btn ${drawerOpen ? 'open' : ''}`}
+                            aria-label="Menu"
+                        >
+                            <span className="mh-hamburger">
+                                <span></span><span></span><span></span>
+                            </span>
                         </button>
                     </div>
+                </header>
 
-                    <ProTab to="/investments" icon={<BookOpen size={22} />} active={location.pathname === '/investments'} />
-                    <button onClick={() => setDrawerOpen(true)} className={`pro-tab-item ${drawerOpen ? 'active' : ''}`}>
-                        <Menu size={22} />
-                    </button>
+                {/* ── BOTTOM SHEET ── */}
+                <div
+                    className={`bs-overlay ${drawerOpen ? 'open' : ''}`}
+                    onClick={() => setDrawerOpen(false)}
+                    aria-hidden="true"
+                />
+                <div
+                    ref={sheetRef}
+                    className={`bottom-sheet ${drawerOpen ? 'open' : ''}`}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Navigation menu"
+                >
+                    {/* Drag Handle */}
+                    <div className="bs-handle-wrap">
+                        <div className="bs-handle"></div>
+                    </div>
+
+                    {/* Sheet Header — Live Stats */}
+                    <div className="bs-stats-header">
+                        <div className="bs-stat-card">
+                            <span className="bs-stat-label">LIQUIDITY</span>
+                            <span className="bs-stat-value">{formatCurrency(totalLiquidity)}</span>
+                        </div>
+                        <div className="bs-stat-divider"></div>
+                        <div className="bs-stat-card">
+                            <span className="bs-stat-label">ASSETS</span>
+                            <span className="bs-stat-value">{formatCurrency(totalAssets)}</span>
+                        </div>
+                    </div>
+
+                    {/* Quick Nav Grid */}
+                    <div className="bs-section-label">QUICK NAVIGATE</div>
+                    <div className="bs-nav-grid">
+                        {NAV_ITEMS.map(item => {
+                            const isActive = location.pathname === item.to;
+                            return (
+                                <NavLink
+                                    key={item.to}
+                                    to={item.to}
+                                    end={item.to === '/'}
+                                    className={`bs-grid-item ${isActive ? 'active' : ''}`}
+                                    onClick={() => setDrawerOpen(false)}
+                                    style={{ '--item-color': item.color, '--item-bg': item.bg }}
+                                >
+                                    <div className="bs-grid-icon" style={{ background: isActive ? item.color : item.bg, color: isActive ? '#fff' : item.color }}>
+                                        {item.icon}
+                                    </div>
+                                    <span className="bs-grid-label">{item.label}</span>
+                                    {isActive && <span className="bs-grid-active-dot"></span>}
+                                </NavLink>
+                            );
+                        })}
+                    </div>
+
+                    {/* Tools Grid */}
+                    <div className="bs-section-label">TOOLS</div>
+                    <div className="bs-tool-grid">
+                        {TOOL_ITEMS.map((item, idx) => {
+                            if (item.type === 'action') {
+                                return (
+                                    <button
+                                        key={idx}
+                                        className="bs-grid-item bs-grid-item--sm"
+                                        style={{ '--item-color': item.color }}
+                                        onClick={() => { setDrawerOpen(false); onOpenAiModal(); }}
+                                    >
+                                        <div className="bs-grid-icon bs-grid-icon--sm" style={{ background: item.bg, color: item.color }}>
+                                            {item.icon}
+                                        </div>
+                                        <span className="bs-grid-label bs-grid-label--sm">{item.label}</span>
+                                    </button>
+                                );
+                            }
+                            const isActive = location.pathname === item.to;
+                            return (
+                                <NavLink
+                                    key={item.to}
+                                    to={item.to}
+                                    className={`bs-grid-item bs-grid-item--sm ${isActive ? 'active' : ''}`}
+                                    style={{ '--item-color': item.color }}
+                                    onClick={() => setDrawerOpen(false)}
+                                >
+                                    <div className="bs-grid-icon bs-grid-icon--sm" style={{ background: isActive ? item.color : item.bg, color: isActive ? '#fff' : item.color }}>
+                                        {item.icon}
+                                    </div>
+                                    <span className="bs-grid-label bs-grid-label--sm">{item.label}</span>
+                                    {isActive && <span className="bs-grid-active-dot"></span>}
+                                </NavLink>
+                            );
+                        })}
+                    </div>
+
+                    <div className="bs-footer">
+                        <span className="bs-footer-text">FRIDAY · Financial Intelligence</span>
+                    </div>
                 </div>
             </div>
         </>
     );
 }
 
-const ProTab = ({ to, icon, active }) => (
-    <NavLink to={to} className={`pro-tab-item ${active ? 'active' : ''}`}>
-        {active && <span className="pro-active-pill"></span>}
-        {icon}
-    </NavLink>
-);
-
-const DrawerLinkPro = ({ to, label, icon, onClick }) => (
-    <NavLink to={to} className="drawer-link-pro-item" onClick={onClick}>
-        <span className="drawer-icon-pro">{icon}</span>
-        <span className="drawer-label-pro">{label}</span>
-    </NavLink>
-);
-
 const ClassicNavLink = ({ to, label, icon }) => (
-    <NavLink
-        to={to}
-        className={({ isActive }) => `classic-nav-link ${isActive ? 'active' : 'inactive'}`}
-    >
+    <NavLink to={to} className={({ isActive }) => `classic-nav-link ${isActive ? 'active' : 'inactive'}`}>
         <span className="nav-link-icon-wrap">{icon}</span>
         {label}
     </NavLink>
 );
 
-const MenuOption = ({ icon, label, onClick }) => {
-    return (
-        <div
-            onClick={onClick}
-            className="menu-option-item"
-        >
-            <span className="menu-item-icon-wrap">{icon}</span>
-            {label}
-        </div>
-    );
-};
+const MenuOption = ({ icon, label, onClick }) => (
+    <div onClick={onClick} className="menu-option-item">
+        <span className="menu-item-icon-wrap">{icon}</span>
+        {label}
+    </div>
+);

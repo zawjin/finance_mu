@@ -2,7 +2,7 @@
 
 A premium personal finance management system built with **FastAPI** (Python) and **React** (Vite). It features real-time analytics for spending, investment tracking (Gold, Property, etc.), and custom category management.
 
-<!-- uvicorn app.main:app --reload --port 8001 -->
+<!-- uvicorn app.main:app --reload --port 8001-->
 <!-- npm run dev -->
 
 uvicorn app.main:app --reload --port 8001

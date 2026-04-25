@@ -1040,3 +1040,186 @@ $radius-xl: 32px;
     padding: 0 2rem;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// MOBILE-ONLY SMART LAYOUT OVERRIDES
+// Makes all cards edge-to-edge with proper single-source padding
+// ═══════════════════════════════════════════════════════════════════
+@media (max-width: 768px) {
+
+  // Root removes bottom padding — main-content handles it
+  .ov-root {
+    padding-bottom: 2rem;
+  }
+
+  // Hero section — no horizontal padding, let inner card fill
+  .ov-hero {
+    padding: 0.75rem 0 0.5rem;
+  }
+
+  .ov-hero-card {
+    border-radius: 18px;
+    padding: 1.1rem 1rem;
+
+    .ov-hero-top {
+      margin-bottom: 1rem;
+    }
+
+    .ov-hero-title {
+      font-size: 1.3rem;
+    }
+
+    .ov-hero-clock .clock-time {
+      font-size: 1.2rem;
+    }
+  }
+
+  // Daily quote
+  .daily-quote-box,
+  .quote-skeleton {
+    margin: 0.75rem 0;
+    border-radius: 16px;
+  }
+
+  // Period filter bar — zero padding so it aligns with edge
+  .ov-period-bar {
+    margin-top: 0.85rem;
+    padding-bottom: 2px;
+  }
+
+  // Net worth hero card — full width, reduced horizontal margin
+  .ov-networth {
+    margin: 0 0 1.25rem;
+    border-radius: 20px;
+    padding: 1.35rem 1.15rem;
+
+    &__value {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+    }
+
+    &__pills {
+      gap: 0.5rem;
+    }
+
+    &__pill {
+      padding: 0.35rem 0.65rem;
+
+      .pill-val { font-size: 0.75rem; }
+      .pill-lbl { font-size: 0.58rem; }
+    }
+  }
+
+  // Next-month forecast box inside networth
+  .nw-forecast-box {
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    margin-top: 1rem;
+  }
+
+  // Section title — tighter padding
+  .ov-section-title {
+    padding: 0;
+    margin-bottom: 0.65rem;
+    font-size: 0.62rem;
+  }
+
+  // Key Metrics stat cards — 2 columns, edge-to-edge
+  .ov-stats-row {
+    padding: 0;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ov-stat-card {
+    border-radius: 16px;
+    padding: 0.9rem 0.9rem;
+
+    &__icon {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      margin-bottom: 0.6rem;
+    }
+
+    &__value {
+      font-size: 1rem;
+    }
+
+    &__label {
+      font-size: 0.58rem;
+    }
+  }
+
+  // Charts grid — full width, zero padding
+  .ov-charts-grid {
+    padding: 0;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .ov-chart-card {
+    border-radius: 18px;
+    padding: 1.1rem;
+
+    &__canvas { height: 140px; }
+    &__value { font-size: 1.1rem; }
+  }
+
+  // Allocations — full width
+  .ov-alloc-section {
+    padding: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .ov-alloc-grid {
+    gap: 0.6rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ov-alloc-card {
+    border-radius: 14px;
+    padding: 0.85rem;
+
+    &__val { font-size: 0.9rem; }
+    &__label { font-size: 0.58rem; }
+  }
+
+  // Ledger cards — full width
+  .ov-ledger-grid {
+    padding: 0;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .ov-ledger-card {
+    border-radius: 18px;
+
+    &__head {
+      padding: 0.85rem 1rem 0.7rem;
+    }
+
+    &__row {
+      padding: 0.6rem 1rem;
+    }
+
+    &__title { font-size: 0.62rem; }
+    &__total { font-size: 0.8rem; }
+  }
+
+  // Source spending cards
+  .ov-source-card {
+    border-radius: 18px;
+    margin: 0 0 0.75rem;
+  }
+
+  // Utility padding class — zero on mobile
+  .ov-p {
+    padding: 0;
+  }
+
+  // Spending source section wrapper
+  .ov-spending-sources {
+    padding: 0;
+  }
+}
