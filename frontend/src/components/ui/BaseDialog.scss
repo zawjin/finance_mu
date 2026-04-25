@@ -25,10 +25,25 @@
 
 .dialog-base-content {
     padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .dialog-base-title {
+        padding: 1.5rem 1.5rem !important;
+    }
+    .dialog-title-text {
+        font-size: 1.25rem !important;
+    }
 }
 
 /* Common form styles for consistent modal appearance */
 .form-header-premium {
     padding: 2rem 2.5rem;
     border-bottom: 1px solid rgba(0,0,0,0.04);
+
+    @media (max-width: 768px) {
+        padding: 1.25rem 1.5rem;
+    }
 }

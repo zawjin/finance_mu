@@ -1,99 +1,252 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Arima+Madurai:wght@400;700&display=swap');
 
 // ─── Design Tokens ───────────────────────────────────────────────
-$brand:       #4f46e5;
+$brand: #4f46e5;
 $brand-light: #6366f1;
-$brand-bg:    rgba(79, 70, 229, 0.08);
-$success:     #10b981;
-$success-bg:  rgba(16, 185, 129, 0.05);
-$danger:      #f43f5e;
-$danger-bg:   rgba(244, 63, 94, 0.05);
-$warning:     #f59e0b;
-$warning-bg:  rgba(245, 158, 11, 0.05);
-$text-primary:   #0f172a;
+$brand-bg: rgba(79, 70, 229, 0.08);
+$success: #10b981;
+$success-bg: rgba(16, 185, 129, 0.05);
+$danger: #f43f5e;
+$danger-bg: rgba(244, 63, 94, 0.05);
+$warning: #f59e0b;
+$warning-bg: rgba(245, 158, 11, 0.05);
+$text-primary: #0f172a;
 $text-secondary: #475569;
-$text-muted:     #94a3b8;
-$surface:     #ffffff;
-$surface-2:   #f8fafc;
-$border:      rgba(0, 0, 0, 0.04);
-$shadow-sm:   0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.01);
-$shadow-md:   0 12px 24px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.02);
-$shadow-lg:   0 20px 48px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.04);
-$radius-sm:   14px;
-$radius-md:   20px;
-$radius-lg:   24px;
-$radius-xl:   32px;
+$text-muted: #94a3b8;
+$surface: #ffffff;
+$surface-2: #f8fafc;
+$border: rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
+$shadow-md: 0 12px 24px rgba(0, 0, 0, 0.04), 0 4px 8px rgba(0, 0, 0, 0.02);
+$shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.04);
+$radius-sm: 14px;
+$radius-md: 20px;
+$radius-lg: 24px;
+$radius-xl: 32px;
 
 // ─── Root Container ───────────────────────────────────────────────
 .ov-root {
   width: 100%;
   min-height: 100vh;
   background: #f0f4f8;
-  background-image:
-    radial-gradient(ellipse at 0% 0%, rgba(99,102,241,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 100% 100%, rgba(16,185,129,0.04) 0%, transparent 50%);
+  // background-image:
+  //   radial-gradient(ellipse at 0% 0%, rgba(99,102,241,0.06) 0%, transparent 60%),
+  //   radial-gradient(ellipse at 100% 100%, rgba(16,185,129,0.04) 0%, transparent 50%);
   padding: 0 0 6rem;
   font-family: 'Inter', 'Outfit', sans-serif;
   overflow-x: hidden;
 
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+  }
 }
 
 // ─── Hero Banner ──────────────────────────────────────────────────
 .ov-hero {
-  position: relative;
-  padding: 2rem 1.25rem 1.5rem;
-  overflow: hidden;
+  padding: 1.5rem 1.25rem 0.5rem;
 
   @media (min-width: 768px) {
-    padding: 2.5rem 2rem 2rem;
+    padding: 2.5rem 2rem 1.5rem;
   }
+}
+
+.ov-hero-card {
+  background: white;
+  border-radius: $radius-xl;
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.03);
+  position: relative;
+  overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 480px;
-    height: 480px;
-    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
     pointer-events: none;
   }
 
-  &__greeting {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: $brand;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.25rem;
+  .ov-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
   }
 
-  &__title {
-    font-size: 1.75rem;
+  .ov-hero-greeting {
+    font-size: 0.75rem;
     font-weight: 800;
+    color: $brand;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: $brand-bg;
+    padding: 0.3rem 0.7rem;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .ov-hero-title {
+    font-size: 1.6rem;
+    font-weight: 900;
     color: $text-primary;
     letter-spacing: -0.03em;
-    line-height: 1.15;
-    margin-bottom: 0.25rem;
+    line-height: 1;
 
     @media (min-width: 768px) {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
     }
   }
 
-  &__subtitle {
-    font-size: 0.8rem;
-    color: $text-secondary;
-    font-weight: 500;
-  }
-
-  &__date {
-    font-size: 0.72rem;
-    color: $text-muted;
-    font-weight: 600;
+  .ov-hero-right {
     text-align: right;
   }
+
+  .ov-hero-clock {
+    .clock-time {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: $text-primary;
+      line-height: 1;
+      letter-spacing: -0.02em;
+
+      small {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: $text-muted;
+        text-transform: uppercase;
+        margin-left: 0.1rem;
+      }
+    }
+
+    .clock-date {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: $text-muted;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+// Override Quote box when inside Hero
+.ov-hero-card .daily-quote-box {
+  margin: 0;
+  padding: 1.25rem;
+  background: $surface-2;
+  border-radius: $radius-lg;
+  border: none;
+  box-shadow: none;
+
+  .quote-text {
+    font-size: 0.95rem;
+  }
+
+  .quote-tamil {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.daily-quote-box {
+  margin: 1.5rem 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  border-radius: $radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+
+  @media (min-width: 768px) {
+    margin: 1.5rem 2rem;
+    padding: 1.5rem 2.25rem;
+  }
+
+  &::before {
+    content: '“';
+    position: absolute;
+    top: -1rem;
+    left: 0.5rem;
+    font-family: serif;
+    font-size: 6rem;
+    color: $brand-light;
+    opacity: 0.08;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .quote-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .quote-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 0.4rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+
+    @media (min-width: 768px) {
+      font-size: 1.2rem;
+    }
+  }
+
+  .quote-tamil {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $text-secondary;
+    margin-bottom: 0.85rem;
+    font-family: 'Arima Madurai', 'Inter', sans-serif;
+    line-height: 1.5;
+
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+  .quote-author {
+    font-size: 0.68rem;
+    font-weight: 900;
+    color: $brand;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+  }
+}
+
+.quote-skeleton {
+  margin: 1.5rem 1.25rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: $radius-lg;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  @media (min-width: 768px) {
+    margin: 1.5rem 2rem;
+  }
+
+  .skeleton-line {
+    height: 0.8rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 // ─── Period Filter Bar ─────────────────────────────────────────────
@@ -104,7 +257,10 @@ $radius-xl:   32px;
   overflow-x: auto;
   padding-bottom: 2px;
   scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .ov-period-pill {
@@ -117,21 +273,26 @@ $radius-xl:   32px;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  border: 1.5px solid rgba(0,0,0,0.08);
-  background: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
   color: $text-secondary;
   backdrop-filter: blur(8px);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
   outline: none;
 
-  .pill-icon { font-size: 0.8rem; }
-  .pill-text { letter-spacing: 0.01em; }
+  .pill-icon {
+    font-size: 0.8rem;
+  }
+
+  .pill-text {
+    letter-spacing: 0.01em;
+  }
 
   &:hover {
     border-color: $brand;
     color: $brand;
-    background: rgba(99,102,241,0.06);
+    background: rgba(99, 102, 241, 0.06);
     transform: translateY(-1px);
   }
 
@@ -139,7 +300,7 @@ $radius-xl:   32px;
     background: $brand;
     border-color: $brand;
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
     transform: translateY(-1px);
   }
 }
@@ -152,7 +313,7 @@ $radius-xl:   32px;
   padding: 1.75rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 16px 48px rgba(99,102,241,0.35), 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 16px 48px rgba(99, 102, 241, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
 
   @media (min-width: 768px) {
     margin: 0 2rem 2rem;
@@ -162,22 +323,27 @@ $radius-xl:   32px;
   &::before {
     content: '';
     position: absolute;
-    top: -50%; right: -20%;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 70%);
   }
+
   &::after {
     content: '';
     position: absolute;
-    bottom: -30%; left: -10%;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(129,140,248,0.15) 0%, transparent 70%);
+    bottom: -30%;
+    left: -10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.15) 0%, transparent 70%);
   }
 
   &__label {
     font-size: 0.68rem;
     font-weight: 700;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255, 255, 255, 0.55);
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 0.5rem;
@@ -211,8 +377,8 @@ $radius-xl:   32px;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 50px;
     padding: 0.4rem 0.8rem;
     backdrop-filter: blur(8px);
@@ -222,15 +388,22 @@ $radius-xl:   32px;
       color: #fff;
       font-size: 0.8rem;
     }
+
     .pill-lbl {
       font-size: 0.62rem;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255, 255, 255, 0.55);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
-    &.positive .pill-val { color: #6ee7b7; }
-    &.negative .pill-val { color: #fca5a5; }
+
+    &.positive .pill-val {
+      color: #6ee7b7;
+    }
+
+    &.negative .pill-val {
+      color: #fca5a5;
+    }
   }
 }
 
@@ -321,23 +494,41 @@ $radius-xl:   32px;
     font-weight: 700;
     margin-top: 0.3rem;
 
-    &.positive { color: $success; }
-    &.negative { color: $danger; }
+    &.positive {
+      color: $success;
+    }
+
+    &.negative {
+      color: $danger;
+    }
   }
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; right: 0;
-    width: 60px; height: 60px;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
     border-radius: 0 $radius-lg 0 100%;
     opacity: 0.4;
   }
 
-  &.brand::before   { background: $brand-bg; }
-  &.success::before { background: $success-bg; }
-  &.danger::before  { background: $danger-bg; }
-  &.warning::before { background: $warning-bg; }
+  &.brand::before {
+    background: $brand-bg;
+  }
+
+  &.success::before {
+    background: $success-bg;
+  }
+
+  &.danger::before {
+    background: $danger-bg;
+  }
+
+  &.warning::before {
+    background: $warning-bg;
+  }
 }
 
 // ─── Charts Section ─────────────────────────────────────────────────
@@ -393,10 +584,21 @@ $radius-xl:   32px;
     font-weight: 700;
     padding: 0.25rem 0.6rem;
     border-radius: 50px;
-    
-    &.positive { background: $success-bg; color: $success; }
-    &.negative { background: $danger-bg; color: $danger; }
-    &.neutral  { background: $brand-bg; color: $brand; }
+
+    &.positive {
+      background: $success-bg;
+      color: $success;
+    }
+
+    &.negative {
+      background: $danger-bg;
+      color: $danger;
+    }
+
+    &.neutral {
+      background: $brand-bg;
+      color: $brand;
+    }
   }
 
   &__canvas {
@@ -432,6 +634,7 @@ $radius-xl:   32px;
       color: $text-primary;
       letter-spacing: -0.02em;
     }
+
     .center-lbl {
       font-size: 0.55rem;
       font-weight: 700;
@@ -455,10 +658,12 @@ $radius-xl:   32px;
     gap: 0.5rem;
 
     .leg-dot {
-      width: 8px; height: 8px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+
     .leg-label {
       flex: 1;
       font-size: 0.7rem;
@@ -468,6 +673,7 @@ $radius-xl:   32px;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .leg-val {
       font-size: 0.72rem;
       font-weight: 800;
@@ -591,11 +797,14 @@ $radius-xl:   32px;
     transition: background 0.15s;
     gap: 0.75rem;
 
-    &:hover { background: $surface-2; }
+    &:hover {
+      background: $surface-2;
+    }
   }
 
   &__icon {
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     border-radius: 9px;
     display: flex;
     align-items: center;
@@ -679,15 +888,21 @@ $radius-xl:   32px;
     align-items: center;
     gap: 0.9rem;
     padding: 0.85rem 1.25rem;
-    border-bottom: 1px solid rgba(0,0,0,0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
     transition: background 0.15s;
 
-    &:last-child { border-bottom: none; }
-    &:hover { background: $surface-2; }
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $surface-2;
+    }
   }
 
   &__icon {
-    width: 38px; height: 38px;
+    width: 38px;
+    height: 38px;
     border-radius: 11px;
     display: flex;
     align-items: center;
@@ -739,7 +954,7 @@ $radius-xl:   32px;
 .ov-obligations {
   margin: 0 1.25rem 1.75rem;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1px solid rgba(245,158,11,0.2);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: $radius-lg;
   padding: 1.4rem;
   display: flex;
@@ -788,6 +1003,7 @@ $radius-xl:   32px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
+
     .sip-val {
       font-size: 1.15rem;
       font-weight: 900;
@@ -817,4 +1033,10 @@ $radius-xl:   32px;
 }
 
 // ─── Utility ───────────────────────────────────────────────────────
-.ov-p { padding: 0 1.25rem; @media (min-width: 768px) { padding: 0 2rem; } }
+.ov-p {
+  padding: 0 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+}

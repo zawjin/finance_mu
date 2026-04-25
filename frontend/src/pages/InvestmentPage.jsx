@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 import {
     Search, Filter, PieChart, Download, Activity,
     TrendingUp, Calendar, Trash2, Edit2, Zap, CalendarDays,
-    Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings
+    Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2
 } from 'lucide-react';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
 import Modal from '../components/ui/Modal';
 import BaseDialog from '../components/ui/BaseDialog';
-import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper } from '@mui/material';
+import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper, Stack } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 import './InvestmentPage.scss';
@@ -102,6 +102,18 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             console.error(error);
         } finally {
             setSyncingPrices(false);
+        }
+    };
+
+    const handleToggleStatus = async (item) => {
+        const newStatus = item.status === 'COLLECTED' ? 'ACTIVE' : 'COLLECTED';
+        try {
+            // We need to send the full item with the updated status
+            const updated = { ...item, status: newStatus };
+            await api.put(`/investments/${item._id}`, updated);
+            dispatch(fetchFinanceData());
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -209,23 +221,26 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
             if (!typeStats[type]) typeStats[type] = { current: 0, invested: 0 };
 
+            const isCollected = item.status === 'COLLECTED';
+
             if (period === 'ALL') {
                 // ALL TIME: show full live portfolio value
                 const { current, invested, withdrawn } = getLiveVal(item);
-                grossValue += current;
+                
+                if (!isCollected) {
+                    grossValue += current;
+                    typeStats[type].current += current;
+                }
                 grossInvested += invested;
                 grossWithdrawn += withdrawn;
-                typeStats[type].current += current;
                 typeStats[type].invested += invested;
             } else {
-                // PERIOD SPECIFIC: ONLY sum actual transaction records for this window.
-                // NEVER fall back to total asset value — that inflates period view incorrectly.
+                // PERIOD SPECIFIC
                 let periodSpent = 0;
                 (item.purchases || []).forEach(p => {
                     if (isMatch(p.date)) periodSpent += (parseFloat(p.amount) || 0);
                 });
 
-                // Only fall back for pure legacy items: no purchases array AND first acquired in this period
                 if (periodSpent === 0 && (!item.purchases || item.purchases.length === 0) && isMatch(item.date)) {
                     periodSpent = parseFloat(item.value) || 0;
                 }
@@ -236,10 +251,12 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 });
 
                 const netInflow = periodSpent - periodWithdrawn;
-                grossValue += netInflow;
+                if (!isCollected) {
+                    grossValue += netInflow;
+                    typeStats[type].current += netInflow;
+                }
                 grossInvested += periodSpent;
                 grossWithdrawn += periodWithdrawn;
-                typeStats[type].current += netInflow;
                 typeStats[type].invested += periodSpent;
             }
         });
@@ -257,7 +274,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             // 1. Process all historical purchases (ADDITIONS)
             const purchases = s.purchases || [];
             let hasInitial = false;
-            
+
             if (purchases.length > 0) {
                 purchases.forEach(p => {
                     if (isMatch(p.date)) {
@@ -287,9 +304,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
         const dates = Object.keys(dailyNet).sort();
         let cumulative = 0;
-        const cumulativeData = dates.map(d => { 
-            cumulative += dailyNet[d]; 
-            return cumulative; 
+        const cumulativeData = dates.map(d => {
+            cumulative += dailyNet[d];
+            return cumulative;
         });
 
         return {
@@ -521,12 +538,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             <div className="spending-split-layout">
                 <div className="filters-sidebar-card glass-effect">
                     <div className="sidebar-sticky-wrap">
-                        <div className="filter-header-flex">
-                            <div className="filter-icon-box bg-primary">
-                                <Filter size={15} fill="white" className="icon-opacity" />
-                            </div>
-                            <span className="filter-header-title">Portfolio Filters</span>
-                        </div>
+
 
                         <div className="filter-section-block">
                             <div className="filter-section-label"><span>SEARCH ASSETS</span></div>
@@ -687,6 +699,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             <div className="asset-header-flex">
                                                 <span className="asset-name-text">{s.name}</span>
                                                 {s.ticker && <span className="asset-ticker-tag">{s.ticker}</span>}
+                                                {s.status === 'COLLECTED' && <span className="collected-badge">COLLECTED</span>}
                                             </div>
                                             <div className="asset-meta-flex">
                                                 <span>{dayjs(s.date).format('YYYY-MM-DD')} • {s.sub}</span>
@@ -723,6 +736,16 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             )}
                                         </div>
                                         <div className="row-action-cluster">
+                                            {normalizedType === 'Chit Fund' && (
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => handleToggleStatus(s)} 
+                                                    sx={{ color: s.status === 'COLLECTED' ? '#10b981' : '#86868b' }}
+                                                    title={s.status === 'COLLECTED' ? "Mark as Active" : "Mark as Collected"}
+                                                >
+                                                    <CheckCircle2 size={12} />
+                                                </IconButton>
+                                            )}
                                             <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: '#6366f1' }}><Edit2 size={12} /></IconButton>
                                             <IconButton size="small" onClick={() => setDeleteConfirmItem(s)} sx={{ color: '#ff3b30' }}><Trash2 size={12} /></IconButton>
                                         </div>
@@ -751,9 +774,9 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                                         const cur = s.last_updated || s.date;
                                                         return !max || dayjs(cur).isAfter(dayjs(max)) ? cur : max;
                                                     }, null);
-                                                    
+
                                                     const groupItems = grouped[month];
-                                                    
+
                                                     const totalAdds = groupItems.reduce((sum, s) => {
                                                         const periodPurchases = (s.purchases || []).filter(p => isMatch(p.date));
                                                         let count = periodPurchases.length;
@@ -769,7 +792,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                                     const totalAddUnits = groupItems.reduce((sum, s) => {
                                                         const periodPurchases = (s.purchases || []).filter(p => isMatch(p.date));
                                                         const pQty = periodPurchases.reduce((sq, p) => sq + (parseFloat(p.quantity) || 0), 0);
-                                                        
+
                                                         // Fallback: If no purchase entries but item was updated/added in this period
                                                         if (pQty === 0 && (isMatch(s.date) || isMatch(s.last_updated))) {
                                                             // For legacy/simple updates, we assume the current 'recent' qty or total qty

@@ -10,7 +10,8 @@
   -webkit-tap-highlight-color: transparent; // No blue highlight on tap
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   background: var(--app-bg);
@@ -31,6 +32,7 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #f0f4f8;
 }
 
 .main-content {
@@ -40,7 +42,7 @@ html, body {
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 1rem 1rem 6rem 1rem; // Extra bottom space for mobile thumb reach
+    padding: 6.5rem 0.5% 2.5rem 0.5%;
   }
 }
 
@@ -58,7 +60,7 @@ html, body {
   padding: 4px;
   background-color: #f1f5f9;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .switcher-btn {
@@ -72,13 +74,14 @@ html, body {
   &.active {
     background-color: white !important;
     color: #0f172a !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   }
 
   &.inactive {
     background-color: transparent !important;
+
     &:hover {
-      background-color: rgba(0,0,0,0.02) !important;
+      background-color: rgba(0, 0, 0, 0.02) !important;
     }
   }
 }

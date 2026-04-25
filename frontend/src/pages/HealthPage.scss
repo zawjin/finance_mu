@@ -1,0 +1,619 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+// ─── Design Tokens ─────────────────────────────────────────────────────────
+$bg:          #f0f4f8;
+$surface:     #ffffff;
+$border:      rgba(0, 0, 0, 0.06);
+$border-lg:   #e2e8f0;
+$ink:         #0f172a;
+$ink-muted:   #64748b;
+$ink-subtle:  #94a3b8;
+$emerald:     #10b981;
+$sky:         #0ea5e9;
+$rose:        #f43f5e;
+$amber:       #f59e0b;
+$violet:      #8b5cf6;
+
+// ─── Root Page ──────────────────────────────────────────────────────────────
+.super-health-page {
+    padding: 2.5rem 3rem;
+    max-width: 1480px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    color: $ink;
+    background: $bg;
+    min-height: 100vh;
+}
+
+// ─── Page Header ────────────────────────────────────────────────────────────
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.25rem;
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .super-icon-wrap {
+            width: 52px;
+            height: 52px;
+            background: $surface;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid $border;
+        }
+
+        .header-title-block {
+            h1 {
+                font-size: 1.85rem;
+                font-weight: 800;
+                margin: 0 0 0.1rem 0;
+                letter-spacing: -0.035em;
+                color: $ink;
+            }
+            p {
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: $ink-subtle;
+                margin: 0;
+                letter-spacing: 0.01em;
+            }
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+
+        .btn-add-habit {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: $ink;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.18);
+
+            &:hover {
+                background: #1e293b;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 20px rgba(15,23,42,0.25);
+            }
+        }
+    }
+}
+
+// ─── Metric Cards ──────────────────────────────────────────────────────────
+.premium-widgets-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+
+    .metric-card {
+        background: $surface;
+        border-radius: 20px;
+        padding: 1.4rem 1.6rem;
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+        border: 1px solid $border;
+        cursor: default;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 20px 20px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            &::after { opacity: 1; }
+        }
+
+        &.orange-tint {
+            .metric-icon { background: #fff7ed; color: #f97316; }
+            &::after { background: linear-gradient(90deg, #fb923c, #f97316); }
+        }
+        &.gold-tint {
+            .metric-icon { background: #fefce8; color: $amber; }
+            &::after { background: linear-gradient(90deg, #fcd34d, $amber); }
+        }
+        &.blue-tint {
+            .metric-icon { background: #f0f9ff; color: $sky; }
+            &::after { background: linear-gradient(90deg, #38bdf8, $sky); }
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .metric-info {
+            span {
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: $ink-subtle;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                display: block;
+                margin-bottom: 0.3rem;
+            }
+            h3 {
+                margin: 0;
+                font-size: 1.75rem;
+                font-weight: 900;
+                color: $ink;
+                line-height: 1;
+                letter-spacing: -0.03em;
+                small {
+                    font-size: 0.85rem;
+                    color: $ink-subtle;
+                    font-weight: 600;
+                    margin-left: 0.2rem;
+                    letter-spacing: 0;
+                }
+            }
+        }
+    }
+}
+
+// ─── Tabs ───────────────────────────────────────────────────────────────────
+.notion-tabs-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1.25rem;
+
+    .notion-tabs-container {
+        display: flex;
+        gap: 0.25rem;
+        background: $surface;
+        padding: 0.3rem;
+        border-radius: 14px;
+        border: 1px solid $border-lg;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+
+        .notion-tab-btn {
+            position: relative;
+            background: transparent;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: $ink-muted;
+            cursor: pointer;
+            padding: 0.55rem 1.2rem;
+            border-radius: 10px;
+            transition: color 0.25s;
+            outline: none;
+            white-space: nowrap;
+
+            .active-tab-bg {
+                position: absolute;
+                inset: 0;
+                background: $ink;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(15,23,42,0.2);
+                z-index: 0;
+            }
+
+            .tab-content {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                gap: 0.45rem;
+                svg { transition: color 0.25s; }
+            }
+
+            &.active {
+                color: #fff;
+                svg { color: rgba(255,255,255,0.85); }
+            }
+
+            &:hover:not(.active) {
+                color: $ink;
+                background: #f8fafc;
+                svg { color: $ink-muted; }
+            }
+        }
+    }
+}
+
+// ─── Graph Board ────────────────────────────────────────────────────────────
+.graph-board-container {
+    padding: 2.25rem 2.5rem 2rem;
+
+    .graph-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2.5rem;
+
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: $ink;
+            margin: 0 0 0.35rem 0;
+            letter-spacing: -0.025em;
+        }
+        p {
+            margin: 0;
+            color: $ink-subtle;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .graph-stat {
+            text-align: right;
+            h1 {
+                font-size: 3rem;
+                font-weight: 900;
+                color: $emerald;
+                margin: 0;
+                line-height: 1;
+                letter-spacing: -0.05em;
+            }
+            span {
+                font-size: 0.72rem;
+                font-weight: 800;
+                color: $ink-subtle;
+                letter-spacing: 0.07em;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    .chart-bars-wrap {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        height: 260px;
+        border-bottom: 1px solid $border-lg;
+        padding-bottom: 0.75rem;
+        overflow-x: auto;
+        gap: 6px;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+
+        .chart-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            flex: 1;
+            min-width: 22px;
+            gap: 0.6rem;
+            cursor: crosshair;
+            position: relative;
+
+            .chart-bar-bg {
+                width: 100%;
+                max-width: 18px;
+                flex: 1;
+                background: #f1f5f9;
+                border-radius: 6px 6px 4px 4px;
+                position: relative;
+                display: flex;
+                align-items: flex-end;
+                overflow: hidden;
+                border: 1px solid $border;
+            }
+
+            .chart-fill {
+                width: 100%;
+                background: linear-gradient(180deg, #38bdf8 0%, $sky 100%);
+                border-radius: 4px 4px 2px 2px;
+
+                &.perfect-fill {
+                    background: linear-gradient(180deg, #34d399 0%, $emerald 100%);
+                    box-shadow: 0 0 10px rgba(16,185,129,0.35);
+                }
+            }
+
+            .chart-label-day {
+                font-size: 0.6rem;
+                font-weight: 700;
+                color: $ink-subtle;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                transform: rotate(-45deg);
+                margin-top: 0.25rem;
+            }
+
+            .chart-label-today {
+                font-size: 0.58rem;
+                font-weight: 800;
+                color: $sky;
+                background: rgba(14,165,233,0.1);
+                padding: 0.1rem 0.3rem;
+                border-radius: 4px;
+                position: absolute;
+                bottom: -28px;
+                white-space: nowrap;
+            }
+
+            &:hover {
+                .chart-fill { filter: brightness(1.08); }
+                .chart-label-day { color: $ink; }
+            }
+        }
+    }
+}
+
+// ─── Glass Table Container ──────────────────────────────────────────────────
+.glass-table-container {
+    background: $surface;
+    border-radius: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.04);
+    border: 1px solid $border-lg;
+    overflow: hidden;
+
+    .empty-state-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem;
+        text-align: center;
+
+        h3 {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: $ink;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            color: $ink-muted;
+            font-size: 0.9rem;
+            max-width: 380px;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        button {
+            background: $ink;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 14px rgba(15,23,42,0.15);
+            &:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.2); }
+        }
+    }
+
+    .table-scroll { overflow-x: auto; }
+
+    .super-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+
+        th, td {
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #f8fafc;
+            padding: 0.7rem 1rem;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #fafbfc;
+            font-weight: 700;
+            color: $ink-muted;
+            text-align: left;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+
+            span { margin-left: 0.35rem; }
+
+            &.col-date {
+                width: 14rem;
+                border-right: 2px solid $border-lg;
+            }
+            &.col-habit {
+                min-width: 140px;
+
+                &:hover .habit-actions {
+                    opacity: 1 !important;
+                }
+            }
+            &.col-progress {
+                min-width: 190px;
+                border-right: none;
+                background: #fafbfc;
+            }
+        }
+
+        tr {
+            transition: background 0.15s;
+            &:last-child td { border-bottom: none; }
+            &:hover { background: #fafeff; }
+
+            &.is-today {
+                background: linear-gradient(90deg, rgba(14,165,233,0.04), transparent 60%);
+                td.cell-date {
+                    border-right-color: rgba(14,165,233,0.3);
+                }
+            }
+
+            &.is-perfect {
+                background: linear-gradient(90deg, rgba(16,185,129,0.06), transparent 60%);
+                td { border-bottom-color: rgba(16,185,129,0.1); }
+                td.cell-date { border-right-color: rgba(16,185,129,0.4); }
+                &:hover { background: linear-gradient(90deg, rgba(16,185,129,0.09), transparent 60%); }
+            }
+        }
+
+        td {
+            &.cell-date {
+                border-right: 2px solid $border-lg;
+                padding-top: 0.6rem;
+                padding-bottom: 0.6rem;
+            }
+            &.cell-habit { text-align: center; }
+        }
+
+        tfoot {
+            background: #fafbfc;
+            td {
+                padding: 0.85rem 1rem;
+                border: none;
+                font-size: 0.68rem;
+                font-weight: 800;
+                color: $ink-muted;
+                border-top: 2px solid $border-lg;
+                span {
+                    background: white;
+                    padding: 0.25rem 0.55rem;
+                    border-radius: 7px;
+                    border: 1px solid $border-lg;
+                    letter-spacing: 0.04em;
+                }
+            }
+        }
+    }
+}
+
+// ─── Checkbox ───────────────────────────────────────────────────────────────
+.super-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: transparent;
+    transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+    margin: 0 auto;
+
+    &:hover:not(.disabled) {
+        border-color: $sky;
+        background: rgba(14,165,233,0.05);
+    }
+    &.checked {
+        background: $emerald;
+        border-color: $emerald;
+        color: white;
+        box-shadow: 0 0 0 3px rgba(16,185,129,0.15), 0 2px 8px rgba(16,185,129,0.3);
+    }
+    &.disabled {
+        border-color: #e2e8f0;
+        background: #f8fafc;
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+}
+
+// ─── Progress Bar ───────────────────────────────────────────────────────────
+.premium-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .p-text {
+        min-width: 36px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-align: right;
+    }
+    .p-bar-bg {
+        flex: 1;
+        height: 5px;
+        background: #f1f5f9;
+        border-radius: 999px;
+        overflow: hidden;
+
+        .p-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, $rose 0%, #fb7185 100%);
+            &.perfect {
+                background: linear-gradient(90deg, $emerald 0%, #34d399 100%);
+            }
+        }
+    }
+}
+
+// ─── Pager ──────────────────────────────────────────────────────────────────
+.chrono-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid $border-lg;
+    background: #fafbfc;
+    border-radius: 0 0 22px 22px;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: $surface;
+        border: 1px solid $border-lg;
+        color: $ink;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        transition: all 0.15s;
+        letter-spacing: 0.02em;
+
+        &:hover:not(:disabled) {
+            background: $ink;
+            color: #fff;
+            border-color: $ink;
+        }
+        &:disabled {
+            color: $ink-subtle;
+            cursor: not-allowed;
+            border-color: #f1f5f9;
+            background: #fafbfc;
+        }
+    }
+
+    .chrono-label {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: $ink;
+        letter-spacing: -0.01em;
+    }
+}

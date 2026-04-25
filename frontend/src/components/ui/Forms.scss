@@ -1,6 +1,10 @@
 .form-container-premium {
     padding: 2rem 2.5rem !important;
     background-color: #ffffff;
+
+    @media (max-width: 768px) {
+        padding: 05rem .5rem !important;
+    }
 }
 
 .form-label-premium {
@@ -16,20 +20,20 @@
 .form-input-premium {
     & .MuiOutlinedInput-root {
         border-radius: 12px !important;
-        background-color: rgba(0,0,0,0.01) !important;
+        background-color: rgba(0, 0, 0, 0.01) !important;
         min-height: 48px !important;
         padding-left: 12px !important;
         transition: all 0.2s ease !important;
 
-        & fieldset { 
-            border-color: rgba(0,0,0,0.08) !important;
+        & fieldset {
+            border-color: rgba(0, 0, 0, 0.08) !important;
         }
 
-        &:hover fieldset { 
-            border-color: rgba(0,0,0,0.16) !important;
+        &:hover fieldset {
+            border-color: rgba(0, 0, 0, 0.16) !important;
         }
 
-        &.Mui-focused fieldset { 
+        &.Mui-focused fieldset {
             border-color: #1d1d1f !important;
             border-width: 1.5px !important;
         }
@@ -55,34 +59,123 @@
     padding: 0.9rem 1.5rem;
     border-radius: 12px;
     cursor: pointer;
-    border: 1.5px solid rgba(0,0,0,0.07);
+    border: 1.5px solid rgba(0, 0, 0, 0.07);
     background-color: #fafafa;
     transition: all 0.2s cubic-bezier(0.12, 0.8, 0.12, 1);
 
     &:hover {
-        border-color: rgba(0,0,0,0.15);
-        background-color: rgba(0,0,0,0.02);
+        border-color: rgba(0, 0, 0, 0.15);
+        background-color: rgba(0, 0, 0, 0.02);
     }
 
     &.active {
-        &.method-cash { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.08); .pill-icon, .pill-label { color: #f59e0b; } }
-        &.method-bank { border-color: #6366f1; background-color: rgba(99, 102, 241, 0.08); .pill-icon, .pill-label { color: #6366f1; } }
-        &.method-wallet { border-color: #10b981; background-color: rgba(16, 185, 129, 0.08); .pill-icon, .pill-label { color: #10b981; } }
-        &.method-card { border-color: #ff3b30; background-color: rgba(255, 59, 48, 0.08); .pill-icon, .pill-label { color: #ff3b30; } }
-        &.method-upi { border-color: #0071e3; background-color: rgba(0, 113, 227, 0.08); .pill-icon, .pill-label { color: #0071e3; } }
-        &.method-gift { border-color: #ff9500; background-color: rgba(255, 149, 0, 0.08); .pill-icon, .pill-label { color: #ff9500; } }
-        &.method-other { border-color: #86868b; background-color: rgba(134, 134, 139, 0.08); .pill-icon, .pill-label { color: #86868b; } }
+        &.method-cash {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #f59e0b;
+            }
+        }
+
+        &.method-bank {
+            border-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #6366f1;
+            }
+        }
+
+        &.method-wallet {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #10b981;
+            }
+        }
+
+        &.method-card {
+            border-color: #ff3b30;
+            background-color: rgba(255, 59, 48, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #ff3b30;
+            }
+        }
+
+        &.method-upi {
+            border-color: #0071e3;
+            background-color: rgba(0, 113, 227, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #0071e3;
+            }
+        }
+
+        &.method-gift {
+            border-color: #ff9500;
+            background-color: rgba(255, 149, 0, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #ff9500;
+            }
+        }
+
+        &.method-other {
+            border-color: #86868b;
+            background-color: rgba(134, 134, 139, 0.08);
+
+            .pill-icon,
+            .pill-label {
+                color: #86868b;
+            }
+        }
     }
 
     /* Hover states for inactive pills */
     &:not(.active):hover {
-        &.method-cash { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.04); }
-        &.method-bank { border-color: #6366f1; background-color: rgba(99, 102, 241, 0.04); }
-        &.method-wallet { border-color: #10b981; background-color: rgba(16, 185, 129, 0.04); }
-        &.method-card { border-color: #ff3b30; background-color: rgba(255, 59, 48, 0.04); }
-        &.method-upi { border-color: #0071e3; background-color: rgba(0, 113, 227, 0.04); }
-        &.method-gift { border-color: #ff9500; background-color: rgba(255, 149, 0, 0.04); }
-        &.method-other { border-color: #86868b; background-color: rgba(134, 134, 139, 0.04); }
+        &.method-cash {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.04);
+        }
+
+        &.method-bank {
+            border-color: #6366f1;
+            background-color: rgba(99, 102, 241, 0.04);
+        }
+
+        &.method-wallet {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.04);
+        }
+
+        &.method-card {
+            border-color: #ff3b30;
+            background-color: rgba(255, 59, 48, 0.04);
+        }
+
+        &.method-upi {
+            border-color: #0071e3;
+            background-color: rgba(0, 113, 227, 0.04);
+        }
+
+        &.method-gift {
+            border-color: #ff9500;
+            background-color: rgba(255, 149, 0, 0.04);
+        }
+
+        &.method-other {
+            border-color: #86868b;
+            background-color: rgba(134, 134, 139, 0.04);
+        }
     }
 
     .pill-icon {
@@ -101,7 +194,13 @@
     gap: 1rem;
     margin-top: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1.5px solid rgba(0,0,0,0.04);
+    border-top: 1.5px solid rgba(0, 0, 0, 0.04);
+
+    @media (max-width: 768px) {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        gap: 0.75rem;
+    }
 }
 
 .btn-dismiss-premium {
@@ -112,7 +211,7 @@
     color: #86868b !important;
 
     &:hover {
-        background-color: rgba(0,0,0,0.04) !important;
+        background-color: rgba(0, 0, 0, 0.04) !important;
     }
 }
 
@@ -145,7 +244,7 @@
     border-radius: 18px;
     text-align: center;
     cursor: pointer;
-    border: 2px solid rgba(0,0,0,0.04);
+    border: 2px solid rgba(0, 0, 0, 0.04);
     background-color: #fff;
     transition: all 0.2s cubic-bezier(0.12, 0.8, 0.12, 1);
 
@@ -186,11 +285,11 @@
     padding: 1rem !important;
     font-weight: 800 !important;
     text-transform: uppercase !important;
-    background-color: rgba(0,0,0,0.1) !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
     color: #1d1d1f !important;
 
     &:hover {
-        background-color: rgba(0,0,0,0.15) !important;
+        background-color: rgba(0, 0, 0, 0.15) !important;
     }
 }
 
@@ -230,7 +329,7 @@
     padding: 0 !important;
     border-radius: 8px !important;
     background-color: rgba(0, 113, 227, 0.1) !important;
-    
+
     &:hover {
         background-color: rgba(0, 113, 227, 0.2) !important;
     }
@@ -256,9 +355,14 @@
     .margin-value {
         font-weight: 900;
         font-size: 1.2rem;
-        
-        &.positive { color: #34c759; }
-        &.negative { color: #ff3b30; }
+
+        &.positive {
+            color: #34c759;
+        }
+
+        &.negative {
+            color: #ff3b30;
+        }
     }
 
     .total-val-label {
@@ -312,7 +416,7 @@
     padding: 0.75rem 1rem;
     background-color: #ffffff;
     border-radius: 14px;
-    border: 1px solid rgba(99,102,241,0.1);
+    border: 1px solid rgba(99, 102, 241, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -333,9 +437,9 @@
     margin-top: 1rem;
     padding: 1.5rem;
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(255,149,0,0.03), rgba(255,149,0,0.06));
-    border: 1px solid rgba(255,149,0,0.15);
-    box-shadow: inset 0 0 40px rgba(255,149,0,0.02);
+    background: linear-gradient(135deg, rgba(255, 149, 0, 0.03), rgba(255, 149, 0, 0.06));
+    border: 1px solid rgba(255, 149, 0, 0.15);
+    box-shadow: inset 0 0 40px rgba(255, 149, 0, 0.02);
 }
 
 .exit-label-orange {
@@ -351,7 +455,7 @@
     min-height: 52px !important;
     border-radius: 16px !important;
     background: linear-gradient(135deg, #ff9500, #ffb347) !important;
-    box-shadow: 0 8px 20px rgba(255,149,0,0.2) !important;
+    box-shadow: 0 8px 20px rgba(255, 149, 0, 0.2) !important;
     color: #ffffff !important;
     font-weight: 900 !important;
     text-transform: none !important;
@@ -359,7 +463,7 @@
 
     &:hover {
         transform: translateY(-1px) !important;
-        box-shadow: 0 12px 28px rgba(255,149,0,0.3) !important;
+        box-shadow: 0 12px 28px rgba(255, 149, 0, 0.3) !important;
     }
 }
 
@@ -367,9 +471,9 @@
     margin-top: 1rem;
     padding: 1.5rem;
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(52,199,89,0.03), rgba(52,199,89,0.06));
-    border: 1px solid rgba(52,199,89,0.15);
-    box-shadow: inset 0 0 40px rgba(52,199,89,0.02);
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.03), rgba(52, 199, 89, 0.06));
+    border: 1px solid rgba(52, 199, 89, 0.15);
+    box-shadow: inset 0 0 40px rgba(52, 199, 89, 0.02);
 }
 
 .avg-label-green {
@@ -385,7 +489,7 @@
     min-height: 52px !important;
     border-radius: 16px !important;
     background: linear-gradient(135deg, #34c759, #28a745) !important;
-    box-shadow: 0 8px 20px rgba(52,199,89,0.2) !important;
+    box-shadow: 0 8px 20px rgba(52, 199, 89, 0.2) !important;
     color: #ffffff !important;
     font-weight: 900 !important;
     text-transform: none !important;
@@ -393,7 +497,7 @@
 
     &:hover {
         transform: translateY(-1px) !important;
-        box-shadow: 0 12px 28px rgba(52,199,89,0.3) !important;
+        box-shadow: 0 12px 28px rgba(52, 199, 89, 0.3) !important;
     }
 }
 

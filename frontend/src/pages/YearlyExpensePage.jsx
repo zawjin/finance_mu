@@ -210,6 +210,18 @@ export default function YearlyExpensePage({ onEdit }) {
                             <Typography className="stat-mini-label">REMAINING</Typography>
                             <Typography className="stat-mini-value">{formatCurrency(yearlyRemaining)}</Typography>
                         </Box>
+                        {upcomingYearly.length > 0 && (
+                            <>
+                                <Box className="stat-divider" />
+                                <Box className="flex-1">
+                                    <Typography className="stat-mini-label">NEXT DUE</Typography>
+                                    <Typography className="stat-mini-value" sx={{ fontSize: '1rem !important' }}>
+                                        {upcomingYearly[0].due_month}
+                                        <div style={{ fontSize: '0.6rem', opacity: 0.8, fontWeight: 700, marginTop: '-2px' }}>{upcomingYearly[0].name}</div>
+                                    </Typography>
+                                </Box>
+                            </>
+                        )}
                     </div>
 
                     {/* TOP UP SECTION */}
@@ -319,12 +331,13 @@ export default function YearlyExpensePage({ onEdit }) {
                                                 ) : (() => {
                                                     const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
                                                     const isInsufficient = activeTab === 'YEARLY' && nipponFund && parseFloat(nipponFund.value || 0) < item.amount;
+                                                    const isLocked = activeTab === 'YEARLY' && upcomingYearly.length > 0 && item._id !== upcomingYearly[0]._id;
                                                     
                                                     return (
                                                         <Button 
                                                             variant="contained" 
                                                             size="small" 
-                                                            disabled={isInsufficient}
+                                                            disabled={isInsufficient || isLocked}
                                                             onClick={() => { 
                                                                 setPayModalItem(item); 
                                                                 if(activeTab === 'YEARLY' && nipponFund) {
@@ -333,9 +346,9 @@ export default function YearlyExpensePage({ onEdit }) {
                                                                     setPaySourceId(''); 
                                                                 }
                                                             }} 
-                                                            className={`btn-pay-status ${isInsufficient ? 'insufficient' : (activeTab === 'YEARLY' ? 'yearly' : 'monthly')}`}
+                                                            className={`btn-pay-status ${isInsufficient ? 'insufficient' : (isLocked ? 'insufficient' : (activeTab === 'YEARLY' ? 'yearly' : 'monthly'))}`}
                                                         >
-                                                            {isInsufficient ? 'LOW BAL' : 'PAY'}
+                                                            {isLocked ? 'LOCKED' : (isInsufficient ? 'LOW BAL' : 'PAY')}
                                                         </Button>
                                                     );
                                                 })()}

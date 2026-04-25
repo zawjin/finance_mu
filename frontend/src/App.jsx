@@ -23,6 +23,8 @@ import CategoryPage from './pages/CategoryPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import SiteSettingsPage from './pages/SiteSettingsPage';
+import SalaryCalcPage from './pages/SalaryCalcPage';
+import HealthPage from './pages/HealthPage';
 import ReservePage from './pages/ReservePage';
 import BaseDialog from './components/ui/BaseDialog';
 import ExpenseForm from './components/ui/ExpenseForm';
@@ -409,6 +411,8 @@ export default function App() {
                                         <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/settings" element={<SettingsPage />} />
                                         <Route path="/site-settings" element={<SiteSettingsPage />} />
+                                        <Route path="/salary-calculation" element={<SalaryCalcPage />} />
+                                        <Route path="/health" element={<HealthPage showAnalytics={showAnalytics} />} />
                                     </Routes>
                                 </AnimatePresence>
                             </main>

@@ -55,6 +55,7 @@ class InvestmentItem(BaseModel):
     recentPurchaseQty: Optional[float] = None # Units added
     last_updated: Optional[str] = None # ISO Format YYYY-MM-DD
     purchases: List[WithdrawalItem] = [] # Historical top-ups
+    status: str = "ACTIVE" # ACTIVE, COLLECTED, ARCHIVED
 
 class CategorySchema(BaseModel):
     name: str
@@ -123,3 +124,16 @@ class CardItem(BaseModel):
     last_updated: str
     payments: List[dict] = [] # List of {term_number, amount, date, source_id, source_name}
 
+class HealthHabit(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    name: str
+    duration: int = 0
+    type: str = "Daily" # Daily, Weekly, Monthly, Yearly
+    frequency_days: Optional[List[str]] = [] # Days of week e.g. ["Monday", "Tuesday"]
+    status: str = "ACTIVE" # ACTIVE, ARCHIVED
+
+class HealthLog(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    habit_id: str
+    date: str # YYYY-MM-DD
+    completed: bool = True

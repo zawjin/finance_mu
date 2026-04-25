@@ -16,6 +16,17 @@ import { useSelector } from 'react-redux';
 import './Forms.scss';
 export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
+    
+    const labelStyle = { 
+        fontSize: '0.72rem', 
+        fontWeight: 900, 
+        color: '#86868b', 
+        mb: 1.2, 
+        display: 'block', 
+        letterSpacing: '0.05em', 
+        textTransform: 'uppercase' 
+    };
+
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
         value: initialData?.value || '',

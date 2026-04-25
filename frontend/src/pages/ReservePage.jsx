@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Replace, Trash2, Edit2, AlertCircle, Banknote, Wallet, ArrowRightLeft, History, PieChart, Activity, Briefcase, TrendingUp, TrendingDown, Landmark, Receipt, FileText, BarChart3, Handshake, Calendar, CheckCircle2, ArrowRight, Sigma, Sparkles } from 'lucide-react';
+import { Plus, Replace, Trash2, Edit2, AlertCircle, Banknote, Wallet, ArrowRightLeft, History, PieChart, Activity, Briefcase, TrendingUp, TrendingDown, Landmark, Receipt, FileText, BarChart3, Handshake, Calendar, CheckCircle2, ArrowRight, Sigma, Sparkles, ShieldCheck } from 'lucide-react';
 import BaseDialog from '../components/ui/BaseDialog';
 import { Box, Typography, Button, IconButton, Dialog, Grow, Stack, TextField, InputAdornment, LinearProgress, Skeleton, Grid } from '@mui/material';
 import api from '../utils/api';
@@ -16,6 +16,7 @@ import AccountLedgerTab from '../components/reserve/AccountLedgerTab';
 import BalanceSheetTab from '../components/reserve/BalanceSheetTab';
 import DebtLedgerTab from '../components/reserve/DebtLedgerTab';
 import ChitFundTab from '../components/reserve/ChitFundTab';
+import BudgetPlannerTab from '../components/reserve/BudgetPlannerTab';
 
 export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettle, onRevert, onTransfer, onAddFunds }) {
     const dispatch = useDispatch();
@@ -23,7 +24,23 @@ export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettl
     const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
     const [deleteConfirmDebt, setDeleteConfirmDebt] = React.useState(null);
     const [deleteConfirmLending, setDeleteConfirmLending] = React.useState(null);
-    const [activeTab, setActiveTab] = React.useState('local-investment'); // 'accounts' | 'balance-sheet' | 'debt-ledger' | 'local-investment'
+    const [activeTab, setActiveTab] = React.useState('accounts'); // 'accounts' | 'balance-sheet' | 'debt-ledger' | 'local-investment' | 'budget-planner'
+    
+    // Budget Planner Calculation Logic (Replicated from YearlyExpensePage)
+    const { yearlyExpenses } = useSelector(state => state.finance);
+    
+    const budgetCalculation = useMemo(() => {
+        const activeYearly = yearlyExpenses?.filter(e => e.status === 'ACTIVE' && (e.frequency === 'YEARLY' || !e.frequency)) || [];
+        const activeMonthly = yearlyExpenses?.filter(e => e.status === 'ACTIVE' && e.frequency === 'MONTHLY') || [];
+        
+        const totalYearly = activeYearly.reduce((s, e) => s + (e.amount || 0), 0);
+        const totalMonthly = activeMonthly.reduce((s, e) => s + (e.amount || 0), 0);
+        
+        return {
+            yearlySip: totalYearly / 12,
+            monthlyObligations: totalMonthly
+        };
+    }, [yearlyExpenses]);
 
     // Debt State
     const [debtSearch, setDebtSearch] = React.useState('');
@@ -118,7 +135,19 @@ const handleRevertSettlement = async (item) => {
         return { receivables, liabilities, net: receivables - liabilities, localPrincipals, localValuation };
     }, [filteredDebt]);
 
-    // ────────────────────────────────────────────────────────────────────────
+    const totalCCOutstanding = useMemo(() => {
+        return (reserves || [])
+            .filter(r => r.account_type === 'CREDIT_CARD')
+            .reduce((s, r) => s + parseFloat(r.balance || 0), 0);
+    }, [reserves]);
+
+    const lastMonthCCPayments = useMemo(() => {
+        if (!spending) return 0;
+        const lastMonthDate = dayjs().subtract(1, 'month');
+        return spending
+            .filter(s => s.category === 'Credit Bill' && dayjs(s.date).isSame(lastMonthDate, 'month'))
+            .reduce((s, item) => s + Math.abs(item.amount), 0);
+    }, [spending]);
 
     // ────────────────────────────────────────────────────────────────────────
 
@@ -348,7 +377,8 @@ const handleRevertSettlement = async (item) => {
                     { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },
                     { id: 'balance-sheet', label: 'Balance Sheet', icon: <BarChart3 size={15} /> },
                     { id: 'debt-ledger', label: 'Debt Ledger', icon: <Handshake size={15} /> },
-                    { id: 'local-investment', label: 'Chit Fund', icon: <Landmark size={15} /> }
+                    { id: 'local-investment', label: 'Chit Fund', icon: <Landmark size={15} /> },
+                    { id: 'budget-planner', label: 'Budget Planner', icon: <Sigma size={15} /> }
                 ].map(tab => (
                     <button
                         key={tab.id}
@@ -409,6 +439,17 @@ const handleRevertSettlement = async (item) => {
                     setDeleteConfirmLending={setDeleteConfirmLending}
                     onSettle={onSettle}
                     onRevert={onRevert}
+                />
+            )}
+
+            {/* ── BUDGET PLANNER TAB ── */}
+            {activeTab === 'budget-planner' && (
+                <BudgetPlannerTab 
+                    yearlySip={budgetCalculation.yearlySip}
+                    monthlyObligations={budgetCalculation.monthlyObligations}
+                    defaultOtherIncome={debtStats.receivables}
+                    defaultCcOutstanding={totalCCOutstanding}
+                    lastMonthCcOutstanding={lastMonthCCPayments}
                 />
             )}
 

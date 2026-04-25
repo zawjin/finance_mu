@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, YearlyExpenseItem, PrivateLendingItem
+from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, YearlyExpenseItem, PrivateLendingItem, HealthHabit, HealthLog
 from app.core.database import db
 from bson import ObjectId
 import urllib.request
@@ -14,6 +14,41 @@ router = APIRouter()
 def format_doc(doc):
     doc["_id"] = str(doc["_id"])
     return doc
+
+@router.get("/daily-quote")
+async def get_daily_quote():
+    try:
+        async with httpx.AsyncClient() as client:
+            # 1. Fetch from ZenQuotes
+            res = await client.get("https://zenquotes.io/api/today", timeout=5.0)
+            quote_data = res.json()[0]
+            eng_text = quote_data.get("q", "")
+            author = quote_data.get("a", "Unknown")
+
+            # 2. Translate to Tamil using a free Google Translate API bridge
+            # Fallback if translation fails
+            tamil_text = "நிச்சயமற்றது..." 
+            try:
+                # client=gtx is the older translate bridge often used for simple free scripts
+                trans_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q={httpx.utils.quote(eng_text)}"
+                trans_res = await client.get(trans_url, timeout=5.0)
+                # Structure: [[[translated_part, original, ...], ...], ...]
+                tamil_text = "".join([part[0] for part in trans_res.json()[0]])
+            except Exception as te:
+                print(f"Translation Error: {te}")
+                tamil_text = "நேர்மறையாக இருங்கள்."
+
+            return {
+                "quote": eng_text,
+                "author": author,
+                "tamil": tamil_text
+            }
+    except Exception as e:
+        return {
+            "quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            "author": "Winston Churchill",
+            "tamil": "வெற்றி இறுதியானது அல்ல, தோல்வி ஆபத்தானது அல்ல: தொடரும் தைரியமே முக்கியம்."
+        }
 
 @router.get("/spending")
 async def get_spending():
@@ -549,6 +584,59 @@ async def get_summary():
         "total_reserves": total_reserves,
         "lending_active_value": total_lending_live
     }
+
+
+# HEALTH TRACKER ENDPOINTS
+@router.get("/health/habits")
+async def get_health_habits():
+    cursor = db.health_habits.find().sort("name", 1)
+    return [format_doc(doc) async for doc in cursor]
+
+@router.post("/health/habits")
+async def add_health_habit(item: HealthHabit):
+    result = await db.health_habits.insert_one(item.dict(exclude={"id"}))
+    return {"id": str(result.inserted_id)}
+
+@router.put("/health/habits/{item_id}")
+async def update_health_habit(item_id: str, item: HealthHabit):
+    await db.health_habits.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    return {"status": "ok"}
+
+@router.delete("/health/habits/{item_id}")
+async def delete_health_habit(item_id: str):
+    await db.health_habits.delete_one({"_id": ObjectId(item_id)})
+    # Also delete logs associated with this habit
+    await db.health_logs.delete_many({"habit_id": item_id})
+    return {"status": "ok"}
+
+@router.get("/health/logs")
+async def get_health_logs(start_date: str = None, end_date: str = None):
+    query = {}
+    if start_date and end_date:
+        query["date"] = {"$gte": start_date, "$lte": end_date}
+    elif start_date:
+        query["date"] = {"$gte": start_date}
+    
+    cursor = db.health_logs.find(query)
+    return [format_doc(doc) async for doc in cursor]
+
+@router.post("/health/logs")
+async def toggle_health_log(log: HealthLog):
+    # Check if exists
+    existing = await db.health_logs.find_one({"habit_id": log.habit_id, "date": log.date})
+    if existing:
+        if log.completed:
+            await db.health_logs.update_one({"_id": existing["_id"]}, {"$set": {"completed": True}})
+            return {"status": "updated", "id": str(existing["_id"])}
+        else:
+            # If false, we just remove the log
+            await db.health_logs.delete_one({"_id": existing["_id"]})
+            return {"status": "removed"}
+    else:
+        if log.completed:
+            result = await db.health_logs.insert_one(log.dict(exclude={"id"}))
+            return {"status": "created", "id": str(result.inserted_id)}
+        return {"status": "ignored"}
 
 
 # ELITE CHROME HEADERS FOR UPSTREAM RESILIENCE
