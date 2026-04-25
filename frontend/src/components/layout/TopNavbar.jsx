@@ -148,9 +148,14 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                 <header className={`mobile-header ${scrolled ? 'scrolled' : ''}`}>
                     <div className="mh-left">
                         {location.pathname !== '/' ? (
-                            <button className="mh-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-                                <ArrowLeft size={20} />
-                            </button>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <button className="mh-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+                                    <ArrowLeft size={20} />
+                                </button>
+                                <button className="mh-back-btn" onClick={() => navigate('/')} aria-label="Go home">
+                                    <Home size={18} />
+                                </button>
+                            </div>
                         ) : (
                             <div className="mh-logo">
                                 <div className="mh-logo-inner"></div>

@@ -92,6 +92,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [syncingPrices, setSyncingPrices] = useState(false);
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
     const handleManualSync = async () => {
         setSyncingPrices(true);
@@ -366,6 +367,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         const types = new Set([...usageTypes, ...configuredTypes]);
         return Array.from(types).sort();
     }, [investments, assetClasses]);
+    const hasActiveFilters = search !== '' || selectedType !== 'ALL' || period !== 'ALL';
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
@@ -536,7 +538,20 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             </div>
 
             <div className="spending-split-layout">
-                <div className="filters-sidebar-card glass-effect">
+                {/* Mobile Filter Toggle Button */}
+                <button 
+                    className="mobile-filter-toggle"
+                    onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                >
+                    <div className="mft-left">
+                        <Filter size={15} />
+                        <span>Filters</span>
+                        {hasActiveFilters && <span className="mft-badge">Active</span>}
+                    </div>
+                    <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                </button>
+
+                <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
                     <div className="sidebar-sticky-wrap">
 
 

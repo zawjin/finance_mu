@@ -137,6 +137,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
     const [selectedSourceId, setSelectedSourceId] = useState('ALL');
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
     // Settlement Logic
     const [showSettlement, setShowSettlement] = useState(false);
@@ -565,7 +566,19 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             </div>
 
             <div className="spending-split-layout">
-                <div className="filters-sidebar-card glass-effect">
+                {/* Mobile Filter Toggle */}
+                <button className="mobile-filter-toggle" onClick={() => setMobileFiltersOpen(o => !o)}>
+                    <span className="mft-left">
+                        <Filter size={13} />
+                        <span>Filters</span>
+                        {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
+                            <span className="mft-badge">Active</span>
+                        )}
+                    </span>
+                    <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                </button>
+
+                <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
                     <div className="sidebar-sticky-wrap">
                         <div className="filter-header-flex">
                             <div className="filter-icon-box">

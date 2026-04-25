@@ -359,7 +359,7 @@
 }
 
 .investment-category-pill {
-    min-width: 180px;
+    min-width: max-content !important; // Ensures pill grows to fit all text without wrapping
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -374,14 +374,15 @@
     }
 
     @media (max-width: 576px) {
-        min-width: 160px;
         padding: 0.75rem 1rem;
+        gap: 0.75rem;
     }
 }
 
 .pill-info-box {
     display: flex;
     flex-direction: column;
+    white-space: nowrap !important; // Prevent inner text wrapping
 }
 
 .pill-type-label {
@@ -389,6 +390,7 @@
     opacity: 0.8 !important;
     display: block !important;
     font-size: 0.65rem !important;
+    white-space: nowrap !important;
 }
 
 .pill-value-stack {
@@ -399,24 +401,27 @@
 
 .pill-amt-val {
     font-weight: 900;
-    font-size: 1rem;
+    font-size: 1.05rem;
     letter-spacing: -0.02em;
-    line-height: 1;
+    line-height: 1.1;
     color: var(--text-color) !important;
+    white-space: nowrap !important;
 }
 
 .pill-cost-label {
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     font-weight: 800;
     color: #86868b;
-    opacity: 0.7;
+    opacity: 0.8;
+    white-space: nowrap !important;
 }
 
 .pill-yield-meta {
     display: flex;
-    gap: 0.25rem;
-    font-size: 0.6rem;
+    gap: 0.35rem;
+    font-size: 0.62rem;
     font-weight: 800;
+    white-space: nowrap !important;
 
     .yield-up {
         color: #34c759;
@@ -829,4 +834,285 @@
     display: flex;
     gap: 0.35rem;
     margin-left: 1rem;
+}
+
+// ── Desktop defaults (these elements are mobile-only controls) ──────
+.mobile-filter-toggle {
+    display: none; // Hidden on desktop
+}
+
+.filters-sidebar-card {
+    display: block; // Always visible on desktop
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MOBILE-ONLY SMART LAYOUT — INVESTMENT PAGE
+// Native iOS-style: edge-to-edge, compact, single-line rows
+// ═══════════════════════════════════════════════════════════════════
+@media (max-width: 768px) {
+
+  // Mobile Filter Toggle Button
+  .mobile-filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 16px;
+    padding: 0.8rem 1rem;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: #1d1d1f;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    text-align: left;
+
+    .mft-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mft-badge {
+      background: #6366f1;
+      color: white;
+      font-size: 0.55rem;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 50px;
+    }
+
+    .mft-chevron {
+      font-size: 1.1rem;
+      line-height: 1;
+      color: #86868b;
+      transition: transform 0.25s;
+
+      &.open { transform: rotate(180deg); }
+    }
+  }
+
+  // Filter panel: hidden by default, shown when toggled
+  .filters-sidebar-card {
+    display: none;
+    padding: 1.1rem 1rem !important;
+    border-radius: 20px !important;
+    margin-bottom: 0.75rem;
+
+    &.mobile-open { display: block; }
+  }
+
+  // Category filter chips
+  .category-filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .cat-filter-chip {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.65rem !important;
+    border-radius: 10px !important;
+  }
+
+  // Time horizon: 3-col
+  .time-horizon-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.45rem !important;
+  }
+
+  .time-horizon-btn {
+    padding: 0.55rem 0.35rem !important;
+
+    .th-label { font-size: 0.6rem !important; }
+  }
+
+  // Group Header Fixes for 380px
+  .group-header-luxury {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      padding: 1rem !important;
+      gap: 0.5rem !important;
+  }
+
+  .group-title-flex {
+      flex-wrap: wrap !important;
+      gap: 0.35rem !important;
+  }
+
+  .group-meta-info-cluster {
+      margin-left: 0 !important;
+      flex-wrap: wrap !important;
+      gap: 0.35rem !important;
+  }
+
+  .group-tx-stats-tag {
+      font-size: 0.55rem !important;
+  }
+
+  .group-acquired-label {
+      font-size: 0.8rem !important;
+      width: 100% !important;
+      text-align: left !important;
+  }
+
+  // Transaction rows: native layout
+  .transaction-row-fancy {
+    padding: 0.8rem 1rem !important;
+    gap: 0.65rem !important;
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    align-items: flex-start !important; // Changed to flex-start so content can wrap vertically
+  }
+
+  .pill-icon-box {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 10px !important;
+      flex-shrink: 0 !important;
+      margin-top: 2px !important; // Adjust for flex-start alignment
+      svg { width: 16px !important; height: 16px !important; }
+  }
+
+  .asset-header-flex {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap; // Allow wrapping so name and badge don't collide
+      gap: 4px;
+      margin-bottom: 2px;
+  }
+
+  .asset-name-text {
+      font-size: 0.8rem !important;
+      word-wrap: break-word !important;
+  }
+
+  .asset-meta-flex {
+      font-size: 0.55rem !important;
+      flex-wrap: wrap !important;
+      white-space: normal !important;
+      gap: 0.3rem !important;
+      line-height: 1.4 !important;
+  }
+
+  .tx-category-col {
+      display: none !important;
+  }
+
+  // Amount: always right-aligned
+  .tx-amount-col {
+    text-align: right !important;
+    min-width: auto !important;
+    width: auto !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 1px !important;
+    border-top: none !important;
+    padding-top: 0 !important;
+    position: static !important;
+  }
+
+  .tx-val-main { font-size: 0.85rem !important; font-weight: 900 !important; }
+  .tx-cost-label { font-size: 0.55rem !important; font-weight: 800 !important; }
+
+  // Action buttons: stay inline
+  .row-action-cluster {
+    flex-shrink: 0 !important;
+    gap: 0 !important;
+    width: auto !important; // FIX: Was 100% which squished the middle column!
+    justify-content: flex-end !important;
+    padding-top: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    margin-left: 0.25rem !important;
+    align-self: flex-start !important; // Align to top like the text
+
+    .MuiIconButton-root {
+      padding: 3px !important;
+      svg { width: 13px !important; height: 13px !important; }
+    }
+  }
+
+  // Summary Cards
+  .summary-card-investment {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem !important;
+      gap: 0.75rem !important;
+  }
+  
+  .summary-header-flex {
+      flex-direction: row !important;
+      align-items: center !important;
+  }
+
+  .summary-value-flex {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+  }
+
+  // Sort/action bar
+  .meta-status-bar {
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 16px;
+    margin-bottom: 0.85rem;
+  }
+
+  .badge-status { width: 100%; font-size: 0.72rem; }
+
+  .action-hub-right {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .sort-pill-btn, .btn-pill-sync-minimal, .btn-clear-minimal, .btn-export-minimal {
+      flex-shrink: 0; 
+      padding: 0.3rem 0.65rem; 
+      font-size: 0.6rem;
+  }
+}
+
+// ── Extra small phones (≤400px): sort bar wraps to 2 rows ──────────
+@media (max-width: 400px) {
+  .action-hub-right {
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+  }
+
+  .sort-pill-btn {
+    width: calc(50% - 0.2rem) !important;
+    text-align: center;
+  }
+
+  .btn-pill-sync-minimal,
+  .btn-clear-minimal,
+  .btn-export-minimal {
+    flex: 1 !important;
+    justify-content: center !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  // Transaction row: shrink icon slightly
+  .pill-icon-box {
+    width: 30px !important;
+    height: 30px !important;
+    svg { width: 14px !important; height: 14px !important; }
+  }
+
+  .tx-val-main {
+    font-size: 0.8rem !important;
+  }
 }

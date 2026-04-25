@@ -1,49 +1,205 @@
+// ─────────────────────────────────────────────────────────────────
+// BASE DIALOG — Premium Mobile Bottom-Sheet + Desktop Modal
+// ─────────────────────────────────────────────────────────────────
+
+.base-dialog-paper {
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18) !important;
+}
+
+// Mobile bottom sheet — slides from bottom edge
+.base-dialog-paper.mobile-sheet {
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+// ── Drag handle (mobile only) ─────────────────────────────────────
+.sheet-drag-handle-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 0.6rem 0 0.2rem;
+    background: #fff;
+}
+
+.sheet-drag-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 100px;
+}
+
+// ── Dialog title bar ──────────────────────────────────────────────
 .dialog-base-title {
-    padding: 2rem 2.5rem !important;
+    padding: 1.25rem 1.5rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
     background: #fff !important;
 }
 
 .dialog-title-text {
-    font-size: 1.6rem !important;
+    font-size: 1.25rem !important;
     font-weight: 900 !important;
     color: #1d1d1f !important;
-    letter-spacing: -0.04em !important;
+    letter-spacing: -0.03em !important;
+    line-height: 1.2 !important;
 }
 
 .dialog-close-btn {
-    background-color: rgba(0,0,0,0.03) !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
     color: #1d1d1f !important;
-    
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+
     &:hover {
-        background-color: rgba(0,0,0,0.06) !important;
+        background-color: rgba(0, 0, 0, 0.08) !important;
     }
 }
 
+// ── Dialog content area ───────────────────────────────────────────
 .dialog-base-content {
     padding: 0 !important;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 768px) {
-    .dialog-base-title {
-        padding: 1.5rem 1.5rem !important;
-    }
-    .dialog-title-text {
-        font-size: 1.25rem !important;
-    }
-}
-
-/* Common form styles for consistent modal appearance */
+// ── Form header (inside modal) ────────────────────────────────────
 .form-header-premium {
-    padding: 2rem 2.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
 
-    @media (max-width: 768px) {
-        padding: 1.25rem 1.5rem;
+// ─────────────────────────────────────────────────────────────────
+// GLOBAL MOBILE FORM STYLES (all dialogs/modals)
+// Premium iOS-native feel for all inputs and buttons
+// ─────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+
+    // ── Dialog title area ─────────────────────────────────────────
+    .dialog-base-title {
+        padding: 1rem 1.25rem !important;
+    }
+
+    .dialog-title-text {
+        font-size: 1.1rem !important;
+    }
+
+    // ── MUI TextField / Input overrides ──────────────────────────
+    .MuiTextField-root,
+    .MuiFormControl-root {
+        // Taller touch targets
+        .MuiOutlinedInput-root {
+            border-radius: 14px !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            min-height: 52px !important;
+            background: rgba(0, 0, 0, 0.025) !important;
+
+            &.Mui-focused {
+                background: rgba(0, 113, 227, 0.03) !important;
+
+                .MuiOutlinedInput-notchedOutline {
+                    border-color: #0071e3 !important;
+                    border-width: 2px !important;
+                }
+            }
+        }
+
+        .MuiInputLabel-root {
+            font-size: 0.78rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.04em !important;
+        }
+
+        .MuiOutlinedInput-input {
+            padding: 14px 14px !important;
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+        }
+
+        .MuiInputAdornment-root {
+            margin-right: 4px;
+        }
+    }
+
+    // ── MUI Select ───────────────────────────────────────────────
+    .MuiSelect-root {
+        border-radius: 14px !important;
+        min-height: 52px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+
+        .MuiOutlinedInput-notchedOutline {
+            border-radius: 14px !important;
+        }
+    }
+
+    // ── MUI MenuItem (dropdown options) ──────────────────────────
+    .MuiMenuItem-root {
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        min-height: 48px !important;
+        padding: 0.85rem 1rem !important;
+    }
+
+    // ── MUI Button (contained / outlined) ────────────────────────
+    .MuiButton-root {
+        border-radius: 50px !important;
+        font-size: 0.88rem !important;
+        font-weight: 900 !important;
+        min-height: 50px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+
+        &.MuiButton-contained {
+            box-shadow: none !important;
+
+            &:hover {
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+            }
+        }
+    }
+
+    // ── MUI Stack spacing inside dialogs ─────────────────────────
+    .dialog-base-content .MuiStack-root {
+        gap: 0.9rem !important;
+    }
+
+    // ── Form label micro style ────────────────────────────────────
+    .MuiFormLabel-root,
+    .MuiInputLabel-root {
+        font-size: 0.7rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+        color: #86868b !important;
+    }
+
+    // ── DatePicker mobile ─────────────────────────────────────────
+    .MuiPickersLayout-root {
+        .MuiPickersCalendarHeader-root {
+            font-size: 0.9rem !important;
+        }
+    }
+
+    // ── MUI Dialog Paper: full-width & scrollable ─────────────────
+    .MuiDialog-paper {
+        max-width: 100% !important;
+    }
+
+    // ── Spacing inside modal content areas ────────────────────────
+    .dialog-base-content {
+        > .MuiBox-root {
+            padding: 1.25rem !important;
+        }
+
+        > div {
+            > .MuiStack-root {
+                padding: 1.25rem;
+                gap: 1rem !important;
+            }
+        }
     }
 }

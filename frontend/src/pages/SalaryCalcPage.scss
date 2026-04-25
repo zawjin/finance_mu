@@ -1,0 +1,442 @@
+$emerald: #10b981;
+$indigo: #6366f1;
+$violet: #8b5cf6;
+$amber: #f59e0b;
+$rose: #f43f5e;
+
+.salary-calc-viewport {
+    padding: 2rem 0 0 0;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+        padding: 1rem 0 0 0 !important;
+    }
+}
+
+.salary-calc-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    marginBottom: 2rem;
+
+    @media (max-width: 768px) {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .header-icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+
+        @media (max-width: 768px) {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+        }
+    }
+
+    .header-text {
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #1e1b4b;
+            margin: 0;
+
+            @media (max-width: 768px) {
+                font-size: 1.25rem;
+            }
+        }
+        p {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+}
+
+.salary-calc-layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}
+
+.salary-calc-inputs {
+    flex: 0 0 340px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+}
+
+.salary-calc-results {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        gap: 1rem;
+    }
+}
+
+// ── Cards ──
+
+.quick-ctc-card {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+
+    @media (max-width: 768px) {
+        padding: 1.25rem;
+        border-radius: 18px;
+    }
+
+    .label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #c7d2fe;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrap {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+
+        span {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 800;
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+        }
+    }
+
+    .footer {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.5rem;
+        font-weight: 600;
+    }
+}
+
+.salary-white-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.75rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+    @media (max-width: 768px) {
+        padding: 1.25rem;
+        border-radius: 18px;
+    }
+
+    .card-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+
+        span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    }
+}
+
+.take-home-hero {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 32px rgba(6, 78, 59, 0.25);
+
+    @media (max-width: 768px) {
+        padding: 1.25rem;
+        border-radius: 18px;
+    }
+
+    .hero-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .main-val-box {
+        .label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #6ee7b7;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .value {
+            font-size: 2.75rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -0.02em;
+
+            @media (max-width: 768px) {
+                font-size: 2.25rem;
+            }
+        }
+        .annual {
+            font-size: 0.85rem;
+            color: #a7f3d0;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+    }
+
+    .tax-rate-box {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: right;
+
+        @media (max-width: 768px) {
+            text-align: left;
+            width: 100%;
+        }
+
+        .label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #6ee7b7;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+        .rate {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: #fff;
+        }
+    }
+}
+
+.stat-grid-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+.bonus-month-card {
+    background: linear-gradient(135deg, #1c1402 0%, #2d1f04 50%, #451a03 100%);
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 32px rgba(120, 53, 15, 0.3);
+
+    @media (max-width: 768px) {
+        padding: 1.25rem;
+    }
+
+    .bonus-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .bonus-main {
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+
+            span {
+                font-size: 0.7rem;
+                font-weight: 800;
+                color: #fbbf24;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+            }
+        }
+        .value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -0.02em;
+
+            @media (max-width: 768px) {
+                font-size: 2rem;
+            }
+        }
+        .compare {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.4rem;
+        }
+    }
+}
+
+.dark-deduction-card {
+    background: #1e1b4b;
+    border-radius: 20px;
+    padding: 1.75rem;
+
+    @media (max-width: 768px) {
+        padding: 1.25rem;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+
+        span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #a5b4fc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    }
+}
+
+.payslip-container {
+    margin-top: 2.5rem;
+
+    @media (max-width: 768px) {
+        margin-top: 1.5rem;
+    }
+
+    .payslip-header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+
+        .bar {
+            width: 4px;
+            height: 24px;
+            border-radius: 4px;
+            background: linear-gradient(#6366f1, #8b5cf6);
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #1e1b4b;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            background: #eef2ff;
+            color: #6366f1;
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            font-weight: 700;
+        }
+    }
+}
+
+// ── Payslip ──
+.payslip-box {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+
+    .payslip-top-banner {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        @media (max-width: 768px) {
+            padding: 1rem 1.25rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .net-pay-val {
+            @media (max-width: 768px) {
+                text-align: left !important;
+            }
+        }
+    }
+
+    .payslip-meta-bar {
+        padding: 1rem 2rem;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        gap: 3rem;
+        flex-wrap: wrap;
+
+        @media (max-width: 768px) {
+            padding: 1rem 1.25rem;
+            gap: 1rem;
+            
+            div { width: 45%; }
+        }
+    }
+
+    .payslip-table-grid {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid #e5e7eb;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
+    }
+}

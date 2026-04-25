@@ -13,7 +13,6 @@ import './ReservePage.scss';
 // Micro Components
 import ReservesSummaryHeader from '../components/reserve/ReservesSummaryHeader';
 import AccountLedgerTab from '../components/reserve/AccountLedgerTab';
-import BalanceSheetTab from '../components/reserve/BalanceSheetTab';
 import DebtLedgerTab from '../components/reserve/DebtLedgerTab';
 import ChitFundTab from '../components/reserve/ChitFundTab';
 import BudgetPlannerTab from '../components/reserve/BudgetPlannerTab';
@@ -24,18 +23,18 @@ export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettl
     const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
     const [deleteConfirmDebt, setDeleteConfirmDebt] = React.useState(null);
     const [deleteConfirmLending, setDeleteConfirmLending] = React.useState(null);
-    const [activeTab, setActiveTab] = React.useState('accounts'); // 'accounts' | 'balance-sheet' | 'debt-ledger' | 'local-investment' | 'budget-planner'
-    
+    const [activeTab, setActiveTab] = React.useState('accounts'); // 'accounts' | 'debt-ledger' | 'local-investment' | 'budget-planner'
+
     // Budget Planner Calculation Logic (Replicated from YearlyExpensePage)
     const { yearlyExpenses } = useSelector(state => state.finance);
-    
+
     const budgetCalculation = useMemo(() => {
         const activeYearly = yearlyExpenses?.filter(e => e.status === 'ACTIVE' && (e.frequency === 'YEARLY' || !e.frequency)) || [];
         const activeMonthly = yearlyExpenses?.filter(e => e.status === 'ACTIVE' && e.frequency === 'MONTHLY') || [];
-        
+
         const totalYearly = activeYearly.reduce((s, e) => s + (e.amount || 0), 0);
         const totalMonthly = activeMonthly.reduce((s, e) => s + (e.amount || 0), 0);
-        
+
         return {
             yearlySip: totalYearly / 12,
             monthlyObligations: totalMonthly
@@ -45,9 +44,6 @@ export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettl
     // Debt State
     const [debtSearch, setDebtSearch] = React.useState('');
     const [debtFilterType, setDebtFilterType] = React.useState('ALL');
-
-    // Balance sheet filter state
-    const [bsFilterMonth, setBsFilterMonth] = React.useState('ALL');
 
 
 
@@ -67,7 +63,7 @@ export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettl
     }, [settlementItem]);
 
 
-const handleRevertSettlement = async (item) => {
+    const handleRevertSettlement = async (item) => {
         try {
             // Updated logic: DO NOT DELETE THE LOGS.
             // We only reset the status to ACTIVE to allow for re-settling.
@@ -226,52 +222,7 @@ const handleRevertSettlement = async (item) => {
 
     // ────────────────────────────────────────────────────────────────────────
 
-    // ── BALANCE SHEET COMPUTATION ────────────────────────────────────────────
-    const balanceSheetData = useMemo(() => {
-        const monthMap = {};
 
-        // Process all spending transactions
-        (spending || []).forEach(s => {
-            const m = (s.date || '').slice(0, 7); // YYYY-MM
-            if (!m) return;
-            if (!monthMap[m]) monthMap[m] = { month: m, debits: 0, credits: 0 };
-            monthMap[m].debits += parseFloat(s.amount || 0);
-            monthMap[m].credits += parseFloat(s.recovered || 0);
-        });
-
-        // Sort months ascending
-        const sorted = Object.values(monthMap).sort((a, b) => a.month.localeCompare(b.month));
-
-        // Compute running balance (cumulative net)
-        let running = 0;
-        return sorted.map(row => {
-            const net = row.credits - row.debits;
-            const opening = running;
-            running += net;
-            return {
-                ...row,
-                net,
-                opening,
-                closing: running,
-            };
-        });
-    }, [spending]);
-
-    // Available months for filter
-    const availableMonths = useMemo(() => balanceSheetData.map(r => r.month), [balanceSheetData]);
-
-    const filteredRows = useMemo(() => {
-        if (bsFilterMonth === 'ALL') return balanceSheetData;
-        return balanceSheetData.filter(r => r.month === bsFilterMonth);
-    }, [balanceSheetData, bsFilterMonth]);
-
-    // Totals row
-    const bsTotals = useMemo(() => ({
-        debits: filteredRows.reduce((s, r) => s + r.debits, 0),
-        credits: filteredRows.reduce((s, r) => s + r.credits, 0),
-        net: filteredRows.reduce((s, r) => s + r.net, 0),
-    }), [filteredRows]);
-    // ────────────────────────────────────────────────────────────────────────
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
@@ -375,7 +326,6 @@ const handleRevertSettlement = async (item) => {
             <div className="tab-group-container">
                 {[
                     { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },
-                    { id: 'balance-sheet', label: 'Balance Sheet', icon: <BarChart3 size={15} /> },
                     { id: 'debt-ledger', label: 'Debt Ledger', icon: <Handshake size={15} /> },
                     { id: 'local-investment', label: 'Chit Fund', icon: <Landmark size={15} /> },
                     { id: 'budget-planner', label: 'Budget Planner', icon: <Sigma size={15} /> }
@@ -407,13 +357,6 @@ const handleRevertSettlement = async (item) => {
                 />
             )}
 
-            {/* ── BALANCE SHEET TAB ── */}
-            {activeTab === 'balance-sheet' && (
-                <BalanceSheetTab
-                    filteredRows={filteredRows}
-                    bsTotals={bsTotals}
-                />
-            )}
 
             {/* ── DEBT LEDGER TAB ── */}
             {activeTab === 'debt-ledger' && (
@@ -444,7 +387,7 @@ const handleRevertSettlement = async (item) => {
 
             {/* ── BUDGET PLANNER TAB ── */}
             {activeTab === 'budget-planner' && (
-                <BudgetPlannerTab 
+                <BudgetPlannerTab
                     yearlySip={budgetCalculation.yearlySip}
                     monthlyObligations={budgetCalculation.monthlyObligations}
                     defaultOtherIncome={debtStats.receivables}

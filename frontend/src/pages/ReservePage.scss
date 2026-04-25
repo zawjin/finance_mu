@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 // ─── Tokens ──────────────────────────────────────────────────────────────────
-$bg:         #f0f4f8;
-$surface:    #ffffff;
-$ink:        #0f172a;
-$ink-muted:  #64748b;
+$bg: #f0f4f8;
+$surface: #ffffff;
+$ink: #0f172a;
+$ink-muted: #64748b;
 $ink-subtle: #94a3b8;
-$border:     #e2e8f0;
-$emerald:    #10b981;
-$sky:        #0ea5e9;
-$rose:       #f43f5e;
-$violet:     #6366f1;
-$amber:      #f59e0b;
-$indigo:     #4f46e5;
+$border: #e2e8f0;
+$emerald: #10b981;
+$sky: #0ea5e9;
+$rose: #f43f5e;
+$violet: #6366f1;
+$amber: #f59e0b;
+$indigo: #4f46e5;
 
 // ─── Tab Pills ───────────────────────────────────────────────────────────────
 .tab-group-container {
@@ -23,7 +23,7 @@ $indigo:     #4f46e5;
     padding: 0.3rem;
     border-radius: 14px;
     border: 1px solid $border;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     width: fit-content;
 
     @media (max-width: 768px) {
@@ -31,7 +31,10 @@ $indigo:     #4f46e5;
         overflow-x: auto;
         border-radius: 12px;
         scrollbar-width: none;
-        &::-webkit-scrollbar { display: none; }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 }
 
@@ -55,7 +58,7 @@ $indigo:     #4f46e5;
     &.active {
         background: $ink;
         color: #fff;
-        box-shadow: 0 2px 8px rgba(15,23,42,0.2);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
     }
 
     &:hover:not(.active) {
@@ -82,14 +85,14 @@ $indigo:     #4f46e5;
 .reserves-summary-glass {
     padding: 1.4rem 1.75rem;
     border-radius: 20px;
-    border: 1px solid rgba(16,185,129,0.15);
+    border: 1px solid rgba(16, 185, 129, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 1.25rem;
-    background: linear-gradient(120deg, rgba(16,185,129,0.04), rgba(16,185,129,0.08));
-    box-shadow: 0 1px 4px rgba(16,185,129,0.06);
+    background: linear-gradient(120deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.08));
+    box-shadow: 0 1px 4px rgba(16, 185, 129, 0.06);
 }
 
 .reserves-summary-info {
@@ -106,7 +109,7 @@ $indigo:     #4f46e5;
     color: white;
     display: grid;
     place-items: center;
-    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .reserves-summary-label {
@@ -134,7 +137,7 @@ $indigo:     #4f46e5;
 
 // ─── Action Buttons ───────────────────────────────────────────────────────────
 .btn-move-money {
-    background: rgba(99,102,241,0.08) !important;
+    background: rgba(99, 102, 241, 0.08) !important;
     color: $violet !important;
     padding: 0.5rem 1.2rem !important;
     border-radius: 11px !important;
@@ -143,13 +146,13 @@ $indigo:     #4f46e5;
     transition: all 0.2s !important;
 
     &:hover {
-        background: rgba(99,102,241,0.14) !important;
+        background: rgba(99, 102, 241, 0.14) !important;
         transform: translateY(-1px);
     }
 }
 
 .btn-sync-account {
-    background: rgba(16,185,129,0.08) !important;
+    background: rgba(16, 185, 129, 0.08) !important;
     color: $emerald !important;
     padding: 0.5rem 1.2rem !important;
     border-radius: 11px !important;
@@ -158,7 +161,7 @@ $indigo:     #4f46e5;
     transition: all 0.2s !important;
 
     &:hover {
-        background: rgba(16,185,129,0.14) !important;
+        background: rgba(16, 185, 129, 0.14) !important;
         transform: translateY(-1px);
     }
 }
@@ -171,12 +174,12 @@ $indigo:     #4f46e5;
     font-size: 0.78rem !important;
     color: #fff !important;
     letter-spacing: 0.02em !important;
-    box-shadow: 0 4px 12px rgba(15,23,42,0.18) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18) !important;
     transition: all 0.2s !important;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(15,23,42,0.25) !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25) !important;
     }
 }
 
@@ -186,16 +189,18 @@ $indigo:     #4f46e5;
     border-radius: 20px !important;
     background: $surface !important;
     border: 1px solid $border !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
     transition: all 0.2s ease !important;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.07) !important;
-        border-color: rgba(14,165,233,0.2) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07) !important;
+        border-color: rgba(14, 165, 233, 0.2) !important;
     }
 
-    &:active { transform: scale(0.99); }
+    &:active {
+        transform: scale(0.99);
+    }
 
     @media (max-width: 768px) {
         padding: 1rem !important;
@@ -243,14 +248,25 @@ $indigo:     #4f46e5;
     border-radius: 6px;
 }
 
-.due-faint  { background: rgba(0,0,0,0.04); color: $ink-subtle; }
-.due-urgent { background: rgba(244,63,94,0.08); color: $rose; }
-.due-normal { background: rgba(99,102,241,0.08); color: $violet; }
+.due-faint {
+    background: rgba(0, 0, 0, 0.04);
+    color: $ink-subtle;
+}
+
+.due-urgent {
+    background: rgba(244, 63, 94, 0.08);
+    color: $rose;
+}
+
+.due-normal {
+    background: rgba(99, 102, 241, 0.08);
+    color: $violet;
+}
 
 .account-progress-track {
     width: 90%;
     height: 6px;
-    background: rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.04);
     border-radius: 999px;
     overflow: hidden;
     margin-top: 0.4rem;
@@ -298,7 +314,7 @@ $indigo:     #4f46e5;
     color: #fff !important;
     height: 30px !important;
     padding: 0 0.75rem !important;
-    box-shadow: 0 2px 8px rgba(244,63,94,0.25) !important;
+    box-shadow: 0 2px 8px rgba(244, 63, 94, 0.25) !important;
 }
 
 .btn-add-money-small {
@@ -309,17 +325,38 @@ $indigo:     #4f46e5;
     color: #fff !important;
     height: 30px !important;
     padding: 0 0.75rem !important;
-    box-shadow: 0 2px 8px rgba(16,185,129,0.25) !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25) !important;
 }
 
 // ─── Account Type Colors ──────────────────────────────────────────────────────
-.type-style-bank   { background: rgba(99,102,241,0.1) !important; color: $violet !important; }
-.type-style-wallet { background: rgba(16,185,129,0.1) !important; color: $emerald !important; }
-.type-style-cash   { background: rgba(245,158,11,0.1) !important; color: $amber !important; }
-.type-style-red    { background: rgba(244,63,94,0.1) !important; color: $rose !important; }
+.type-style-bank {
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: $violet !important;
+}
 
-.bg-faint-grey { background: rgba(0,0,0,0.02) !important; }
-.bg-faint-red  { background: rgba(244,63,94,0.04) !important; color: $rose !important; }
+.type-style-wallet {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: $emerald !important;
+}
+
+.type-style-cash {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: $amber !important;
+}
+
+.type-style-red {
+    background: rgba(244, 63, 94, 0.1) !important;
+    color: $rose !important;
+}
+
+.bg-faint-grey {
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+
+.bg-faint-red {
+    background: rgba(244, 63, 94, 0.04) !important;
+    color: $rose !important;
+}
 
 // ─── Ledger Activity ──────────────────────────────────────────────────────────
 .ledger-activity-card {
@@ -327,7 +364,7 @@ $indigo:     #4f46e5;
     padding: 1.5rem !important;
     background: $surface !important;
     border: 1px solid $border !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
 }
 
 .ledger-activity-header {
@@ -338,10 +375,26 @@ $indigo:     #4f46e5;
     padding: 0 0.25rem;
 }
 
-.ledger-activity-title { display: flex; align-items: center; gap: 0.75rem; }
-.ledger-activity-text  { font-weight: 800 !important; font-size: 0.9rem !important; color: $ink !important; }
-.ledger-activity-divider { height: 1px; flex: 1; background: $border; margin: 0 1.25rem; }
-.ledger-activity-meta  {
+.ledger-activity-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ledger-activity-text {
+    font-weight: 800 !important;
+    font-size: 0.9rem !important;
+    color: $ink !important;
+}
+
+.ledger-activity-divider {
+    height: 1px;
+    flex: 1;
+    background: $border;
+    margin: 0 1.25rem;
+}
+
+.ledger-activity-meta {
     font-size: 0.62rem !important;
     font-weight: 700 !important;
     color: $ink-subtle !important;
@@ -363,8 +416,13 @@ $indigo:     #4f46e5;
     border-bottom: 1px solid #f8fafc !important;
     transition: background 0.15s !important;
 
-    &:hover { background: #fafeff !important; }
-    &:last-child { border-bottom: none !important; }
+    &:hover {
+        background: #fafeff !important;
+    }
+
+    &:last-child {
+        border-bottom: none !important;
+    }
 }
 
 .ledger-activity-icon-box {
@@ -377,25 +435,81 @@ $indigo:     #4f46e5;
     margin-right: 0.85rem;
 }
 
-.bg-green-soft { background: rgba(16,185,129,0.08); }
-.bg-red-soft   { background: rgba(244,63,94,0.08); }
+.bg-green-soft {
+    background: rgba(16, 185, 129, 0.08);
+}
 
-.ledger-activity-desc      { font-weight: 700 !important; color: $ink !important; font-size: 0.88rem !important; }
-.ledger-activity-meta-row  { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.1rem; }
-.ledger-activity-date      { font-size: 0.65rem !important; font-weight: 600 !important; color: $ink-subtle !important; }
-.ledger-activity-dot       { width: 3px; height: 3px; border-radius: 50%; background: $border; }
-.ledger-activity-from      { font-size: 0.65rem !important; font-weight: 700 !important; color: $violet !important; }
-.ledger-activity-to        { font-size: 0.65rem !important; font-weight: 700 !important; color: $emerald !important; }
+.bg-red-soft {
+    background: rgba(244, 63, 94, 0.08);
+}
 
-.ledger-activity-actions   { text-align: right; display: flex; align-items: center; gap: 1.25rem; }
-.ledger-activity-amt       { font-weight: 800 !important; font-size: 0.95rem !important; letter-spacing: -0.02em !important; }
-.ledger-activity-type      { font-size: 0.58rem !important; font-weight: 700 !important; color: $ink-subtle !important; text-transform: uppercase !important; letter-spacing: 0.07em !important; }
+.ledger-activity-desc {
+    font-weight: 700 !important;
+    color: $ink !important;
+    font-size: 0.88rem !important;
+}
+
+.ledger-activity-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.1rem;
+}
+
+.ledger-activity-date {
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    color: $ink-subtle !important;
+}
+
+.ledger-activity-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: $border;
+}
+
+.ledger-activity-from {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: $violet !important;
+}
+
+.ledger-activity-to {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: $emerald !important;
+}
+
+.ledger-activity-actions {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.ledger-activity-amt {
+    font-weight: 800 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: -0.02em !important;
+}
+
+.ledger-activity-type {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    color: $ink-subtle !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.07em !important;
+}
 
 .btn-delete-activity {
     color: $rose !important;
-    background: rgba(244,63,94,0.04) !important;
+    background: rgba(244, 63, 94, 0.04) !important;
     transition: all 0.2s !important;
-    &:hover { background: rgba(244,63,94,0.1) !important; }
+
+    &:hover {
+        background: rgba(244, 63, 94, 0.1) !important;
+    }
 }
 
 // ─── Dialog Styles ────────────────────────────────────────────────────────────
@@ -409,7 +523,7 @@ $indigo:     #4f46e5;
     width: 64px;
     height: 64px;
     border-radius: 20px;
-    background: rgba(244,63,94,0.08);
+    background: rgba(244, 63, 94, 0.08);
     color: $rose;
     display: grid;
     place-items: center;
@@ -431,11 +545,19 @@ $indigo:     #4f46e5;
     font-weight: 500 !important;
     line-height: 1.55 !important;
 
-    strong { color: $ink; }
+    strong {
+        color: $ink;
+    }
 }
 
-.dialog-action-flex { display: flex; gap: 1rem; }
-.dialog-content-premium { padding: 2.25rem !important; }
+.dialog-action-flex {
+    display: flex;
+    gap: 1rem;
+}
+
+.dialog-content-premium {
+    padding: 2.25rem !important;
+}
 
 .dialog-desc-text {
     color: $ink-muted !important;
@@ -460,67 +582,178 @@ $indigo:     #4f46e5;
     @extend %pill-btn;
     color: $ink !important;
     background: #f1f5f9 !important;
-    &:hover { background: #e2e8f0 !important; }
+
+    &:hover {
+        background: #e2e8f0 !important;
+    }
 }
 
 .btn-delete-pill {
     @extend %pill-btn;
     background: $rose !important;
     color: #fff !important;
-    box-shadow: 0 4px 12px rgba(244,63,94,0.25) !important;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25) !important;
 }
 
 .btn-purge-confirm {
     @extend %pill-btn;
     background: $rose !important;
     color: #fff !important;
-    box-shadow: 0 4px 12px rgba(244,63,94,0.25) !important;
-    &:hover { opacity: 0.9 !important; transform: translateY(-1px); }
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25) !important;
+
+    &:hover {
+        opacity: 0.9 !important;
+        transform: translateY(-1px);
+    }
 }
 
 .btn-purge-abort {
     @extend %pill-btn;
     background: #f1f5f9 !important;
     color: $ink !important;
-    &:hover { background: #e2e8f0 !important; }
+
+    &:hover {
+        background: #e2e8f0 !important;
+    }
 }
 
 // ─── Misc Utilities ───────────────────────────────────────────────────────────
-.ledger-spacer      { height: 4rem; }
-.text-center        { text-align: center !important; }
-.margin-t-1         { margin-top: 1rem !important; }
-.margin-t-2         { margin-top: 2rem !important; }
-.margin-t-15        { margin-top: 1.5rem !important; }
-.margin-b-25        { margin-bottom: 2.5rem !important; }
-.margin-b-15        { margin-bottom: 1.5rem !important; }
-.margin-b-02        { margin-bottom: 0.2rem !important; }
-.margin-b-0         { margin-bottom: 0 !important; }
-.flex-1             { flex: 1 !important; }
-.flex-gap-04        { display: flex !important; gap: 0.4rem !important; align-items: center !important; }
-.flex-gap-05        { display: flex !important; gap: 0.5rem !important; }
-.flex-col-gap-02    { display: flex !important; flex-direction: column !important; gap: 0.2rem !important; }
-.flex-center-gap-1  { display: flex !important; align-items: center !important; gap: 1rem !important; }
-.flex-center-gap-08 { display: flex; align-items: center; gap: 0.8rem; }
-.flex-center-gap-05 { display: flex; align-items: center; gap: 0.5rem; }
-.grid-col-all       { grid-column: 1 / -1 !important; }
-.radius-28          { border-radius: 28px !important; }
-.min-w-180          { min-width: 180px !important; }
-.color-blue         { color: $violet !important; }
-.color-amber        { color: $amber !important; }
-.color-green        { color: $emerald !important; }
-.color-dark         { color: $ink !important; }
-.color-red          { color: $rose !important; }
-.ledger-portal-label { font-weight: 700 !important; font-size: 0.82rem !important; }
+.ledger-spacer {
+    height: 4rem;
+}
 
-.ledger-pill-scroll-wrap { width: 100%; overflow: hidden; margin-bottom: 2rem; }
+.text-center {
+    text-align: center !important;
+}
+
+.margin-t-1 {
+    margin-top: 1rem !important;
+}
+
+.margin-t-2 {
+    margin-top: 2rem !important;
+}
+
+.margin-t-15 {
+    margin-top: 1.5rem !important;
+}
+
+.margin-b-25 {
+    margin-bottom: 2.5rem !important;
+    padding-bottom: 0px !important;
+}
+
+.margin-b-15 {
+    margin-bottom: 1.5rem !important;
+}
+
+.margin-b-02 {
+    margin-bottom: 0.2rem !important;
+}
+
+.margin-b-0 {
+    margin-bottom: 0 !important;
+}
+
+.flex-1 {
+    flex: 1 !important;
+}
+
+.flex-gap-04 {
+    display: flex !important;
+    gap: 0.4rem !important;
+    align-items: center !important;
+}
+
+.flex-gap-05 {
+    display: flex !important;
+    gap: 0.5rem !important;
+}
+
+.flex-col-gap-02 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.2rem !important;
+}
+
+.flex-center-gap-1 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+.flex-center-gap-08 {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.flex-center-gap-05 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.grid-col-all {
+    grid-column: 1 / -1 !important;
+}
+
+.radius-28 {
+    border-radius: 28px !important;
+}
+
+.min-w-180 {
+    min-width: 180px !important;
+}
+
+.color-blue {
+    color: $violet !important;
+}
+
+.color-amber {
+    color: $amber !important;
+}
+
+.color-green {
+    color: $emerald !important;
+}
+
+.color-dark {
+    color: $ink !important;
+}
+
+.color-red {
+    color: $rose !important;
+}
+
+.ledger-portal-label {
+    font-weight: 700 !important;
+    font-size: 0.82rem !important;
+}
+
+.ledger-pill-scroll-wrap {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
 .ledger-pill-scroll {
-    display: flex; gap: 1.25rem; overflow-x: auto; padding: 0.5rem 0;
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
     scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 // ─── Debt Ledger ──────────────────────────────────────────────────────────────
-.debt-ledger-viewport { padding-bottom: 5rem; }
+.debt-ledger-viewport {
+    padding-bottom: 5rem;
+}
+
 .debt-stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -532,14 +765,45 @@ $indigo:     #4f46e5;
     padding: 1.35rem;
     border-radius: 18px;
 
-    &.card-red   { border: 1px solid rgba(244,63,94,0.12); background: rgba(244,63,94,0.03); color: $rose; }
-    &.card-green { border: 1px solid rgba(16,185,129,0.12); background: rgba(16,185,129,0.03); color: $emerald; }
-    &.card-blue  { border: 1px solid rgba(14,165,233,0.12); background: rgba(14,165,233,0.03); color: $sky; }
+    &.card-red {
+        border: 1px solid rgba(244, 63, 94, 0.12);
+        background: rgba(244, 63, 94, 0.03);
+        color: $rose;
+    }
+
+    &.card-green {
+        border: 1px solid rgba(16, 185, 129, 0.12);
+        background: rgba(16, 185, 129, 0.03);
+        color: $emerald;
+    }
+
+    &.card-blue {
+        border: 1px solid rgba(14, 165, 233, 0.12);
+        background: rgba(14, 165, 233, 0.03);
+        color: $sky;
+    }
 }
 
-.debt-stat-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; }
-.debt-stat-label  { font-weight: 700 !important; color: inherit !important; opacity: 0.85 !important; font-size: 0.78rem !important; }
-.debt-stat-val    { font-weight: 900 !important; color: $ink !important; font-size: 1.4rem !important; letter-spacing: -0.03em !important; }
+.debt-stat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+}
+
+.debt-stat-label {
+    font-weight: 700 !important;
+    color: inherit !important;
+    opacity: 0.85 !important;
+    font-size: 0.78rem !important;
+}
+
+.debt-stat-val {
+    font-weight: 900 !important;
+    color: $ink !important;
+    font-size: 1.4rem !important;
+    letter-spacing: -0.03em !important;
+}
 
 .debt-filter-bar {
     background: $surface;
@@ -551,13 +815,34 @@ $indigo:     #4f46e5;
     gap: 1.25rem;
     align-items: center;
     flex-wrap: wrap;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
-.debt-search-wrap    { flex: 1; position: relative; }
-.debt-search-icon    { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: $ink-muted; z-index: 1; }
-.debt-search-input   { padding-left: 3rem !important; border-radius: 14px !important; }
-.debt-filter-select  { border-radius: 12px !important; min-width: 160px !important; font-weight: 700 !important; font-size: 0.8rem !important; }
+.debt-search-wrap {
+    flex: 1;
+    position: relative;
+}
+
+.debt-search-icon {
+    position: absolute;
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $ink-muted;
+    z-index: 1;
+}
+
+.debt-search-input {
+    padding-left: 3rem !important;
+    border-radius: 14px !important;
+}
+
+.debt-filter-select {
+    border-radius: 12px !important;
+    min-width: 160px !important;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+}
 
 .debt-item-row {
     padding: 1rem 1.35rem !important;
@@ -565,19 +850,73 @@ $indigo:     #4f46e5;
     flex-wrap: wrap !important;
     gap: 1rem !important;
     transition: background 0.15s !important;
-    &:hover { background: #fafeff !important; }
+
+    &:hover {
+        background: #fafeff !important;
+    }
 }
 
-.debt-item-icon-box { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; margin-right: 0.5rem; }
-.debt-item-name-row  { display: flex; align-items: center; gap: 0.6rem; }
-.debt-person-name    { font-weight: 700 !important; color: $ink !important; font-size: 0.92rem !important; }
-.debt-type-chip      { height: 18px !important; font-size: 0.6rem !important; font-weight: 700 !important; }
-.chip-green          { background: rgba(16,185,129,0.1) !important; color: $emerald !important; }
-.chip-red            { background: rgba(244,63,94,0.1) !important; color: $rose !important; }
-.debt-item-desc      { color: $ink-subtle !important; font-size: 0.72rem !important; font-weight: 500 !important; }
-.debt-item-amt-col   { text-align: right; margin-right: 1.5rem; }
-.debt-item-amt       { font-weight: 800 !important; color: $ink !important; font-size: 1rem !important; letter-spacing: -0.02em !important; }
-.debt-item-date      { color: $ink-subtle !important; font-size: 0.68rem !important; font-weight: 600 !important; }
+.debt-item-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+}
+
+.debt-item-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.debt-person-name {
+    font-weight: 700 !important;
+    color: $ink !important;
+    font-size: 0.92rem !important;
+}
+
+.debt-type-chip {
+    height: 18px !important;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+}
+
+.chip-green {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: $emerald !important;
+}
+
+.chip-red {
+    background: rgba(244, 63, 94, 0.1) !important;
+    color: $rose !important;
+}
+
+.debt-item-desc {
+    color: $ink-subtle !important;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+}
+
+.debt-item-amt-col {
+    text-align: right;
+    margin-right: 1.5rem;
+}
+
+.debt-item-amt {
+    font-weight: 800 !important;
+    color: $ink !important;
+    font-size: 1rem !important;
+    letter-spacing: -0.02em !important;
+}
+
+.debt-item-date {
+    color: $ink-subtle !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+}
 
 .debt-item-actions {
     display: flex;
@@ -592,18 +931,30 @@ $indigo:     #4f46e5;
     }
 }
 
-.debt-status-select { height: 30px !important; border-radius: 8px !important; font-size: 0.7rem !important; font-weight: 700 !important; min-width: 100px !important; }
+.debt-status-select {
+    height: 30px !important;
+    border-radius: 8px !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    min-width: 100px !important;
+}
 
 // ─── Chit Fund ────────────────────────────────────────────────────────────────
-.chit-fund-viewport { padding-bottom: 5rem; }
-.chit-card-wrapper  { width: 100%; margin-bottom: 3.5rem; }
+.chit-fund-viewport {
+    padding-bottom: 5rem;
+}
+
+.chit-card-wrapper {
+    width: 100%;
+    margin-bottom: 3.5rem;
+}
 
 .chit-card-premium {
     background: $surface !important;
     border-radius: 24px !important;
     overflow: hidden !important;
     border: 1px solid $border !important;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
 }
 
 .chit-header-premium {
@@ -623,24 +974,56 @@ $indigo:     #4f46e5;
     line-height: 1.1 !important;
 }
 
-.chit-plan-chip     { font-weight: 700 !important; font-size: 0.62rem !important; height: 20px !important; color: #fff !important; }
-.chit-asset-label   { font-size: 0.68rem !important; font-weight: 700 !important; color: $ink-subtle !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; }
-.chit-meta-dot      { width: 3px; height: 3px; border-radius: 50%; background: $border; }
-.chit-term-label    { font-size: 0.75rem !important; font-weight: 700 !important; color: $ink !important; }
+.chit-plan-chip {
+    font-weight: 700 !important;
+    font-size: 0.62rem !important;
+    height: 20px !important;
+    color: #fff !important;
+}
+
+.chit-asset-label {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    color: $ink-subtle !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+}
+
+.chit-meta-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: $border;
+}
+
+.chit-term-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    color: $ink !important;
+}
 
 .chit-action-btn {
     background: $surface !important;
     border: 1px solid $border !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
     border-radius: 10px !important;
     transition: all 0.2s !important;
 
-    &:hover { background: #f8fafc !important; }
-    &.btn-edit   { color: $ink !important; }
+    &:hover {
+        background: #f8fafc !important;
+    }
+
+    &.btn-edit {
+        color: $ink !important;
+    }
+
     &.btn-delete {
         color: $rose !important;
-        border-color: rgba(244,63,94,0.15) !important;
-        &:hover { background: #fff5f6 !important; }
+        border-color: rgba(244, 63, 94, 0.15) !important;
+
+        &:hover {
+            background: #fff5f6 !important;
+        }
     }
 }
 
@@ -650,13 +1033,49 @@ $indigo:     #4f46e5;
     border-bottom: 1px solid $border !important;
 }
 
-.chit-progress-meta    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
-.chit-progress-label   { font-size: 0.62rem !important; font-weight: 700 !important; color: $ink-subtle !important; letter-spacing: 0.1em !important; text-transform: uppercase !important; }
-.chit-reclaimed-chip   { height: 18px !important; font-size: 0.58rem !important; font-weight: 700 !important; background: rgba(16,185,129,0.1) !important; color: $emerald !important; border-radius: 6px !important; }
-.chit-progress-val     { font-size: 0.82rem !important; font-weight: 700 !important; color: $ink !important; }
+.chit-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
 
-.chit-progress-track   { width: 100%; height: 10px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
-.chit-progress-fill    { height: 100%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); border-radius: 999px; }
+.chit-progress-label {
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    color: $ink-subtle !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+}
+
+.chit-reclaimed-chip {
+    height: 18px !important;
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: $emerald !important;
+    border-radius: 6px !important;
+}
+
+.chit-progress-val {
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: $ink !important;
+}
+
+.chit-progress-track {
+    width: 100%;
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.chit-progress-fill {
+    height: 100%;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 999px;
+}
 
 $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
 
@@ -669,10 +1088,25 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     min-width: 950px !important;
 }
 
-.chit-th-item  { display: flex; align-items: center; gap: 0.4rem; }
-.chit-th-text  { font-size: 0.58rem !important; font-weight: 700 !important; color: rgba(255,255,255,0.55) !important; letter-spacing: 0.06em !important; text-transform: uppercase !important; }
+.chit-th-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
 
-.chit-table-body { max-height: 600px; overflow-y: auto; min-width: 950px; }
+.chit-th-text {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+}
+
+.chit-table-body {
+    max-height: 600px;
+    overflow-y: auto;
+    min-width: 950px;
+}
 
 .chit-row-layout {
     display: grid !important;
@@ -682,21 +1116,60 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     border-bottom: 1px solid #f8fafc !important;
     transition: background 0.15s !important;
 
-    &:hover { background: #fafffc !important; }
+    &:hover {
+        background: #fafffc !important;
+    }
 
     &.row-paid {
-        background: rgba(16,185,129,0.05) !important;
-        &:hover { background: rgba(16,185,129,0.09) !important; }
+        background: rgba(16, 185, 129, 0.05) !important;
+
+        &:hover {
+            background: rgba(16, 185, 129, 0.09) !important;
+        }
     }
 }
 
-.chit-td-term     { font-size: 0.72rem !important; font-weight: 700 !important; color: $ink-subtle !important; }
-.chit-td-month    { font-size: 0.7rem !important; font-weight: 700 !important; color: $violet !important; text-transform: uppercase !important; }
-.chit-td-expected { font-weight: 700 !important; font-size: 0.85rem !important; color: $ink !important; }
-.chit-td-cumul    { font-weight: 600 !important; font-size: 0.8rem !important; color: $ink-muted !important; }
-.chit-td-dividend { font-weight: 600 !important; font-size: 0.8rem !important; color: $ink-subtle !important; }
-.chit-td-rowval   { font-weight: 800 !important; font-size: 0.88rem !important; }
-.chit-pending-label { font-size: 0.58rem !important; font-weight: 700 !important; color: $rose !important; }
+.chit-td-term {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: $ink-subtle !important;
+}
+
+.chit-td-month {
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    color: $violet !important;
+    text-transform: uppercase !important;
+}
+
+.chit-td-expected {
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    color: $ink !important;
+}
+
+.chit-td-cumul {
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    color: $ink-muted !important;
+}
+
+.chit-td-dividend {
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    color: $ink-subtle !important;
+}
+
+.chit-td-rowval {
+    font-weight: 800 !important;
+    font-size: 0.88rem !important;
+}
+
+.chit-pending-label {
+    font-size: 0.58rem !important;
+    font-weight: 700 !important;
+    color: $rose !important;
+}
 
 .chit-status-chip {
     height: 18px !important;
@@ -705,18 +1178,36 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     border-radius: 6px !important;
     width: fit-content !important;
 
-    .MuiChip-icon { margin-left: 0.5rem !important; margin-right: -0.5rem !important; }
+    .MuiChip-icon {
+        margin-left: 0.5rem !important;
+        margin-right: -0.5rem !important;
+    }
 
-    &.status-amber { background: #fef3c7 !important; color: #92400e !important; }
-    &.status-green { background: #dcfce7 !important; color: #166534 !important; }
-    &.status-blue  { background: #e0f2fe !important; color: #075985 !important; }
+    &.status-amber {
+        background: #fef3c7 !important;
+        color: #92400e !important;
+    }
+
+    &.status-green {
+        background: #dcfce7 !important;
+        color: #166534 !important;
+    }
+
+    &.status-blue {
+        background: #e0f2fe !important;
+        color: #075985 !important;
+    }
 }
 
 .btn-revert-chit {
     color: $amber !important;
-    background: rgba(245,158,11,0.06) !important;
+    background: rgba(245, 158, 11, 0.06) !important;
     transition: all 0.25s ease !important;
-    &:hover { background: rgba(245,158,11,0.14) !important; transform: rotate(-45deg) !important; }
+
+    &:hover {
+        background: rgba(245, 158, 11, 0.14) !important;
+        transform: rotate(-45deg) !important;
+    }
 }
 
 .btn-pay-chit {
@@ -728,9 +1219,13 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     min-width: unset !important;
     text-transform: uppercase !important;
     letter-spacing: 0.04em !important;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.15) !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15) !important;
     transition: all 0.2s !important;
-    &:hover { background: #1e293b !important; transform: translateY(-1px) !important; }
+
+    &:hover {
+        background: #1e293b !important;
+        transform: translateY(-1px) !important;
+    }
 }
 
 .chit-footer-belt {
@@ -742,9 +1237,720 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     align-items: center !important;
 }
 
-.chit-footer-label { font-size: 0.62rem !important; font-weight: 700 !important; color: $rose !important; letter-spacing: 0.05em !important; text-transform: uppercase !important; }
-.chit-footer-val   { font-weight: 800 !important; font-size: 0.88rem !important; color: $ink !important; }
-.chit-footer-paid  { font-weight: 700 !important; font-size: 0.88rem !important; color: $ink-muted !important; }
-.chit-footer-div   { font-weight: 700 !important; font-size: 0.88rem !important; color: $ink-muted !important; }
-.chit-footer-total-col { text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; }
-.chit-footer-grand { font-weight: 900 !important; font-size: 1.15rem !important; color: $emerald !important; letter-spacing: -0.025em !important; }
+.chit-footer-label {
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    color: $rose !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+}
+
+.chit-footer-val {
+    font-weight: 800 !important;
+    font-size: 0.88rem !important;
+    color: $ink !important;
+}
+
+.chit-footer-paid {
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    color: $ink-muted !important;
+}
+
+.chit-footer-div {
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    color: $ink-muted !important;
+}
+
+.chit-footer-total-col {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.chit-footer-grand {
+    font-weight: 900 !important;
+    font-size: 1.15rem !important;
+    color: $emerald !important;
+    letter-spacing: -0.025em !important;
+}
+
+// ─── Mobile Overrides (Max-Width: 768px & 400px) ─────────────────────────────
+@media (max-width: 768px) {
+
+    // 0. Utility Overrides
+    .margin-b-25 {
+        margin-bottom: 0 !important;
+    }
+
+    // 1. Tab Group Container (Cute Native Tabs with Underline)
+    .tab-group-container {
+        width: calc(100% + 2rem) !important; // Bleed edge to edge
+        margin-left: -1rem !important;
+        margin-right: -1rem !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        padding: 0 1rem !important;
+        margin-bottom: 1.5rem !important;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important; // Subtle track line
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        gap: 1.5rem !important; // Space between cute tabs
+        -webkit-overflow-scrolling: touch !important;
+
+        // Hide scrollbar but keep functionality
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .tab-btn-luxury {
+        flex: 0 0 auto !important;
+        padding: 0.5rem 0 0.6rem 0 !important;
+        border-radius: 0 !important; // No pill
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        display: flex !important;
+        flex-direction: column !important; // Stack icon over text
+        align-items: center !important;
+        gap: 0.35rem !important;
+
+        color: #94a3b8 !important; // Muted unselected text
+        font-size: 0.6rem !important; // Cute small text
+        font-weight: 800 !important;
+        letter-spacing: 0.03em !important;
+        text-transform: uppercase !important;
+        position: relative !important; // For the active underline
+
+        svg {
+            width: 20px !important;
+            height: 20px !important;
+            opacity: 0.6 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        &.active {
+            background: transparent !important;
+            color: #0f172a !important; // Bold dark active text
+            box-shadow: none !important;
+            border: none !important;
+
+            svg {
+                opacity: 1 !important;
+                color: #10b981 !important; // Cute emerald highlight for active icon
+                transform: scale(1.1) !important; // Slight pop
+            }
+
+            // The cute underline
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -1px; // Overlap the container's bottom border
+                left: 10%;
+                width: 80%;
+                height: 3px;
+                background: #0f172a; // Dark underline
+                border-radius: 4px 4px 0 0; // Rounded top edges
+            }
+        }
+    }
+
+    // 2. Summary Grid (Top Cards)
+    .reserves-summary-grid {
+        margin-bottom: 1rem !important;
+    }
+
+    .reserves-summary-glass {
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .reserves-summary-value {
+        font-size: 1.25rem !important;
+    }
+
+    .btn-move-money,
+    .btn-sync-account,
+    .btn-new-instrument {
+        padding: 0.4rem 0.75rem !important;
+        font-size: 0.65rem !important;
+    }
+
+    // 3. Ledger Pill Scroll & Group Containers
+    .ledger-pill-scroll-wrap {
+        margin-bottom: 0 !important;
+    }
+
+    .ledger-pill-scroll {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        overflow-x: visible !important;
+        padding: 0 !important;
+
+        .apple-category-pill {
+            width: 100% !important;
+            padding: 0.85rem 1rem !important;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+            gap: 0.75rem !important;
+        }
+
+        .pill-icon-box {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 10px !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            svg { width: 18px !important; height: 18px !important; }
+        }
+
+        .pill-info-box {
+            flex: 1 !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        .pill-cat-label {
+            font-size: 0.85rem !important;
+            font-weight: 800 !important;
+            color: #1e293b !important;
+        }
+
+        .pill-amt-val {
+            font-size: 1rem !important;
+            font-weight: 900 !important;
+        }
+    }
+
+    .date-group {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 0px !important
+    }
+
+    .date-header-luxury {
+        padding: 0 0.5rem 1rem 0.5rem !important;
+        background: transparent !important;
+        border-bottom: none !important;
+    }
+
+    .investment-items-luxury>.margin-b-15 {
+        margin-bottom: 6px !important; // Let the card itself handle the margin
+    }
+
+    // 4. Account Ledger Row (Floating Elevated Card Style via Grid - Small & Cute)
+    .account-card-glass {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        padding: 0.85rem 1rem !important; // Smaller padding
+        margin-bottom: 0.75rem !important; // Smaller gap between cards
+
+        &:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important; // Softer shadow
+        border: none !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-areas: "text icon"
+        "actions actions" !important;
+        gap: 0.4rem 0.75rem !important; // Smaller gaps
+        align-items: flex-start !important;
+    }
+
+    .account-icon-box {
+        grid-area: icon !important;
+        width: 38px !important; // Scaled down
+        height: 38px !important;
+        border-radius: 10px !important;
+        background: #f8fafc !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+
+        svg {
+            width: 18px !important;
+            height: 18px !important;
+            color: #64748b !important;
+        }
+    }
+
+    .account-card-glass>.flex-1 {
+        grid-area: text !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .account-name-row {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.25rem !important; // Tighter stacking
+    }
+
+    .account-main-name {
+        font-size: 0.85rem !important; // Even smaller, cuter font
+        font-weight: 800 !important;
+        color: #1e293b !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+    }
+
+    .account-type-badge,
+    .due-date-badge {
+        font-size: 0.55rem !important; // Scaled down
+        padding: 0.15rem 0.45rem !important;
+        margin-left: 0 !important;
+        border-radius: 6px !important;
+        background: rgba(16, 185, 129, 0.1) !important;
+        color: #10b981 !important;
+        font-weight: 700 !important;
+    }
+
+    .account-actions-col {
+        grid-area: actions !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: flex-end !important;
+        width: 100% !important;
+        margin-top: 0.4rem !important; // Tighter
+        padding-left: 0 !important;
+        gap: 0.5rem !important;
+    }
+
+    .account-val-stack {
+        align-items: flex-start !important;
+        flex: 1 1 auto !important;
+    }
+
+    .account-main-val {
+        font-size: 1rem !important; // Scaled down further
+        font-weight: 900 !important;
+        color: #0f172a !important;
+        line-height: 1.1 !important;
+    }
+
+    .account-avail-label {
+        font-size: 0.6rem !important; // Scaled down
+        color: #64748b !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .account-actions-col>.flex-gap-05 {
+        flex: 0 0 auto !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 0.35rem !important; // Tighter buttons
+    }
+
+    .btn-add-money-small,
+    .btn-pay-bill-small {
+        height: 28px !important; // Scaled down
+        padding: 0 0.75rem !important;
+        font-size: 0.6rem !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+
+    .account-actions-col .MuiIconButton-root {
+        padding: 4px 10px !important; // Scaled down with horizontal padding
+        background: rgba(0, 0, 0, 0.03) !important;
+        border-radius: 8px !important;
+
+        svg {
+            width: 14px !important;
+            height: 14px !important;
+        }
+    }
+
+    // 5. Debt Ledger Overrides (Small & Cute)
+    .debt-item-row {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        padding: 0.85rem 1rem !important;
+        margin-bottom: 0.75rem !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+        border: none !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-areas:
+            "text icon"
+            "amount actions" !important;
+        gap: 0.5rem 0.75rem !important;
+        align-items: flex-end !important;
+    }
+
+    .debt-item-icon-box {
+        grid-area: icon !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+        background: #f8fafc !important;
+        margin: 0 !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        align-self: flex-start !important;
+
+        svg {
+            width: 18px !important;
+            height: 18px !important;
+            color: #64748b !important;
+        }
+    }
+
+    .debt-item-name-row {
+        grid-area: text !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.25rem !important;
+    }
+
+    .debt-person-name {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        color: #1e293b !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+    }
+
+    .debt-item-amt-col {
+        grid-area: amount !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+    }
+
+    .debt-item-amt {
+        font-size: 1.15rem !important;
+        font-weight: 900 !important;
+        color: #0f172a !important;
+        line-height: 1.1 !important;
+        text-align: left !important;
+        display: block !important;
+    }
+
+    .debt-item-date {
+        font-size: 0.6rem !important;
+        color: #64748b !important;
+        text-align: left !important;
+        display: block !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .debt-item-actions {
+        grid-area: actions !important;
+        justify-content: flex-end !important;
+        padding-top: 0 !important;
+        border-top: none !important;
+        gap: 0.35rem !important;
+        margin-top: 0 !important;
+        padding-left: 0 !important;
+
+        .MuiIconButton-root {
+            padding: 4px !important;
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-radius: 8px !important;
+
+            svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
+    }
+
+    // 6. Ledger Activity Card & Rows (Full width container, tight spacing)
+    .spending-split-layout.margin-t-1 {
+        margin-top: 0 !important; // Reduce gap above
+    }
+
+    .ledger-activity-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    .ledger-activity-header {
+        padding: 0 0.5rem 0.5rem 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+
+        .ledger-activity-divider {
+            display: none !important; // Remove horizontal line on mobile
+        }
+
+        .ledger-activity-meta {
+            display: none !important; // Hide subtitle on small screens to save space
+        }
+    }
+
+    .ledger-activity-row {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        padding: 0.85rem 1rem !important;
+        margin-bottom: 0.75rem !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+        border: none !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-areas:
+            "text icon"
+            "actions actions" !important;
+        gap: 0.5rem 0.75rem !important;
+        align-items: flex-end !important;
+    }
+
+    .ledger-activity-icon-box {
+        grid-area: icon !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+        margin: 0 !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        align-self: flex-start !important;
+
+        svg {
+            width: 18px !important;
+            height: 18px !important;
+        }
+    }
+
+    .ledger-activity-row>.flex-1 {
+        grid-area: text !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.25rem !important;
+    }
+
+    .ledger-activity-desc {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        color: #1e293b !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+    }
+
+    .ledger-activity-meta-row {
+        flex-wrap: wrap !important;
+        gap: 0.2rem !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .ledger-activity-date,
+    .ledger-activity-from,
+    .ledger-activity-to {
+        font-size: 0.55rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+    }
+
+    .ledger-activity-actions {
+        grid-area: actions !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: flex-end !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        padding-left: 0 !important;
+
+        >.text-right {
+            text-align: left !important; // override to left alignment for grid layout
+        }
+
+        .ledger-activity-amt {
+            font-size: 1.15rem !important;
+            font-weight: 900 !important;
+            line-height: 1.1 !important;
+            display: block !important;
+        }
+
+        .ledger-activity-type {
+            font-size: 0.6rem !important;
+            color: #64748b !important;
+            display: block !important;
+            margin-top: 0.15rem !important;
+        }
+
+        .btn-delete-activity {
+            padding: 4px !important;
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-radius: 8px !important;
+            margin-left: auto !important;
+            box-shadow: none !important;
+
+            svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
+    }
+
+    // 7. Budget Planner Overrides (Small & Cute)
+    .budget-planner-viewport {
+        padding-bottom: 2rem !important;
+    }
+
+    .budget-summary-card {
+        padding: 1.25rem !important;
+        border-radius: 20px !important;
+        margin-bottom: 1.25rem !important;
+
+        .summary-value {
+            font-size: 1.75rem !important;
+        }
+
+        .summary-icon-box {
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 14px !important;
+
+            svg {
+                width: 24px !important;
+                height: 24px !important;
+            }
+        }
+
+        .summary-footer {
+            gap: 1.5rem !important;
+            margin-top: 1.25rem !important;
+
+            .footer-item p {
+                font-size: 0.95rem !important;
+            }
+        }
+    }
+
+    .budget-flex-container {
+        flex-direction: column !important;
+        gap: 1.25rem !important;
+    }
+
+    .budget-block-wrap {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    .budget-input-panel,
+    .budget-income-panel,
+    .budget-allocation-panel {
+        min-height: auto !important;
+        border-radius: 20px !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+
+        .panel-header {
+            padding: 1rem 1.25rem !important;
+
+            svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+        }
+
+        .panel-footer {
+            padding: 1.25rem !important;
+
+            .total-burn-value {
+                font-size: 1.25rem !important;
+            }
+        }
+
+        // Internal content padding
+        .MuiBox-root[sx*="p: 3"] {
+            padding: 1.25rem !important;
+        }
+
+        .MuiStack-root[sx*="p: 3"] {
+            padding: 1.25rem !important;
+        }
+    }
+
+    .data-row {
+        padding: 0.65rem 0 !important;
+
+        .data-info {
+            gap: 0.65rem !important;
+
+            .data-title {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        .data-value {
+            font-size: 0.85rem !important;
+        }
+    }
+
+    .income-desc,
+    .allocation-desc {
+        margin-bottom: 1.25rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1.4 !important;
+    }
+
+    .allocation-row-mini {
+        padding: 0.5rem 0 !important;
+
+        .alloc-val {
+            font-size: 0.95rem !important;
+        }
+    }
+
+    .deficit-notice-mini {
+        padding: 1.5rem 0.5rem !important;
+
+        .notice-title {
+            font-size: 1.1rem !important;
+        }
+
+        svg {
+            width: 28px !important;
+            height: 28px !important;
+        }
+    }
+
+    .surplus-visualizer {
+        margin-top: 2rem !important;
+    }
+}
+
+@media (max-width: 400px) {
+
+    // Extreme narrow phones
+    .account-card-glass {
+        padding: 0.75rem 0.25rem !important;
+        gap: 0.25rem !important;
+    }
+
+    .account-main-val {
+        font-size: 0.75rem !important;
+    }
+
+    .btn-add-money-small,
+    .btn-pay-bill-small {
+        padding: 0 0.35rem !important;
+        font-size: 0.5rem !important;
+    }
+}
