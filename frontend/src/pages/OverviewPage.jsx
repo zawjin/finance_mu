@@ -699,7 +699,7 @@ export default function OverviewPage() {
             {investAlloc.data.length > 0 && (
                 <motion.div {...fadeUp(0.25)}>
                     <div className="ov-section-title">Portfolio Allocation</div>
-                    <div style={{ padding: '0 1.25rem', marginBottom: '1.75rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div className="ov-portfolio-grid">
                         <div className="ov-chart-card" style={{ flex: '0 0 auto', width: 'clamp(200px, 35%, 280px)' }}>
                             <div className="ov-chart-card__header">
                                 <div>
