@@ -149,9 +149,6 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                     <div className="mh-left">
                         {location.pathname !== '/' ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <button className="mh-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-                                    <ArrowLeft size={20} />
-                                </button>
                                 <button className="mh-back-btn" onClick={() => navigate('/')} aria-label="Go home">
                                     <Home size={18} />
                                 </button>

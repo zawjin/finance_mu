@@ -197,8 +197,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         let result = spending.filter(item => {
             // EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT AS REQUESTED
             const investmentCategories = [
-                'investment', 'investments', 'investment settlement', 'stocks', 
-                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                'investment', 'investments', 'investment settlement', 'stocks',
+                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
                 'chit fund', 'local investment', 'transfer', 'inflow'
             ];
             if (investmentCategories.includes((item.category || '').toLowerCase())) return false;
@@ -516,8 +516,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     ) : (
                         [...categories]
                             .filter(c => ![
-                                'investment', 'investments', 'investment settlement', 'stocks', 
-                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                                'investment', 'investments', 'investment settlement', 'stocks',
+                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
                                 'chit fund', 'local investment', 'transfer', 'inflow'
                             ].includes((c.name || '').toLowerCase()))
                             .sort((a, b) => {
@@ -580,15 +580,10 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                 <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
                     <div className="sidebar-sticky-wrap">
-                        <div className="filter-header-flex">
-                            <div className="filter-icon-box">
-                                <Filter size={15} fill="white" />
-                            </div>
-                            <span className="filter-header-title">Audit Filters</span>
-                        </div>
+
 
                         <div className="filter-section-block">
-                            <div className="filter-section-label"><span>SEARCH LEDGER</span></div>
+
                             <div className="search-input-wrapper">
                                 <Search size={15} className="search-icon-fixed" />
                                 <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Description, category..." />
@@ -605,8 +600,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                         <div className={`cat-filter-chip ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>All</div>
                                         {categories
                                             .filter(c => ![
-                                                'investment', 'investments', 'investment settlement', 'stocks', 
-                                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit', 
+                                                'investment', 'investments', 'investment settlement', 'stocks',
+                                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
                                                 'chit fund', 'local investment', 'transfer', 'inflow'
                                             ].includes((c.name || '').toLowerCase()))
                                             .slice()
@@ -705,7 +700,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         <div className="action-hub-right">
                             {/* SORT CONTROL */}
                             <div className="sort-group-premium">
-                                <span className="sort-label-mini">Sort</span>
+
                                 {[
                                     { id: 'DATE_DESC', label: 'Latest' },
                                     { id: 'DATE_ASC', label: 'Oldest' },
@@ -724,7 +719,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         </div>
                     </div>
 
-                    <div className="data-table-premium scroll-y-luxury">
+                    <div className="data-table-premium scroll-y-luxury scroll-y-luxury_jj">
                         {loading ? (
                             [...Array(3)].map((_, i) => (
                                 <Box key={i} sx={{ mb: 4 }}>

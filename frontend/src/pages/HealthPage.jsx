@@ -276,6 +276,14 @@ export default function HealthPage({ showAnalytics }) {
         return sched > 0 ? Math.round((done / sched) * 100) : 0;
     }, [habits, completedSet]);
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const handleSetView = (t) => {
         setViewType(t);
         setPageDate(dayjs()); // Snap to today when changing views
@@ -367,31 +375,21 @@ export default function HealthPage({ showAnalytics }) {
                 </motion.div>
             </div>
 
-            <div className="notion-tabs-wrapper">
-                <div className="notion-tabs-container">
-                    {['Daily', 'Weekly', 'Monthly', 'Yearly'].map(t => (
-                        <button
-                            key={t}
-                            className={`notion-tab-btn ${viewType === t ? 'active' : ''}`}
-                            onClick={() => handleSetView(t)}
-                        >
-                            {viewType === t && (
-                                <motion.div
-                                    layoutId="healthActiveTab"
-                                    className="active-tab-bg"
-                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                />
-                            )}
-                            <span className="tab-content">
-                                {t === 'Daily' && <Target size={14} />}
-                                {t === 'Weekly' && <Calendar size={14} />}
-                                {t === 'Monthly' && <TableProperties size={14} />}
-                                {t === 'Yearly' && <Sigma size={14} />}
-                                {t} View
-                            </span>
-                        </button>
-                    ))}
-                </div>
+            <div className="tab-group-container">
+                {[
+                    { id: 'Daily', label: 'Daily View', icon: <Target size={15} /> },
+                    { id: 'Weekly', label: 'Weekly View', icon: <Calendar size={15} /> },
+                    { id: 'Monthly', label: 'Monthly View', icon: <TableProperties size={15} /> },
+                    { id: 'Yearly', label: 'Yearly View', icon: <Sigma size={15} /> }
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => handleSetView(tab.id)}
+                        className={`tab-btn-luxury ${viewType === tab.id ? 'active' : ''}`}
+                    >
+                        {tab.icon} {tab.label}
+                    </button>
+                ))}
             </div>
 
             <AnimatePresence>
@@ -448,176 +446,256 @@ export default function HealthPage({ showAnalytics }) {
                     </motion.div>
                 ) : (
                     <>
-                        <div className="table-scroll">
-                            <table className="super-table">
-                                <thead>
-                                    <tr>
-                                        <th className="col-date"><Calendar size={14} /> <span>{renderSecondaryHeader()}</span></th>
-                                        {currentHabits.map(h => (
-                                            <th key={h._id} className="col-habit">
-                                                <div className="th-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.15rem' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                            <CheckSquare size={14} style={{ marginRight: '0.4rem' }} />
-                                                            <span>{h.name}</span>
-                                                        </div>
-                                                        <div style={{ display: 'flex', gap: '0.3rem', opacity: 0.4, transition: 'opacity 0.2s' }} className="habit-actions">
-                                                            <button
-                                                                onClick={() => setEditingHabit(h)}
-                                                                title="Edit habit"
-                                                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#0ea5e9', display: 'flex', alignItems: 'center' }}
-                                                            >
-                                                                <Pencil size={12} />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteHabit(h._id)}
-                                                                title="Archive habit"
-                                                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#f43f5e', display: 'flex', alignItems: 'center' }}
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
+                        {isMobile ? (
+                            <div className="mobile-health-grid">
+                                {paginatedPeriods.map((dateObj) => {
+                                    const dateStr = dateObj.format('YYYY-MM-DD');
+                                    const dayName = dateObj.format('dddd');
+                                    let scheduledTotal = 0;
+                                    let doneTotal = 0;
+
+                                    const habitsForThisDate = currentHabits.map(h => {
+                                        let isScheduled = true;
+                                        if (viewType === 'Daily') {
+                                            isScheduled = (!h.frequency_days || h.frequency_days.length === 0 || h.frequency_days.includes(dayName));
+                                        }
+                                        const isDone = completedSet.has(`${h._id}_${dateStr}`);
+                                        if (isScheduled) {
+                                            scheduledTotal++;
+                                            if (isDone) doneTotal++;
+                                        }
+                                        return { ...h, isScheduled, isDone };
+                                    });
+
+                                    const progressPct = scheduledTotal > 0 ? Math.round((doneTotal / scheduledTotal) * 100) : 0;
+                                    const isPerfect = progressPct === 100;
+                                    const isToday = dateObj.isSame(dayjs(), 'day');
+
+                                    return (
+                                        <div key={dateStr} className={`mobile-date-card ${isToday ? 'is-today' : ''} ${isPerfect ? 'is-perfect' : ''}`}>
+                                            <div className="card-header">
+                                                <div className="date-info">
+                                                    <span className="label">
+                                                        {viewType === 'Daily' ? dayName : 
+                                                         viewType === 'Weekly' ? `Week of ${dateObj.format('MMM D')}` :
+                                                         viewType === 'Monthly' ? dateObj.format('MMMM YYYY') :
+                                                         dateObj.format('YYYY')}
+                                                    </span>
+                                                    <span className="sub">
+                                                        {viewType === 'Daily' ? dateObj.format('MMM D, YYYY') : ''}
+                                                    </span>
+                                                </div>
+                                                <div className="progress-info">
+                                                    <div className="premium-progress">
+                                                        <span className="p-text" style={{ fontWeight: isPerfect ? 800 : 600, color: isPerfect ? '#10b981' : '#64748b' }}>
+                                                            {progressPct}%
+                                                        </span>
+                                                        <div className="p-bar-bg" style={{ background: isPerfect ? 'rgba(16,185,129,0.1)' : '#f1f5f9' }}>
+                                                            <motion.div
+                                                                initial={{ width: 0 }}
+                                                                animate={{ width: `${progressPct}%` }}
+                                                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                                                className={`p-bar-fill ${isPerfect ? 'perfect' : ''}`}
+                                                            />
                                                         </div>
                                                     </div>
-                                                    {h.duration > 0 && (
-                                                        <div style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.2rem', marginLeft: '1.25rem', fontWeight: 700, letterSpacing: '0.04em' }}>
-                                                            <Clock size={10} /> {h.duration} MINS
-                                                        </div>
-                                                    )}
                                                 </div>
-                                            </th>
-                                        ))}
-                                        <th className="col-progress"><Sigma size={14} /> <span>Calculated Target Score</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <AnimatePresence>
-                                        {paginatedPeriods.map((dateObj) => {
-                                            const dateStr = dateObj.format('YYYY-MM-DD');
-                                            let label1, label2;
-                                            const dayName = dateObj.format('dddd');
+                                            </div>
+                                            <div className="card-body">
+                                                {habitsForThisDate.filter(h => h.isScheduled).map(h => (
+                                                    <div key={h._id} className="mobile-habit-row" onClick={() => handleToggle(h._id, dateStr)}>
+                                                        <div className="habit-meta">
+                                                            <div className={`habit-icon-circle ${h.isDone ? 'checked' : ''}`}>
+                                                                <CheckSquare size={16} />
+                                                            </div>
+                                                            <div className="name-stack">
+                                                                <span className="name">{h.name}</span>
+                                                                {h.duration > 0 && (
+                                                                    <span className="time"><Clock size={10} /> {h.duration} min</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className={`mobile-check-box ${h.isDone ? 'checked' : ''}`}>
+                                                            {h.isDone && <Check size={18} strokeWidth={4} />}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="table-scroll">
+                                <table className="super-table">
+                                    <thead>
+                                        <tr>
+                                            <th className="col-date"><Calendar size={14} /> <span>{renderSecondaryHeader()}</span></th>
+                                            {currentHabits.map(h => (
+                                                <th key={h._id} className="col-habit">
+                                                    <div className="th-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.15rem' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                                <CheckSquare size={14} style={{ marginRight: '0.4rem' }} />
+                                                                <span>{h.name}</span>
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '0.3rem', opacity: 0.4, transition: 'opacity 0.2s' }} className="habit-actions">
+                                                                <button
+                                                                    onClick={() => setEditingHabit(h)}
+                                                                    title="Edit habit"
+                                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#0ea5e9', display: 'flex', alignItems: 'center' }}
+                                                                >
+                                                                    <Pencil size={12} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteHabit(h._id)}
+                                                                    title="Archive habit"
+                                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#f43f5e', display: 'flex', alignItems: 'center' }}
+                                                                >
+                                                                    <Trash2 size={12} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        {h.duration > 0 && (
+                                                            <div style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.2rem', marginLeft: '1.25rem', fontWeight: 700, letterSpacing: '0.04em' }}>
+                                                                <Clock size={10} /> {h.duration} MINS
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </th>
+                                            ))}
+                                            <th className="col-progress"><Sigma size={14} /> <span>Calculated Target Score</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <AnimatePresence>
+                                            {paginatedPeriods.map((dateObj) => {
+                                                const dateStr = dateObj.format('YYYY-MM-DD');
+                                                let label1, label2;
+                                                const dayName = dateObj.format('dddd');
+                                                const isFuture = false;
 
-                                            // Unlocked Future states for open logging
-                                            const isFuture = false;
-
-                                            if (viewType === 'Daily') {
-                                                label1 = dayName;
-                                                label2 = dateObj.format('MMM D, YYYY');
-                                            } else if (viewType === 'Weekly') {
-                                                label1 = dateObj.format('MMM D');
-                                                label2 = `${dateObj.format('MMM D')} - ${dateObj.endOf('week').format('MMM D')}`;
-                                            } else if (viewType === 'Monthly') {
-                                                label1 = dateObj.format('MMMM');
-                                                label2 = dateObj.format('YYYY');
-                                            } else {
-                                                label1 = dateObj.format('YYYY');
-                                                label2 = 'All Year interval';
-                                            }
-
-                                            let scheduledTotal = 0;
-                                            let doneTotal = 0;
-
-                                            const habitCells = currentHabits.map(h => {
-                                                let isScheduled = true;
                                                 if (viewType === 'Daily') {
-                                                    isScheduled = (!h.frequency_days || h.frequency_days.length === 0 || h.frequency_days.includes(dayName));
+                                                    label1 = dayName;
+                                                    label2 = dateObj.format('MMM D, YYYY');
+                                                } else if (viewType === 'Weekly') {
+                                                    label1 = dateObj.format('MMM D');
+                                                    label2 = `${dateObj.format('MMM D')} - ${dateObj.endOf('week').format('MMM D')}`;
+                                                } else if (viewType === 'Monthly') {
+                                                    label1 = dateObj.format('MMMM');
+                                                    label2 = dateObj.format('YYYY');
+                                                } else {
+                                                    label1 = dateObj.format('YYYY');
+                                                    label2 = 'All Year interval';
                                                 }
-                                                const isDone = completedSet.has(`${h._id}_${dateStr}`);
 
-                                                if (isScheduled && !isFuture) {
-                                                    scheduledTotal++;
-                                                    if (isDone) doneTotal++;
-                                                }
+                                                let scheduledTotal = 0;
+                                                let doneTotal = 0;
+
+                                                const habitCells = currentHabits.map(h => {
+                                                    let isScheduled = true;
+                                                    if (viewType === 'Daily') {
+                                                        isScheduled = (!h.frequency_days || h.frequency_days.length === 0 || h.frequency_days.includes(dayName));
+                                                    }
+                                                    const isDone = completedSet.has(`${h._id}_${dateStr}`);
+
+                                                    if (isScheduled && !isFuture) {
+                                                        scheduledTotal++;
+                                                        if (isDone) doneTotal++;
+                                                    }
+
+                                                    return (
+                                                        <td key={h._id} className="cell-habit">
+                                                            {isScheduled ? (
+                                                                <motion.div
+                                                                    whileTap={!isFuture ? { scale: 0.85 } : {}}
+                                                                    className={`super-checkbox ${isDone ? 'checked' : ''} ${isFuture ? 'disabled' : ''}`}
+                                                                    onClick={() => !isFuture && handleToggle(h._id, dateStr)}
+                                                                >
+                                                                    <AnimatePresence>
+                                                                        {isDone && (
+                                                                            <motion.div
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1 }}
+                                                                                exit={{ scale: 0 }}
+                                                                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                                                            >
+                                                                                <Check size={14} strokeWidth={4} />
+                                                                            </motion.div>
+                                                                        )}
+                                                                    </AnimatePresence>
+                                                                </motion.div>
+                                                            ) : (
+                                                                <div className="super-checkbox disabled"></div>
+                                                            )}
+                                                        </td>
+                                                    );
+                                                });
+
+                                                const progressPct = (!isFuture && scheduledTotal > 0) ? Math.round((doneTotal / scheduledTotal) * 100) : null;
+                                                const isPerfect = progressPct === 100;
 
                                                 return (
-                                                    <td key={h._id} className="cell-habit">
-                                                        {isScheduled ? (
-                                                            <motion.div
-                                                                whileTap={!isFuture ? { scale: 0.85 } : {}}
-                                                                className={`super-checkbox ${isDone ? 'checked' : ''} ${isFuture ? 'disabled' : ''}`}
-                                                                onClick={() => !isFuture && handleToggle(h._id, dateStr)}
-                                                            >
-                                                                <AnimatePresence>
-                                                                    {isDone && (
-                                                                        <motion.div
-                                                                            initial={{ scale: 0 }}
-                                                                            animate={{ scale: 1 }}
-                                                                            exit={{ scale: 0 }}
-                                                                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                                                        >
-                                                                            <Check size={14} strokeWidth={4} />
-                                                                        </motion.div>
-                                                                    )}
-                                                                </AnimatePresence>
-                                                            </motion.div>
-                                                        ) : (
-                                                            <div className="super-checkbox disabled"></div>
-                                                        )}
-                                                    </td>
-                                                );
-                                            });
-
-                                            const progressPct = (!isFuture && scheduledTotal > 0) ? Math.round((doneTotal / scheduledTotal) * 100) : null;
-                                            const isPerfect = progressPct === 100;
-
-                                            return (
-                                                <motion.tr
-                                                    key={dateStr}
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    className={`${dateObj.isSame(dayjs(), 'day') ? 'is-today' : ''} ${isPerfect ? 'is-perfect' : ''}`}
-                                                >
-                                                    <td className="cell-date">
-                                                        <div className="day-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                                {dateObj.isSame(dayjs(), 'day') && <div className="today-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#0ea5e9', boxShadow: '0 0 8px rgba(14,165,233,0.5)' }}></div>}
-                                                                <strong style={{ color: isPerfect ? '#10b981' : (isFuture ? '#cbd5e1' : '#0f172a'), fontWeight: 600, transition: '0.3s' }}>{label1}</strong>
-                                                            </div>
-                                                            <span style={{ fontSize: '0.75rem', color: isFuture ? '#e2e8f0' : '#64748b', fontWeight: 500, letterSpacing: '0.02em', marginLeft: dateObj.isSame(dayjs(), 'day') ? '12px' : '0' }}>{label2}</span>
-                                                        </div>
-                                                    </td>
-
-                                                    {habitCells}
-
-                                                    <td className="cell-progress">
-                                                        {progressPct !== null ? (
-                                                            <div className="premium-progress">
-                                                                <span className="p-text" style={{ fontWeight: isPerfect ? 800 : 600, color: isPerfect ? '#10b981' : '#64748b' }}>
-                                                                    {progressPct}%
-                                                                </span>
-                                                                <div className="p-bar-bg" style={{ background: isPerfect ? 'rgba(16,185,129,0.1)' : '#f1f5f9' }}>
-                                                                    <motion.div
-                                                                        initial={{ width: 0 }}
-                                                                        animate={{ width: `${progressPct}%` }}
-                                                                        transition={{ duration: 0.5, ease: "easeOut" }}
-                                                                        className={`p-bar-fill ${isPerfect ? 'perfect' : ''}`}
-                                                                    />
+                                                    <motion.tr
+                                                        key={dateStr}
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        className={`${dateObj.isSame(dayjs(), 'day') ? 'is-today' : ''} ${isPerfect ? 'is-perfect' : ''}`}
+                                                    >
+                                                        <td className="cell-date">
+                                                            <div className="day-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                                    {dateObj.isSame(dayjs(), 'day') && <div className="today-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#0ea5e9', boxShadow: '0 0 8px rgba(14,165,233,0.5)' }}></div>}
+                                                                    <strong style={{ color: isPerfect ? '#10b981' : (isFuture ? '#cbd5e1' : '#0f172a'), fontWeight: 600, transition: '0.3s' }}>{label1}</strong>
                                                                 </div>
+                                                                <span style={{ fontSize: '0.75rem', color: isFuture ? '#e2e8f0' : '#64748b', fontWeight: 500, letterSpacing: '0.02em', marginLeft: dateObj.isSame(dayjs(), 'day') ? '12px' : '0' }}>{label2}</span>
                                                             </div>
-                                                        ) : (
-                                                            <div style={{ color: '#cbd5e1', fontSize: '0.8rem', fontWeight: 500 }}>{isFuture ? 'Future Timeline' : ''}</div>
-                                                        )}
-                                                    </td>
-                                                </motion.tr>
-                                            );
-                                        })}
-                                    </AnimatePresence>
-                                </tbody>
+                                                        </td>
 
-                                {currentHabits.length > 0 && paginatedPeriods.length > 0 && (
-                                    <tfoot>
-                                        <tr>
-                                            <td className="footer-count"><span>COUNT {paginatedPeriods.length}</span></td>
-                                            {currentHabits.map(h => (
-                                                <td key={h._id} className="footer-stat">
-                                                    <span>AVG {habitStats[h._id]}%</span>
-                                                </td>
-                                            ))}
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                )}
-                            </table>
-                        </div>
+                                                        {habitCells}
+
+                                                        <td className="cell-progress">
+                                                            {progressPct !== null ? (
+                                                                <div className="premium-progress">
+                                                                    <span className="p-text" style={{ fontWeight: isPerfect ? 800 : 600, color: isPerfect ? '#10b981' : '#64748b' }}>
+                                                                        {progressPct}%
+                                                                    </span>
+                                                                    <div className="p-bar-bg" style={{ background: isPerfect ? 'rgba(16,185,129,0.1)' : '#f1f5f9' }}>
+                                                                        <motion.div
+                                                                            initial={{ width: 0 }}
+                                                                            animate={{ width: `${progressPct}%` }}
+                                                                            transition={{ duration: 0.5, ease: "easeOut" }}
+                                                                            className={`p-bar-fill ${isPerfect ? 'perfect' : ''}`}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', fontWeight: 500 }}>{isFuture ? 'Future Timeline' : ''}</div>
+                                                            )}
+                                                        </td>
+                                                    </motion.tr>
+                                                );
+                                            })}
+                                        </AnimatePresence>
+                                    </tbody>
+
+                                    {currentHabits.length > 0 && paginatedPeriods.length > 0 && (
+                                        <tfoot>
+                                            <tr>
+                                                <td className="footer-count"><span>COUNT {paginatedPeriods.length}</span></td>
+                                                {currentHabits.map(h => (
+                                                    <td key={h._id} className="footer-stat">
+                                                        <span>AVG {habitStats[h._id]}%</span>
+                                                    </td>
+                                                ))}
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    )}
+                                </table>
+                            </div>
+                        )}
+
 
                         {/* Calendar Chronological Navigation */}
                         <div className="chrono-pagination">

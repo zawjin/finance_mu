@@ -22,7 +22,7 @@ const LOADING_STEPS = [
 
 const SectionCard = ({ icon, title, color, children }) => (
     <Paper sx={{
-        p: 3.5, borderRadius: '28px',
+        p: { xs: 2.5, md: 3.5 }, borderRadius: '28px',
         background: 'rgba(255,255,255,0.025)',
         border: `1.5px solid rgba(255,255,255,0.08)`,
         backdropFilter: 'blur(10px)',
@@ -115,23 +115,38 @@ export default function AiAnalysisModal({ open, onClose }) {
 
             {/* HEADER */}
             <Box sx={{
-                position: 'relative', zIndex: 10, px: 4, py: 2,
+                position: 'relative', zIndex: 10, px: { xs: 2, md: 4 }, py: 2,
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 borderBottom: '1px solid rgba(255,255,255,0.08)',
                 background: 'rgba(2,6,23,0.85)', backdropFilter: 'blur(20px)'
             }}>
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box display="flex" alignItems="center" gap={{ xs: 1.5, md: 2 }}>
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 12, ease: 'linear' }}>
-                        <Box sx={{ p: 1.2, borderRadius: '50%', border: '2px solid #6366f1', color: '#6366f1', display: 'flex', boxShadow: '0 0 18px rgba(99,102,241,0.5)' }}>
-                            <Activity size={22} />
+                        <Box sx={{ 
+                            p: { xs: 1, md: 1.2 }, 
+                            borderRadius: '50%', 
+                            border: '2px solid #6366f1', 
+                            color: '#6366f1', 
+                            display: 'flex', 
+                            boxShadow: '0 0 18px rgba(99,102,241,0.5)' 
+                        }}>
+                            <Activity size={window.innerWidth < 600 ? 18 : 22} />
                         </Box>
                     </motion.div>
                     <Box>
-                        <Typography variant="h5" sx={{ fontWeight: 900, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #fff 40%, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            FRIDAY — AI Financial Advisor
+                        <Typography variant="h6" sx={{ 
+                            fontWeight: 900, 
+                            lineHeight: 1.1,
+                            fontSize: { xs: '1rem', md: '1.25rem' },
+                            letterSpacing: '-0.02em', 
+                            background: 'linear-gradient(90deg, #fff 40%, #6366f1)', 
+                            WebkitBackgroundClip: 'text', 
+                            WebkitTextFillColor: 'transparent' 
+                        }}>
+                            FRIDAY AI Analyst
                         </Typography>
-                        <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 800, letterSpacing: '0.12em' }}>
-                            PROFESSIONAL RISK &amp; WEALTH ANALYSIS ENGINE
+                        <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 800, fontSize: { xs: '0.6rem', md: '0.75rem' }, letterSpacing: '0.12em', display: 'block' }}>
+                            {window.innerWidth < 600 ? 'RISK & WEALTH ENGINE' : 'PROFESSIONAL RISK & WEALTH ANALYSIS ENGINE'}
                         </Typography>
                     </Box>
                 </Box>
@@ -141,20 +156,29 @@ export default function AiAnalysisModal({ open, onClose }) {
             </Box>
 
             {/* BODY */}
-            <Box sx={{ position: 'relative', zIndex: 1, p: { xs: 2.5, md: 5 }, overflowY: 'auto', height: 'calc(100vh - 70px)' }}>
+            <Box sx={{ 
+                position: 'relative', 
+                zIndex: 1, 
+                p: { xs: 2, md: 5 }, 
+                overflowY: 'auto', 
+                height: 'calc(100vh - 70px)',
+                '&::-webkit-scrollbar': { width: '4px' },
+                '&::-webkit-scrollbar-track': { background: 'transparent' },
+                '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.1)', borderRadius: '10px' }
+            }}>
                 <AnimatePresence mode="wait">
                     {loading ? (
                         <Box key="loader" component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="75vh" textAlign="center">
+                            display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="75vh" textAlign="center" px={3}>
                             <motion.div animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>
-                                <Box sx={{ width: 130, height: 130, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #06b6d4)', display: 'grid', placeItems: 'center', boxShadow: '0 0 60px rgba(99,102,241,0.4)', mb: 4 }}>
-                                    <Fingerprint size={64} color="#fff" />
+                                <Box sx={{ width: { xs: 100, md: 130 }, height: { xs: 100, md: 130 }, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #06b6d4)', display: 'grid', placeItems: 'center', boxShadow: '0 0 60px rgba(99,102,241,0.4)', mb: 4 }}>
+                                    <Fingerprint size={window.innerWidth < 600 ? 48 : 64} color="#fff" />
                                 </Box>
                             </motion.div>
-                            <Typography variant="h3" sx={{ fontWeight: 900, color: LOADING_STEPS[loadingStep].color, mb: 1 }}>
+                            <Typography variant="h4" sx={{ fontWeight: 900, color: LOADING_STEPS[loadingStep].color, mb: 1, fontSize: { xs: '1.25rem', md: '2.125rem' } }}>
                                 {LOADING_STEPS[loadingStep].text}
                             </Typography>
-                            <Typography variant="body1" sx={{ opacity: 0.5 }}>AI is processing your complete financial profile…</Typography>
+                            <Typography variant="body2" sx={{ opacity: 0.5 }}>Neural processing in progress…</Typography>
                         </Box>
                     ) : error ? (
                         <Box key="error" display="flex" justifyContent="center" alignItems="center" height="60vh" textAlign="center">
@@ -166,170 +190,215 @@ export default function AiAnalysisModal({ open, onClose }) {
                     ) : data && (
                         <Box key="data" component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
 
-                            {/* ── SCORE BANNER ── */}
-                            <Box sx={{ display: 'flex', gap: 3, mb: 4, p: 4, borderRadius: '32px', background: `linear-gradient(135deg, ${accentColor}18, rgba(255,255,255,0.02))`, border: `2px solid ${accentColor}30`, alignItems: 'center', flexWrap: 'wrap' }}>
+                            {/* ── SCORE HERO SECTION ── */}
+                            <Box sx={{ 
+                                display: 'flex', 
+                                flexDirection: { xs: 'column', md: 'row' },
+                                gap: { xs: 3, md: 4 }, 
+                                mb: 4, 
+                                p: { xs: 3, md: 4 }, 
+                                borderRadius: '32px', 
+                                background: `linear-gradient(135deg, ${accentColor}12, rgba(255,255,255,0.01))`, 
+                                border: `1px solid ${accentColor}25`, 
+                                alignItems: { xs: 'center', md: 'center' },
+                                position: 'relative',
+                                overflow: 'hidden'
+                            }}>
+                                {/* Glowing backdrop */}
+                                <Box sx={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: accentColor, filter: 'blur(100px)', opacity: 0.15, pointerEvents: 'none' }} />
+
                                 {/* Score Circle */}
-                                <Box sx={{ position: 'relative', width: 130, height: 130, flexShrink: 0 }}>
-                                    <svg width="130" height="130" viewBox="0 0 100 100" style={{ position: 'absolute', inset: 0 }}>
-                                        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                                <Box sx={{ position: 'relative', width: { xs: 120, md: 140 }, height: { xs: 120, md: 140 }, flexShrink: 0 }}>
+                                    <svg width="100%" height="100%" viewBox="0 0 100 100" style={{ position: 'absolute', inset: 0 }}>
+                                        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
                                         <motion.circle cx="50" cy="50" r="44" fill="none" stroke={accentColor}
-                                            strokeWidth="6" strokeLinecap="round"
+                                            strokeWidth="8" strokeLinecap="round"
                                             strokeDasharray={`${score * 2.76} 276`}
                                             initial={{ strokeDasharray: '0 276' }}
                                             animate={{ strokeDasharray: `${score * 2.76} 276` }}
-                                            transition={{ duration: 1.5, ease: 'easeOut' }}
+                                            transition={{ duration: 1.5, delay: 0.2, ease: 'easeOut' }}
                                             transform="rotate(-90 50 50)"
                                         />
                                     </svg>
                                     <Box sx={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '2.2rem', color: accentColor, lineHeight: 1 }}>{score}</Typography>
-                                        <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: '#94a3b8' }}>/100</Typography>
+                                        <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '2.5rem' }, color: accentColor, lineHeight: 1 }}>{score}</Typography>
+                                        <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#94a3b8' }}>SCORE</Typography>
                                     </Box>
                                 </Box>
-                                <Box flex={1} minWidth={200}>
-                                    <Typography sx={{ fontWeight: 900, fontSize: '0.7rem', color: accentColor, letterSpacing: '0.15em', mb: 0.5 }}>
-                                        FINANCIAL HEALTH SCORE — {data.status}
+
+                                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
+                                    <Box sx={{ display: 'inline-flex', px: 1.5, py: 0.5, borderRadius: '100px', background: `${accentColor}25`, mb: 1.5 }}>
+                                        <Typography sx={{ fontWeight: 900, fontSize: '0.65rem', color: accentColor, letterSpacing: '0.1em' }}>
+                                            STATUS: {data.status}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="h4" sx={{ 
+                                        fontWeight: 900, 
+                                        color: '#fff', 
+                                        lineHeight: 1.2, 
+                                        mb: 2,
+                                        fontSize: { xs: '1.4rem', md: '1.8rem' },
+                                        letterSpacing: '-0.02em'
+                                    }}>
+                                        {data.score_explanation || 'Neural processing complete.'}
                                     </Typography>
-                                    <Typography variant="h5" sx={{ fontWeight: 900, color: '#fff', lineHeight: 1.3, mb: 1.5 }}>
-                                        {data.score_explanation || 'Complete financial analysis ready.'}
-                                    </Typography>
-                                    {/* Key Metrics Row */}
-                                    <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                                    
+                                    {/* Key Metrics Grid */}
+                                    <Grid container spacing={2}>
                                         {[
                                             { label: 'SAVINGS', value: fmt(data.metrics?.total_savings), color: '#10b981' },
-                                            { label: 'INVESTMENTS', value: fmt(data.metrics?.total_investment), color: '#6366f1' },
-                                            { label: 'CARD O/S', value: fmt(data.metrics?.credit_outstanding), color: '#f43f5e' },
-                                            { label: 'AVG MONTHLY SPEND', value: fmt(data.metrics?.monthly_avg_spend), color: '#f59e0b' },
+                                            { label: 'ASSETS', value: fmt(data.metrics?.total_investment), color: '#6366f1' },
+                                            { label: 'LIABILITIES', value: fmt(data.metrics?.credit_outstanding), color: '#f43f5e' },
+                                            { label: 'AVG SPEND', value: fmt(data.metrics?.monthly_avg_spend), color: '#f59e0b' },
                                         ].map(m => (
-                                            <Box key={m.label}>
-                                                <Typography sx={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', letterSpacing: '0.1em' }}>{m.label}</Typography>
-                                                <Typography sx={{ fontSize: '0.95rem', fontWeight: 900, color: m.color }}>{m.value}</Typography>
-                                            </Box>
+                                            <Grid item xs={6} sm={3} key={m.label}>
+                                                <Typography sx={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', letterSpacing: '0.08em', mb: 0.2 }}>{m.label}</Typography>
+                                                <Typography sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, fontWeight: 900, color: m.color }}>{m.value}</Typography>
+                                            </Grid>
                                         ))}
-                                    </Box>
+                                    </Grid>
                                 </Box>
                             </Box>
 
-                            {/* ── ROW 1: Cash Flow + Risk + Debt Strategy ── */}
-                            <Grid container spacing={3} mb={3}>
+                            {/* ── GRID CONTENT ── */}
+                            <Grid container spacing={{ xs: 2, md: 3 }} mb={3}>
                                 <Grid item xs={12} md={4}>
-                                    <SectionCard icon={<TrendingUp size={18} />} title="1 — CASH FLOW ANALYSIS" color="#10b981">
-                                        <InfoRow label="Monthly Surplus / Deficit" value={data.cash_flow?.monthly_surplus_deficit} valueColor="#10b981" />
-                                        <InfoRow label="Expense Ratio" value={data.cash_flow?.expense_ratio} />
-                                    </SectionCard>
+                                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+                                        <SectionCard icon={<TrendingUp size={18} />} title="1 — CASH FLOW" color="#10b981">
+                                            <InfoRow label="Monthly Surplus" value={data.cash_flow?.monthly_surplus_deficit} valueColor="#10b981" />
+                                            <InfoRow label="Expense Ratio" value={data.cash_flow?.expense_ratio} />
+                                        </SectionCard>
+                                    </motion.div>
                                 </Grid>
                                 <Grid item xs={12} md={4}>
-                                    <SectionCard icon={<ShieldAlert size={18} />} title="2 — RISK ANALYSIS" color={riskColor}>
-                                        <InfoRow label="Debt Risk Level"
-                                            value={debtRisk}
-                                            valueColor={riskColor} />
-                                        <Box mt={1.5}>
-                                            <Box sx={{ height: 8, borderRadius: 10, bgcolor: 'rgba(255,255,255,0.05)', overflow: 'hidden', mb: 1.5 }}>
-                                                <motion.div initial={{ width: 0 }} animate={{ width: debtRisk === 'High' ? '85%' : debtRisk === 'Medium' ? '50%' : '20%' }}
-                                                    transition={{ duration: 1 }}
-                                                    style={{ height: '100%', background: riskColor, borderRadius: 10 }} />
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                                        <SectionCard icon={<ShieldAlert size={18} />} title="2 — RISK VECTORS" color={riskColor}>
+                                            <InfoRow label="Risk Level" value={debtRisk} valueColor={riskColor} />
+                                            <Box mt={1.5}>
+                                                <Box sx={{ height: 6, borderRadius: 10, bgcolor: 'rgba(255,255,255,0.05)', overflow: 'hidden', mb: 1.5 }}>
+                                                    <motion.div initial={{ width: 0 }} animate={{ width: debtRisk === 'High' ? '85%' : debtRisk === 'Medium' ? '50%' : '20%' }}
+                                                        transition={{ duration: 1, delay: 0.6 }}
+                                                        style={{ height: '100%', background: riskColor, borderRadius: 10 }} />
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                        <InfoRow label="Emergency Fund Status" value={data.risk?.emergency_fund_status} />
-                                    </SectionCard>
+                                            <InfoRow label="Emergency Fund" value={data.risk?.emergency_fund_status} />
+                                        </SectionCard>
+                                    </motion.div>
                                 </Grid>
                                 <Grid item xs={12} md={4}>
-                                    <SectionCard icon={<CreditCard size={18} />} title="3 — DEBT STRATEGY" color="#f43f5e">
-                                        {(data.debt_strategy?.priority_order || []).length > 0 ? (
-                                            <Stack spacing={1} mb={2}>
-                                                {data.debt_strategy.priority_order.map((d, i) => (
-                                                    <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1, borderRadius: '10px', bgcolor: 'rgba(244,63,94,0.08)' }}>
-                                                        <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#f43f5e', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                                                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#fff' }}>{i + 1}</Typography>
+                                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+                                        <SectionCard icon={<CreditCard size={18} />} title="3 — DEBT PRIORITY" color="#f43f5e">
+                                            {(data.debt_strategy?.priority_order || []).length > 0 ? (
+                                                <Stack spacing={1} mb={2}>
+                                                    {data.debt_strategy.priority_order.map((d, i) => (
+                                                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.2, borderRadius: '12px', bgcolor: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.1)' }}>
+                                                            <Box sx={{ width: 20, height: 20, borderRadius: '6px', bgcolor: '#f43f5e', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                                                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: '#fff' }}>{i + 1}</Typography>
+                                                            </Box>
+                                                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#fda4af' }}>{d}</Typography>
                                                         </Box>
-                                                        <Typography sx={{ fontSize: '0.78rem', fontWeight: 800, color: '#fda4af' }}>{d}</Typography>
-                                                    </Box>
-                                                ))}
-                                            </Stack>
-                                        ) : (
-                                            <Typography sx={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 800, mb: 2 }}>✓ No formal debts recorded.</Typography>
-                                        )}
-                                        <InfoRow label="Repayment Plan" value={data.debt_strategy?.repayment_plan} />
-                                    </SectionCard>
+                                                    ))}
+                                                </Stack>
+                                            ) : (
+                                                <Typography sx={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 800, mb: 2 }}>✓ No liabilities detected.</Typography>
+                                            )}
+                                            <InfoRow label="Strategy" value={data.debt_strategy?.repayment_plan} />
+                                        </SectionCard>
+                                    </motion.div>
                                 </Grid>
                             </Grid>
 
                             {/* ── ROW 2: Investment + Optimization ── */}
-                            <Grid container spacing={3} mb={3}>
+                            <Grid container spacing={{ xs: 2, md: 3 }} mb={3}>
                                 <Grid item xs={12} md={6}>
-                                    <SectionCard icon={<BarChart3 size={18} />} title="4 — INVESTMENT ANALYSIS" color="#6366f1">
-                                        <InfoRow label="Asset Allocation" value={data.investment_analysis?.asset_allocation} />
-                                        <InfoRow label="Concerns / Gaps" value={data.investment_analysis?.concerns} valueColor="#f59e0b" />
-                                    </SectionCard>
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+                                        <SectionCard icon={<BarChart3 size={18} />} title="4 — ASSET ALLOCATION" color="#6366f1">
+                                            <InfoRow label="Distribution" value={data.investment_analysis?.asset_allocation} />
+                                            <InfoRow label="Key Gaps" value={data.investment_analysis?.concerns} valueColor="#f59e0b" />
+                                        </SectionCard>
+                                    </motion.div>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
-                                    <SectionCard icon={<PiggyBank size={18} />} title="5 — OPTIMIZATION SUGGESTIONS" color="#f59e0b">
-                                        <InfoRow label="Reduce Expenses" value={data.optimization?.reduce_expenses} valueColor="#f43f5e" />
-                                        <InfoRow label="Increase Savings" value={data.optimization?.increase_savings} valueColor="#10b981" />
-                                    </SectionCard>
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                                        <SectionCard icon={<PiggyBank size={18} />} title="5 — OPTIMIZATION" color="#f59e0b">
+                                            <InfoRow label="Burn Rate" value={data.optimization?.reduce_expenses} valueColor="#f43f5e" />
+                                            <InfoRow label="Growth Path" value={data.optimization?.increase_savings} valueColor="#10b981" />
+                                        </SectionCard>
+                                    </motion.div>
                                 </Grid>
                             </Grid>
 
                             {/* ── ROW 3: Category Insights ── */}
-                            <Grid container spacing={3} mb={3}>
-                                <Grid item xs={12}>
-                                    <SectionCard icon={<Lightbulb size={18} />} title="6 — CATEGORY INSIGHTS & SPECIFIC ADVICE" color="#ec4899">
+                            <Box mb={3}>
+                                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.8 }}>
+                                    <SectionCard icon={<Lightbulb size={18} />} title="6 — NEURAL INSIGHTS" color="#ec4899">
                                         {data.category_advice && data.category_advice.length > 0 ? (
                                             <Grid container spacing={2}>
                                                 {data.category_advice.map((item, idx) => (
-                                                    <Grid item xs={12} md={4} key={idx}>
+                                                    <Grid item xs={12} sm={6} md={4} key={idx}>
                                                         <Box sx={{
-                                                            p: 2, borderRadius: '16px', background: 'rgba(255,255,255,0.02)',
-                                                            border: '1px solid rgba(236, 72, 153, 0.2)', height: '100%'
+                                                            p: 2.5, borderRadius: '20px', background: 'rgba(255,255,255,0.02)',
+                                                            border: '1px solid rgba(236, 72, 153, 0.15)', height: '100%',
+                                                            transition: '0.3s',
+                                                            '&:hover': { background: 'rgba(236, 72, 153, 0.05)', borderColor: '#ec4899' }
                                                         }}>
-                                                            <Typography sx={{fontSize: '0.75rem', fontWeight: 900, color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1}}>{item.category}</Typography>
-                                                            <Typography sx={{fontSize: '0.85rem', color: '#e2e8f0', lineHeight: 1.5}}>{item.advice}</Typography>
+                                                            <Typography sx={{fontSize: '0.65rem', fontWeight: 900, color: '#ec4899', textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1}}>{item.category}</Typography>
+                                                            <Typography sx={{fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, fontWeight: 500}}>{item.advice}</Typography>
                                                         </Box>
                                                     </Grid>
                                                 ))}
                                             </Grid>
                                         ) : (
-                                            <Typography sx={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>No specific category alerts generated.</Typography>
+                                            <Typography sx={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>No localized advice generated.</Typography>
                                         )}
                                     </SectionCard>
-                                </Grid>
-                            </Grid>
+                                </motion.div>
+                            </Box>
 
-                            {/* ── ROW 3: Action Plan (full width) ── */}
-                            <Paper sx={{
-                                p: 4, borderRadius: '28px',
-                                background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.05))',
-                                border: '1.5px solid rgba(99,102,241,0.25)'
-                            }}>
-                                <Box display="flex" alignItems="center" gap={1.5} mb={3}>
-                                    <Zap size={20} color="#f59e0b" />
-                                    <Typography sx={{ fontWeight: 900, color: '#fff', letterSpacing: '0.1em', fontSize: '0.85rem' }}>
-                                        7 — ACTION PLAN — 5 STEPS TO TAKE RIGHT NOW
-                                    </Typography>
-                                </Box>
-                                <Grid container spacing={2}>
-                                    {(data.action_plan || []).map((step, i) => (
-                                        <Grid item xs={12} sm={6} lg={4} key={i}>
-                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+                            {/* ── ROW 4: Action Plan ── */}
+                            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+                                <Paper sx={{
+                                    p: { xs: 3, md: 4 }, borderRadius: '32px',
+                                    background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(16,185,129,0.08))',
+                                    border: '1.5px solid rgba(99,102,241,0.2)',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}>
+                                    <Box sx={{ position: 'absolute', top: -100, left: -100, width: 300, height: 300, background: '#6366f1', filter: 'blur(150px)', opacity: 0.1 }} />
+                                    
+                                    <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                                        <Zap size={22} color="#f59e0b" />
+                                        <Typography sx={{ fontWeight: 900, color: '#fff', letterSpacing: '0.12em', fontSize: { xs: '0.75rem', md: '0.85rem' } }}>
+                                            7 — IMMEDIATE ACTION PROTOCOL
+                                        </Typography>
+                                    </Box>
+                                    <Grid container spacing={2}>
+                                        {(data.action_plan || []).map((step, i) => (
+                                            <Grid item xs={12} sm={6} lg={4} key={i}>
                                                 <Box sx={{
-                                                    p: 2.5, borderRadius: '20px',
-                                                    background: 'rgba(255,255,255,0.03)',
-                                                    border: '1px solid rgba(255,255,255,0.07)',
+                                                    p: 2.5, borderRadius: '22px',
+                                                    background: 'rgba(255,255,255,0.04)',
+                                                    border: '1px solid rgba(255,255,255,0.06)',
                                                     display: 'flex', gap: 2, alignItems: 'flex-start',
                                                     height: '100%',
-                                                    transition: '0.2s',
-                                                    '&:hover': { background: 'rgba(99,102,241,0.1)', borderColor: '#6366f1' }
+                                                    transition: '0.3s',
+                                                    '&:hover': { background: 'rgba(99,102,241,0.12)', borderColor: '#6366f1', transform: 'translateY(-3px)' }
                                                 }}>
-                                                    <Box sx={{ width: 30, height: 30, borderRadius: '10px', background: 'linear-gradient(135deg, #6366f1, #06b6d4)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                                                        <Typography sx={{ fontWeight: 900, fontSize: '0.78rem', color: '#fff' }}>{i + 1}</Typography>
+                                                    <Box sx={{ 
+                                                        width: 28, height: 28, borderRadius: '8px', 
+                                                        background: 'linear-gradient(135deg, #6366f1, #06b6d4)', 
+                                                        display: 'grid', placeItems: 'center', flexShrink: 0,
+                                                        boxShadow: '0 4px 12px rgba(99,102,241,0.3)'
+                                                    }}>
+                                                        <Typography sx={{ fontWeight: 900, fontSize: '0.75rem', color: '#fff' }}>{i + 1}</Typography>
                                                     </Box>
-                                                    <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: '#cbd5e1', lineHeight: 1.5 }}>{step}</Typography>
+                                                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e2e8f0', lineHeight: 1.5 }}>{step}</Typography>
                                                 </Box>
-                                            </motion.div>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Paper>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </Paper>
+                            </motion.div>
 
                         </Box>
                     )}
