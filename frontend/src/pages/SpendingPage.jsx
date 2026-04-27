@@ -1,29 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Search, Tag, Calendar, CalendarDays, Clock, Filter,
-    PieChart, Layers, History, X, Download, Activity,
-    Utensils, ShoppingBag, Heart, Zap, Briefcase, Lightbulb,
-    Truck, Globe, Package, ShoppingCart, Stethoscope, BarChart2,
-    TrendingUp, ArrowUpRight, Plus, Edit2, Trash2, Settings, PlusCircle, Fingerprint,
-    ShoppingBag as ShoppingBagIcon, Car, Zap as ZapIcon, Gamepad2, Plane, Home,
-    Music, Coffee, Smartphone, Laptop, Tv, Film, Camera, Dumbbell, Bike, Scissors, Wrench,
-    Umbrella, Wind, Sun, Moon, Cloud, Star, Shield, Key, Lock, Bell, Mail, Phone, MapPin,
-    Flag, Globe as GlobeIcon, Cpu, HardDrive, Database, Book, Library, Building, Store,
-    Coins, Euro, PoundSterling, JapaneseYen, Bitcoin, Landmark, Wallet, Terminal, Gavel, Code, Webhook, Hash, Hexagon,
-    Server, Wifi, Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree,
-    ChefHat, Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine, Activity as ActivityIcon,
-    Bone, Brain, HeartPulse, Microscope, Syringe, Thermometer, Bath, Bed, Lamp, Refrigerator,
-    Sofa, WashingMachine, Bird, Bug, Dog, Fish, Flower, Leaf, Rabbit, TreeDeciduous,
-    TreePine, Brush, Music2, Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive,
-    Atom, Battery, Binary, Box as BoxIcon, Calculator, Clock as ClockIcon, Compass,
-    Component, Construction, Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical,
-    Gamepad, Gift, Glasses, GraduationCap, Hammer, Infinity, Joystick, Lasso, LifeBuoy,
-    Monitor, Mouse, Network, Newspaper, Nut, Orbit, Paperclip, PawPrint, PersonStanding,
-    Pipette, Plug, Printer, Puzzle, Quote, Radiation, Radio, Rocket, Send, Share2,
-    Shrink, Shuffle, Skull, Smile, Target, Ticket, Timer, Trophy, User as UserIcon, Users,
-    Video, Volume2, Watch
+    Search, Filter, PieChart, Download, Activity,
+    TrendingUp, Calendar, Trash2, Edit2, Zap, CalendarDays,
+    Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2, Layers,
+    Plus, X, PlusCircle, Fingerprint
 } from 'lucide-react';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -47,76 +29,7 @@ import {
 ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Filler);
 
 // Universal Icon Map Projection
-const IconMap = {
-    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
-    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
-    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
-    Gamepad2: <Gamepad2 />, Plane: <Plane />,
-    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
-    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
-    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
-    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
-    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
-    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
-    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
-    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
-    Library: <Library />, Building: <Building />, Store: <Store />,
-    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
-    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
-    TrendingUp: <TrendingUp />, Wallet: <Wallet />, Gavel: <Gavel />,
-    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />,
-    Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />, Settings2: <Settings2 />,
-    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />,
-    Mountain: <Mountain />, Tents: <Tent />, Palmtree: <Palmtree />,
-    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
-    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Soup />, Wine: <Wine />,
-    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />,
-    Microscope: <Microscope />, Syringe: <Syringe />, Thermometer: <Thermometer />,
-    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />,
-    Sofa: <Sofa />, WashingMachine: <WashingMachine />,
-    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
-    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />, TreePine: <TreePine />,
-    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />,
-    PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
-    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
-    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
-    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
-    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
-    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
-    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
-    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
-    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
-    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
-    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
-    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
-    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />,
-    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />,
-    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />,
-    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />,
-    Video: <Video />, Volume2: <Volume2 />, Watch: <Watch />
-};
-
-const getIcon = (catName, categories = [], options = {}) => {
-    const cat = categories.find(c => c.name === catName);
-    const iconName = cat?.icon || 'Package';
-    const color = options.color || cat?.color || '#0071e3';
-
-    const fillValue = options.fill === 'none' ? 'none' : (options.fill || `${color}30`);
-    const props = {
-        size: options.size || 16,
-        color: color,
-        fill: fillValue,
-        strokeWidth: options.strokeWidth || 2.5,
-        style: options.style || {}
-    };
-
-    if (!options.style) {
-        props.className = "icon-filter-shadow";
-    }
-
-    const IconComponent = IconMap[iconName] || <Package />;
-    return React.cloneElement(IconComponent, props);
-};
+import { getIcon } from '../utils/iconMap';
 
 const getCatStyle = (catName, categories = []) => {
     const cat = categories.find(c => c.name === catName);
@@ -126,18 +39,28 @@ const getCatStyle = (catName, categories = []) => {
 
 export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics }) {
     const dispatch = useDispatch();
+    const touchStartRef = useRef(0);
     const { spending, categories, loading, reserves } = useSelector(state => state.finance);
 
     // Filters State
     const [search, setSearch] = useState('');
     const [selectedCat, setSelectedCat] = useState('ALL');
-    const [selectedSub, setSelectedSub] = useState('ALL');
     const [period, setPeriod] = useState('THIS MONTH');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
     const [selectedSourceId, setSelectedSourceId] = useState('ALL');
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const handlePullToRefresh = async () => {
+        setRefreshing(true);
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(10);
+        }
+        await dispatch(fetchFinanceData());
+        setTimeout(() => setRefreshing(false), 800);
+    };
 
     // Settlement Logic
     const [showSettlement, setShowSettlement] = useState(false);
@@ -203,10 +126,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             ];
             if (investmentCategories.includes((item.category || '').toLowerCase())) return false;
 
-            const matchesSearch = item.description.toLowerCase().includes(search.toLowerCase()) ||
-                item.category.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = (item.description || '').toLowerCase().includes(search.toLowerCase()) ||
+                (item.category || '').toLowerCase().includes(search.toLowerCase());
             const matchesCat = selectedCat === 'ALL' || item.category === selectedCat;
-            const matchesSub = selectedSub === 'ALL' || item.sub_category === selectedSub;
 
             let matchesPeriod = true;
             const itemDate = dayjs(item.date);
@@ -227,7 +149,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             const matchesSource = selectedSourceId === 'ALL' || item.payment_source_id === selectedSourceId;
 
-            return matchesSearch && matchesCat && matchesSub && matchesPeriod && matchesSource;
+            return matchesSearch && matchesCat && matchesPeriod && matchesSource;
         });
 
         // Sort
@@ -238,7 +160,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         else if (sortBy === 'AMT_ASC') result.sort((a, b) => (a.amount || 0) - (b.amount || 0));
 
         return result;
-    }, [spending, search, selectedCat, selectedSub, period, dateRange, sortBy, selectedSourceId]);
+    }, [spending, search, selectedCat, period, dateRange, sortBy, selectedSourceId]);
 
     // Global Position (Unfiltered Persistent State)
     const globalSummary = useMemo(() => {
@@ -584,7 +506,33 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
                 </button>
 
-                <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
+                {/* Pull to Refresh Indicator */}
+                <AnimatePresence>
+                    {refreshing && (
+                        <motion.div 
+                            initial={{ y: -50, opacity: 0 }}
+                            animate={{ y: 20, opacity: 1 }}
+                            exit={{ y: -50, opacity: 0 }}
+                            className="pull-to-refresh-indicator"
+                        >
+                            <Activity size={16} className="spin-slow" />
+                            <span>Refreshing Ledger...</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <div 
+                    className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}
+                    onTouchStart={e => {
+                        touchStartRef.current = e.touches[0].clientY;
+                    }}
+                    onTouchMove={e => {
+                        const touchEnd = e.touches[0].clientY;
+                        if (touchEnd - touchStartRef.current > 150 && window.scrollY === 0 && !refreshing) {
+                            handlePullToRefresh();
+                        }
+                    }}
+                >
                     <div className="sidebar-sticky-wrap">
 
 
@@ -603,7 +551,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     [...Array(6)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
                                 ) : (
                                     <>
-                                        <div className={`unified-filter-btn ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>
+                                        <div className={`unified-filter-btn ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); }}>
                                             <span className="th-icon"><Layers size={13} /></span>
                                             <span className="th-label">All</span>
                                         </div>
@@ -618,7 +566,15 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             .map(c => {
                                                 const style = getCatStyle(c.name, categories);
                                                 return (
-                                                    <div key={c.name} className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
+                                                    <div 
+                                                        key={c.name} 
+                                                        className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`} 
+                                                        onClick={(e) => { 
+                                                            e.stopPropagation(); // Prevent bubbling that might close sidebar
+                                                            setSelectedCat(c.name); 
+                                                            setSelectedSub('ALL'); 
+                                                        }}
+                                                    >
                                                         <span className="th-icon">
                                                             {getIcon(c.name, categories, {
                                                                 color: selectedCat === c.name ? 'white' : style.color,
@@ -647,7 +603,14 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
                                     { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
                                 ].map(p => (
-                                    <div key={p.id} className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
+                                    <div 
+                                        key={p.id} 
+                                        className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setPeriod(p.id);
+                                        }}
+                                    >
                                         <span className="th-icon" style={{ color: period === p.id ? 'white' : 'var(--primary)' }}>{p.icon}</span>
                                         <span className="th-label">{p.label}</span>
                                     </div>
@@ -719,7 +682,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     >{s.label}</button>
                                 ))}
                             </div>
-                            <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
+                            <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
                             <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> </button>
                         </div>
                     </div>
@@ -811,7 +774,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                                                     setSettleData({ cardId: s.payment_source_id, sourceId: '', amount: outstanding.toString(), targetTx: s });
                                                                     setShowSettlement(true);
                                                                 }} sx={{ color: '#ff3b30', '&:hover': { bgcolor: '#fff1f2' } }}>
-                                                                    <ActivityIcon size={14} />
+                                                                    <Activity size={14} />
                                                                 </IconButton>
                                                             )}
                                                             <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: 'var(--primary)', '&:hover': { bgcolor: 'rgba(0,113,227,0.08)' } }}>

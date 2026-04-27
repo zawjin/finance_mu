@@ -1,0 +1,85 @@
+Connecting to FIN_MU...
+Traceback (most recent call last):
+  File "/Users/shajinva/Documents/D2C /Codes/Finance/backend/simple_check.py", line 30, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 721, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/shajinva/Documents/D2C /Codes/Finance/backend/simple_check.py", line 17, in main
+    users_count = await db.users.count_documents({})
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/collection.py", line 2163, in count_documents
+    return self._retryable_non_cursor_read(_cmd, session, _Op.COUNT)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/collection.py", line 2177, in _retryable_non_cursor_read
+    return client._retryable_read(func, self._read_preference_for(s), s, operation)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 2048, in _retryable_read
+    return self._retry_internal(
+           ~~~~~~~~~~~~~~~~~~~~^
+        func,
+        ^^^^^
+    ...<7 lines>...
+        operation_id=operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/_csot.py", line 125, in csot_wrapper
+    return func(self, *args, **kwargs)
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 2014, in _retry_internal
+    ).run()
+      ~~~^^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 2763, in run
+    return self._read() if self._is_read else self._write()
+           ~~~~~~~~~~^^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 2908, in _read
+    self._server = self._get_server()
+                   ~~~~~~~~~~~~~~~~^^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 2856, in _get_server
+    return self._client._select_server(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._server_selector,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        operation_id=self._operation_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/mongo_client.py", line 1833, in _select_server
+    server = topology.select_server(
+        server_selector,
+    ...<2 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/topology.py", line 428, in select_server
+    server = self._select_server(
+        selector,
+    ...<4 lines>...
+        operation_id=operation_id,
+    )
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/topology.py", line 402, in _select_server
+    servers = self.select_servers(
+        selector,
+    ...<4 lines>...
+        deprioritized_servers,
+    )
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/topology.py", line 298, in select_servers
+    server_descriptions = self._select_servers_loop(
+        selector,
+    ...<4 lines>...
+        deprioritized_servers=deprioritized_servers,
+    )
+  File "/Users/shajinva/Library/Python/3.13/lib/python/site-packages/pymongo/synchronous/topology.py", line 359, in _select_servers_loop
+    raise ServerSelectionTimeoutError(
+        f"{self._error_message(selector)}, Timeout: {timeout}s, Topology Description: {self.description!r}"
+    )
+pymongo.errors.ServerSelectionTimeoutError: ac-rjhgwbo-shard-00-00.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms),ac-rjhgwbo-shard-00-01.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms),ac-rjhgwbo-shard-00-02.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 69ef4d320fd13f948ddbdf4c, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-rjhgwbo-shard-00-00.xdlsefg.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('ac-rjhgwbo-shard-00-00.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms)')>, <ServerDescription ('ac-rjhgwbo-shard-00-01.xdlsefg.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('ac-rjhgwbo-shard-00-01.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms)')>, <ServerDescription ('ac-rjhgwbo-shard-00-02.xdlsefg.mongodb.net', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('ac-rjhgwbo-shard-00-02.xdlsefg.mongodb.net:27017: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020) (configured timeouts: socketTimeoutMS: 10000.0ms, connectTimeoutMS: 10000.0ms)')>]>

@@ -647,25 +647,50 @@ CHROME_HEADERS = {
 
 @router.get("/market-price")
 async def get_market_price(ticker: str):
+    # 1. INTELLIGENT CACHE CHECK (AI-Resilience)
+    ticker_up = ticker.upper()
+    cached = await db.price_cache.find_one({"ticker": ticker_up})
+    if cached:
+        last_updated = cached.get("last_updated")
+        if last_updated:
+            diff = (datetime.now() - last_updated).total_seconds()
+            # If cache is fresh (less than 30 mins), return it immediately
+            if diff < 1800:
+                return {"ticker": ticker, "price": cached["price"], "source": "Neural Cache", "cached": True}
+
     async with httpx.AsyncClient(timeout=15.0, follow_redirects=True, headers=CHROME_HEADERS, verify=False) as client:
+        price = 0.0
+        source = "SYNC_FAILED"
+        
         try:
-            # Screener.in Check
-            res = await client.get(f"{settings.SCREENER_BASE_URL}{ticker.upper()}/")
+            # Screener.in Check (Primary)
+            res = await client.get(f"{settings.SCREENER_BASE_URL}{ticker_up}/")
             html = res.text
             if 'Current Price' in html:
                 pre = html.split('Current Price')[1]
-                price = pre.split('<span class="number">')[1].split('</span>')[0].replace(',', '').strip()
-                return {"ticker": ticker, "price": float(price), "source": "Screener.in"}
-        except: pass
+                price_str = pre.split('<span class="number">')[1].split('</span>')[0].replace(',', '').strip()
+                price = float(price_str)
+                source = "Screener.in"
+        except: 
+            try:
+                # Yahoo Fallback (Secondary)
+                y_ticker = ticker_up if "." in ticker_up else f"{ticker_up}.NS"
+                res = await client.get(f"{settings.YAHOO_FINANCE_URL}{y_ticker}")
+                data = res.json()
+                price = data['chart']['result'][0]['meta']['regularMarketPrice']
+                source = "Yahoo Finance"
+            except: pass
+
+        if price > 0:
+            # Update Intelligence Cache
+            await db.price_cache.update_one(
+                {"ticker": ticker_up},
+                {"$set": {"price": price, "last_updated": datetime.now(), "source": source}},
+                upsert=True
+            )
+            return {"ticker": ticker, "price": price, "source": source}
             
-        try:
-            # Yahoo Fallback
-            y_ticker = ticker if "." in ticker else f"{ticker}.NS"
-            res = await client.get(f"{settings.YAHOO_FINANCE_URL}{y_ticker.upper()}")
-            data = res.json()
-            return {"ticker": ticker, "price": data['chart']['result'][0]['meta']['regularMarketPrice'], "source": "Yahoo"}
-        except:
-            return {"ticker": ticker, "price": 0.0, "source": "SYNC_FAILED"}
+        return {"ticker": ticker, "price": 0.0, "source": "SYNC_FAILED"}
 
 @router.get("/mf-search")
 async def search_mutual_fund(q: str):
@@ -727,8 +752,13 @@ async def get_ai_insights():
 # NEW: MARKET ENGINE MANIFEST
 @router.post("/sync-prices")
 async def sync_all_prices():
-    """Neural hub for background asset price auditing"""
-    investments = await db.investments.find().to_list(1000)
+    """Neural hub for background asset price auditing with Priority Quotas"""
+    cursor = db.investments.find()
+    investments = [doc async for doc in cursor]
+    
+    # PRIORITY QUEUE: Sort by Value (High to Low) - AI Focus on Top Assets
+    investments.sort(key=lambda x: float(x.get("value", 0)), reverse=True)
+    
     synced_count = 0
     for item in investments:
         try:

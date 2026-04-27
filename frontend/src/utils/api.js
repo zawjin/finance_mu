@@ -7,8 +7,10 @@ const api = axios.create({
 // REQUEST INTERCEPTOR
 api.interceptors.request.use(
     (config) => {
-        // You can add auth tokens here in future
-        // console.log(`🚀 Starting Request: ${config.method.toUpperCase()} ${config.url}`);
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {

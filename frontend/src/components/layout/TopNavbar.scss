@@ -555,3 +555,9 @@
         padding-top: 64px !important;
     }
 }
+.menu-divider-glass {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}

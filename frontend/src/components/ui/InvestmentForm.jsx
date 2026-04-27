@@ -2,28 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     X, Calendar, CreditCard, ChevronDown,
     FileText, LayoutGrid, Tag, TrendingUp, Hash, DollarSign, Zap,
-    Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign,
-    Package, Heart, ShoppingCart, Stethoscope, Briefcase, Utensils,
-    ShoppingBag, Car, Plane, Home, Music, Coffee, Laptop, Tv, Film,
-    Camera, Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun,
-    Moon, Cloud, Star, Shield, Key, Lock, Bell, Mail, Phone, MapPin,
-    Flag, Globe, Cpu, HardDrive, Database, Book, Library, Building,
-    Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin,
-    Gavel, Terminal, Code, Webhook, Hexagon, Server, Wifi,
-    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree,
-    ChefHat, Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine,
-    Activity, Bone, Brain, HeartPulse, Microscope, Syringe, Thermometer,
-    Bath, Bed, Lamp, Refrigerator, Sofa, WashingMachine, Bird, Bug, Dog,
-    Fish, Flower, Leaf, Rabbit, TreeDeciduous, TreePine, Brush, Music2,
-    Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive, Atom,
-    Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component,
-    Construction, Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical,
-    Gamepad, Glasses, GraduationCap, Hammer, Infinity, Joystick, Lasso,
-    LifeBuoy, Monitor, Mouse, Network, Newspaper, Nut, Orbit, Paperclip,
-    PawPrint, PersonStanding, Pipette, Plug, Printer, Puzzle, Quote,
-    Radiation, Radio, Rocket, Search, Send, Share2, Shrink, Shuffle,
-    Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon,
-    Users, Video, Volume2, Watch, Gamepad2, Gem
+    Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import {
@@ -34,72 +13,9 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { Autocomplete } from '@mui/material';
 import api from '../../utils/api';
 import { useSelector } from 'react-redux';
+import { getIcon } from '../../utils/iconMap';
+import { predictSmartCategory } from '../../utils/aiUtils';
 import './Forms.scss';
-
-// Expanded high-res icon map - Universal Taxonomy
-const IconMap = {
-    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
-    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
-    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
-    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
-    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
-    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
-    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
-    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
-    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
-    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
-    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
-    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
-    Library: <Library />, Building: <Building />, Store: <Store />,
-    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
-    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
-    TrendingUp: <TrendingUp />, Wallet: <Wallet />, Gavel: <Gavel />,
-    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />,
-    Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />, Settings2: <Settings2 />,
-    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />,
-    Mountain: <Mountain />, Tents: <Tent />, Palmtree: <Palmtree />,
-    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
-    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Soup />, Wine: <Wine />,
-    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />,
-    Microscope: <Microscope />, Syringe: <Syringe />, Thermometer: <Thermometer />,
-    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />,
-    Sofa: <Sofa />, WashingMachine: <WashingMachine />,
-    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
-    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />, TreePine: <TreePine />,
-    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />,
-    PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
-    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
-    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
-    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
-    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
-    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
-    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
-    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
-    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
-    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
-    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
-    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
-    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />,
-    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />,
-    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />,
-    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />,
-    Video: <Video />, Volume2: <Volume2 />, Watch: <Watch />, Gem: <Gem />
-};
-
-const getIcon = (catName, categories = [], options = {}) => {
-    const cat = categories.find(c => c.name === catName);
-    const iconName = cat?.icon || 'Package';
-    const color = options.color || cat?.color || '#0071e3';
-
-    const props = {
-        size: options.size || 16,
-        color: color,
-        strokeWidth: options.strokeWidth || 2.5,
-    };
-
-    const IconComponent = IconMap[iconName] || <Package />;
-    return React.cloneElement(IconComponent, props);
-};
 export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
 
@@ -265,6 +181,9 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
 
     const handleFormSubmit = () => {
         if (validate()) {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(20);
+            }
             onSubmit({
                 name: formData.name,
                 value: parseFloat(formData.value),
@@ -560,7 +479,17 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         variant="outlined"
                         size="small"
                         value={formData.name}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        onChange={e => {
+                            const val = e.target.value;
+                            setFormData(prev => {
+                                const newData = { ...prev, name: val };
+                                const suggested = predictSmartCategory(val, assetClasses);
+                                if (suggested) {
+                                    newData.type = suggested;
+                                }
+                                return newData;
+                            });
+                        }}
                         error={!!errors.name}
                         helperText={errors.name}
                         InputProps={{
@@ -580,6 +509,10 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         onChange={e => setFormData({ ...formData, type: e.target.value, sub: '' })}
                         error={!!errors.type}
                         displayEmpty
+                        renderValue={(selected) => {
+                            if (!selected) return <span style={{ opacity: 0.6 }}>Select Class</span>;
+                            return selected;
+                        }}
                         startAdornment={
                             <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}>
                                 <Box className="form-icon-vibrant" sx={{ 
@@ -850,6 +783,11 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                             value={formData.payment_source_id}
                             onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
                             displayEmpty
+                            renderValue={(selected) => {
+                                if (!selected) return <span style={{ opacity: 0.6 }}>No deduction (track only)</span>;
+                                const account = filteredReserves.find(r => r._id === selected);
+                                return account ? account.account_name : selected;
+                            }}
                             sx={{ borderRadius: '14px', backgroundColor: 'rgba(0,0,0,0.015)', fontWeight: 700, fontSize: '0.92rem' }}
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (track only)</em></MenuItem>

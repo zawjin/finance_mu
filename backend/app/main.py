@@ -6,6 +6,8 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.api.endpoints import router as api_router
 from app.api.ai_service import router as ai_router
+from app.api.auth import router as auth_router
+from app.api.user_mgmt import router as user_router
 from app.middleware.logging import RequestLoggingMiddleware
 
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -23,6 +25,8 @@ app.add_middleware(
 )
 
 # 3. Register our split endpoints 
+app.include_router(auth_router, prefix="/api")
+app.include_router(user_router, prefix="/api")
 app.include_router(api_router, prefix="/api")
 app.include_router(ai_router, prefix="/api/ai")
 

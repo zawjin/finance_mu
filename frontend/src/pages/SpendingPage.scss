@@ -1,11 +1,26 @@
 .spending-analytics-container {
     margin-bottom: 2.5rem;
     overflow: hidden;
+
+    @media (max-width: 768px) {
+        margin-left: -1rem; // Pull out to touch edges
+        margin-right: -1rem;
+        margin-bottom: 1.5rem;
+        width: calc(100% + 2rem);
+    }
 }
 
 .analytics-card-premium {
     padding: 2.5rem !important;
     border-radius: 32px !important;
+
+    @media (max-width: 768px) {
+        padding: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 }
 
 .analytics-hub {
@@ -35,6 +50,14 @@
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
+
+    @media (max-width: 768px) {
+        padding: 1.25rem !important;
+        background-color: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+        border-radius: 20px !important;
+    }
 }
 
 .analytic-inner-card-large {
@@ -45,6 +68,14 @@
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
+
+    @media (max-width: 768px) {
+        padding: 1.25rem !important;
+        background-color: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+        border-radius: 20px !important;
+    }
 }
 
 .analytic-subtitle {

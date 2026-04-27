@@ -5,75 +5,8 @@ import {
     Search, Filter, PieChart, Download, Activity,
     TrendingUp, Calendar, Trash2, Edit2, Zap, CalendarDays,
     Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2, Layers,
-    Plus, X, PlusCircle, Fingerprint, Package, Heart,
-    ShoppingCart, Stethoscope, ShoppingBag, Car, Gamepad2,
-    Plane, Music, Tag, Coffee, Smartphone, Laptop, Tv, Film, Camera,
-    Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun, Moon, Cloud, Star, Shield,
-    Key, Lock, Bell, Mail, Phone, MapPin, Flag, Cpu, HardDrive, Database, Book,
-    Library, Building, Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin,
-    Gavel, Terminal, Code, Webhook, Hash, Hexagon, Server, Wifi,
-    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree, ChefHat,
-    Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine, Bone, Brain,
-    HeartPulse, Microscope, Syringe, Thermometer, Bath, Bed, Lamp, Refrigerator, Sofa,
-    WashingMachine, Bird, Bug, Dog, Fish, Flower, Leaf, Rabbit, TreeDeciduous,
-    TreePine, Brush, Music2, Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive,
-    Atom, Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component, Construction,
-    Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical, Gamepad, Gift, Glasses,
-    GraduationCap, Hammer, Infinity, Joystick, Lasso, LifeBuoy, Monitor, Mouse, Network,
-    Newspaper, Nut, Orbit, Paperclip, PawPrint, PersonStanding, Pipette, Plug, Printer,
-    Puzzle, Quote, Radiation, Radio, Rocket, Send, Share2, Shrink, Shuffle,
-    Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon, Users, Video, Volume2, Watch
+    Plus, X, PlusCircle, Fingerprint, Sparkles
 } from 'lucide-react';
-
-const IconMap = {
-    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
-    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Package />, // Fallback
-    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
-    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
-    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
-    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
-    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
-    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
-    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
-    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
-    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
-    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
-    Library: <Library />, Building: <Building />, Store: <Store />,
-    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
-    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
-    TrendingUp: <TrendingUp />, Wallet: <Landmark />, // Fallback
-    Gavel: <Gavel />, Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />,
-    Hash: <Hash />, Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />,
-    Settings2: <Settings2 />, Bus: <Bus />, TrainFront: <TrainFront />,
-    Ship: <Ship />, TramFront: <TramFront />, Mountain: <Mountain />,
-    Tents: <Tent />, Palmtree: <Palmtree />, ChefHat: <ChefHat />,
-    Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
-    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Package />, // Fallback
-    Wine: <Wine />, Activity: <Activity />, Bones: <Bone />, Brain: <Brain />,
-    HeartPulse: <HeartPulse />, Microscope: <Microscope />, Syringe: <Syringe />,
-    Thermometer: <Thermometer />, Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />,
-    Refrigerator: <Refrigerator />, Sofa: <Sofa />, WashingMachine: <WashingMachine />,
-    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
-    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />,
-    TreePine: <TreePine />, Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />,
-    Palette: <Palette />, PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
-    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
-    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
-    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
-    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
-    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
-    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
-    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
-    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
-    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
-    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
-    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
-    Radio: <Radio />, Rocket: <Rocket />, Send: <Send />, Share2: <Share2 />,
-    Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />, Smile: <Smile />,
-    Target: <Target />, Ticket: <Ticket />, Timer: <Timer />, Trophy: <Trophy />,
-    Truck: <Truck />, User: <UserIcon />, Users: <Users />, Video: <Video />,
-    Volume2: <Volume2 />, Watch: <Watch />, Gem: <Gem />
-};
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
@@ -82,6 +15,7 @@ import BaseDialog from '../components/ui/BaseDialog';
 import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper, Stack } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import { getIcon, IconMap } from '../utils/iconMap';
 import './InvestmentPage.scss';
 
 // Charting
@@ -131,6 +65,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
         return { current: amt - totalWithdrawnAmt, invested: amt, withdrawn: totalWithdrawnAmt, isStatic: true };
     };
+
     const getAssetStyle = (type) => {
         const found = assetClasses?.find(c => c.name === type);
         if (found) {
@@ -201,7 +136,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const filteredInvestments = useMemo(() => {
         return investments.filter(item => {
             const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
-            const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
+            const matchesSearch = (item.name || '').toLowerCase().includes(search.toLowerCase()) ||
                 type.toLowerCase().includes(search.toLowerCase());
             const matchesType = selectedType === 'ALL' || type === selectedType;
 
@@ -501,6 +436,91 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 </Box>
                             </div>
                         </div>
+
+                        {/* ADVANCED INTELLIGENCE: PORTFOLIO REBALANCING & PASSIVE INCOME */}
+                        <Grid container spacing={2} sx={{ mt: 1, px: { xs: 0, sm: 0 } }}>
+                            <Grid item xs={12} md={6}>
+                                <Box className="intelligence-card-sub glass-effect no-glass-mobile">
+                                    <Typography className="intelligence-label">
+                                        <Activity size={14} color="#6366f1" /> PORTFOLIO REBALANCING (BETA)
+                                    </Typography>
+                                    <div className="rebalance-grid">
+                                        {Object.entries(totals.typeStats).map(([type, stats]) => {
+                                            const weight = (stats.current / (totals.grossValue || 1)) * 100;
+                                            const typeLower = type.toLowerCase();
+                                            
+                                            // INTELLIGENT TARGET MAPPING
+                                            let target = 0;
+                                            if (typeLower.includes('stock') || typeLower.includes('equity')) target = 40;
+                                            else if (typeLower.includes('cash') || typeLower.includes('bank')) target = 20;
+                                            else if (typeLower.includes('gold') || typeLower.includes('metal')) target = 15;
+                                            else if (typeLower.includes('fund') || typeLower.includes('mutual')) target = 25;
+                                            else if (typeLower.includes('chit') || typeLower.includes('fixed')) target = 10;
+                                            
+                                            const diff = weight - target;
+                                            const style = getAssetStyle(type);
+
+                                            return (
+                                                <div key={type} className="rebalance-item">
+                                                    <div className="rebalance-meta">
+                                                        <span className="rebalance-type">{type}</span>
+                                                        <span className="rebalance-weight">{weight.toFixed(1)}%</span>
+                                                    </div>
+                                                    <div className="rebalance-progress-track">
+                                                        <div className="rebalance-progress-fill" style={{ width: `${weight}%`, background: style.color }}></div>
+                                                        {target > 0 && <div className="rebalance-target-marker" style={{ left: `${target}%` }} title={`Target: ${target}%`}></div>}
+                                                    </div>
+                                                    {target > 0 && (
+                                                        <div className={`rebalance-status ${Math.abs(diff) < 5 ? 'neutral' : diff > 0 ? 'overweight' : 'underweight'}`}>
+                                                            {Math.abs(diff) < 5 ? 'Balanced' : diff > 0 ? `Overweight (+${diff.toFixed(0)}%)` : `Underweight (${diff.toFixed(0)}%)`}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Box className="intelligence-card-sub glass-effect no-glass-mobile">
+                                    <Typography className="intelligence-label">
+                                        <Zap size={14} color="#f59e0b" /> PASSIVE INCOME PROJECTIONS
+                                    </Typography>
+                                    <div className="income-projection-wrap">
+                                        <div className="projection-main">
+                                            <span className="projection-label">EXPECTED ANNUAL YIELD</span>
+                                            <span className="projection-value">
+                                                {formatCurrency(
+                                                    Object.entries(totals.typeStats).reduce((sum, [type, stats]) => {
+                                                        if (type === 'Chit Fund') return sum + (stats.current * 0.065);
+                                                        if (type === 'Mutual Funds') return sum + (stats.current * 0.12);
+                                                        if (type === 'Stocks') return sum + (stats.current * 0.02);
+                                                        return sum;
+                                                    }, 0)
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className="projection-breakdown">
+                                            <div className="pb-item">
+                                                <span className="pb-label">Monthly Passive</span>
+                                                <span className="pb-val">~ {formatCurrency(Object.entries(totals.typeStats).reduce((sum, [type, stats]) => {
+                                                    if (type === 'Chit Fund') return sum + (stats.current * 0.065 / 12);
+                                                    if (type === 'Mutual Funds') return sum + (stats.current * 0.12 / 12);
+                                                    return sum;
+                                                }, 0))}</span>
+                                            </div>
+                                            <div className="pb-item">
+                                                <span className="pb-label">Daily Accrual</span>
+                                                <span className="pb-val">~ {formatCurrency(Object.entries(totals.typeStats).reduce((sum, [type, stats]) => {
+                                                    if (type === 'Chit Fund') return sum + (stats.current * 0.065 / 365);
+                                                    return sum;
+                                                }, 0))}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Box>
                 </motion.div>
             )}
@@ -552,6 +572,19 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+
+                <div className="intelligence-toggle-card glass-effect" onClick={onToggleAnalytics}>
+                    <div className="itc-left">
+                        <div className="itc-icon"><Sparkles size={20} color="#f97316" /></div>
+                        <div className="itc-info">
+                            <div className="itc-label">NEURAL DASHBOARD</div>
+                            <div className="itc-sub">Toggle Rebalancing & Passive Projections</div>
+                        </div>
+                    </div>
+                    <div className={`itc-status-chip ${showAnalytics ? 'active' : ''}`}>
+                        {showAnalytics ? 'LIVE' : 'OPEN'}
                     </div>
                 </div>
             </div>

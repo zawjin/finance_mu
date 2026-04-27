@@ -11,8 +11,8 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { X, CalendarDays, Repeat } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { X, CalendarDays, Repeat, Activity } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import './App.scss';
 import TopNavbar from './components/layout/TopNavbar';
 import OverviewPage from './pages/OverviewPage';
@@ -26,6 +26,11 @@ import SiteSettingsPage from './pages/SiteSettingsPage';
 import SalaryCalcPage from './pages/SalaryCalcPage';
 import HealthPage from './pages/HealthPage';
 import ReservePage from './pages/ReservePage';
+import LoginPage from './pages/LoginPage';
+import UserManagementPage from './pages/UserManagementPage';
+import RoleManagementPage from './pages/RoleManagementPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { fetchCurrentUser } from './store/authSlice';
 import BaseDialog from './components/ui/BaseDialog';
 import ExpenseForm from './components/ui/ExpenseForm';
 import InvestmentForm from './components/ui/InvestmentForm';
@@ -99,14 +104,14 @@ export default function App() {
     const [showAnalytics, setShowAnalytics] = useState(false);
     const [reserveActiveTab, setReserveActiveTab] = useState('accounts');
 
-    const initialized = React.useRef(false);
+    const { user, token } = useSelector(state => state.auth);
 
     useEffect(() => {
-        if (!initialized.current) {
-            dispatch(fetchFinanceData());
-            initialized.current = true;
+        if (token) {
+            dispatch(fetchCurrentUser());
         }
-    }, [dispatch]);
+        dispatch(fetchFinanceData());
+    }, [dispatch, token]);
 
     const handleExpenseSubmit = async (data) => {
         try {
@@ -351,6 +356,10 @@ export default function App() {
             setShowAddInvestmentModal(true);
         } else if (path === '/fixed-expenses' || path === '/monthly-bills') {
             setShowAddYearlyModal(true);
+        } else if (path.startsWith('/admin/users')) {
+            window.dispatchEvent(new CustomEvent('trigger-add-user'));
+        } else if (path.startsWith('/admin/roles')) {
+            window.dispatchEvent(new CustomEvent('trigger-add-role'));
         } else if (path === '/reserves') {
             if (reserveActiveTab === 'local-investment') {
                 setShowAddLendingModal(true);
@@ -373,45 +382,72 @@ export default function App() {
         }
         if (path === '/investments') return 'ADD ASSET';
         if (path === '/fixed-expenses' || path === '/monthly-bills') return 'ADD BILL';
+        if (path === '/admin/users') return 'PROVISION';
+        if (path === '/admin/roles') return 'BORN';
         return 'SYNC';
     };
 
+    if (token && !user) {
+        return (
+            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', gap: '20px' }}>
+                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                    <Activity size={40} color="#0071e3" />
+                </motion.div>
+                <Typography sx={{ fontWeight: 800, color: '#1d1d1f', letterSpacing: '-0.02em' }}>Initializing Secure Session...</Typography>
+            </div>
+        );
+    }
+
     return (
         <ThemeProvider theme={appleTheme}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <CssBaseline />
-                <Router>
-                    <div className="app-shell">
-                        <TopNavbar
-                            onAdd={handleGlobalAdd}
-                            addLabel={getDynamicAddLabel()}
-                            onOpenAiModal={() => setShowAiModal(true)}
-                            onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
-                            showAnalytics={showAnalytics}
-                        />
+            <Router>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <CssBaseline />
+                    <AnimatePresence mode="wait">
+                        <Routes>
+                            <Route path="/login" element={!token ? <LoginPage /> : <Navigate to="/" replace />} />
+                            
+                            <Route path="/*" element={
+                                <ProtectedRoute>
+                                    <div className="app-shell">
+                                        <TopNavbar
+                                            onAdd={handleGlobalAdd}
+                                            addLabel={getDynamicAddLabel()}
+                                            onOpenAiModal={() => setShowAiModal(true)}
+                                            onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
+                                            showAnalytics={showAnalytics}
+                                        />
 
-                        <div className="content-shell">
-                            <main className="main-content">
-                                <AnimatePresence mode="wait">
-                                    <Routes>
-                                        <Route path="/" element={<OverviewPage />} />
-                                        <Route path="/overview" element={<Navigate to="/" replace />} />
-                                        <Route path="/spending" element={<SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
-                                        <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
-                                        <Route path="/fixed-expenses" element={<YearlyExpensePage onEdit={(item) => setEditingYearly(item)} />} />
-                                        <Route path="/yearly-expenses" element={<Navigate to="/fixed-expenses" replace />} />
-                                        <Route path="/reserves" element={<ReservePage activeTab={reserveActiveTab} setActiveTab={setReserveActiveTab} onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} onRevert={handleTermRevert} onTransfer={() => setShowTransferModal(true)} onAddFunds={(acc) => setAddingFundsTo(acc)} />} />
-                                        <Route path="/categories" element={<CategoryPage />} />
-                                        <Route path="/profile" element={<ProfilePage />} />
-                                        <Route path="/settings" element={<SettingsPage />} />
-                                        <Route path="/site-settings" element={<SiteSettingsPage />} />
-                                        <Route path="/salary-calculation" element={<SalaryCalcPage />} />
-                                        <Route path="/health" element={<HealthPage showAnalytics={showAnalytics} />} />
-                                    </Routes>
-                                </AnimatePresence>
-                            </main>
+                                        <div className="content-shell">
+                                            <main className="main-content">
+                                                <Routes>
+                                                    <Route path="/" element={<ProtectedRoute module="Dashboard"><OverviewPage /></ProtectedRoute>} />
+                                                    <Route path="/overview" element={<Navigate to="/" replace />} />
+                                                    <Route path="/spending" element={<ProtectedRoute module="Audit Ledger"><SpendingPage onEdit={(item) => setEditingItem(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} /></ProtectedRoute>} />
+                                                    <Route path="/investments" element={<ProtectedRoute module="Asset Portfolio"><InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} /></ProtectedRoute>} />
+                                                    <Route path="/fixed-expenses" element={<ProtectedRoute module="Fixed Costs"><YearlyExpensePage onEdit={(item) => setEditingYearly(item)} /></ProtectedRoute>} />
+                                                    <Route path="/yearly-expenses" element={<Navigate to="/fixed-expenses" replace />} />
+                                                    <Route path="/reserves" element={<ProtectedRoute module="Cash Reserves"><ReservePage activeTab={reserveActiveTab} setActiveTab={setReserveActiveTab} onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} onRevert={handleTermRevert} onTransfer={() => setShowTransferModal(true)} onAddFunds={(acc) => setAddingFundsTo(acc)} /></ProtectedRoute>} />
+                                                    <Route path="/categories" element={<ProtectedRoute module="Settings"><CategoryPage /></ProtectedRoute>} />
+                                                    <Route path="/profile" element={<ProfilePage />} />
+                                                    <Route path="/settings" element={<ProtectedRoute module="Settings"><SettingsPage /></ProtectedRoute>} />
+                                                    <Route path="/site-settings" element={<ProtectedRoute module="Role Management"><SiteSettingsPage /></ProtectedRoute>} />
+                                                    <Route path="/salary-calculation" element={<ProtectedRoute module="Salary Calculation"><SalaryCalcPage /></ProtectedRoute>} />
+                                                    <Route path="/health" element={<ProtectedRoute module="Health"><HealthPage showAnalytics={showAnalytics} /></ProtectedRoute>} />
+                                                    
+                                                    {/* RBAC Protected Modules */}
+                                                    <Route path="/admin/users" element={<ProtectedRoute module="User Management"><UserManagementPage /></ProtectedRoute>} />
+                                                    <Route path="/admin/roles" element={<ProtectedRoute module="Role Management"><RoleManagementPage /></ProtectedRoute>} />
+                                                </Routes>
+                                            </main>
+                                        </div>
+                                    </div>
+                                </ProtectedRoute>
+                            } />
+                        </Routes>
+                    </AnimatePresence>
 
-                            {/* REFACTORED DYNAMIC MODALS */}
+                    {/* REFACTORED DYNAMIC MODALS */}
 
                             <BaseDialog
                                 open={showAddModal || !!editingItem}
@@ -523,10 +559,8 @@ export default function App() {
                             </BaseDialog>
 
                             <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />
-                        </div>
-                    </div>
-                </Router>
-            </LocalizationProvider>
-        </ThemeProvider>
-    );
+                        </LocalizationProvider>
+                    </Router>
+                </ThemeProvider>
+            );
 }

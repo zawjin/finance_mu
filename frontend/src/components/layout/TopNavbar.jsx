@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Typography } from '@mui/material';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles,
     User, Globe, Banknote, Bookmark, Activity,
     X, ArrowLeft, Zap, ChevronRight, Home, TrendingUp,
-    Shield, Calculator, CreditCard
+    Shield, Calculator, CreditCard, LogOut, Users, Key
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { logout } from '../../store/authSlice';
 import './TopNavbar.scss';
 
 const NAV_ITEMS = [
-    { to: '/',               label: 'Dashboard',     icon: <LayoutDashboard size={22} />, color: '#6366f1', bg: '#eef2ff' },
-    { to: '/spending',       label: 'Audit Ledger',  icon: <Wallet size={22} />,          color: '#0ea5e9', bg: '#e0f2fe' },
-    { to: '/reserves',       label: 'Cash Reserves', icon: <Banknote size={22} />,        color: '#10b981', bg: '#d1fae5' },
-    { to: '/investments',    label: 'Assets',        icon: <Gem size={22} />,             color: '#f59e0b', bg: '#fef3c7' },
-    { to: '/fixed-expenses', label: 'Fixed Costs',   icon: <Bookmark size={22} />,        color: '#8b5cf6', bg: '#ede9fe' },
-    { to: '/health',         label: 'Health',        icon: <Activity size={22} />,        color: '#ef4444', bg: '#fee2e2' },
+    { to: '/',               label: 'Dashboard',     module: 'Dashboard',       icon: <LayoutDashboard size={22} />, color: '#6366f1', bg: '#eef2ff' },
+    { to: '/spending',       label: 'Audit Ledger',  module: 'Audit Ledger',    icon: <Wallet size={22} />,          color: '#0ea5e9', bg: '#e0f2fe' },
+    { to: '/reserves',       label: 'Cash Reserves', module: 'Cash Reserves',   icon: <Banknote size={22} />,        color: '#10b981', bg: '#d1fae5' },
+    { to: '/investments',    label: 'Assets',        module: 'Asset Portfolio', icon: <Gem size={22} />,             color: '#f59e0b', bg: '#fef3c7' },
+    { to: '/fixed-expenses', label: 'Fixed Costs',   module: 'Fixed Costs',     icon: <Bookmark size={22} />,        color: '#8b5cf6', bg: '#ede9fe' },
+    { to: '/health',         label: 'Health',        module: 'Health',          icon: <Activity size={22} />,        color: '#ef4444', bg: '#fee2e2' },
+];
+
+const ADMIN_ITEMS = [
+    { to: '/admin/users', label: 'User Mgmt', module: 'User Management', icon: <Users size={22} />, color: '#6366f1', bg: '#eef2ff' },
+    { to: '/admin/roles', label: 'Role Mgmt', module: 'Role Management', icon: <Key size={22} />,   color: '#0ea5e9', bg: '#e0f2fe' },
 ];
 
 const TOOL_ITEMS = [
@@ -24,7 +31,6 @@ const TOOL_ITEMS = [
     { type: 'link',   to: '/salary-calculation', label: 'Salary Calc',  icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
     { type: 'link',   to: '/categories',         label: 'Config',       icon: <Settings size={18} />,   color: '#8b5cf6', bg: '#ede9fe' },
     { type: 'link',   to: '/profile',            label: 'Profile',      icon: <User size={18} />,       color: '#10b981', bg: '#d1fae5' },
-    { type: 'link',   to: '/site-settings',      label: 'Site Config',  icon: <Globe size={18} />,      color: '#64748b', bg: '#f1f5f9' },
 ];
 
 const PAGE_TITLE_MAP = {
@@ -46,20 +52,33 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
     const [profileOpen, setProfileOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const profileRef = useRef(null);
     const sheetRef = useRef(null);
 
     // Live financial stats for the bottom sheet header
     const { reserves, summary } = useSelector(state => state.finance);
+    const { user } = useSelector(state => state.auth);
+    
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+    };
+
+    const hasPermission = (moduleName) => {
+        if (user?.role?.role_name === 'Super Admin') return true;
+        return user?.role?.permissions?.some(p => p.module_name === moduleName && p.can_view);
+    };
+
     const totalLiquidity = (reserves || [])
         .filter(r => r.account_type !== 'CREDIT_CARD')
         .reduce((s, r) => s + parseFloat(r.balance || 0), 0);
     const totalAssets = summary?.total_investment || 0;
 
     const currentPage = PAGE_TITLE_MAP[location.pathname] || { title: 'Friday', sub: 'Financial Intelligence' };
-    const showAddBtn = ['/spending', '/investments', '/fixed-expenses', '/health', '/reserves'].includes(location.pathname);
-    const showAnalyticsBtn = ['/spending', '/investments', '/health'].includes(location.pathname);
+    const showAddBtn = ['/spending', '/investments', '/fixed-expenses', '/health', '/reserves', '/admin/users', '/admin/roles'].some(p => location.pathname.startsWith(p));
+    const showAnalyticsBtn = ['/spending', '/investments', '/health'].some(p => location.pathname.startsWith(p));
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 8);
@@ -95,18 +114,17 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
             {/* ─── DESKTOP NAVBAR ─── */}
             <nav className="top-navbar-root desktop-nav-only">
                 <div className="nav-brand-wrap">
-                    <div onClick={() => window.location.href = '/'} className="nav-logo-brand">
-                        <div className="logo-square-icon"><div className="logo-inner-rect"></div></div>
+                    <div onClick={() => navigate('/')} className="nav-logo-brand">
+                        <div className="logo-square-icon">
+                            <div className="logo-inner-rect"></div>
+                        </div>
                         FRIDAY
                     </div>
                     <div className="nav-links-scrollable">
-                        <ClassicNavLink to="/"               label="DASHBOARD" icon={<LayoutDashboard size={16} />} />
-                        <ClassicNavLink to="/spending"        label="AUDIT"     icon={<Wallet size={16} />} />
-                        <ClassicNavLink to="/reserves"        label="CASH"      icon={<Banknote size={16} />} />
-                        <ClassicNavLink to="/investments"     label="ASSETS"    icon={<Gem size={16} />} />
-                        <ClassicNavLink to="/fixed-expenses"  label="FIXED"     icon={<Bookmark size={16} />} />
-                        <ClassicNavLink to="/health"          label="HEALTH"    icon={<Activity size={16} />} />
-                        <ClassicNavLink to="/categories"      label="CONFIG"    icon={<Settings size={16} />} />
+                        {NAV_ITEMS.map(item => hasPermission(item.module) && (
+                            <ClassicNavLink key={item.to} to={item.to} label={item.label.toUpperCase()} icon={item.icon} />
+                        ))}
+                        
                     </div>
                 </div>
 
@@ -126,14 +144,24 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                     </div>
                     <div className="nav-profile-group">
                         <div className="pos-rel" ref={profileRef}>
-                            <div onClick={() => setProfileOpen(!profileOpen)} className="profile-trigger-avatar">S</div>
+                            <div onClick={() => setProfileOpen(!profileOpen)} className="profile-trigger-avatar">
+                                {user?.username?.[0]?.toUpperCase() || 'S'}
+                            </div>
                             {profileOpen && (
                                 <div className="dropdown-menu-glass">
                                     <MenuOption icon={<User size={16} />}     label="Profile"       onClick={() => { setProfileOpen(false); navigate('/profile'); }} />
-                                    <MenuOption icon={<Settings size={16} />} label="Settings"      onClick={() => { setProfileOpen(false); navigate('/settings'); }} />
-                                    <MenuOption icon={<Banknote size={16} />} label="S Calculation" onClick={() => { setProfileOpen(false); navigate('/salary-calculation'); }} />
-                                    <MenuOption icon={<Settings size={16} />} label="Config"        onClick={() => { setProfileOpen(false); navigate('/categories'); }} />
-                                    <MenuOption icon={<Globe size={16} />}    label="Site Settings" onClick={() => { setProfileOpen(false); navigate('/site-settings'); }} />
+                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Settings"      onClick={() => { setProfileOpen(false); navigate('/settings'); }} />}
+                                    {hasPermission('Salary Calculation') && <MenuOption icon={<Banknote size={16} />} label="S Calculation" onClick={() => { setProfileOpen(false); navigate('/salary-calculation'); }} />}
+                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Config"        onClick={() => { setProfileOpen(false); navigate('/categories'); }} />}
+                                    
+                                    <div className="menu-divider-glass"></div>
+                                    
+                                    {hasPermission('User Management') && <MenuOption icon={<Users size={16} />} label="Users" onClick={() => { setProfileOpen(false); navigate('/admin/users'); }} />}
+                                    {hasPermission('Role Management') && <MenuOption icon={<Key size={16} />} label="Roles" onClick={() => { setProfileOpen(false); navigate('/admin/roles'); }} />}
+                                    
+                                    <div className="menu-divider-glass"></div>
+                                    
+                                    <MenuOption icon={<LogOut size={16} />} label="Sign Out" onClick={handleLogout} className="logout-option" />
                                 </div>
                             )}
                         </div>
@@ -225,31 +253,28 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                     {/* Quick Nav Grid */}
                     <div className="bs-section-label">QUICK NAVIGATE</div>
                     <div className="bs-nav-grid">
-                        {NAV_ITEMS.map(item => {
-                            const isActive = location.pathname === item.to;
-                            return (
-                                <NavLink
-                                    key={item.to}
-                                    to={item.to}
-                                    end={item.to === '/'}
-                                    className={`bs-grid-item ${isActive ? 'active' : ''}`}
-                                    onClick={() => setDrawerOpen(false)}
-                                    style={{ '--item-color': item.color, '--item-bg': item.bg }}
-                                >
-                                    <div className="bs-grid-icon" style={{ background: isActive ? item.color : item.bg, color: isActive ? '#fff' : item.color }}>
-                                        {item.icon}
-                                    </div>
-                                    <span className="bs-grid-label">{item.label}</span>
-                                    {isActive && <span className="bs-grid-active-dot"></span>}
-                                </NavLink>
-                            );
-                        })}
+                        {NAV_ITEMS.map((item) => hasPermission(item.module) && (
+                            <NavLink
+                                key={item.to}
+                                to={item.to}
+                                end={item.to === '/'}
+                                className={({ isActive }) => `bs-grid-item ${isActive ? 'active' : ''}`}
+                                onClick={() => setDrawerOpen(false)}
+                                style={{ '--item-color': item.color, '--item-bg': item.bg }}
+                            >
+                                <div className="bs-grid-icon" style={{ background: location.pathname === item.to ? item.color : item.bg, color: location.pathname === item.to ? '#fff' : item.color }}>
+                                    {item.icon}
+                                </div>
+                                <span className="bs-grid-label">{item.label}</span>
+                                {location.pathname === item.to && <span className="bs-grid-active-dot"></span>}
+                            </NavLink>
+                        ))}
                     </div>
 
                     {/* Tools Grid */}
-                    <div className="bs-section-label">TOOLS</div>
+                    <div className="bs-section-label">MANAGEMENT TOOLS</div>
                     <div className="bs-tool-grid">
-                        {TOOL_ITEMS.map((item, idx) => {
+                        {[...TOOL_ITEMS, ...ADMIN_ITEMS].filter(item => !item.module || hasPermission(item.module)).map((item, idx) => {
                             if (item.type === 'action') {
                                 return (
                                     <button
@@ -282,6 +307,18 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                                 </NavLink>
                             );
                         })}
+                        {user?.role?.role_name === 'Super Admin' && (
+                            <button
+                                className="bs-grid-item bs-grid-item--sm"
+                                style={{ '--item-color': '#ef4444' }}
+                                onClick={handleLogout}
+                            >
+                                <div className="bs-grid-icon bs-grid-icon--sm" style={{ background: '#fee2e2', color: '#ef4444' }}>
+                                    <LogOut size={18} />
+                                </div>
+                                <span className="bs-grid-label bs-grid-label--sm">Logout</span>
+                            </button>
+                        )}
                     </div>
 
                     <div className="bs-footer">

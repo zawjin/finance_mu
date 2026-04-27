@@ -137,3 +137,39 @@ class HealthLog(BaseModel):
     habit_id: str
     date: str # YYYY-MM-DD
     completed: bool = True
+
+# --- AUTH & RBAC SCHEMAS ---
+
+class PermissionSchema(BaseModel):
+    module_name: str
+    can_view: bool = False
+    can_create: bool = False
+    can_edit: bool = False
+    can_delete: bool = False
+
+class RoleSchema(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    role_name: str
+    permissions: List[PermissionSchema] = []
+
+class UserSchema(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    username: str
+    password: Optional[str] = None # Only for input
+    mobile: Optional[str] = None
+    role_id: Optional[str] = None
+    status: str = "ACTIVE" # ACTIVE, DISABLED
+
+class UserResponse(BaseModel):
+    id: str = Field(None, alias="_id")
+    username: str
+    mobile: Optional[str] = None
+    role: Optional[RoleSchema] = None
+    status: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

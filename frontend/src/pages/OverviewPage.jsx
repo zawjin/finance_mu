@@ -106,6 +106,13 @@ export default function OverviewPage() {
     const [activePeriod, setActivePeriod] = useState('month');
     const [currentTime, setCurrentTime] = useState(dayjs());
 
+    const { user } = useSelector(s => s.auth);
+
+    const hasModule = (moduleName) => {
+        if (user?.role?.role_name === 'Super Admin') return true;
+        return user?.role?.permissions?.some(p => p.module_name === moduleName && p.can_view);
+    };
+
     React.useEffect(() => {
         const timer = setInterval(() => setCurrentTime(dayjs()), 10000);
         return () => clearInterval(timer);
@@ -420,78 +427,80 @@ export default function OverviewPage() {
             </motion.div>
 
             {/* ── Net Worth Card ────────────────────────────── */}
-            <motion.div {...fadeUp(0.05)}>
-                <div className="ov-networth" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <div className="ov-networth__label" style={{ position: 'relative', zIndex: 1 }}>
-                            <Activity size={12} /> Total Net Worth
-                        </div>
-                        <div className="ov-networth__value" style={{ position: 'relative', zIndex: 1 }}>
-                            {formatCurrency(pulse.netWorth)}
-                        </div>
-                        <div className="ov-networth__pills">
-                            <div className="ov-networth__pill positive">
-                                <TrendingUp size={12} color="#6ee7b7" />
-                                <span className="pill-val">{formatCurrency(pulse.liquidity)}</span>
-                                <span className="pill-lbl">Liquid</span>
+            {hasModule('Cash Reserves') && hasModule('Asset Portfolio') && (
+                <motion.div {...fadeUp(0.05)}>
+                    <div className="ov-networth" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <div className="ov-networth__label" style={{ position: 'relative', zIndex: 1 }}>
+                                <Activity size={12} /> Total Net Worth
                             </div>
-                            <div className="ov-networth__pill">
-                                <BarChart2 size={12} color="rgba(255,255,255,0.6)" />
-                                <span className="pill-val">{formatCurrency(pulse.totalValuation)}</span>
-                                <span className="pill-lbl">Invested</span>
+                            <div className="ov-networth__value" style={{ position: 'relative', zIndex: 1 }}>
+                                {formatCurrency(pulse.netWorth)}
                             </div>
-                            {pulse.grossLiabilities > 0 && (
-                                <div className="ov-networth__pill negative">
-                                    <TrendingDown size={12} color="#fca5a5" />
-                                    <span className="pill-val">{formatCurrency(pulse.grossLiabilities)}</span>
-                                    <span className="pill-lbl">Liability</span>
+                            <div className="ov-networth__pills">
+                                <div className="ov-networth__pill positive">
+                                    <TrendingUp size={12} color="#6ee7b7" />
+                                    <span className="pill-val">{formatCurrency(pulse.liquidity)}</span>
+                                    <span className="pill-lbl">Liquid</span>
                                 </div>
-                            )}
+                                <div className="ov-networth__pill">
+                                    <BarChart2 size={12} color="rgba(255,255,255,0.6)" />
+                                    <span className="pill-val">{formatCurrency(pulse.totalValuation)}</span>
+                                    <span className="pill-lbl">Invested</span>
+                                </div>
+                                {pulse.grossLiabilities > 0 && (
+                                    <div className="ov-networth__pill negative">
+                                        <TrendingDown size={12} color="#fca5a5" />
+                                        <span className="pill-val">{formatCurrency(pulse.grossLiabilities)}</span>
+                                        <span className="pill-lbl">Liability</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    <div style={{ position: 'relative', zIndex: 1, textAlign: 'right', padding: '1.25rem', background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                        <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.4rem', letterSpacing: '0.05em' }}>
-                            <Calendar size={12} /> Next Month Est. Outflow
-                        </div>
-                        <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#fca5a5' }}>
-                            -{formatCurrency(Number(pulse.monthlyObligation || 0) + Number(pulse.totalMonthly || 0) + Number(sourceAnalytics.credit || 0))}
-                        </div>
-                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.35rem', maxWidth: '160px', marginLeft: 'auto', lineHeight: 1.4 }}>
-                            SIP + Bills + Credit Cards
+                        <div style={{ position: 'relative', zIndex: 1, textAlign: 'right', padding: '1.25rem', background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.4rem', letterSpacing: '0.05em' }}>
+                                <Calendar size={12} /> Next Month Est. Outflow
+                            </div>
+                            <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#fca5a5' }}>
+                                -{formatCurrency(Number(pulse.monthlyObligation || 0) + Number(pulse.totalMonthly || 0) + Number(sourceAnalytics.credit || 0))}
+                            </div>
+                            <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.35rem', maxWidth: '160px', marginLeft: 'auto', lineHeight: 1.4 }}>
+                                SIP + Bills + Credit Cards
+                            </div>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            )}
 
             {/* ── Key Metrics ───────────────────────────────── */}
             <motion.div {...fadeUp(0.1)}>
                 <div className="ov-section-title">Key Metrics</div>
                 <div className="ov-stats-row">
                     {[
-                        {
+                        ...(hasModule('Cash Reserves') ? [{
                             label: 'Liquidity', val: pulse.liquidity,
                             icon: <Wallet size={16} />, cls: 'brand',
                             iconBg: 'rgba(99,102,241,0.12)', iconColor: '#6366f1',
-                        },
-                        {
+                        }] : []),
+                        ...(hasModule('Asset Portfolio') ? [{
                             label: 'Portfolio', val: pulse.totalValuation,
                             icon: <TrendingUp size={16} />, cls: 'success',
                             iconBg: 'rgba(16,185,129,0.12)', iconColor: '#10b981',
                             change: pulse.yield !== 0 ? `${pulse.yield >= 0 ? '+' : ''}${pulse.yield.toFixed(2)}% yield` : null,
                             changeType: pulse.yield >= 0 ? 'positive' : 'negative'
-                        },
-                        {
+                        }] : []),
+                        ...(hasModule('Cash Reserves') ? [{
                             label: 'Liabilities', val: pulse.grossLiabilities,
                             icon: <CreditCard size={16} />, cls: 'danger',
                             iconBg: 'rgba(239,68,68,0.12)', iconColor: '#ef4444',
-                        },
-                        {
+                        }] : []),
+                        ...(hasModule('Audit Ledger') ? [{
                             label: `${activePeriodLabel} Spend`,
                             val: spendingAnalytics.total,
                             icon: <Flame size={16} />, cls: 'warning',
                             iconBg: 'rgba(245,158,11,0.12)', iconColor: '#f59e0b',
-                        }
+                        }] : [])
                     ].map((card, i) => (
                         <motion.div key={i} {...fadeUp(0.1 + i * 0.05)}>
                             <div className={`ov-stat-card ${card.cls}`}>
@@ -510,53 +519,55 @@ export default function OverviewPage() {
             </motion.div>
 
             {/* ── Source Breakdown ──────────────────────────── */}
-            <motion.div {...fadeUp(0.12)}>
-                <div className="ov-section-title">Spending by Source — {activePeriodLabel}</div>
-                <div className="ov-stats-row source-breakdown-row" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', gap: '1rem', display: 'flex', flexWrap: 'wrap' }}>
-                    {[
-                        { label: 'Credit Cards', val: sourceAnalytics.credit, breakdown: sourceAnalytics.breakdowns.credit, icon: <CreditCard size={16} />, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-                        { label: 'Bank / Debit', val: sourceAnalytics.bank, breakdown: sourceAnalytics.breakdowns.bank, icon: <Landmark size={16} />, color: '#6366f1', bg: 'rgba(99,102,241,0.1)' },
-                        { label: 'UPI apps', val: sourceAnalytics.upi, breakdown: sourceAnalytics.breakdowns.upi, icon: <Zap size={16} />, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
-                        { label: 'Wallets', val: sourceAnalytics.wallet, breakdown: sourceAnalytics.breakdowns.wallet, icon: <Smartphone size={16} />, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
-                        { label: 'Cash', val: sourceAnalytics.cash, breakdown: sourceAnalytics.breakdowns.cash, icon: <Wallet size={16} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-                        ...(sourceAnalytics.other > 0 ? [{ label: 'Other', val: sourceAnalytics.other, breakdown: sourceAnalytics.breakdowns.other, icon: <Activity size={16} />, color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' }] : [])
-                    ].filter(item => item.val > 0).map((bItem, i) => (
-                        <div key={bItem.label} style={{ flex: '1 1 min-content', minWidth: '220px', background: 'white', borderRadius: '16px', padding: '1.25rem', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <div style={{ width: 36, height: 36, borderRadius: 10, background: bItem.bg, color: bItem.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    {bItem.icon}
+            {hasModule('Audit Ledger') && (
+                <motion.div {...fadeUp(0.12)}>
+                    <div className="ov-section-title">Spending by Source — {activePeriodLabel}</div>
+                    <div className="ov-stats-row source-breakdown-row" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', gap: '1rem', display: 'flex', flexWrap: 'wrap' }}>
+                        {[
+                            { label: 'Credit Cards', val: sourceAnalytics.credit, breakdown: sourceAnalytics.breakdowns.credit, icon: <CreditCard size={16} />, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+                            { label: 'Bank / Debit', val: sourceAnalytics.bank, breakdown: sourceAnalytics.breakdowns.bank, icon: <Landmark size={16} />, color: '#6366f1', bg: 'rgba(99,102,241,0.1)' },
+                            { label: 'UPI apps', val: sourceAnalytics.upi, breakdown: sourceAnalytics.breakdowns.upi, icon: <Zap size={16} />, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+                            { label: 'Wallets', val: sourceAnalytics.wallet, breakdown: sourceAnalytics.breakdowns.wallet, icon: <Smartphone size={16} />, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+                            { label: 'Cash', val: sourceAnalytics.cash, breakdown: sourceAnalytics.breakdowns.cash, icon: <Wallet size={16} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+                            ...(sourceAnalytics.other > 0 ? [{ label: 'Other', val: sourceAnalytics.other, breakdown: sourceAnalytics.breakdowns.other, icon: <Activity size={16} />, color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' }] : [])
+                        ].filter(item => item.val > 0).map((bItem, i) => (
+                            <div key={bItem.label} style={{ flex: '1 1 min-content', minWidth: '220px', background: 'white', borderRadius: '16px', padding: '1.25rem', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 10, background: bItem.bg, color: bItem.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        {bItem.icon}
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#86868b', textTransform: 'uppercase', marginBottom: '0.15rem' }}>{bItem.label}</div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1d1d1f' }}>{formatCurrency(bItem.val)}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#86868b', textTransform: 'uppercase', marginBottom: '0.15rem' }}>{bItem.label}</div>
-                                    <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1d1d1f' }}>{formatCurrency(bItem.val)}</div>
-                                </div>
-                            </div>
 
-                            {/* Breakdown List */}
-                            {Object.keys(bItem.breakdown || {}).filter(k => bItem.breakdown[k] > 0).length > 0 && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(0,0,0,0.04)' }}>
-                                    {Object.entries(bItem.breakdown || {})
-                                        .filter(([k, v]) => v > 0)
-                                        .sort((a, b) => b[1] - a[1])
-                                        .map(([name, amount]) => (
-                                            <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-                                                <span style={{ fontWeight: 600, color: '#64748b' }}>{name}</span>
-                                                <span style={{ fontWeight: 800, color: '#1d1d1f' }}>{formatCurrency(amount)}</span>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                    {sourceAnalytics.total === 0 && (
-                        <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.8rem', padding: '1.5rem', width: '100%', background: 'rgba(0,0,0,0.02)', borderRadius: '16px' }}>No spending from sources in this period</div>
-                    )}
-                </div>
-            </motion.div>
+                                {/* Breakdown List */}
+                                {Object.keys(bItem.breakdown || {}).filter(k => bItem.breakdown[k] > 0).length > 0 && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(0,0,0,0.04)' }}>
+                                        {Object.entries(bItem.breakdown || {})
+                                            .filter(([k, v]) => v > 0)
+                                            .sort((a, b) => b[1] - a[1])
+                                            .map(([name, amount]) => (
+                                                <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
+                                                    <span style={{ fontWeight: 600, color: '#64748b' }}>{name}</span>
+                                                    <span style={{ fontWeight: 800, color: '#1d1d1f' }}>{formatCurrency(amount)}</span>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {sourceAnalytics.total === 0 && (
+                            <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.8rem', padding: '1.5rem', width: '100%', background: 'rgba(0,0,0,0.02)', borderRadius: '16px' }}>No spending from sources in this period</div>
+                        )}
+                    </div>
+                </motion.div>
+            )}
 
             {/* ── Yearly & Monthly Obligations ────────────────────────── */}
-            {(pulse.totalYearly > 0 || pulse.totalMonthly > 0) && (
+            {hasModule('Fixed Costs') && (pulse.totalYearly > 0 || pulse.totalMonthly > 0) && (
                 <motion.div {...fadeUp(0.15)}>
                     <div className='ov-stats-row source-breakdown-row' style={{ display: 'flex', gap: '1rem', width: '100%', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                         {/* Left Half: Yearly */}
@@ -611,92 +622,94 @@ export default function OverviewPage() {
             )}
 
             {/* ── Analytics Charts ──────────────────────────── */}
-            <motion.div {...fadeUp(0.2)}>
-                <div className="ov-section-title">Analytics — {activePeriodLabel}</div>
-                <div className="ov-charts-grid">
-                    {/* Spending Trend - Line */}
-                    <div className="ov-chart-card">
-                        <div className="ov-chart-card__header">
-                            <div>
-                                <div className="ov-chart-card__title">
-                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                                        <TrendingUp size={12} color="#6366f1" /> Spending Trend
-                                    </span>
-                                </div>
-                                <div className="ov-chart-card__value">
-                                    {formatCurrency(trend.cumulative.slice(-1)[0] || 0)}
-                                </div>
-                            </div>
-                            <span className="ov-chart-card__badge neutral">{activePeriodLabel}</span>
-                        </div>
-                        <div className="ov-chart-card__canvas">
-                            <Line data={lineChartData} options={chartOpts(true)} />
-                        </div>
-                    </div>
-
-                    {/* Daily Burn - Bar */}
-                    <div className="ov-chart-card">
-                        <div className="ov-chart-card__header">
-                            <div>
-                                <div className="ov-chart-card__title">
-                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                                        <BarChart2 size={12} color="#6366f1" /> Daily Burn
-                                    </span>
-                                </div>
-                                <div className="ov-chart-card__value">
-                                    {formatCurrency(trend.daily.length ? trend.daily.reduce((a, b) => a + b, 0) / trend.daily.length : 0)}/d
-                                </div>
-                            </div>
-                            <span className="ov-chart-card__badge neutral">Avg/Day</span>
-                        </div>
-                        <div className="ov-chart-card__canvas">
-                            <Bar data={barChartData} options={chartOpts(true)} />
-                        </div>
-                    </div>
-
-                    {/* By Category - Donut */}
-                    <div className="ov-chart-card">
-                        <div className="ov-chart-card__header">
-                            <div>
-                                <div className="ov-chart-card__title">
-                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                                        <PieChart size={12} color="#6366f1" /> By Category
-                                    </span>
-                                </div>
-                                <div className="ov-chart-card__value">{formatCurrency(spendingAnalytics.total)}</div>
-                            </div>
-                            <span className="ov-chart-card__badge negative">Spent</span>
-                        </div>
-                        <div className="ov-chart-card__donut-wrap">
-                            {spendingAnalytics.data.length > 0 ? (
-                                <>
-                                    <Doughnut data={spendDonutData} options={chartOpts(false)} />
-                                    <div className="ov-chart-card__donut-center">
-                                        <span className="center-val">₹{(spendingAnalytics.total / 1000).toFixed(0)}k</span>
-                                        <span className="center-lbl">Total</span>
+            {hasModule('Audit Ledger') && (
+                <motion.div {...fadeUp(0.2)}>
+                    <div className="ov-section-title">Analytics — {activePeriodLabel}</div>
+                    <div className="ov-charts-grid">
+                        {/* Spending Trend - Line */}
+                        <div className="ov-chart-card">
+                            <div className="ov-chart-card__header">
+                                <div>
+                                    <div className="ov-chart-card__title">
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <TrendingUp size={12} color="#6366f1" /> Spending Trend
+                                        </span>
                                     </div>
-                                </>
-                            ) : (
-                                <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>
-                                    No spending in this period
+                                    <div className="ov-chart-card__value">
+                                        {formatCurrency(trend.cumulative.slice(-1)[0] || 0)}
+                                    </div>
                                 </div>
-                            )}
+                                <span className="ov-chart-card__badge neutral">{activePeriodLabel}</span>
+                            </div>
+                            <div className="ov-chart-card__canvas">
+                                <Line data={lineChartData} options={chartOpts(true)} />
+                            </div>
                         </div>
-                        <div className="ov-chart-card__legend">
-                            {spendingAnalytics.labels.slice(0, 4).map((l, i) => (
-                                <div className="ov-chart-card__legend-row" key={l}>
-                                    <div className="leg-dot" style={{ background: PALETTE[i] }} />
-                                    <span className="leg-label">{l}</span>
-                                    <span className="leg-val">{formatCurrency(spendingAnalytics.data[i])}</span>
+
+                        {/* Daily Burn - Bar */}
+                        <div className="ov-chart-card">
+                            <div className="ov-chart-card__header">
+                                <div>
+                                    <div className="ov-chart-card__title">
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <BarChart2 size={12} color="#6366f1" /> Daily Burn
+                                        </span>
+                                    </div>
+                                    <div className="ov-chart-card__value">
+                                        {formatCurrency(trend.daily.length ? trend.daily.reduce((a, b) => a + b, 0) / trend.daily.length : 0)}/d
+                                    </div>
                                 </div>
-                            ))}
+                                <span className="ov-chart-card__badge neutral">Avg/Day</span>
+                            </div>
+                            <div className="ov-chart-card__canvas">
+                                <Bar data={barChartData} options={chartOpts(true)} />
+                            </div>
+                        </div>
+
+                        {/* By Category - Donut */}
+                        <div className="ov-chart-card">
+                            <div className="ov-chart-card__header">
+                                <div>
+                                    <div className="ov-chart-card__title">
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <PieChart size={12} color="#6366f1" /> By Category
+                                        </span>
+                                    </div>
+                                    <div className="ov-chart-card__value">{formatCurrency(spendingAnalytics.total)}</div>
+                                </div>
+                                <span className="ov-chart-card__badge negative">Spent</span>
+                            </div>
+                            <div className="ov-chart-card__donut-wrap">
+                                {spendingAnalytics.data.length > 0 ? (
+                                    <>
+                                        <Doughnut data={spendDonutData} options={chartOpts(false)} />
+                                        <div className="ov-chart-card__donut-center">
+                                            <span className="center-val">₹{(spendingAnalytics.total / 1000).toFixed(0)}k</span>
+                                            <span className="center-lbl">Total</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        No spending in this period
+                                    </div>
+                                )}
+                            </div>
+                            <div className="ov-chart-card__legend">
+                                {spendingAnalytics.labels.slice(0, 4).map((l, i) => (
+                                    <div className="ov-chart-card__legend-row" key={l}>
+                                        <div className="leg-dot" style={{ background: PALETTE[i] }} />
+                                        <span className="leg-label">{l}</span>
+                                        <span className="leg-val">{formatCurrency(spendingAnalytics.data[i])}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            )}
 
             {/* ── Portfolio Allocation ──────────────────────── */}
-            {investAlloc.data.length > 0 && (
+            {hasModule('Asset Portfolio') && investAlloc.data.length > 0 && (
                 <motion.div {...fadeUp(0.25)}>
                     <div className="ov-section-title">Portfolio Allocation</div>
                     <div className="ov-portfolio-grid">
@@ -753,71 +766,65 @@ export default function OverviewPage() {
             )}
 
             {/* ── Ledger ────────────────────────────────────── */}
-            <motion.div {...fadeUp(0.3)}>
-                <div className="ov-section-title">Ledger</div>
-                <div className="ov-ledger-grid">
-                    {/* Accounts */}
-                    <div className="ov-ledger-card">
-                        <div className="ov-ledger-card__head">
-                            <span className="ov-ledger-card__title">
-                                <Landmark size={12} style={{ display: 'inline', marginRight: '0.3rem' }} />Accounts
-                            </span>
-                            <span className="ov-ledger-card__total">{formatCurrency(pulse.liquidity)}</span>
+            {hasModule('Cash Reserves') && (
+                <motion.div {...fadeUp(0.3)}>
+                    <div className="ov-section-title">Ledger</div>
+                    <div className="ov-ledger-grid">
+                        {/* Accounts */}
+                        <div className="ov-ledger-card">
+                            <div className="ov-ledger-card__head">
+                                <span className="ov-ledger-card__title">
+                                    <Landmark size={12} style={{ display: 'inline', marginRight: '0.3rem' }} />Accounts
+                                </span>
+                                <span className="ov-ledger-card__total">{formatCurrency(pulse.liquidity)}</span>
+                            </div>
+                            <div className="ov-ledger-card__body">
+                                {(reserves || []).filter(r => r.account_type !== 'CREDIT_CARD').slice(0, 6).map(r => (
+                                    <div className="ov-ledger-card__row" key={r._id}>
+                                        <div className="ov-ledger-card__icon" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
+                                            <Landmark size={14} />
+                                        </div>
+                                        <div className="ov-ledger-card__info">
+                                            <div className="ov-ledger-card__name">{r.account_name}</div>
+                                            <div className="ov-ledger-card__meta">{r.account_type?.replace('_', ' ')}</div>
+                                        </div>
+                                        <div className="ov-ledger-card__amount" style={{ color: parseFloat(r.balance) >= 0 ? '#10b981' : '#ef4444' }}>
+                                            {formatCurrency(r.balance)}
+                                        </div>
+                                    </div>
+                                ))}
+                                {(reserves || []).filter(r => r.account_type === 'CREDIT_CARD').slice(0, 3).map(r => (
+                                    <div className="ov-ledger-card__row" key={r._id}>
+                                        <div className="ov-ledger-card__icon" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
+                                            <CreditCard size={14} />
+                                        </div>
+                                        <div className="ov-ledger-card__info">
+                                            <div className="ov-ledger-card__name">{r.account_name}</div>
+                                            <div className="ov-ledger-card__meta">Credit Card</div>
+                                        </div>
+                                        <div className="ov-ledger-card__amount" style={{ color: '#ef4444' }}>
+                                            -{formatCurrency(r.balance)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="ov-ledger-card__body">
-                            {(reserves || []).filter(r => r.account_type !== 'CREDIT_CARD').slice(0, 6).map(r => (
-                                <div className="ov-ledger-card__row" key={r._id}>
-                                    <div className="ov-ledger-card__icon" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
-                                        <Landmark size={14} />
-                                    </div>
-                                    <div className="ov-ledger-card__info">
-                                        <div className="ov-ledger-card__name">{r.account_name}</div>
-                                        <div className="ov-ledger-card__meta">{r.account_type?.replace('_', ' ')}</div>
-                                    </div>
-                                    <div className="ov-ledger-card__amount" style={{ color: parseFloat(r.balance) >= 0 ? '#10b981' : '#ef4444' }}>
-                                        {formatCurrency(r.balance)}
-                                    </div>
-                                </div>
-                            ))}
-                            {(reserves || []).filter(r => r.account_type === 'CREDIT_CARD').slice(0, 3).map(r => (
-                                <div className="ov-ledger-card__row" key={r._id}>
-                                    <div className="ov-ledger-card__icon" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
-                                        <CreditCard size={14} />
-                                    </div>
-                                    <div className="ov-ledger-card__info">
-                                        <div className="ov-ledger-card__name">{r.account_name}</div>
-                                        <div className="ov-ledger-card__meta">Credit Card</div>
-                                    </div>
-                                    <div className="ov-ledger-card__amount" style={{ color: '#ef4444' }}>
-                                        -{formatCurrency(r.balance)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Debt */}
-                    <div className="ov-ledger-card">
-                        <div className="ov-ledger-card__head">
-                            <span className="ov-ledger-card__title">
-                                <Shield size={12} style={{ display: 'inline', marginRight: '0.3rem' }} />Debt Exposure
-                            </span>
-                            <span className="ov-ledger-card__total" style={{ color: pulse.grossLiabilities > 0 ? '#ef4444' : '#10b981' }}>
-                                {formatCurrency(pulse.grossLiabilities)}
-                            </span>
-                        </div>
-                        <div className="ov-ledger-card__body">
-                            {(debt || []).filter(d => d.status !== 'SETTLED').length === 0 ? (
-                                <div style={{ padding: '2rem 1.25rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>
-                                    ✅ No active debt exposure
+                        {/* Debt */}
+                        <div className="ov-ledger-card">
+                            <div className="ov-ledger-card__head">
+                                <span className="ov-ledger-card__title">
+                                    <Shield size={12} style={{ display: 'inline', marginRight: '0.3rem' }} />Debt & Lending
+                                </span>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div className="ov-ledger-card__total" style={{ color: '#ef4444' }}>-{formatCurrency(pulse.iOwe)}</div>
+                                    <div className="ov-ledger-card__total" style={{ color: '#10b981', fontSize: '0.7rem', marginTop: '-2px' }}>+{formatCurrency(pulse.owedToMe)}</div>
                                 </div>
-                            ) : (
-                                (debt || []).filter(d => d.status !== 'SETTLED').slice(0, 6).map(d => (
+                            </div>
+                            <div className="ov-ledger-card__body">
+                                {(debt || []).filter(d => d.status !== 'SETTLED').slice(0, 6).map(d => (
                                     <div className="ov-ledger-card__row" key={d._id}>
-                                        <div className="ov-ledger-card__icon" style={{
-                                            background: d.direction === 'OWED_TO_ME' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                            color: d.direction === 'OWED_TO_ME' ? '#10b981' : '#ef4444'
-                                        }}>
+                                        <div className="ov-ledger-card__icon" style={{ background: d.direction === 'OWED_TO_ME' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', color: d.direction === 'OWED_TO_ME' ? '#10b981' : '#ef4444' }}>
                                             {d.direction === 'OWED_TO_ME' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                                         </div>
                                         <div className="ov-ledger-card__info">
@@ -828,12 +835,12 @@ export default function OverviewPage() {
                                             {d.direction === 'OWED_TO_ME' ? '+' : '-'}{formatCurrency(d.amount)}
                                         </div>
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                ))}
+                            </div>
                     </div>
                 </div>
             </motion.div>
+        )}
 
             {/* ── Recent Transactions ───────────────────────── */}
             <motion.div {...fadeUp(0.35)}>
