@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment } from '@mui/material';
-import { Bookmark, DollarSign, CalendarDays, Wallet } from 'lucide-react';
+import { Bookmark, DollarSign, CalendarDays, Wallet, Tag, Layers, Activity, FileText } from 'lucide-react';
+import { Stack } from '@mui/material';
+import './Forms.scss';
 
 export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
     const { investments, reserves, categories: allCategories } = useSelector(state => state.finance);
@@ -63,14 +65,10 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
     const targetValueStr = targetFund ? ` (Value: ₹${Number(targetFund.value || 0).toLocaleString()})` : '';
 
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={{
-            p: 4,
-            background: 'linear-gradient(135deg, #ffffff, #f8fafc)',
-            borderTop: '1px solid rgba(0,0,0,0.02)'
-        }}>
-            <div style={{ display: 'grid', gap: '1.5rem' }}>
+        <Box component="form" onSubmit={handleSubmit} className="form-container-premium">
+            <Stack spacing={2.5}>
                 <Box>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Category</Typography>
+                    <Typography className="form-label-premium">Category</Typography>
                     <Select
                         fullWidth value={formData.category}
                         onChange={e => {
@@ -82,38 +80,41 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                                 sub_category: catObj?.sub_categories?.[0] || 'General'
                             });
                         }}
-                        startAdornment={<InputAdornment position="start"><Bookmark size={16} /></InputAdornment>}
-                        sx={{ borderRadius: '16px', background: 'white', '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' }, pl: 1, mb: 1.5 }}
+                        className="form-input-premium"
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><Tag size={18} /></Box></InputAdornment>}
                     >
                         {categories.map(c => <MenuItem key={c.name || c} value={c.name || c}>{c.name || c}</MenuItem>)}
                     </Select>
+                </Box>
 
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Sub-Category</Typography>
+                <Box>
+                    <Typography className="form-label-premium">Sub-Category</Typography>
                     <Select
                         fullWidth value={formData.sub_category} onChange={e => setFormData({ ...formData, sub_category: e.target.value })}
-                        sx={{ borderRadius: '16px', background: 'white', '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' } }}
+                        className="form-input-premium"
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><Layers size={18} /></Box></InputAdornment>}
                     >
                         {activeSubs.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
                     </Select>
                 </Box>
 
                 <Box>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Amount (Yearly)</Typography>
+                    <Typography className="form-label-premium">Amount (Yearly)</Typography>
                     <TextField
                         fullWidth type="number" placeholder="0.00"
-                        InputProps={{ startAdornment: <InputAdornment position="start"><DollarSign size={16} /></InputAdornment> }}
+                        className="form-input-premium"
+                        InputProps={{ startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(52, 199, 89, 0.1)', color: '#34c759' }}><Typography sx={{ fontWeight: 900, fontSize: '1rem' }}>₹</Typography></Box></InputAdornment> }}
                         value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })}
                         required
-                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: '16px', background: 'white', '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' } } }}
                     />
                 </Box>
 
                 <Box>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Due Month</Typography>
+                    <Typography className="form-label-premium">Due Month</Typography>
                     <Select
                         fullWidth value={formData.due_month} onChange={e => setFormData({ ...formData, due_month: e.target.value })}
-                        startAdornment={<InputAdornment position="start"><CalendarDays size={16} /></InputAdornment>}
-                        sx={{ borderRadius: '16px', background: 'white', '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' }, pl: 1 }}
+                        className="form-input-premium"
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 149, 0, 0.1)', color: '#ff9500' }}><CalendarDays size={18} /></Box></InputAdornment>}
                     >
                         {months.map(m => (
                             <MenuItem key={m} value={m}>{m}</MenuItem>
@@ -122,25 +123,26 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                 </Box>
 
                 <Box>
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 900, color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.05em', mb: 1 }}>Funding Source / Backing Fund</Typography>
+                    <Typography className="form-label-premium">Funding Source / Backing Fund</Typography>
                     <Select
                         fullWidth value="Nippon india corparate bond" disabled
-                        startAdornment={<InputAdornment position="start"><Wallet size={16} /></InputAdornment>}
-                        sx={{ borderRadius: '16px', background: 'rgba(0,0,0,0.02)', '& fieldset': { borderColor: 'rgba(0,0,0,0.08)' }, pl: 1, color: '#1d1d1f' }}
+                        className="form-input-premium"
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><Wallet size={18} /></Box></InputAdornment>}
+                        sx={{ color: '#1d1d1f' }}
                     >
                         <MenuItem value="Nippon india corparate bond" sx={{ fontWeight: 800 }}>📈 Nippon india corparate bond{targetValueStr}</MenuItem>
                     </Select>
                 </Box>
 
-                <Box sx={{ mt: 2, display: 'flex', gap: '1rem' }}>
-                    <Button fullWidth onClick={onCancel} sx={{ py: 2, borderRadius: '50px', fontWeight: 900, color: '#1d1d1f', bgcolor: 'rgba(0,0,0,0.04)', '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' } }}>
+                <Box className="form-actions-row">
+                    <Button onClick={onCancel} className="btn-dismiss-premium">
                         CANCEL
                     </Button>
-                    <Button fullWidth type="submit" variant="contained" sx={{ py: 2, borderRadius: '50px', fontWeight: 900, color: '#fff', bgcolor: '#8b5cf6', '&:hover': { bgcolor: '#7c3aed' }, boxShadow: '0 4px 14px rgba(139,92,246,0.3)' }}>
+                    <Button type="submit" variant="contained" className="btn-submit-premium">
                         {initialData ? 'UPDATE EXTRACT' : 'REGISTER EXPENSE'}
                     </Button>
                 </Box>
-            </div>
+            </Stack>
         </Box>
     );
 }

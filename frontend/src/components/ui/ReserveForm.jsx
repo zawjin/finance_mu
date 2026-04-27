@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, TextField, Stack, IconButton, MenuItem } from '@mui/material';
-import { X, Landmark, Wallet, Banknote, CreditCard, Calendar } from 'lucide-react';
+import { X, Landmark, Wallet, Banknote, CreditCard, Calendar, Tag, FileText, Activity } from 'lucide-react';
+import { InputAdornment } from '@mui/material';
 import dayjs from 'dayjs';
 import './Forms.scss';
 
@@ -86,6 +87,9 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                     value={formData.account_name}
                     onChange={e => setFormData({ ...formData, account_name: e.target.value })}
                     className="form-input-premium"
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><Activity size={18} /></Box></InputAdornment>
+                    }}
                 />
             </Box>
 
@@ -97,6 +101,9 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                     value={formData.last_updated}
                     onChange={e => setFormData({ ...formData, last_updated: e.target.value })}
                     className="form-input-premium"
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
+                    }}
                 />
             </Box>
 
@@ -111,7 +118,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                         onChange={e => setFormData({ ...formData, balance: e.target.value })}
                         className="form-input-premium"
                         InputProps={{
-                            startAdornment: <Typography sx={{ fontWeight: 900, color: '#86868b', mr: 1, fontSize: '1.2rem' }}>₹</Typography>
+                            startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(52, 199, 89, 0.1)', color: '#34c759' }}><Banknote size={18} /></Box><Typography sx={{ fontWeight: 900, color: '#1d1d1f', ml: 1, fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
                     />
                 </Box>
@@ -126,7 +133,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                             onChange={e => setFormData({ ...formData, credit_limit: e.target.value })}
                             className="form-input-premium"
                             InputProps={{
-                                startAdornment: <Typography sx={{ fontWeight: 900, color: '#86868b', mr: 1, fontSize: '1.2rem' }}>₹</Typography>
+                                startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(0, 113, 227, 0.1)', color: '#0071e3' }}><CreditCard size={18} /></Box><Typography sx={{ fontWeight: 900, color: '#1d1d1f', ml: 1, fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                             }}
                         />
                     </Box>
@@ -144,6 +151,7 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                         onChange={e => setFormData({ ...formData, due_date: e.target.value })}
                         className="form-input-premium"
                         InputProps={{
+                            startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 149, 0, 0.1)', color: '#ff9500' }}><Calendar size={18} /></Box></InputAdornment>,
                             inputProps: { min: 1, max: 31 },
                             endAdornment: formData.due_date && (
                                 <Typography sx={{ fontWeight: 800, color: '#6366f1', fontSize: '0.8rem', whiteSpace: 'nowrap', pr: 1 }}>
@@ -172,14 +180,17 @@ export default function ReserveForm({ onSubmit, onCancel, initialData }) {
                     value={formData.description}
                     onChange={e => setFormData({ ...formData, description: e.target.value })}
                     className="form-input-premium"
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><FileText size={18} /></Box></InputAdornment>
+                    }}
                 />
             </Box>
 
             <Box className="form-actions-row">
-                <Button fullWidth onClick={onCancel} className="btn-form-abort">
+                <Button onClick={onCancel} className="btn-dismiss-premium">
                     ABORT
                 </Button>
-                <Button fullWidth variant="contained" onClick={handleSubmit} className="btn-form-submit">
+                <Button variant="contained" onClick={handleSubmit} className="btn-submit-premium">
                     SUBMIT
                 </Button>
             </Box>

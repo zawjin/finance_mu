@@ -17,13 +17,13 @@ import DebtLedgerTab from '../components/reserve/DebtLedgerTab';
 import ChitFundTab from '../components/reserve/ChitFundTab';
 import BudgetPlannerTab from '../components/reserve/BudgetPlannerTab';
 
-export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettle, onRevert, onTransfer, onAddFunds }) {
+export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDebt, onEditLending, onSettle, onRevert, onTransfer, onAddFunds }) {
     const dispatch = useDispatch();
     const { reserves, loading, summary, spending, debt, privateLending } = useSelector(state => state.finance);
     const [deleteConfirmItem, setDeleteConfirmItem] = React.useState(null);
     const [deleteConfirmDebt, setDeleteConfirmDebt] = React.useState(null);
     const [deleteConfirmLending, setDeleteConfirmLending] = React.useState(null);
-    const [activeTab, setActiveTab] = React.useState('accounts'); // 'accounts' | 'debt-ledger' | 'local-investment' | 'budget-planner'
+
 
     // Budget Planner Calculation Logic (Replicated from YearlyExpensePage)
     const { yearlyExpenses } = useSelector(state => state.finance);
@@ -311,18 +311,18 @@ export default function ReservePage({ onEdit, onEditDebt, onEditLending, onSettl
                 )}
             </BaseDialog>
 
-            {/* SUMMARY HEADER */}
-            <ReservesSummaryHeader
-                totalLiquidity={totalBank + totalCash + totalWallet}
-                activeTab={activeTab}
-                onEdit={onEdit}
-                onEditDebt={onEditDebt}
-                onEditLending={onEditLending}
-                localInvestments={localInvestments}
-                onTransfer={onTransfer}
-            />
-
-            {/* ── TAB SWITCHER ── */}
+            {/* SUMMARY HEADER (Desktop Only via CSS) */}
+            <div className="reserves-header-desktop-only">
+                <ReservesSummaryHeader
+                    totalLiquidity={totalBank + totalCash + totalWallet}
+                    activeTab={activeTab}
+                    onEdit={onEdit}
+                    onEditDebt={onEditDebt}
+                    onEditLending={onEditLending}
+                    localInvestments={localInvestments}
+                    onTransfer={onTransfer}
+                />
+            </div>            {/* ── TAB SWITCHER ── */}
             <div className="tab-group-container">
                 {[
                     { id: 'accounts', label: 'Account Ledger', icon: <Activity size={15} /> },

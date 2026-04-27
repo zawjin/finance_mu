@@ -4,8 +4,76 @@ import { motion } from 'framer-motion';
 import {
     Search, Filter, PieChart, Download, Activity,
     TrendingUp, Calendar, Trash2, Edit2, Zap, CalendarDays,
-    Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2
+    Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2, Layers,
+    Plus, X, PlusCircle, Fingerprint, Package, Heart,
+    ShoppingCart, Stethoscope, ShoppingBag, Car, Gamepad2,
+    Plane, Music, Tag, Coffee, Smartphone, Laptop, Tv, Film, Camera,
+    Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun, Moon, Cloud, Star, Shield,
+    Key, Lock, Bell, Mail, Phone, MapPin, Flag, Cpu, HardDrive, Database, Book,
+    Library, Building, Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin,
+    Gavel, Terminal, Code, Webhook, Hash, Hexagon, Server, Wifi,
+    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree, ChefHat,
+    Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine, Bone, Brain,
+    HeartPulse, Microscope, Syringe, Thermometer, Bath, Bed, Lamp, Refrigerator, Sofa,
+    WashingMachine, Bird, Bug, Dog, Fish, Flower, Leaf, Rabbit, TreeDeciduous,
+    TreePine, Brush, Music2, Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive,
+    Atom, Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component, Construction,
+    Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical, Gamepad, Gift, Glasses,
+    GraduationCap, Hammer, Infinity, Joystick, Lasso, LifeBuoy, Monitor, Mouse, Network,
+    Newspaper, Nut, Orbit, Paperclip, PawPrint, PersonStanding, Pipette, Plug, Printer,
+    Puzzle, Quote, Radiation, Radio, Rocket, Send, Share2, Shrink, Shuffle,
+    Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon, Users, Video, Volume2, Watch
 } from 'lucide-react';
+
+const IconMap = {
+    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
+    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Package />, // Fallback
+    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
+    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
+    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
+    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
+    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
+    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
+    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
+    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
+    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
+    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
+    Library: <Library />, Building: <Building />, Store: <Store />,
+    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
+    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
+    TrendingUp: <TrendingUp />, Wallet: <Landmark />, // Fallback
+    Gavel: <Gavel />, Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />,
+    Hash: <Hash />, Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />,
+    Settings2: <Settings2 />, Bus: <Bus />, TrainFront: <TrainFront />,
+    Ship: <Ship />, TramFront: <TramFront />, Mountain: <Mountain />,
+    Tents: <Tent />, Palmtree: <Palmtree />, ChefHat: <ChefHat />,
+    Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
+    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Package />, // Fallback
+    Wine: <Wine />, Activity: <Activity />, Bones: <Bone />, Brain: <Brain />,
+    HeartPulse: <HeartPulse />, Microscope: <Microscope />, Syringe: <Syringe />,
+    Thermometer: <Thermometer />, Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />,
+    Refrigerator: <Refrigerator />, Sofa: <Sofa />, WashingMachine: <WashingMachine />,
+    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
+    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />,
+    TreePine: <TreePine />, Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />,
+    Palette: <Palette />, PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
+    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
+    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
+    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
+    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
+    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
+    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
+    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
+    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
+    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
+    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
+    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
+    Radio: <Radio />, Rocket: <Rocket />, Send: <Send />, Share2: <Share2 />,
+    Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />, Smile: <Smile />,
+    Target: <Target />, Ticket: <Ticket />, Timer: <Timer />, Trophy: <Trophy />,
+    Truck: <Truck />, User: <UserIcon />, Users: <Users />, Video: <Video />,
+    Volume2: <Volume2 />, Watch: <Watch />, Gem: <Gem />
+};
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
@@ -66,11 +134,11 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const getAssetStyle = (type) => {
         const found = assetClasses?.find(c => c.name === type);
         if (found) {
+            const iconName = found.icon || 'Activity';
             return {
                 bg: `${found.color}15`,
                 color: found.color,
-                // fallback to a generic icon for now
-                icon: <Activity size={16} color={found.color} />
+                icon: IconMap[iconName] ? React.cloneElement(IconMap[iconName], { size: 16, color: found.color }) : <Activity size={16} color={found.color} />
             };
         }
         switch (type) {
@@ -462,31 +530,26 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             {/* FINANCIAL SUMMARY CORE - LEGACY DESIGN RESTORED */}
             <div className="investment-summary-grid">
                 <div className="summary-card-investment">
-                    <div className="pill-icon-box bg-primary color-white"><Activity size={20} /></div>
-                    <div className="flex-1">
-                        <div className="summary-header-flex">
-                            <Typography className="summary-label-primary">TOTAL ASSETS UNDER MANAGEMENT</Typography>
-                            {totals.grossWithdrawn > 0 && (
-                                <Box className="realized-badge">
-                                    <div className="realized-dot" />
-                                    REALIZED: {formatCurrency(totals.grossWithdrawn)}
-                                </Box>
-                            )}
+                    <div className="summary-card-left">
+                        <div className="pill-icon-box"><Activity size={20} /></div>
+                    </div>
+                    <div className="summary-card-right">
+                        <div className="summary-main-line">
+                            <div className="summary-label-primary">TOTAL ASSETS</div>
+                            <div className="summary-value-main">{formatCurrency(totals.grossValue)}</div>
                         </div>
-                        <div className="summary-value-flex">
-                            <Typography className="summary-value-main">{formatCurrency(totals.grossValue)}</Typography>
-                            <Typography className="summary-label-secondary">
-                                Invested: {formatCurrency(totals.grossInvested)}
-                            </Typography>
+                        
+                        <div className="summary-secondary-line">
+                            <span className="summary-label-secondary">Invested: {formatCurrency(totals.grossInvested)}</span>
                             {totals.grossValue > 0 && (
-                                <Box className="pnl-chips-flex">
+                                <div className="pnl-chips-flex">
                                     <span className={`pnl-chip ${totals.grossProfitAmt >= 0 ? 'positive' : 'negative'}`}>
                                         {totals.grossProfitAmt >= 0 ? '+' : ''}{formatCurrency(Math.abs(totals.grossProfitAmt))}
                                     </span>
                                     <span className={`pnl-chip ${totals.grossProfitPct >= 0 ? 'positive' : 'negative'}`}>
-                                        {totals.grossProfitPct >= 0 ? '▲ +' : '▼ '}{Math.abs(totals.grossProfitPct).toFixed(totals.grossProfitPct < 0.1 ? 4 : 2)}% net profit
+                                        {totals.grossProfitPct >= 0 ? '▲' : '▼'}{Math.abs(totals.grossProfitPct).toFixed(2)}%
                                     </span>
-                                </Box>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -556,27 +619,31 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
 
                         <div className="filter-section-block">
-                            <div className="filter-section-label"><span>SEARCH ASSETS</span></div>
                             <div className="search-input-wrapper">
                                 <Search size={15} className="search-icon-fixed" />
-                                <input className="filter-search-input padding-l-2-75" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class..." />
+                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class, category..." />
                             </div>
                         </div>
 
                         <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>ASSET CLASS</span></div>
-                            <div className="category-filter-grid">
+                            <div className="filter-section-label"><span>ASSET CLASS ENTITY</span></div>
+                            <div className="unified-filter-grid">
                                 {loading ? (
                                     [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
                                 ) : (
                                     <>
-                                        <div className={`cat-filter-chip ${selectedType === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedType('ALL')}>All</div>
+                                        <div className={`unified-filter-btn ${selectedType === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedType('ALL')}>
+                                            <span className="th-icon"><Layers size={20} /></span>
+                                            <span className="th-label">All</span>
+                                        </div>
                                         {uniqueTypes.map(c => {
                                             const style = getAssetStyle(c);
                                             return (
-                                                <div key={c} className={`cat-filter-chip ${selectedType === c ? 'active' : ''}`} onClick={() => setSelectedType(c)}>
-                                                    <span className="filter-chip-icon" style={{ '--icon-color': style.color }}>{style.icon}</span>
-                                                    <span>{c}</span>
+                                                <div key={c} className={`unified-filter-btn ${selectedType === c ? 'active' : ''}`} onClick={() => setSelectedType(c)}>
+                                                    <span className="th-icon" style={{ color: selectedType === c ? 'white' : style.color }}>
+                                                        {React.cloneElement(style.icon, { size: 20, strokeWidth: 2.4 })}
+                                                    </span>
+                                                    <span className="th-label">{c.split(' ')[0]}</span>
                                                 </div>
                                             );
                                         })}
@@ -587,24 +654,21 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>TIME HORIZON</span></div>
-                            <div className="time-horizon-grid">
+                            <div className="unified-filter-grid">
                                 {[
-                                    { id: 'TODAY', label: 'Today', icon: <Zap size={13} fill="currentColor" /> },
-                                    { id: 'YESTERDAY', label: 'Yesterday', icon: <CalendarDays size={13} fill="currentColor" /> },
-                                    { id: 'THIS WEEK', label: 'This Week', icon: <TrendingUp size={13} fill="currentColor" /> },
-                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={13} fill="currentColor" /> },
-                                    { id: 'LAST MONTH', label: 'Last Month', icon: <Calendar size={13} fill="currentColor" /> },
-                                    { id: 'THIS YEAR', label: 'This Year', icon: <Globe size={13} fill="currentColor" /> },
-                                    { id: 'ALL', label: 'All Time', icon: <Filter size={13} fill="currentColor" /> },
-                                    { id: 'CUSTOM', label: 'Custom', icon: <Settings size={13} fill="currentColor" /> },
+                                    { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
+                                    { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
+                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
+                                    { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
+                                    { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
+                                    { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
                                 ].map(p => (
-                                    <div key={p.id} className={`time-horizon-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
-                                        <span className="th-icon">{p.icon}</span>
+                                    <div key={p.id} className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
+                                        <span className="th-icon" style={{ color: period === p.id ? 'white' : '#6366f1' }}>{p.icon}</span>
                                         <span className="th-label">{p.label}</span>
                                     </div>
                                 ))}
                             </div>
-
                             {/* CUSTOM RANGE PICKERS - DELUXE UI */}
                             {period === 'CUSTOM' && (
                                 <motion.div
@@ -642,7 +706,6 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                 </motion.div>
                             )}
                         </div>
-
                     </div>
                 </div>
 

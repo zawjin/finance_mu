@@ -97,6 +97,7 @@ export default function App() {
     const [showTransferModal, setShowTransferModal] = useState(false);
     const [showAiModal, setShowAiModal] = useState(false);
     const [showAnalytics, setShowAnalytics] = useState(false);
+    const [reserveActiveTab, setReserveActiveTab] = useState('accounts');
 
     const initialized = React.useRef(false);
 
@@ -351,10 +352,28 @@ export default function App() {
         } else if (path === '/fixed-expenses' || path === '/monthly-bills') {
             setShowAddYearlyModal(true);
         } else if (path === '/reserves') {
-            setShowAddReserveModal(true);
+            if (reserveActiveTab === 'local-investment') {
+                setShowAddLendingModal(true);
+            } else if (reserveActiveTab === 'debt-ledger') {
+                setShowAddDebtModal(true);
+            } else {
+                setShowAddReserveModal(true);
+            }
         } else {
             setShowAddModal(true);
         }
+    };
+
+    const getDynamicAddLabel = () => {
+        const path = window.location.pathname;
+        if (path === '/reserves') {
+            if (reserveActiveTab === 'local-investment') return 'ADD CHIT';
+            if (reserveActiveTab === 'debt-ledger') return 'ADD DEBT';
+            return 'ADD ACCOUNT';
+        }
+        if (path === '/investments') return 'ADD ASSET';
+        if (path === '/fixed-expenses' || path === '/monthly-bills') return 'ADD BILL';
+        return 'SYNC';
     };
 
     return (
@@ -365,6 +384,7 @@ export default function App() {
                     <div className="app-shell">
                         <TopNavbar
                             onAdd={handleGlobalAdd}
+                            addLabel={getDynamicAddLabel()}
                             onOpenAiModal={() => setShowAiModal(true)}
                             onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
                             showAnalytics={showAnalytics}
@@ -380,7 +400,7 @@ export default function App() {
                                         <Route path="/investments" element={<InvestmentPage onEdit={(item) => setEditingInvestment(item)} showAnalytics={showAnalytics} onToggleAnalytics={() => setShowAnalytics(!showAnalytics)} />} />
                                         <Route path="/fixed-expenses" element={<YearlyExpensePage onEdit={(item) => setEditingYearly(item)} />} />
                                         <Route path="/yearly-expenses" element={<Navigate to="/fixed-expenses" replace />} />
-                                        <Route path="/reserves" element={<ReservePage onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} onRevert={handleTermRevert} onTransfer={() => setShowTransferModal(true)} onAddFunds={(acc) => setAddingFundsTo(acc)} />} />
+                                        <Route path="/reserves" element={<ReservePage activeTab={reserveActiveTab} setActiveTab={setReserveActiveTab} onEdit={(item) => setEditingReserve(item)} onEditDebt={(item) => setEditingDebt(item || {})} onEditLending={(item) => setEditingLending(item)} onSettle={(data) => setSettlingTerm(data)} onRevert={handleTermRevert} onTransfer={() => setShowTransferModal(true)} onAddFunds={(acc) => setAddingFundsTo(acc)} />} />
                                         <Route path="/categories" element={<CategoryPage />} />
                                         <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/settings" element={<SettingsPage />} />

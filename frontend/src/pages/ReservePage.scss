@@ -14,6 +14,12 @@ $violet: #6366f1;
 $amber: #f59e0b;
 $indigo: #4f46e5;
 
+.reserves-header-desktop-only {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}
+
 // ─── Tab Pills ───────────────────────────────────────────────────────────────
 .tab-group-container {
     display: flex;
@@ -1937,6 +1943,255 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
 
     .surplus-visualizer {
         margin-top: 2rem !important;
+    }
+
+    // 8. Chit Fund Table → Cute Premium Card List on Mobile
+    .chit-card-wrapper {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .chit-card-premium {
+        border-radius: 20px !important;
+        border: none !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07) !important;
+        overflow: hidden !important;
+    }
+
+    // Header card: cute compact layout
+    .chit-header-premium {
+        padding: 1rem 1.1rem !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        border-radius: 0 !important;
+
+        > div:first-child {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+    }
+
+    .chit-borrower-name {
+        font-size: 1.15rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .chit-header-premium .MuiStack-root {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 0.35rem !important;
+        margin-top: 0.35rem !important;
+    }
+
+    // Progress belt: stack label + val vertically for mobile
+    .chit-progress-belt {
+        padding: 0.85rem 1.1rem !important;
+    }
+
+    .chit-progress-meta {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.35rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .chit-progress-val {
+        font-size: 0.7rem !important;
+        color: #475569 !important;
+    }
+
+    // Hide the wide table header
+    .chit-table-header {
+        display: none !important;
+    }
+
+    // Hide the footer totals belt
+    .chit-footer-belt {
+        display: none !important;
+    }
+
+    // Table body: vertical card list
+    .chit-table-body {
+        min-width: 0 !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding: 0.6rem 0.75rem 0.75rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+
+    // Each row → compact wrapped card
+    .chit-row-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;            // Allow secondary line to wrap below
+        align-items: center !important;
+        grid-template-columns: unset !important;
+        padding: 0.65rem 0.85rem !important;
+        background: #ffffff !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        gap: 0.5rem 0.6rem !important;
+
+        &.row-paid {
+            background: rgba(16, 185, 129, 0.04) !important;
+            border-color: rgba(16, 185, 129, 0.15) !important;
+        }
+
+        // ── Row 1: Term circle · Month · Expected · Status · Action ──
+        .chit-td-term {
+            order: 1 !important;
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            background: rgba(99, 102, 241, 0.1) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.58rem !important;
+            font-weight: 900 !important;
+            color: #6366f1 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .chit-td-month {
+            order: 2 !important;
+            flex: 1 !important;
+            font-size: 0.68rem !important;
+            font-weight: 800 !important;
+            color: #6366f1 !important;
+        }
+
+        .chit-td-expected {
+            order: 3 !important;
+            font-size: 0.8rem !important;
+            font-weight: 900 !important;
+            color: #1e293b !important;
+        }
+
+        .flex-col-gap-05 {
+            order: 4 !important;
+            flex-shrink: 0 !important;
+            gap: 0.15rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+        }
+
+        .chit-status-chip {
+            font-size: 0.48rem !important;
+            height: 15px !important;
+        }
+
+        .chit-pending-label {
+            font-size: 0.48rem !important;
+        }
+
+        // The action (PAY / ✓ / –) always last on row 1
+        > .MuiBox-root:last-child {
+            order: 5 !important;
+            flex-shrink: 0 !important;
+        }
+
+        // ── Row 2: Cumulative · Interest · Maturity (full-width secondary strip) ──
+        .chit-td-cumul,
+        .chit-td-dividend,
+        .flex-center-gap-1 {
+            display: flex !important;
+            order: 10 !important;                   // Push all to after row-1 items
+            flex-basis: auto !important;
+            align-items: center !important;
+        }
+
+        // Make the 3 together form a single full-width strip
+        .chit-td-cumul {
+            width: 100% !important;                 // Force line break after row 1
+            margin-top: 0.2rem !important;
+            padding-top: 0.35rem !important;
+            border-top: 1px dashed rgba(0,0,0,0.07) !important;
+            font-size: 0.58rem !important;
+            font-weight: 700 !important;
+            color: #64748b !important;
+            gap: 0.25rem !important;
+
+            &::before {
+                content: 'CUMUL' !important;
+                font-size: 0.48rem !important;
+                font-weight: 800 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                margin-right: 0.15rem !important;
+            }
+        }
+
+        .chit-td-dividend {
+            font-size: 0.58rem !important;
+            font-weight: 700 !important;
+            color: #64748b !important;
+
+            &::before {
+                content: '|  INT' !important;
+                font-size: 0.48rem !important;
+                font-weight: 800 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                margin-right: 0.15rem !important;
+            }
+        }
+
+        .flex-center-gap-1 {
+            gap: 0.2rem !important;
+
+            &::before {
+                content: '|  MAT' !important;
+                font-size: 0.48rem !important;
+                font-weight: 800 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                margin-right: 0.15rem !important;
+            }
+
+            .chit-td-rowval {
+                font-size: 0.58rem !important;
+                font-weight: 800 !important;
+            }
+        }
+
+        // Active PAY button: smiley, indigo, small
+        .btn-pay-chit {
+            padding: 0.25rem 0.65rem !important;
+            font-size: 0.55rem !important;
+            min-width: unset !important;
+            border-radius: 8px !important;
+            background: #6366f1 !important;
+            box-shadow: 0 2px 6px rgba(99,102,241,0.3) !important;
+        }
+
+        // Locked term placeholder dash — not a button, just a muted mark
+        .btn-pay-chit-locked {
+            font-size: 0.7rem !important;
+            color: #cbd5e1 !important;
+            font-weight: 700 !important;
+            padding: 0 0.3rem !important;
+        }
+
+        .btn-revert-chit {
+            padding: 3px !important;
+            background: rgba(245,158,11,0.08) !important;
+            border-radius: 6px !important;
+
+            svg {
+                width: 11px !important;
+                height: 11px !important;
+            }
+        }
     }
 }
 

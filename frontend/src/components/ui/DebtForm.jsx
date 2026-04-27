@@ -68,8 +68,8 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <Box className="form-icon-highlight">
-                                        <User size={20} color="#6366f1" />
+                                    <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}>
+                                        <User size={18} />
                                     </Box>
                                 </InputAdornment>
                             ),
@@ -93,7 +93,9 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Typography sx={{ fontWeight: 900, color: '#6366f1' }}>₹</Typography>
+                                        <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(52, 199, 89, 0.1)', color: '#34c759' }}>
+                                            <Typography sx={{ fontWeight: 900, fontSize: '1rem' }}>₹</Typography>
+                                        </Box>
                                     </InputAdornment>
                                 ),
                                 className: "form-input-premium"
@@ -181,7 +183,10 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        className="form-input-premium"
+                        InputProps={{
+                            className: "form-input-premium",
+                            startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><FileText size={18} /></Box></InputAdornment>
+                        }}
                     />
                 </Box>
             </Stack>
@@ -191,7 +196,6 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                 <Button
                     onClick={onCancel}
                     className="btn-dismiss-premium"
-                    sx={{ flex: 1 }}
                 >
                     ABORT
                 </Button>
@@ -199,11 +203,9 @@ export default function DebtForm({ onSubmit, initialData, onCancel }) {
                     onClick={handleSubmit}
                     variant="contained"
                     className="btn-submit-premium"
-                    sx={{ flex: 1 }}
                 >
                     {initialData ? 'SAVE EXPOSURE' : 'COMMIT DEBT'}
                 </Button>
-
             </Box>
         </Box>
     );

@@ -61,6 +61,17 @@ export default function AiAnalysisModal({ open, onClose }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (open && window.innerWidth <= 768) {
+            document.body.classList.add('dialog-open-mobile');
+        } else {
+            document.body.classList.remove('dialog-open-mobile');
+        }
+        return () => {
+            document.body.classList.remove('dialog-open-mobile');
+        };
+    }, [open]);
+
+    useEffect(() => {
         if (open) {
             setLoading(true);
             setLoadingStep(0);

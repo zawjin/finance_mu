@@ -77,6 +77,76 @@
     margin-bottom: 2rem;
 }
 
+.unified-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+}
+
+.unified-filter-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.4rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    gap: 0.35rem;
+    position: relative;
+    overflow: hidden;
+
+    &:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.06);
+        transform: translateY(-1px);
+    }
+
+    &.active {
+        background: #6366f1;
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+        border: 1px solid #6366f1;
+
+        .th-icon {
+            color: #ffffff !important;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+        }
+
+        .th-label {
+            color: #ffffff;
+            opacity: 1;
+        }
+    }
+
+    .th-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+
+        svg {
+            display: block;
+        }
+    }
+
+    .th-label {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: #1d1d1f;
+        opacity: 0.8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+    }
+}
+
 .chart-center-label {
     position: absolute;
     inset: 0;
@@ -193,30 +263,6 @@
     color: #ffffff !important;
 }
 
-/* SUMMARY CARDS */
-.investment-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.summary-card-investment {
-    padding: 1.5rem;
-    border-radius: 2rem;
-    border: 1px solid rgba(99, 102, 241, 0.1);
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    background: rgba(99, 102, 241, 0.03);
-
-    @media (max-width: 576px) {
-        flex-direction: column;
-        padding: 1.25rem;
-        gap: 1.25rem;
-    }
-}
-
 .pill-icon-box {
     width: 42px;
     height: 42px;
@@ -232,7 +278,224 @@
     }
 
     &.color-white {
-        color: #ffffff !important;
+        color: white !important;
+    }
+}
+
+/* SUMMARY CARDS */
+.investment-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.25rem;
+}
+
+.summary-card-investment {
+    padding: 1.5rem 2rem;
+    border-radius: 1.5rem;
+    background: rgba(99, 102, 241, 0.03);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    margin-bottom: 1.5rem;
+
+    .summary-card-left {
+        flex-shrink: 0;
+    }
+
+    .summary-card-right {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .summary-main-line {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .summary-secondary-line {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: right;
+    }
+
+    .pill-icon-box {
+        background: #6366f1 !important;
+        color: white !important;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+
+        svg {
+            width: 22px !important;
+            height: 22px !important;
+        }
+    }
+
+    .summary-label-primary {
+        color: #64748b;
+        font-weight: 800;
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+    }
+
+    .summary-value-main {
+        color: #1d1d1f;
+        font-size: 1.8rem;
+        font-weight: 900;
+    }
+
+    .summary-label-secondary {
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #86868b;
+    }
+
+    .pnl-chips-flex {
+        justify-content: flex-end;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .pnl-chip {
+        font-size: 0.54rem !important;
+        padding: 0.15rem 0.45rem !important;
+        border-radius: 6px !important;
+        font-weight: 900 !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+
+        &.positive {
+            background: rgba(52, 199, 89, 0.1) !important;
+            color: #34c759 !important;
+            border: none !important;
+        }
+
+        &.negative {
+            background: rgba(255, 59, 48, 0.1) !important;
+            color: #ff3b30 !important;
+            border: none !important;
+        }
+    }
+
+    // 📱 MOBILE ONLY: ULTRA CUTE & SUPER PREMIUM WIDGET
+    @media (max-width: 768px) {
+        padding: 0.65rem 1rem; // Sleeker padding
+
+        background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); // Sleeker Indigo-to-Blue
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35); // Softer, wider glow
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        align-items: center;
+        flex-direction: row !important;
+
+        .summary-card-left {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .summary-card-right {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem; // Slightly more breathing room
+            flex: 1;
+            min-width: 0;
+        }
+
+        .summary-main-line {
+            flex-direction: row;
+            align-items: center; // Center perfectly horizontally
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .summary-secondary-line {
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            gap: 0.4rem;
+            flex-wrap: nowrap;
+            width: 100%;
+        }
+
+        .pill-icon-box {
+            width: 36px; // Perfect cute size
+            height: 36px;
+            border-radius: 50%; // PERFECT CIRCLE for maximum cuteness!
+            background: rgba(255, 255, 255, 0.2) !important; // Glassier
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                width: 18px !important;
+                height: 18px !important;
+                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+            }
+        }
+
+        .summary-label-primary {
+            font-size: 0.55rem;
+            font-weight: 800 !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        .summary-value-main {
+            font-size: 1.4rem !important; // BIGGER, crisper amount
+            font-weight: 900 !important;
+            color: white !important;
+            letter-spacing: -0.01em !important;
+            line-height: 1;
+            white-space: nowrap;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); // Stronger pop
+        }
+
+        .summary-label-secondary {
+            font-size: 0.55rem;
+            font-weight: 700 !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            white-space: nowrap;
+        }
+
+        .pnl-chip {
+            background: rgba(255, 255, 255, 0.2) !important; // Frosted
+            backdrop-filter: blur(8px);
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            font-size: 0.5rem !important;
+            padding: 0.15rem 0.45rem !important; // Better chip padding
+            border-radius: 1rem !important; // Fully rounded cute chips
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+
+            // FIX: Override desktop colors that clash with the blue background
+            &.positive,
+            &.negative {
+                background: rgba(255, 255, 255, 0.2) !important;
+                color: #ffffff !important; // FORCE pure white text
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            }
+        }
+
+        .pnl-chips-flex {
+            justify-content: flex-start;
+            gap: 0.35rem;
+        }
     }
 }
 
@@ -347,8 +610,12 @@
         }
 
         @media (max-width: 768px) {
-            gap: 0.85rem;
-            mask-image: linear-gradient(to right, black 90%, transparent 100%);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            mask-image: none;
+            overflow-x: visible;
+            padding: 0.25rem 0; // Remove side padding to maximize width
         }
     }
 }
@@ -359,7 +626,7 @@
 }
 
 .investment-category-pill {
-    min-width: max-content !important; // Ensures pill grows to fit all text without wrapping
+    min-width: max-content !important; // Ensures pill grows to fit all text without wrapping on desktop
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -373,9 +640,29 @@
         transform: translateY(-2px);
     }
 
-    @media (max-width: 576px) {
-        padding: 0.75rem 1rem;
-        gap: 0.75rem;
+    // Mobile 2x2 grid adaptations
+    // Mobile 2x2 grid adaptations
+    @media (max-width: 768px) {
+        min-width: 0 !important; // Allow shrinking for grid
+        padding: 0.75rem 0.65rem; // Tighter padding to maximize space
+        gap: 0.5rem; // Tight gap between icon and text
+        flex-direction: row; // Icon left, text right
+        align-items: center;
+        width: 100%;
+        overflow: hidden;
+
+        // Shrink icon slightly so the text has plenty of room horizontally
+        .pill-icon-box {
+            width: 32px !important;
+            height: 32px !important;
+            flex-shrink: 0;
+            border-radius: 10px !important;
+
+            svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+        }
     }
 }
 
@@ -383,6 +670,8 @@
     display: flex;
     flex-direction: column;
     white-space: nowrap !important; // Prevent inner text wrapping
+    width: 100%;
+    overflow: hidden;
 }
 
 .pill-type-label {
@@ -391,12 +680,16 @@
     display: block !important;
     font-size: 0.65rem !important;
     white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pill-value-stack {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .pill-amt-val {
@@ -406,6 +699,12 @@
     line-height: 1.1;
     color: var(--text-color) !important;
     white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (max-width: 768px) {
+        font-size: 0.95rem; // Slightly smaller to fit grid
+    }
 }
 
 .pill-cost-label {
@@ -851,268 +1150,324 @@
 // ═══════════════════════════════════════════════════════════════════
 @media (max-width: 768px) {
 
-  // Mobile Filter Toggle Button
-  .mobile-filter-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background: white;
-    border: 1px solid rgba(0,0,0,0.07);
-    border-radius: 16px;
-    padding: 0.8rem 1rem;
-    font-weight: 800;
-    font-size: 0.78rem;
-    color: #1d1d1f;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    text-align: left;
+    // Mobile Filter Toggle Button
+    .mobile-filter-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 16px;
+        padding: 0.8rem 1rem;
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: #1d1d1f;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        text-align: left;
 
-    .mft-left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+        .mft-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mft-badge {
+            background: #6366f1;
+            color: white;
+            font-size: 0.55rem;
+            font-weight: 900;
+            padding: 1px 6px;
+            border-radius: 50px;
+        }
+
+        .mft-chevron {
+            font-size: 1.1rem;
+            line-height: 1;
+            color: #86868b;
+            transition: transform 0.25s;
+
+            &.open {
+                transform: rotate(180deg);
+            }
+        }
     }
 
-    .mft-badge {
-      background: #6366f1;
-      color: white;
-      font-size: 0.55rem;
-      font-weight: 900;
-      padding: 1px 6px;
-      border-radius: 50px;
+    // Filter panel: hidden by default, shown when toggled
+    .filters-sidebar-card {
+        display: none;
+        padding: 1.1rem 1rem !important;
+        border-radius: 20px !important;
+        margin-bottom: 0.75rem;
+
+        &.mobile-open {
+            display: block;
+        }
     }
 
-    .mft-chevron {
-      font-size: 1.1rem;
-      line-height: 1;
-      color: #86868b;
-      transition: transform 0.25s;
+    // Unified filters will handle the layout
 
-      &.open { transform: rotate(180deg); }
+
+    .data-table-premium.scroll-y-luxury.scroll-y-luxury_jj>.date-group {
+        padding: 9px 0px 0px 0px !important;
+        border-radius: 13px !important;
+        overflow: hidden !important;
     }
-  }
 
-  // Filter panel: hidden by default, shown when toggled
-  .filters-sidebar-card {
-    display: none;
-    padding: 1.1rem 1rem !important;
-    border-radius: 20px !important;
-    margin-bottom: 0.75rem;
-
-    &.mobile-open { display: block; }
-  }
-
-  // Category filter chips
-  .category-filter-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-
-  .cat-filter-chip {
-    padding: 0.4rem 0.7rem !important;
-    font-size: 0.65rem !important;
-    border-radius: 10px !important;
-  }
-
-  // Time horizon: 3-col
-  .time-horizon-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 0.45rem !important;
-  }
-
-  .time-horizon-btn {
-    padding: 0.55rem 0.35rem !important;
-
-    .th-label { font-size: 0.6rem !important; }
-  }
-
-  // Group Header Fixes for 380px
-  .group-header-luxury {
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      padding: 1rem !important;
-      gap: 0.5rem !important;
-  }
-
-  .group-title-flex {
-      flex-wrap: wrap !important;
-      gap: 0.35rem !important;
-  }
-
-  .group-meta-info-cluster {
-      margin-left: 0 !important;
-      flex-wrap: wrap !important;
-      gap: 0.35rem !important;
-  }
-
-  .group-tx-stats-tag {
-      font-size: 0.55rem !important;
-  }
-
-  .group-acquired-label {
-      font-size: 0.8rem !important;
-      width: 100% !important;
-      text-align: left !important;
-  }
-
-  // Transaction rows: native layout
-  .transaction-row-fancy {
-    padding: 0.8rem 1rem !important;
-    gap: 0.65rem !important;
-    flex-wrap: nowrap !important;
-    flex-direction: row !important;
-    align-items: flex-start !important; // Changed to flex-start so content can wrap vertically
-  }
-
-  .pill-icon-box {
-      width: 36px !important;
-      height: 36px !important;
-      border-radius: 10px !important;
-      flex-shrink: 0 !important;
-      margin-top: 2px !important; // Adjust for flex-start alignment
-      svg { width: 16px !important; height: 16px !important; }
-  }
-
-  .asset-header-flex {
-      display: flex;
-      align-items: flex-start;
-      flex-wrap: wrap; // Allow wrapping so name and badge don't collide
-      gap: 4px;
-      margin-bottom: 2px;
-  }
-
-  .asset-name-text {
-      font-size: 0.8rem !important;
-      word-wrap: break-word !important;
-  }
-
-  .asset-meta-flex {
-      font-size: 0.55rem !important;
-      flex-wrap: wrap !important;
-      white-space: normal !important;
-      gap: 0.3rem !important;
-      line-height: 1.4 !important;
-  }
-
-  .tx-category-col {
-      display: none !important;
-  }
-
-  // Amount: always right-aligned
-  .tx-amount-col {
-    text-align: right !important;
-    min-width: auto !important;
-    width: auto !important;
-    flex-shrink: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    gap: 1px !important;
-    border-top: none !important;
-    padding-top: 0 !important;
-    position: static !important;
-  }
-
-  .tx-val-main { font-size: 0.85rem !important; font-weight: 900 !important; }
-  .tx-cost-label { font-size: 0.55rem !important; font-weight: 800 !important; }
-
-  // Action buttons: stay inline
-  .row-action-cluster {
-    flex-shrink: 0 !important;
-    gap: 0 !important;
-    width: auto !important; // FIX: Was 100% which squished the middle column!
-    justify-content: flex-end !important;
-    padding-top: 0 !important;
-    display: flex !important;
-    flex-direction: row !important;
-    margin-left: 0.25rem !important;
-    align-self: flex-start !important; // Align to top like the text
-
-    .MuiIconButton-root {
-      padding: 3px !important;
-      svg { width: 13px !important; height: 13px !important; }
+    .data-table-premium.scroll-y-luxury.scroll-y-luxury_jj>.date-group>.date-header-luxury {
+        margin-bottom: -11px !important;
     }
-  }
 
-  // Summary Cards
-  .summary-card-investment {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 1rem !important;
-      gap: 0.75rem !important;
-  }
-  
-  .summary-header-flex {
-      flex-direction: row !important;
-      align-items: center !important;
-  }
+    // Group Header Fixes for 380px
+    .data-table-premium.scroll-y-luxury>.date-group {
+        padding: 0px !important;
+        border-radius: 13px !important;
+        overflow: hidden !important;
+    }
 
-  .summary-value-flex {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
-  }
+    .group-header-luxury {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 0.85rem 1rem !important;
+        gap: 0.5rem !important;
+        background: rgba(99, 102, 241, 0.04) !important;
+        border: 1px solid rgba(99, 102, 241, 0.1) !important;
+        border-radius: 12px !important;
+    }
 
-  // Sort/action bar
-  .meta-status-bar {
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 16px;
-    margin-bottom: 0.85rem;
-  }
+    .group-title-flex {
+        display: grid !important;
+        grid-template-columns: auto auto 1fr; // Icon, Date, Remaining space
+        gap: 0.35rem !important;
+        width: 100% !important;
+        align-items: center !important;
 
-  .badge-status { width: 100%; font-size: 0.72rem; }
+        >svg {
+            grid-column: 1;
+            grid-row: 1;
+        }
+    }
 
-  .action-hub-right {
-    width: 100%;
-    flex-wrap: nowrap;
-    gap: 0.4rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
-  }
+    .group-date-label {
+        grid-column: 2;
+        grid-row: 1;
+    }
 
-  .sort-pill-btn, .btn-pill-sync-minimal, .btn-clear-minimal, .btn-export-minimal {
-      flex-shrink: 0; 
-      padding: 0.3rem 0.65rem; 
-      font-size: 0.6rem;
-  }
+    .group-meta-info-cluster {
+        display: contents !important; // Unbox the tags so they act as grid children
+    }
+
+    .group-activity-tag {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: end; // Push to the right edge
+        font-size: 0.5rem !important; // Slightly smaller to fit nicely
+    }
+
+    .group-tx-stats-tag {
+        grid-column: 1 / span 3; // Span the full width below
+        grid-row: 2;
+        justify-self: start; // Align to the left
+        font-size: 0.55rem !important;
+        background: rgba(255, 149, 0, 0.1) !important;
+        margin-top: 0.15rem;
+    }
+
+    .group-acquired-label {
+        font-size: 0.8rem !important;
+        width: 100% !important;
+        text-align: left !important;
+        margin-top: 0.25rem !important;
+        padding-top: 0.5rem !important;
+        border-top: 1px dashed rgba(99, 102, 241, 0.2) !important; // Clean separation
+        color: #1d1d1f !important;
+    }
+
+    // Transaction rows: native layout
+    .transaction-row-fancy {
+        padding: 0.8rem 1rem !important;
+        gap: 0.65rem !important;
+        flex-wrap: nowrap !important;
+        flex-direction: row !important;
+        align-items: flex-start !important; // Changed to flex-start so content can wrap vertically
+    }
+
+    .pill-icon-box {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        flex-shrink: 0 !important;
+        margin-top: 2px !important; // Adjust for flex-start alignment
+
+        svg {
+            width: 16px !important;
+            height: 16px !important;
+        }
+    }
+
+    .asset-header-flex {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap; // Allow wrapping so name and badge don't collide
+        gap: 4px;
+        margin-bottom: 2px;
+    }
+
+    .asset-name-text {
+        font-size: 0.8rem !important;
+        word-wrap: break-word !important;
+    }
+
+    .asset-meta-flex {
+        font-size: 0.55rem !important;
+        flex-wrap: wrap !important;
+        white-space: normal !important;
+        gap: 0.3rem !important;
+        line-height: 1.4 !important;
+    }
+
+    .tx-category-col {
+        display: none !important;
+    }
+
+    // Amount: always right-aligned
+    .tx-amount-col {
+        text-align: right !important;
+        min-width: auto !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 1px !important;
+        border-top: none !important;
+        padding-top: 0 !important;
+        position: static !important;
+    }
+
+    .tx-val-main {
+        font-size: 0.85rem !important;
+        font-weight: 900 !important;
+    }
+
+    .tx-cost-label {
+        font-size: 0.55rem !important;
+        font-weight: 800 !important;
+    }
+
+    // Action buttons: stay inline
+    .row-action-cluster {
+        flex-shrink: 0 !important;
+        gap: 0 !important;
+        width: auto !important; // FIX: Was 100% which squished the middle column!
+        justify-content: flex-end !important;
+        padding-top: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        margin-left: 0.25rem !important;
+        align-self: flex-start !important; // Align to top like the text
+
+        .MuiIconButton-root {
+            padding: 3px !important;
+
+            svg {
+                width: 13px !important;
+                height: 13px !important;
+            }
+        }
+    }
+
+    // Summary Cards
+    .summary-card-investment {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .summary-header-flex {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    .summary-value-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    // Sort/action bar
+    .meta-status-bar {
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        padding: 0.75rem 0.85rem;
+        border-radius: 16px;
+        margin-bottom: 0.85rem;
+    }
+
+    .badge-status {
+        width: 100%;
+        font-size: 0.72rem;
+    }
+
+    .action-hub-right {
+        width: 100%;
+        flex-wrap: nowrap;
+        gap: 0.4rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .sort-pill-btn,
+    .btn-pill-sync-minimal,
+    .btn-clear-minimal,
+    .btn-export-minimal {
+        flex-shrink: 0;
+        padding: 0.3rem 0.65rem;
+        font-size: 0.6rem;
+    }
 }
 
 // ── Extra small phones (≤400px): sort bar wraps to 2 rows ──────────
 @media (max-width: 400px) {
-  .action-hub-right {
-    flex-wrap: wrap !important;
-    gap: 0.4rem !important;
-  }
+    .action-hub-right {
+        flex-wrap: wrap !important;
+        gap: 0.4rem !important;
+    }
 
-  .sort-pill-btn {
-    width: calc(50% - 0.2rem) !important;
-    text-align: center;
-  }
+    .sort-pill-btn {
+        width: calc(50% - 0.2rem) !important;
+        text-align: center;
+    }
 
-  .btn-pill-sync-minimal,
-  .btn-clear-minimal,
-  .btn-export-minimal {
-    flex: 1 !important;
-    justify-content: center !important;
-    text-align: center !important;
-    display: flex !important;
-    align-items: center !important;
-  }
+    .btn-pill-sync-minimal,
+    .btn-clear-minimal,
+    .btn-export-minimal {
+        flex: 1 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+    }
 
-  // Transaction row: shrink icon slightly
-  .pill-icon-box {
-    width: 30px !important;
-    height: 30px !important;
-    svg { width: 14px !important; height: 14px !important; }
-  }
+    // Transaction row: shrink icon slightly
+    .pill-icon-box {
+        width: 30px !important;
+        height: 30px !important;
 
-  .tx-val-main {
-    font-size: 0.8rem !important;
-  }
+        svg {
+            width: 14px !important;
+            height: 14px !important;
+        }
+    }
+
+    .tx-val-main {
+        font-size: 0.8rem !important;
+    }
 }

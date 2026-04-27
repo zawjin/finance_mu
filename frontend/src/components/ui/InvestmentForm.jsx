@@ -2,7 +2,28 @@ import React, { useState, useEffect } from 'react';
 import {
     X, Calendar, CreditCard, ChevronDown,
     FileText, LayoutGrid, Tag, TrendingUp, Hash, DollarSign, Zap,
-    Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign
+    Landmark, Banknote, Wallet, Gift, Smartphone, CircleDollarSign,
+    Package, Heart, ShoppingCart, Stethoscope, Briefcase, Utensils,
+    ShoppingBag, Car, Plane, Home, Music, Coffee, Laptop, Tv, Film,
+    Camera, Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun,
+    Moon, Cloud, Star, Shield, Key, Lock, Bell, Mail, Phone, MapPin,
+    Flag, Globe, Cpu, HardDrive, Database, Book, Library, Building,
+    Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin,
+    Gavel, Terminal, Code, Webhook, Hexagon, Server, Wifi,
+    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree,
+    ChefHat, Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine,
+    Activity, Bone, Brain, HeartPulse, Microscope, Syringe, Thermometer,
+    Bath, Bed, Lamp, Refrigerator, Sofa, WashingMachine, Bird, Bug, Dog,
+    Fish, Flower, Leaf, Rabbit, TreeDeciduous, TreePine, Brush, Music2,
+    Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive, Atom,
+    Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component,
+    Construction, Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical,
+    Gamepad, Glasses, GraduationCap, Hammer, Infinity, Joystick, Lasso,
+    LifeBuoy, Monitor, Mouse, Network, Newspaper, Nut, Orbit, Paperclip,
+    PawPrint, PersonStanding, Pipette, Plug, Printer, Puzzle, Quote,
+    Radiation, Radio, Rocket, Search, Send, Share2, Shrink, Shuffle,
+    Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon,
+    Users, Video, Volume2, Watch, Gamepad2, Gem
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import {
@@ -14,17 +35,82 @@ import { Autocomplete } from '@mui/material';
 import api from '../../utils/api';
 import { useSelector } from 'react-redux';
 import './Forms.scss';
+
+// Expanded high-res icon map - Universal Taxonomy
+const IconMap = {
+    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
+    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
+    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
+    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
+    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
+    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
+    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
+    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
+    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
+    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
+    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
+    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
+    Library: <Library />, Building: <Building />, Store: <Store />,
+    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
+    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
+    TrendingUp: <TrendingUp />, Wallet: <Wallet />, Gavel: <Gavel />,
+    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />,
+    Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />, Settings2: <Settings2 />,
+    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />,
+    Mountain: <Mountain />, Tents: <Tent />, Palmtree: <Palmtree />,
+    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
+    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Soup />, Wine: <Wine />,
+    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />,
+    Microscope: <Microscope />, Syringe: <Syringe />, Thermometer: <Thermometer />,
+    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />,
+    Sofa: <Sofa />, WashingMachine: <WashingMachine />,
+    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
+    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />, TreePine: <TreePine />,
+    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />,
+    PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
+    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
+    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
+    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
+    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
+    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
+    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
+    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
+    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
+    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
+    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
+    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
+    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />,
+    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />,
+    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />,
+    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />,
+    Video: <Video />, Volume2: <Volume2 />, Watch: <Watch />, Gem: <Gem />
+};
+
+const getIcon = (catName, categories = [], options = {}) => {
+    const cat = categories.find(c => c.name === catName);
+    const iconName = cat?.icon || 'Package';
+    const color = options.color || cat?.color || '#0071e3';
+
+    const props = {
+        size: options.size || 16,
+        color: color,
+        strokeWidth: options.strokeWidth || 2.5,
+    };
+
+    const IconComponent = IconMap[iconName] || <Package />;
+    return React.cloneElement(IconComponent, props);
+};
 export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
-    
-    const labelStyle = { 
-        fontSize: '0.72rem', 
-        fontWeight: 900, 
-        color: '#86868b', 
-        mb: 1.2, 
-        display: 'block', 
-        letterSpacing: '0.05em', 
-        textTransform: 'uppercase' 
+
+    const labelStyle = {
+        fontSize: '0.72rem',
+        fontWeight: 900,
+        color: '#86868b',
+        mb: 1.2,
+        display: 'block',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase'
     };
 
     const [formData, setFormData] = useState({
@@ -190,7 +276,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 contributions: formData.contributions, // Ensure EPF contribs are passed
                 payment_method: formData.payment_method || null,
                 payment_source_id: formData.payment_source_id || null,
-                recentPurchase: formData._recentPurchaseAmt || null, 
+                recentPurchase: formData._recentPurchaseAmt || null,
                 recentPurchaseQty: formData._recentPurchaseQty || null,
                 ...(isMarketAsset && {
                     quantity: parseFloat(formData.quantity) || null,
@@ -316,7 +402,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         error={!!errors.value}
                         helperText={errors.value}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
+                            startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(0, 113, 227, 0.1)', color: '#0071e3' }}><CreditCard size={18} /></Box><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -335,7 +421,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 value={formData.ticker}
                                 onChange={e => setFormData({ ...formData, ticker: e.target.value })}
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start"><TrendingUp size={16} style={{ color: '#0071e3' }} /></InputAdornment>,
+                                    startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><TrendingUp size={18} /></Box></InputAdornment>,
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <Button
@@ -361,7 +447,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     const val = e.target.value;
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, quantity: val });
                                 }}
-                                InputProps={{ startAdornment: <InputAdornment position="start"><Hash size={16} style={{ color: '#0071e3' }} /></InputAdornment> }}
+                                InputProps={{ startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><Hash size={18} /></Box></InputAdornment> }}
                                 className="form-input-premium"
                             />
                         </Stack>
@@ -376,7 +462,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     const val = e.target.value;
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, buy_price: val });
                                 }}
-                                InputProps={{ startAdornment: <InputAdornment position="start"><DollarSign size={16} style={{ color: '#ff3b30' }} /></InputAdornment> }}
+                                InputProps={{ startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 59, 48, 0.1)', color: '#ff3b30' }}><Banknote size={18} /></Box></InputAdornment> }}
                                 className="form-input-premium"
                             />
                             <TextField
@@ -389,7 +475,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                     const val = e.target.value;
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, current_price: val });
                                 }}
-                                InputProps={{ startAdornment: <InputAdornment position="start"><DollarSign size={16} style={{ color: '#34c759' }} /></InputAdornment> }}
+                                InputProps={{ startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(52, 199, 89, 0.1)', color: '#34c759' }}><Zap size={18} /></Box></InputAdornment> }}
                                 className="form-input-premium"
                             />
                         </Stack>
@@ -478,7 +564,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         error={!!errors.name}
                         helperText={errors.name}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><LayoutGrid size={18} style={{ color: '#ff9500' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 149, 0, 0.1)', color: '#ff9500' }}><LayoutGrid size={18} /></Box></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -494,7 +580,16 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         onChange={e => setFormData({ ...formData, type: e.target.value, sub: '' })}
                         error={!!errors.type}
                         displayEmpty
-                        startAdornment={<InputAdornment position="start" sx={{ mr: 1, ml: -0.5 }}><Tag size={18} style={{ color: '#5856d6' }} /></InputAdornment>}
+                        startAdornment={
+                            <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}>
+                                <Box className="form-icon-vibrant" sx={{ 
+                                    bgcolor: formData.type ? `${assetClasses.find(c => c.name === formData.type)?.color}15` : 'rgba(88, 86, 214, 0.1)', 
+                                    color: formData.type ? assetClasses.find(c => c.name === formData.type)?.color : '#5856d6' 
+                                }}>
+                                    {formData.type ? getIcon(formData.type, assetClasses, { size: 18 }) : <Tag size={18} />}
+                                </Box>
+                            </InputAdornment>
+                        }
                         className="form-input-premium"
                         IconComponent={ChevronDown}
                     >
@@ -502,7 +597,9 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         {assetClasses.map(c => (
                             <MenuItem key={c.name} value={c.name} sx={{ fontWeight: 800, py: 1.5 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                    <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: c.color || '#0071e3' }} />
+                                    <Box className="form-icon-vibrant" sx={{ bgcolor: `${c.color}12`, color: c.color, width: 32, height: 32 }}>
+                                        {getIcon(c.name, assetClasses, { size: 18 })}
+                                    </Box>
                                     {c.name}
                                 </Box>
                             </MenuItem>
@@ -538,8 +635,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 InputProps={{
                                     ...params.InputProps,
                                     startAdornment: (
-                                        <InputAdornment position="start" sx={{ mr: 1.5, ml: -0.5 }}>
-                                            <Tag size={18} style={{ color: '#32ade6' }} />
+                                        <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}>
+                                            <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(50, 173, 230, 0.1)', color: '#32ade6' }}><Tag size={18} /></Box>
                                         </InputAdornment>
                                     ),
                                     endAdornment: (
@@ -567,13 +664,14 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
+                        sx={{ width: '100%' }}
                         slotProps={{
                             textField: {
                                 fullWidth: true, size: 'small', error: !!errors.date,
                                 helperText: errors.date, className: "form-input-premium",
+                                inputProps: { readOnly: true },
                                 InputProps: {
-                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>,
-                                    sx: { pl: '12px' }
+                                    startAdornment: <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
                                 }
                             }
                         }}
@@ -591,7 +689,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         value={formData.details}
                         onChange={e => setFormData({ ...formData, details: e.target.value })}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#32ade6' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(50, 173, 230, 0.1)', color: '#32ade6' }}><FileText size={18} /></Box></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -669,7 +767,8 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                                 <DatePicker
                                     value={newWithdrawal.date}
                                     onChange={val => setNewWithdrawal({ ...newWithdrawal, date: val })}
-                                    slotProps={{ textField: { fullWidth: true, size: 'small', className: "form-input-premium" } }}
+                                    sx={{ width: '100%' }}
+                                    slotProps={{ textField: { fullWidth: true, size: 'small', className: "form-input-premium", inputProps: { readOnly: true } } }}
                                 />
                             </Stack>
                             <Button
@@ -727,7 +826,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 {/* FUNDING METHOD */}
                 <Box>
                     <Typography className="form-label-premium">FUNDING METHOD</Typography>
-                    <Box className="payment-method-pill-group">
+                    <Box className="payment-method-pill-group mobile-4-col">
                         {PAYMENT_METHODS.map(m => (
                             <Box
                                 key={m.key}

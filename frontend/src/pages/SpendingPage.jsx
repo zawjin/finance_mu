@@ -534,13 +534,19 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 return (
                                     <motion.div key={cat} className="apple-category-pill glass-effect category-pill-wrapper">
                                         <div
-                                            className={`pill-icon-box ${hasActivity ? 'active' : 'inactive'}`}
+                                            className={`pill-icon-box ${selectedCat === cat ? 'active' : 'inactive'}`}
                                             style={{
-                                                '--pill-bg': hasActivity ? style.bg : 'rgba(0,0,0,0.04)',
-                                                '--pill-color': hasActivity ? style.color : '#8e8e93'
+                                                '--pill-bg': selectedCat === cat ? '#6366f1' : 'rgba(0,0,0,0.03)',
+                                                '--pill-color': selectedCat === cat ? 'white' : style.color
                                             }}
+                                            onClick={() => { setSelectedCat(cat); setSelectedSub('ALL'); }}
                                         >
-                                            {getIcon(cat, categories, { color: hasActivity ? style.color : '#8e8e93', fill: hasActivity ? 'auto' : 'none' })}
+                                            {getIcon(cat, categories, { 
+                                                size: 20, 
+                                                color: selectedCat === cat ? 'white' : style.color, 
+                                                fill: 'none',
+                                                strokeWidth: 2.4
+                                            })}
                                         </div>
                                         <div className="pill-info-box">
                                             <div className="tx-sub-flex">
@@ -592,12 +598,15 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>CATEGORY ENTITY</span></div>
-                            <div className="category-filter-grid">
+                            <div className="unified-filter-grid">
                                 {loading ? (
                                     [...Array(6)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
                                 ) : (
                                     <>
-                                        <div className={`cat-filter-chip ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>All</div>
+                                        <div className={`unified-filter-btn ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}>
+                                            <span className="th-icon"><Layers size={13} /></span>
+                                            <span className="th-label">All</span>
+                                        </div>
                                         {categories
                                             .filter(c => ![
                                                 'investment', 'investments', 'investment settlement', 'stocks',
@@ -609,42 +618,37 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             .map(c => {
                                                 const style = getCatStyle(c.name, categories);
                                                 return (
-                                                    <div key={c.name} className={`cat-filter-chip ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
-                                                        {getIcon(c.name, categories, {
-                                                            color: selectedCat === c.name ? 'white' : style.color,
-                                                            fill: selectedCat === c.name ? 'white' : 'auto',
-                                                            size: 14
-                                                        })}
-                                                        <span>{c.name.split(' ')[0]}</span>
+                                                    <div key={c.name} className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`} onClick={() => { setSelectedCat(c.name); setSelectedSub('ALL'); }}>
+                                                        <span className="th-icon">
+                                                            {getIcon(c.name, categories, {
+                                                                color: selectedCat === c.name ? 'white' : style.color,
+                                                                fill: 'none',
+                                                                size: 20,
+                                                                strokeWidth: 2.4
+                                                            })}
+                                                        </span>
+                                                        <span className="th-label">{c.name.split(' ')[0]}</span>
                                                     </div>
                                                 );
                                             })}
                                     </>
-                                )}
-                                {selectedCat !== 'ALL' && (
-                                    <div className="sub-cat-scroll-wrap">
-                                        <span className={`sub-cat-pill ${selectedSub === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedSub('ALL')}>All Nodes</span>
-                                        {(categories.find(c => c.name === selectedCat)?.sub_categories || []).slice().sort().map(sub => (
-                                            <span key={sub} className={`sub-cat-pill ${selectedSub === sub ? 'active' : ''}`} onClick={() => setSelectedSub(sub)}>{sub}</span>
-                                        ))}
-                                    </div>
                                 )}
                             </div>
                         </div>
 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>TIME HORIZON</span></div>
-                            <div className="time-horizon-grid">
+                            <div className="unified-filter-grid">
                                 {[
-                                    { id: 'TODAY', label: 'Today', icon: <Zap size={13} fill="currentColor" /> },
-                                    { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={13} fill="currentColor" /> },
-                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={13} fill="currentColor" /> },
-                                    { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={13} fill="currentColor" /> },
-                                    { id: 'ALL', label: 'All Time', icon: <Globe size={13} fill="currentColor" /> },
-                                    { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={13} fill="currentColor" /> },
+                                    { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
+                                    { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
+                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
+                                    { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
+                                    { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
+                                    { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
                                 ].map(p => (
-                                    <div key={p.id} className={`time-horizon-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
-                                        <span className="th-icon">{p.icon}</span>
+                                    <div key={p.id} className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
+                                        <span className="th-icon" style={{ color: period === p.id ? 'white' : 'var(--primary)' }}>{p.icon}</span>
                                         <span className="th-label">{p.label}</span>
                                     </div>
                                 ))}
@@ -653,17 +657,18 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
-                            <div className="portal-filter-wrap">
+                            <div className="unified-filter-grid">
                                 <div
-                                    className={`portal-chip-custom ${selectedSourceId === 'ALL' ? 'active' : ''}`}
+                                    className={`unified-filter-btn ${selectedSourceId === 'ALL' ? 'active' : ''}`}
                                     onClick={() => setSelectedSourceId('ALL')}
                                 >
-                                    All Portals
+                                    <span className="th-icon" style={{ color: selectedSourceId === 'ALL' ? 'white' : '#6366f1' }}><Activity size={20} /></span>
+                                    <span className="th-label">All Portals</span>
                                 </div>
                                 {reserves.map(r => (
                                     <div
                                         key={r._id}
-                                        className={`portal-chip-custom ${selectedSourceId === r._id ? 'active' : ''}`}
+                                        className={`unified-filter-btn ${selectedSourceId === r._id ? 'active' : ''}`}
                                         onClick={() => setSelectedSourceId(r._id)}
                                         style={{
                                             '--portal-color': r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
@@ -671,7 +676,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                         }}
                                     >
                                         <div className="portal-dot" />
-                                        {r.account_name}
+                                        <span className="th-label">{r.account_name}</span>
                                     </div>
                                 ))}
                             </div>
@@ -715,7 +720,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 ))}
                             </div>
                             <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setSelectedSub('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
-                            <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> EXPORT</button>
+                            <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> </button>
                         </div>
                     </div>
 

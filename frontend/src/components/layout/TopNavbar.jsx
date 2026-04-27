@@ -41,7 +41,7 @@ const PAGE_TITLE_MAP = {
     '/site-settings':       { title: 'Site Settings',   sub: 'App Configuration' },
 };
 
-export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
+export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
     const location = useLocation();
     const [profileOpen, setProfileOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -120,7 +120,7 @@ export default function TopNavbar({ onAdd, onOpenAiModal, onToggleAnalytics, sho
                                 {showAnalyticsBtn && (
                                     <button onClick={onToggleAnalytics} className={`btn-toggle-analytics ${showAnalytics ? 'active' : 'inactive'}`}><BarChart2 size={18} /></button>
                                 )}
-                                <button onClick={onAdd} className="btn-sync-global"><Plus size={16} /> SYNC</button>
+                                <button onClick={onAdd} className="btn-sync-global"><Plus size={16} /> {addLabel || 'SYNC'}</button>
                             </>
                         )}
                     </div>

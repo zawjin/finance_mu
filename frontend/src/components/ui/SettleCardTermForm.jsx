@@ -1,28 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography, TextField, MenuItem, Stack } from '@mui/material';
-import { Banknote, Calendar, CreditCard, ChevronDown } from 'lucide-react';
+import { Banknote, Calendar, CreditCard, ChevronDown, FileText, Tag, Wallet, Landmark } from 'lucide-react';
+import { InputAdornment } from '@mui/material';
+import './Forms.scss';
 import dayjs from 'dayjs';
 
-const inputStyle = {
-    '& .MuiOutlinedInput-root': {
-        borderRadius: '24px',
-        bgcolor: '#ffffff',
-        fontWeight: 900,
-        fontSize: '1.2rem',
-        '& fieldset': { border: '2px solid rgba(0,0,0,0.1)' },
-        '&:hover fieldset': { borderColor: '#1d1d1f' },
-        '&.Mui-focused fieldset': { borderColor: '#1d1d1f' },
-    }
-};
-
-const labelStyle = {
-    fontSize: '0.75rem',
-    fontWeight: 900,
-    color: '#1d1d1f',
-    letterSpacing: '0.02em',
-    mb: 1,
-    textTransform: 'uppercase'
-};
 
 export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, reserves, onSubmit, onCancel }) {
     const remaining = requiredAmount - alreadyPaid;
@@ -44,76 +26,68 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
     };
 
     return (
-        <Box sx={{ p: 3, pt: 0, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Box sx={{ textAlign: 'center', mb: 0.5 }}>
-                <Typography sx={{ fontSize: '1.2rem', fontWeight: 900, color: '#1d1d1f', letterSpacing: '-0.02em' }}>
+        <Box component="form" className="form-container-premium">
+            <Box sx={{ textAlign: 'center', mb: 2 }}>
+                <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: '#1d1d1f', letterSpacing: '-0.02em' }}>
                     SETTLE LENDING RECORD
                 </Typography>
             </Box>
 
             {/* TOTAL STAKE BOX - PREMIUM VIBRANT ORANGE */}
             <Box sx={{
-                p: 2.5, bgcolor: '#fffaf5', borderRadius: '20px',
-                border: '1px solid #fee2e2',
-                boxShadow: '0 10px 30px rgba(255,153,0,0.05)'
+                p: 2, bgcolor: '#fffaf5', borderRadius: '18px',
+                border: '1px solid #fee2e2', mb: 1
             }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
                     <Box>
-                        <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#f59e0b', textTransform: 'uppercase', mb: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: '#f59e0b', textTransform: 'uppercase', mb: 0.2 }}>
                             TOTAL STAKE REQUIRED
                         </Typography>
-                        <Typography sx={{ fontSize: '1.9rem', fontWeight: 900, color: '#f59e0b', lineHeight: 1 }}>
+                        <Typography sx={{ fontSize: '1.5rem', fontWeight: 900, color: '#f59e0b', lineHeight: 1 }}>
                             ₹{requiredAmount.toLocaleString()}
                         </Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                        <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: '#ef4444', textTransform: 'uppercase', mb: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: '#ef4444', textTransform: 'uppercase', mb: 0.2 }}>
                             REMAINING
                         </Typography>
-                        <Typography sx={{ fontSize: '1.4rem', fontWeight: 900, color: '#ef4444', lineHeight: 1 }}>
+                        <Typography sx={{ fontSize: '1.2rem', fontWeight: 900, color: '#ef4444', lineHeight: 1 }}>
                             ₹{remaining.toLocaleString()}
                         </Typography>
                     </Box>
                 </Stack>
-                <Typography sx={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b', mt: 2 }}>
+                <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', mt: 1.5 }}>
                     Already Paid: <span style={{ color: '#10b981', fontWeight: 900 }}>₹{alreadyPaid.toLocaleString()}</span>
                 </Typography>
             </Box>
 
             {/* AMOUNT INPUT */}
             <Box>
-                <Typography sx={labelStyle}>AMOUNT TO PAY NOW</Typography>
+                <Typography className="form-label-premium">AMOUNT TO PAY NOW</Typography>
                 <TextField
                     fullWidth
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Enter amount"
+                    className="form-input-premium"
                     InputProps={{
-                        startAdornment: <Typography sx={{ mr: 1, fontWeight: 900, color: '#86868b', fontSize: '1.1rem' }}>₹</Typography>
-                    }}
-                    sx={{
-                        ...inputStyle,
-                        '& .MuiOutlinedInput-root': { ...inputStyle['& .MuiOutlinedInput-root'], borderRadius: '18px', fontSize: '1.1rem' }
+                        startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 149, 0, 0.1)', color: '#ff9500' }}><Banknote size={18} /></Box><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '1rem' }}>₹</Typography></InputAdornment>
                     }}
                 />
             </Box>
 
             {/* SOURCE SELECT */}
             <Box>
-                <Typography sx={labelStyle}>DEBIT SOURCE ACCOUNT</Typography>
+                <Typography className="form-label-premium">DEBIT SOURCE ACCOUNT</Typography>
                 <TextField
                     select
                     fullWidth
                     value={sourceId}
                     onChange={(e) => setSourceId(e.target.value)}
-                    sx={{
-                        ...inputStyle,
-                        '& .MuiOutlinedInput-root': { ...inputStyle['& .MuiOutlinedInput-root'], borderRadius: '18px', fontSize: '0.95rem' }
-                    }}
-                    SelectProps={{
-                        displayEmpty: true,
-                        IconComponent: () => <ChevronDown size={18} style={{ marginRight: 16 }} />
+                    className="form-input-premium"
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><Landmark size={18} /></Box></InputAdornment>
                     }}
                 >
                     <MenuItem value="" disabled sx={{ fontWeight: 800 }}>Select Source Account</MenuItem>
@@ -127,33 +101,30 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
 
             {/* DATE INPUT */}
             <Box>
-                <Typography sx={labelStyle}>PAYMENT DATE</Typography>
+                <Typography className="form-label-premium">PAYMENT DATE</Typography>
                 <TextField
                     fullWidth
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    sx={{
-                        ...inputStyle,
-                        '& .MuiOutlinedInput-root': { ...inputStyle['& .MuiOutlinedInput-root'], borderRadius: '18px', fontSize: '0.95rem' }
-                    }}
+                    className="form-input-premium"
                     InputProps={{
-                        endAdornment: <Calendar size={18} color="#86868b" style={{ marginLeft: 8 }} />
+                        startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
                     }}
                 />
             </Box>
 
             {/* COMMENT INPUT */}
             <Box>
-                <Typography sx={labelStyle}>TRANSACTION NOTE / COMMENT</Typography>
+                <Typography className="form-label-premium">TRANSACTION NOTE / COMMENT</Typography>
                 <TextField
                     fullWidth
                     placeholder="e.g. Partial pay for this month"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    sx={{
-                        ...inputStyle,
-                        '& .MuiOutlinedInput-root': { ...inputStyle['& .MuiOutlinedInput-root'], borderRadius: '18px', fontSize: '0.9rem' }
+                    className="form-input-premium"
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><FileText size={18} /></Box></InputAdornment>
                     }}
                 />
             </Box>
@@ -170,27 +141,17 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
             </Box>
 
             {/* BUTTONS */}
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box className="form-actions-row">
                 <Button
-                    fullWidth
                     onClick={onCancel}
-                    sx={{
-                        py: 1.5, borderRadius: '50px', fontWeight: 900, color: '#1d1d1f',
-                        fontSize: '0.85rem',
-                        bgcolor: 'rgba(0,0,0,0.06)', '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' }
-                    }}
+                    className="btn-dismiss-premium"
                 >
                     ABORT
                 </Button>
                 <Button
-                    fullWidth
                     variant="contained"
                     onClick={handleSubmit}
-                    sx={{
-                        py: 1.5, borderRadius: '50px', fontWeight: 900, bgcolor: '#e2e2e2',
-                        color: '#a3a3a3', fontSize: '0.85rem',
-                        '&:hover': { bgcolor: '#d1d1d1' }
-                    }}
+                    className="btn-submit-premium"
                 >
                     CONFIRM PAY
                 </Button>

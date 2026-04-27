@@ -25,7 +25,46 @@ export default function ReservesSummaryHeader({
                     </div>
                 </div>
 
-
+                <Stack direction="row" spacing={1.5}>
+                    {activeTab === 'local-investment' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Plus size={18} />}
+                            onClick={() => onEditLending({})}
+                            className="btn-new-instrument"
+                        >
+                            ADD NEW LENDING
+                        </Button>
+                    )}
+                    {activeTab === 'debt-ledger' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Plus size={18} />}
+                            onClick={() => onEditDebt({})}
+                            className="btn-new-instrument"
+                        >
+                            ADD NEW DEBT
+                        </Button>
+                    )}
+                    {activeTab === 'accounts' && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Plus size={18} />}
+                            onClick={() => onEdit({})}
+                            className="btn-new-instrument"
+                        >
+                            ADD ACCOUNT
+                        </Button>
+                    )}
+                    <Button
+                        variant="outlined"
+                        startIcon={<ArrowRightLeft size={18} />}
+                        onClick={onTransfer}
+                        className="btn-move-money"
+                    >
+                        TRANSFER
+                    </Button>
+                </Stack>
             </div>
         </div>
     );

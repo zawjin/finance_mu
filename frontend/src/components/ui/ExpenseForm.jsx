@@ -1,8 +1,29 @@
 import React, { useState } from 'react';
 import {
     X, Calendar, Edit3, ChevronDown, Wallet,
-    FileText, LayoutGrid, Tag, CreditCard,
-    AlertCircle, CheckCircle2, Landmark, Banknote, Gift, Smartphone, CircleDollarSign
+    FileText, LayoutGrid, Tag, CreditCard, TrendingUp, Zap,
+    AlertCircle, CheckCircle2, Landmark, Banknote, Gift, Smartphone, CircleDollarSign,
+    Package, Heart, ShoppingCart, Stethoscope, Briefcase, Utensils,
+    ShoppingBag, Car, Plane, Home, Music, Coffee, Laptop, Tv, Film,
+    Camera, Dumbbell, Bike, Scissors, Wrench, Umbrella, Wind, Sun,
+    Moon, Cloud, Star, Shield, Key, Lock, Bell, Mail, Phone, MapPin,
+    Flag, Globe, Cpu, HardDrive, Database, Book, Library, Building,
+    Store, Coins, Euro, PoundSterling, JapaneseYen, Bitcoin,
+    Gavel, Terminal, Code, Webhook, Hash, Hexagon, Server, Wifi,
+    Settings2, Bus, TrainFront, Ship, TramFront, Mountain, Tent, Palmtree,
+    ChefHat, Cookie, Croissant, Egg, IceCreamCone, Milk, Pizza, Soup, Wine,
+    Activity, Bone, Brain, HeartPulse, Microscope, Syringe, Thermometer,
+    Bath, Bed, Lamp, Refrigerator, Sofa, WashingMachine, Bird, Bug, Dog,
+    Fish, Flower, Leaf, Rabbit, TreeDeciduous, TreePine, Brush, Music2,
+    Mic2, Palette, PenTool, Piano, Theater, Anchor, Archive, Atom,
+    Battery, Binary, Box as BoxIcon, Calculator, Clock, Compass, Component,
+    Construction, Crown, Diamond, Dice5, Droplets, Eye, Flame, FlaskConical,
+    Gamepad, Glasses, GraduationCap, Hammer, Infinity, Joystick, Lasso,
+    LifeBuoy, Monitor, Mouse, Network, Newspaper, Nut, Orbit, Paperclip,
+    PawPrint, PersonStanding, Pipette, Plug, Printer, Puzzle, Quote,
+    Radiation, Radio, Rocket, Search, Send, Share2, Shrink, Shuffle,
+    Skull, Smile, Target, Ticket, Timer, Trophy, Truck, User as UserIcon,
+    Users, Video, Volume2, Watch, Gamepad2, Gem
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import {
@@ -12,6 +33,71 @@ import {
 import { DatePicker } from '@mui/x-date-pickers';
 import { useSelector } from 'react-redux';
 import './Forms.scss';
+
+// Expanded high-res icon map - Universal Taxonomy
+const IconMap = {
+    Package: <Package />, Heart: <Heart />, ShoppingCart: <ShoppingCart />,
+    Stethoscope: <Stethoscope />, Briefcase: <Briefcase />, Utensils: <Utensils />,
+    ShoppingBag: <ShoppingBag />, Car: <Car />, Zap: <Zap />,
+    Gamepad2: <Gamepad2 />, CreditCard: <CreditCard />, Plane: <Plane />,
+    Home: <Home />, Music: <Music />, Coffee: <Coffee />, Smartphone: <Smartphone />,
+    Laptop: <Laptop />, Tv: <Tv />, Film: <Film />, Camera: <Camera />,
+    Dumbbell: <Dumbbell />, Bike: <Bike />, Scissors: <Scissors />, Wrench: <Wrench />,
+    Umbrella: <Umbrella />, Wind: <Wind />, Sun: <Sun />, Moon: <Moon />,
+    Cloud: <Cloud />, Star: <Star />, Shield: <Shield />, Key: <Key />,
+    Lock: <Lock />, Bell: <Bell />, Mail: <Mail />, Phone: <Phone />,
+    MapPin: <MapPin />, Flag: <Flag />, Globe: <Globe />, Cpu: <Cpu />,
+    HardDrive: <HardDrive />, Database: <Database />, Book: <Book />,
+    Library: <Library />, Building: <Building />, Store: <Store />,
+    Coins: <Coins />, Euro: <Euro />, PoundSterling: <PoundSterling />,
+    JapaneseYen: <JapaneseYen />, Bitcoin: <Bitcoin />, Landmark: <Landmark />,
+    TrendingUp: <TrendingUp />, Wallet: <Wallet />, Gavel: <Gavel />,
+    Terminal: <Terminal />, Code: <Code />, Webhook: <Webhook />, Hash: <Hash />,
+    Hexagon: <Hexagon />, Server: <Server />, Wifi: <Wifi />, Settings2: <Settings2 />,
+    Bus: <Bus />, TrainFront: <TrainFront />, Ship: <Ship />, TramFront: <TramFront />,
+    Mountain: <Mountain />, Tents: <Tent />, Palmtree: <Palmtree />,
+    ChefHat: <ChefHat />, Cookie: <Cookie />, Croissant: <Croissant />, Egg: <Egg />,
+    IceCream: <IceCreamCone />, Milk: <Milk />, Pizza: <Pizza />, Soup: <Soup />, Wine: <Wine />,
+    Activity: <Activity />, Bones: <Bone />, Brain: <Brain />, HeartPulse: <HeartPulse />,
+    Microscope: <Microscope />, Syringe: <Syringe />, Thermometer: <Thermometer />,
+    Bath: <Bath />, Bed: <Bed />, Lamp: <Lamp />, Refrigerator: <Refrigerator />,
+    Sofa: <Sofa />, WashingMachine: <WashingMachine />,
+    Bird: <Bird />, Bug: <Bug />, Dog: <Dog />, Fish: <Fish />, Flower: <Flower />,
+    Leaf: <Leaf />, Rabbit: <Rabbit />, TreeDeciduous: <TreeDeciduous />, TreePine: <TreePine />,
+    Brush: <Brush />, Music2: <Music2 />, Mic2: <Mic2 />, Palette: <Palette />,
+    PenTool: <PenTool />, Piano: <Piano />, Theater: <Theater />,
+    Anchor: <Anchor />, Archive: <Archive />, Atom: <Atom />, Battery: <Battery />,
+    Binary: <Binary />, Box: <BoxIcon />, Calculator: <Calculator />, Clock: <Clock />,
+    Compass: <Compass />, Component: <Component />, Construction: <Construction />,
+    Crown: <Crown />, Diamond: <Diamond />, Dice5: <Dice5 />, Droplets: <Droplets />,
+    Eye: <Eye />, Flame: <Flame />, FlaskConical: <FlaskConical />, Gamepad: <Gamepad />,
+    Gift: <Gift />, Glasses: <Glasses />, GraduationCap: <GraduationCap />, Hammer: <Hammer />,
+    Infinity: <Infinity />, Joystick: <Joystick />, Lasso: <Lasso />, LifeBuoy: <LifeBuoy />,
+    Monitor: <Monitor />, Mouse: <Mouse />, Network: <Network />, Newspaper: <Newspaper />,
+    Nut: <Nut />, Orbit: <Orbit />, Paperclip: <Paperclip />, PawPrint: <PawPrint />,
+    PersonStanding: <PersonStanding />, Pipette: <Pipette />, Plug: <Plug />,
+    Printer: <Printer />, Puzzle: <Puzzle />, Quote: <Quote />, Radiation: <Radiation />,
+    Radio: <Radio />, Rocket: <Rocket />, Search: <Search />, Send: <Send />,
+    Share2: <Share2 />, Shrink: <Shrink />, Shuffle: <Shuffle />, Skull: <Skull />,
+    Smile: <Smile />, Target: <Target />, Ticket: <Ticket />, Timer: <Timer />,
+    Trophy: <Trophy />, Truck: <Truck />, User: <UserIcon />, Users: <Users />,
+    Video: <Video />, Volume2: <Volume2 />, Watch: <Watch />, Gem: <Gem />
+};
+
+const getIcon = (catName, categories = [], options = {}) => {
+    const cat = categories.find(c => c.name === catName);
+    const iconName = cat?.icon || 'Package';
+    const color = options.color || cat?.color || '#0071e3';
+
+    const props = {
+        size: options.size || 16,
+        color: color,
+        strokeWidth: options.strokeWidth || 2.5,
+    };
+
+    const IconComponent = IconMap[iconName] || <Package />;
+    return React.cloneElement(IconComponent, props);
+};
 
 export default function ExpenseForm({ categories, onSubmit, onCancel, initialData }) {
     const reserves = useSelector(state => state.finance.reserves) || [];
@@ -101,7 +187,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                     if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, recovered: val });
                                 }}
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><CheckCircle2 size={18} style={{ color: '#34c759' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#34c759', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
+                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(52, 199, 89, 0.1)', color: '#34c759' }}><CheckCircle2 size={18} /></Box><Typography sx={{ fontWeight: 900, ml: 1, color: '#34c759', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                                 }}
                                 className="form-input-premium"
                             />
@@ -116,7 +202,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                 value={formData.recovery_desc}
                                 onChange={e => setFormData({ ...formData, recovery_desc: e.target.value })}
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><FileText size={18} style={{ color: '#5ac8fa' }} /></InputAdornment>
+                                    startAdornment: <InputAdornment position="start" sx={{ mr: 0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(90, 200, 250, 0.1)', color: '#5ac8fa' }}><FileText size={18} /></Box></InputAdornment>
                                 }}
                                 className="form-input-premium"
                             />
@@ -140,7 +226,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         error={!!errors.amount}
                         helperText={errors.amount}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start"><CreditCard size={18} style={{ color: '#0071e3' }} /><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
+                            startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(0, 113, 227, 0.1)', color: '#0071e3' }}><CreditCard size={18} /></Box><Typography sx={{ fontWeight: 900, ml: 1, color: '#1d1d1f', fontSize: '0.9rem' }}>₹</Typography></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -159,7 +245,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         error={!!errors.description}
                         helperText={errors.description}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start"><FileText size={18} style={{ color: '#ff9500' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 149, 0, 0.1)', color: '#ff9500' }}><FileText size={18} /></Box></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -171,12 +257,14 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                     <DatePicker
                         value={formData.date}
                         onChange={(val) => setFormData({ ...formData, date: val })}
+                        sx={{ width: '100%' }}
                         slotProps={{
                             textField: {
                                 fullWidth: true, size: 'small', error: !!errors.date,
                                 helperText: errors.date, className: "form-input-premium",
+                                inputProps: { readOnly: true },
                                 InputProps: {
-                                    startAdornment: <InputAdornment position="start"><Calendar size={18} style={{ color: '#ff2d55' }} /></InputAdornment>
+                                    startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
                                 }
                             }
                         }}
@@ -193,7 +281,16 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         onChange={e => setFormData({ ...formData, category: e.target.value, sub: '' })}
                         error={!!errors.category}
                         displayEmpty
-                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><LayoutGrid size={18} style={{ color: '#5856d6' }} /></InputAdornment>}
+                        startAdornment={
+                            <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}>
+                                <Box className="form-icon-vibrant" sx={{ 
+                                    bgcolor: formData.category ? `${categories.find(c => c.name === formData.category)?.color}15` : 'rgba(88, 86, 214, 0.1)', 
+                                    color: formData.category ? categories.find(c => c.name === formData.category)?.color : '#5856d6' 
+                                }}>
+                                    {formData.category ? getIcon(formData.category, categories, { size: 18 }) : <LayoutGrid size={18} />}
+                                </Box>
+                            </InputAdornment>
+                        }
                         className="form-input-premium"
                         IconComponent={ChevronDown}
                     >
@@ -201,7 +298,9 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         {categories.map(c => (
                             <MenuItem key={c.name} value={c.name} sx={{ fontWeight: 800, py: 1.5 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                    <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: c.color || '#0071e3' }} />
+                                    <Box className="form-icon-vibrant" sx={{ bgcolor: `${c.color}12`, color: c.color, width: 32, height: 32 }}>
+                                        {getIcon(c.name, categories, { size: 18 })}
+                                    </Box>
                                     {c.name}
                                 </Box>
                             </MenuItem>
@@ -230,7 +329,9 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                                     ...params.InputProps,
                                     startAdornment: (
                                         <InputAdornment position="start" sx={{ ml: -0.5 }}>
-                                            <Tag size={18} style={{ color: '#32ade6' }} />
+                                            <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(50, 173, 230, 0.1)', color: '#32ade6' }}>
+                                                <Tag size={18} />
+                                            </Box>
                                         </InputAdornment>
                                     )
                                 }}
@@ -273,6 +374,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                             value={formData.payment_source_id}
                             onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
                             displayEmpty
+                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><Landmark size={18} /></Box></InputAdornment>}
                             className="form-input-premium"
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (manual only)</em></MenuItem>
@@ -307,7 +409,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                             onChange={e => setFormData({ ...formData, target_account_id: e.target.value })}
                             displayEmpty
                             className="form-input-premium"
-                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><CreditCard size={18} style={{ color: '#6366f1' }} /></InputAdornment>}
+                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><CreditCard size={18} /></Box></InputAdornment>}
                         >
                             <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>None (Standard Expense)</em></MenuItem>
                             {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => (

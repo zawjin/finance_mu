@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Box, Typography, Stack, IconButton, Chip, LinearProgress, Button } from '@mui/material';
-import { Edit2, Trash2, Banknote, CheckCircle2, HandCoins, RotateCcw } from 'lucide-react';
+import { Edit2, Trash2, Banknote, CheckCircle2, Smile, RotateCcw } from 'lucide-react';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../../utils/formatters';
 
@@ -122,7 +122,7 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                         {['TERM', 'MONTH', 'EXPECTED', 'CUMULATIVE', 'INTEREST', 'MATURITY PROJ', 'STATUS', 'ACTION'].map(h => (
                             <Box key={h} className="chit-th-item">
                                 <Typography className="chit-th-text">{h}</Typography>
-                                {h === 'ACTION' && <HandCoins size={12} color="rgba(255,255,255,0.4)" />}
+                                {h === 'ACTION' && <Smile size={12} color="rgba(255,255,255,0.4)" />}
                             </Box>
                         ))}
                     </Box>
@@ -199,12 +199,11 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                                     <RotateCcw size={14} />
                                                 </IconButton>
                                             </div>
-                                        ) : (
+                                        ) : canPay ? (
                                             <Button
                                                 size="small"
                                                 variant="contained"
-                                                disabled={!canPay}
-                                                startIcon={<HandCoins size={12} />}
+                                                startIcon={<Smile size={12} />}
                                                 onClick={() => onSettle({
                                                     card: lending,
                                                     type: 'LENDING',
@@ -216,6 +215,8 @@ export default function LendingInstrumentItem({ lending, onEdit, onDelete, onSet
                                             >
                                                 PAY
                                             </Button>
+                                        ) : (
+                                            <span className="btn-pay-chit-locked">–</span>
                                         )}
                                     </Box>
                                 </Box>

@@ -1,8 +1,8 @@
-import { 
-    Dialog, DialogTitle, DialogContent, Typography, IconButton, 
-    Slide, Grow, Box, useMediaQuery, useTheme 
+import {
+    Dialog, DialogTitle, DialogContent, Typography, IconButton,
+    Slide, Grow, Box, useMediaQuery, useTheme
 } from '@mui/material';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 import './BaseDialog.scss';
 
@@ -15,16 +15,28 @@ export default function BaseDialog({ open, onClose, title, children, maxWidth = 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    useEffect(() => {
+        const checkMobile = () => window.innerWidth <= 768;
+        if (checkMobile() && open) {
+            document.body.classList.add('dialog-open-mobile');
+        } else {
+            document.body.classList.remove('dialog-open-mobile');
+        }
+        return () => {
+            document.body.classList.remove('dialog-open-mobile');
+        };
+    }, [open]);
+
     return (
-        <Dialog 
-            open={open} 
-            onClose={onClose} 
+        <Dialog
+            open={open}
+            onClose={onClose}
             TransitionComponent={isMobile ? SlideUp : Grow}
-            fullWidth 
+            fullWidth
             maxWidth={maxWidth}
-            PaperProps={{ 
+            PaperProps={{
                 className: `base-dialog-paper${isMobile ? ' mobile-sheet' : ''}`,
-                sx: { 
+                sx: {
                     borderRadius: isMobile ? '28px 28px 0 0' : borderRadius,
                     overflow: 'hidden',
                     margin: isMobile ? '0' : 'auto',
@@ -35,7 +47,7 @@ export default function BaseDialog({ open, onClose, title, children, maxWidth = 
                     bottom: isMobile ? 0 : undefined,
                     left: isMobile ? 0 : undefined,
                     right: isMobile ? 0 : undefined,
-                } 
+                }
             }}
             sx={{
                 '& .MuiDialog-container': {
@@ -43,12 +55,7 @@ export default function BaseDialog({ open, onClose, title, children, maxWidth = 
                 }
             }}
         >
-            {/* Drag handle (mobile only) */}
-            {isMobile && (
-                <Box className="sheet-drag-handle-wrap">
-                    <div className="sheet-drag-handle" />
-                </Box>
-            )}
+
 
             <DialogTitle className="dialog-base-title">
                 <Box sx={{ flex: 1 }}>
@@ -57,8 +64,8 @@ export default function BaseDialog({ open, onClose, title, children, maxWidth = 
                     </Typography>
                     {extraHeader}
                 </Box>
-                <IconButton 
-                    onClick={onClose} 
+                <IconButton
+                    onClick={onClose}
                     className="dialog-close-btn"
                 >
                     <X size={isMobile ? 18 : 20} />

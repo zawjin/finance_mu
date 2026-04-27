@@ -50,7 +50,7 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
                         error={!!errors.name}
                         helperText={errors.name}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start"><Target size={18} style={{ color: '#0ea5e9' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9' }}><Target size={18} /></Box></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -68,7 +68,7 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
                         value={formData.duration}
                         onChange={e => setFormData({ ...formData, duration: e.target.value })}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start"><Clock size={18} style={{ color: '#f59e0b' }} /></InputAdornment>
+                            startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}><Clock size={18} /></Box></InputAdornment>
                         }}
                         className="form-input-premium"
                     />
@@ -82,7 +82,7 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
                         size="small"
                         value={formData.type}
                         onChange={e => setFormData({ ...formData, type: e.target.value })}
-                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><CalendarDays size={18} style={{ color: '#6366f1' }} /></InputAdornment>}
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><CalendarDays size={18} /></Box></InputAdornment>}
                         className="form-input-premium"
                     >
                         <MenuItem value="Daily" sx={{ fontWeight: 800 }}>Daily Interval</MenuItem>
