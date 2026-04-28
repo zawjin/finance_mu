@@ -467,13 +467,15 @@ td {
 }
 
 input,
-select {
+select,
+textarea {
   padding: 1rem;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text-main);
   border-radius: 0.75rem;
   outline: none;
+  font-size: 16px; /* Prevents iOS auto-zoom on focus */
 }
 
 .pill-grid {
