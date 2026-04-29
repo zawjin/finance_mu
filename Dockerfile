@@ -4,14 +4,11 @@
 FROM node:22-slim AS frontend-builder
 WORKDIR /frontend
 
-# Set production environment
-ENV NODE_ENV=production
-
 # Copy package files
 COPY frontend/package*.json ./
 
-# Install dependencies using clean install
-# This ensures the build is consistent with your lockfile
+# Install ALL dependencies (including devDependencies like Vite)
+# We do NOT set NODE_ENV=production here so that dev tools are installed
 RUN npm ci
 
 # Copy the rest of the frontend source
@@ -25,9 +22,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Set environment variables
+ENV NODE_ENV=production
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-# Back4App/Heroku/Standard containers typically use port 8080
+# Render/Back4App use the PORT env var
 ENV PORT 8080
 
 # Install system dependencies
@@ -43,8 +41,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the backend source code
 COPY backend/ .
 
-# Copy built frontend to the 'static' directory in the backend app root
-# This matches the 'static' path we added to backend/app/main.py
+# Copy built frontend from stage 1 to the backend's static folder
 COPY --from=frontend-builder /frontend/dist ./static
 
 # Expose the production port
