@@ -1,5 +1,5 @@
 # Common exclusions
-node_modules/
+**/node_modules/
 .git/
 .DS_Store
 backend/__pycache__/

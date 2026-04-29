@@ -1,11 +1,23 @@
 # Combined Dockerfile for Frontend and Backend (Back4App/Production)
 
 # Stage 1: Build Frontend
-FROM node:18 AS frontend-builder
+FROM node:22-slim AS frontend-builder
 WORKDIR /frontend
+
+# Set production environment
+ENV NODE_ENV=production
+
+# Copy package files
 COPY frontend/package*.json ./
-RUN npm install
+
+# Install dependencies using clean install
+# This ensures the build is consistent with your lockfile
+RUN npm ci
+
+# Copy the rest of the frontend source
 COPY frontend/ ./
+
+# Run the build
 RUN npm run build
 
 # Stage 2: Production Backend & Static File Server
