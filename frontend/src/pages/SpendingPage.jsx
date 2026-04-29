@@ -31,6 +31,113 @@ ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScal
 // Universal Icon Map Projection
 import { getIcon } from '../utils/iconMap';
 
+const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
+    const [viewDate, setViewDate] = useState(dayjs());
+    const startOfMonth = viewDate.startOf('month');
+    const daysInMonth = viewDate.daysInMonth();
+    const startDay = startOfMonth.day();
+    
+    const days = [];
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) {
+        days.push(startOfMonth.date(i));
+    }
+
+    const handleDayClick = (d) => {
+        if (!d) return;
+        const dateStr = d.format('YYYY-MM-DD');
+        if (!tempRange.start || (tempRange.start && tempRange.end)) {
+            setTempRange({ start: dateStr, end: '' });
+        } else {
+            if (dayjs(dateStr).isBefore(dayjs(tempRange.start))) {
+                setTempRange({ start: dateStr, end: tempRange.start });
+            } else {
+                setTempRange({ ...tempRange, end: dateStr });
+            }
+        }
+    };
+
+    const isInRange = (d) => {
+        if (!d || !tempRange.start || !tempRange.end) return false;
+        return d.isAfter(dayjs(tempRange.start)) && d.isBefore(dayjs(tempRange.end));
+    };
+
+    const isStart = (d) => d && d.format('YYYY-MM-DD') === tempRange.start;
+    const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
+
+    return (
+        <Dialog 
+            open={open} 
+            onClose={onClose}
+            fullWidth
+            maxWidth={false}
+            className="mui-mobile-range-dialog"
+            TransitionComponent={Grow}
+        >
+            <div className="mui-mobile-range-card">
+                <div className="mui-range-header">
+                    <Typography className="range-header-label">Select date range</Typography>
+                    <div className="range-header-display">
+                        <span className={!tempRange.start ? 'placeholder' : ''}>
+                            {tempRange.start ? dayjs(tempRange.start).format('MMM D') : 'Start Date'}
+                        </span>
+                        <span className="range-sep">—</span>
+                        <span className={!tempRange.end ? 'placeholder' : ''}>
+                            {tempRange.end ? dayjs(tempRange.end).format('MMM D') : 'End Date'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="mui-range-calendar-content">
+                    <div className="mui-calendar-nav">
+                        <Typography className="mui-month-label">{viewDate.format('MMMM YYYY')}</Typography>
+                        <div className="mui-nav-actions">
+                            <IconButton onClick={() => setViewDate(viewDate.subtract(1, 'month'))} size="small">‹</IconButton>
+                            <IconButton onClick={() => setViewDate(viewDate.add(1, 'month'))} size="small">›</IconButton>
+                        </div>
+                    </div>
+
+                    <div className="mui-calendar-weekdays">
+                        {['S','M','T','W','T','F','S'].map((w,i) => <span key={i}>{w}</span>)}
+                    </div>
+
+                    <div className="mui-calendar-grid">
+                        {days.map((d, i) => {
+                            const start = isStart(d);
+                            const end = isEnd(d);
+                            const middle = isInRange(d);
+                            return (
+                                <div 
+                                    key={i} 
+                                    className={`mui-cal-day ${!d ? 'empty' : ''} ${start ? 'is-start' : ''} ${end ? 'is-end' : ''} ${middle ? 'is-middle' : ''}`}
+                                    onClick={() => handleDayClick(d)}
+                                >
+                                    {d && (
+                                        <div className="day-highlight-cell">
+                                            <span className="day-text-val">{d.date()}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="mui-range-actions">
+                    <Button onClick={onClose} color="inherit">Cancel</Button>
+                    <Button 
+                        onClick={() => onConfirm(tempRange)}
+                        disabled={!tempRange.start || !tempRange.end}
+                        color="primary"
+                    >
+                        OK
+                    </Button>
+                </div>
+            </div>
+        </Dialog>
+    );
+};
+
 const getCatStyle = (catName, categories = []) => {
     const cat = categories.find(c => c.name === catName);
     const color = cat?.color || '#8e8e93';
@@ -52,6 +159,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [selectedSourceId, setSelectedSourceId] = useState('ALL');
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [showAndroidRange, setShowAndroidRange] = useState(false);
+    const [tempRange, setTempRange] = useState({ start: '', end: '' });
 
     const handlePullToRefresh = async () => {
         setRefreshing(true);
@@ -114,7 +223,6 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             alert("Purge failed.");
         }
     };
-
 
     const filteredSpending = useMemo(() => {
         let result = spending.filter(item => {
@@ -270,7 +378,16 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-
+            <AndroidRangeModal 
+                open={showAndroidRange}
+                onClose={() => setShowAndroidRange(false)}
+                tempRange={tempRange}
+                setTempRange={setTempRange}
+                onConfirm={(range) => {
+                    setDateRange(range);
+                    setShowAndroidRange(false);
+                }}
+            />
             {/* ANALYTICS HUB - TRIPLE BOX CONVERGENCE */}
             {showAnalytics && (
                 <motion.div
@@ -617,6 +734,23 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                 ))}
                             </div>
                         </div>
+                        {period === 'CUSTOM' && (
+                            <div className="filter-section-block margin-t-1-5" onClick={(e) => e.stopPropagation()}>
+                                <div className="filter-section-label"><CalendarDays size={13} /><span>SELECT AUDIT RANGE</span></div>
+                                <div 
+                                    className="mui-range-trigger"
+                                    onClick={() => setShowAndroidRange(true)}
+                                >
+                                    <div className="trigger-icon"><Calendar size={18} /></div>
+                                    <div className="trigger-text">
+                                        {dateRange.start && dateRange.end 
+                                            ? `${dayjs(dateRange.start).format('MMM D')} — ${dayjs(dateRange.end).format('MMM D, YYYY')}`
+                                            : (dateRange.start ? `From ${dayjs(dateRange.start).format('MMM D')}...` : 'Select Date Range')}
+                                    </div>
+                                    <Edit2 size={14} className="trigger-edit-icon" />
+                                </div>
+                            </div>
+                        )}
 
                         <div className="filter-section-block margin-t-1-75">
                             <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
@@ -645,16 +779,6 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             </div>
                         </div>
 
-                        {period === 'CUSTOM' && (
-                            <div className="filter-section-block margin-t-1-5">
-                                <div className="filter-section-label"><CalendarDays size={13} /><span>DATE RANGE</span></div>
-                                <div className="date-range-inputs">
-                                    <DatePicker label="FROM" value={dateRange.start ? dayjs(dateRange.start) : null} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, start: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, className: "datepicker-nano" } }} />
-                                    <div className="datepicker-divider"></div>
-                                    <DatePicker label="TO" value={dateRange.end ? dayjs(dateRange.end) : null} minDate={dateRange.start ? dayjs(dateRange.start) : undefined} maxDate={dayjs()} onChange={(val) => setDateRange({ ...dateRange, end: val ? val.format('YYYY-MM-DD') : '' })} slotProps={{ textField: { size: 'small', fullWidth: true, className: "datepicker-nano" } }} />
-                                </div>
-                            </div>
-                        )}
 
 
                     </div>

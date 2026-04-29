@@ -608,3 +608,11 @@
         }
     }
 }
+
+/* Prevent Auto-Zoom on Mobile Inputs */
+@media (max-width: 768px) {
+    .perm-modal-content-ordered .role-name-field input,
+    .add-role-cute .role-name-field input {
+        font-size: 16px !important; // Forces 16px to prevent iOS auto-zoom
+    }
+}

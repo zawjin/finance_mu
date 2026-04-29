@@ -29,7 +29,7 @@ body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--background);
   color: var(--text-main);
-  min-height: 100vh;
+  // min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
@@ -1768,13 +1768,14 @@ body {
 
   // ─── HIDE NAVBAR WHEN DIALOG IS OPEN (MOBILE) ───
   body.dialog-open-mobile {
+
     .top-navbar,
     .mobile-header,
     .desktop-nav-only,
     .mobile-pro-container header {
       display: none !important;
     }
-    
+
     // Also adjust the main content padding if needed
     .main-content {
       padding-top: 0 !important;
@@ -1883,6 +1884,7 @@ body {
     background: #f8fafc !important;
 
     &.MuiOutlinedInput-root {
+
       // Subtle border on rest, indigo on focus
       .MuiOutlinedInput-notchedOutline {
         border-color: transparent !important;
@@ -1962,7 +1964,8 @@ body {
   .modal-header {
     margin-bottom: 1rem !important;
 
-    h2, .modal-title {
+    h2,
+    .modal-title {
       font-size: 1rem !important;
     }
   }

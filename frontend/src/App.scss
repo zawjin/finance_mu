@@ -89,3 +89,11 @@ body {
     }
   }
 }
+/* Global Mobile Auto-Zoom Prevention */
+@media (max-width: 768px) {
+  input, 
+  select, 
+  textarea {
+    font-size: 16px !important; // Forces 16px to prevent iOS/Android auto-zoom on focus
+  }
+}

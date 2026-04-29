@@ -14,7 +14,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
     // Filter accounting history per account (Top-ups and Bill Pays only)
     const getAccountHistory = (accountId) => {
         if (!spending) return [];
-        return spending.filter(s => 
+        return spending.filter(s =>
             (s.payment_source_id === accountId || s.target_account_id === accountId) &&
             (s.amount < 0 || s.category === 'Transfer' || s.category === 'Investment Settlement' || s.category === 'Credit Bill')
         ).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
@@ -22,31 +22,31 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
 
     return (
         <>
-        <div className="ledger-pill-scroll-wrap">
-            <div className="ledger-pill-scroll">
-                <div className="apple-category-pill glass-effect min-w-180">
-                    <div className="pill-icon-box type-style-bank"><Landmark size={18} /></div>
-                    <div className="pill-info-box">
-                        <span className="pill-cat-label">BANK</span>
-                        <span className="pill-amt-val color-blue">{formatCurrency(totalBank)}</span>
+            <div className="ledger-pill-scroll-wrap">
+                <div className="ledger-pill-scroll">
+                    <div className="apple-category-pill glass-effect min-w-180">
+                        <div className="pill-icon-box type-style-bank"><Landmark size={18} /></div>
+                        <div className="pill-info-box">
+                            <span className="pill-cat-label">BANK</span>
+                            <span className="pill-amt-val color-blue">{formatCurrency(totalBank)}</span>
+                        </div>
                     </div>
-                </div>
-                <div className="apple-category-pill glass-effect min-w-180">
-                    <div className="pill-icon-box type-style-cash"><Banknote size={18} /></div>
-                    <div className="pill-info-box">
-                        <span className="pill-cat-label">CASH</span>
-                        <span className="pill-amt-val color-amber">{formatCurrency(totalCash)}</span>
+                    <div className="apple-category-pill glass-effect min-w-180">
+                        <div className="pill-icon-box type-style-cash"><Banknote size={18} /></div>
+                        <div className="pill-info-box">
+                            <span className="pill-cat-label">CASH</span>
+                            <span className="pill-amt-val color-amber">{formatCurrency(totalCash)}</span>
+                        </div>
                     </div>
-                </div>
-                <div className="apple-category-pill glass-effect min-w-180">
-                    <div className="pill-icon-box type-style-wallet"><Wallet size={18} /></div>
-                    <div className="pill-info-box">
-                        <span className="pill-cat-label">WALLETS</span>
-                        <span className="pill-amt-val color-green">{formatCurrency(totalWallet)}</span>
+                    <div className="apple-category-pill glass-effect min-w-180">
+                        <div className="pill-icon-box type-style-wallet"><Wallet size={18} /></div>
+                        <div className="pill-info-box">
+                            <span className="pill-cat-label">WALLETS</span>
+                            <span className="pill-amt-val color-green">{formatCurrency(totalWallet)}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
             <div className="spending-split-layout margin-b-25">
                 <div className="spending-main-content grid-col-all">
@@ -54,7 +54,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                         {loading ? (
                             <Skeleton variant="rectangular" width="100%" height={200} className="radius-28" />
                         ) : (
-                            <div className="date-group">
+                            <div className="date-group date-group-bank-details">
                                 <div className="date-header-luxury">
                                     <div className="flex-center-gap-1">
                                         <Activity size={14} color="#1d1d1f" />
@@ -78,17 +78,17 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                                 <span className={`account-type-badge ${style.className}`}>{r.account_type}</span>
                                                                 {r.account_type === 'CREDIT_CARD' && (
                                                                     <div className={`due-date-badge ${(() => {
-                                                                            const rawDue = r.due_date;
-                                                                            if (!rawDue) return 'due-faint';
-                                                                            const today = new Date().getDate();
-                                                                            const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
-                                                                            let diff = due - today;
-                                                                            if (diff < 0) {
-                                                                                const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-                                                                                diff = daysInMonth - today + due;
-                                                                            }
-                                                                            return diff <= 5 ? 'due-urgent' : 'due-normal';
-                                                                        })()}`}>
+                                                                        const rawDue = r.due_date;
+                                                                        if (!rawDue) return 'due-faint';
+                                                                        const today = new Date().getDate();
+                                                                        const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
+                                                                        let diff = due - today;
+                                                                        if (diff < 0) {
+                                                                            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+                                                                            diff = daysInMonth - today + due;
+                                                                        }
+                                                                        return diff <= 5 ? 'due-urgent' : 'due-normal';
+                                                                    })()}`}>
                                                                         <Calendar size={11} fill="currentColor" opacity={0.4} />
                                                                         {(() => {
                                                                             const rawDue = r.due_date;
@@ -110,12 +110,12 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                         {/* PROGRESS BAR */}
                                                         {r.account_type === 'CREDIT_CARD' && (r.credit_limit || 0) > 0 && (
                                                             <div className="account-progress-track">
-                                                                <div 
+                                                                <div
                                                                     className="account-progress-fill"
-                                                                    style={{ 
-                                                                        width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`, 
+                                                                    style={{
+                                                                        width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`,
                                                                         backgroundColor: (r.balance / r.credit_limit) > 0.7 ? '#ff3b30' : '#6366f1'
-                                                                    }} 
+                                                                    }}
                                                                 />
                                                             </div>
                                                         )}
@@ -132,15 +132,15 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                         </div>
                                                         <div className="flex-gap-05">
                                                             {r.account_type === 'CREDIT_CARD' ? (
-                                                                <Button 
-                                                                    size="small" variant="contained" 
+                                                                <Button
+                                                                    size="small" variant="contained"
                                                                     onClick={() => onPayBill(r)}
                                                                     startIcon={<CreditCard size={14} />}
                                                                     className="btn-pay-bill-small"
                                                                 >PAY BILL</Button>
                                                             ) : (
-                                                                <Button 
-                                                                    size="small" variant="contained" 
+                                                                <Button
+                                                                    size="small" variant="contained"
                                                                     onClick={() => onAddFunds(r)}
                                                                     startIcon={<Plus size={14} />}
                                                                     className="btn-add-money-small"
@@ -177,7 +177,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                         <div className="flex-col-gap-02">
                             {(() => {
                                 const unifiedHistory = (spending || [])
-                                    .filter(s => 
+                                    .filter(s =>
                                         reserves.some(r => r._id === s.payment_source_id || r._id === s.target_account_id) &&
                                         (s.amount < 0 || s.category === 'Transfer' || s.category === 'Investment Settlement' || s.category === 'Credit Bill')
                                     )
@@ -227,8 +227,8 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                                         {item.amount < 0 ? 'Top-Up' : (item.category === 'Transfer' ? 'Movement' : 'Settlement')}
                                                     </div>
                                                 </div>
-                                                <IconButton 
-                                                    size="small" 
+                                                <IconButton
+                                                    size="small"
                                                     onClick={() => onDeleteTransaction(item)}
                                                     className="btn-delete-activity"
                                                 >

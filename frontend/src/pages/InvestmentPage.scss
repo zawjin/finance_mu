@@ -137,9 +137,30 @@
 
 .unified-filter-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 0.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     margin-top: 0.85rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px;
+
+        .unified-filter-btn {
+            padding: 8px 4px !important;
+            flex-direction: column !important;
+            min-height: auto !important;
+
+            .th-icon {
+                margin-right: 0 !important;
+                margin-bottom: 4px;
+                svg { width: 16px; height: 16px; }
+            }
+            .th-label {
+                font-size: 0.65rem !important;
+                text-align: center;
+            }
+        }
+    }
 }
 
 .unified-filter-btn {

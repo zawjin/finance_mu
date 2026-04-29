@@ -21,6 +21,113 @@ import './InvestmentPage.scss';
 // Charting
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
 
+const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
+    const [viewDate, setViewDate] = useState(dayjs());
+    const startOfMonth = viewDate.startOf('month');
+    const daysInMonth = viewDate.daysInMonth();
+    const startDay = startOfMonth.day();
+    
+    const days = [];
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) {
+        days.push(startOfMonth.date(i));
+    }
+
+    const handleDayClick = (d) => {
+        if (!d) return;
+        const dateStr = d.format('YYYY-MM-DD');
+        if (!tempRange.start || (tempRange.start && tempRange.end)) {
+            setTempRange({ start: dateStr, end: '' });
+        } else {
+            if (dayjs(dateStr).isBefore(dayjs(tempRange.start))) {
+                setTempRange({ start: dateStr, end: tempRange.start });
+            } else {
+                setTempRange({ ...tempRange, end: dateStr });
+            }
+        }
+    };
+
+    const isInRange = (d) => {
+        if (!d || !tempRange.start || !tempRange.end) return false;
+        return d.isAfter(dayjs(tempRange.start)) && d.isBefore(dayjs(tempRange.end));
+    };
+
+    const isStart = (d) => d && d.format('YYYY-MM-DD') === tempRange.start;
+    const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
+
+    return (
+        <Dialog 
+            open={open} 
+            onClose={onClose}
+            fullWidth
+            maxWidth={false}
+            className="mui-mobile-range-dialog"
+            TransitionComponent={Grow}
+        >
+            <div className="mui-mobile-range-card">
+                <div className="mui-range-header">
+                    <Typography className="range-header-label">Select date range</Typography>
+                    <div className="range-header-display">
+                        <span className={!tempRange.start ? 'placeholder' : ''}>
+                            {tempRange.start ? dayjs(tempRange.start).format('MMM D') : 'Start Date'}
+                        </span>
+                        <span className="range-sep">—</span>
+                        <span className={!tempRange.end ? 'placeholder' : ''}>
+                            {tempRange.end ? dayjs(tempRange.end).format('MMM D') : 'End Date'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="mui-range-calendar-content">
+                    <div className="mui-calendar-nav">
+                        <Typography className="mui-month-label">{viewDate.format('MMMM YYYY')}</Typography>
+                        <div className="mui-nav-actions">
+                            <IconButton onClick={() => setViewDate(viewDate.subtract(1, 'month'))} size="small">‹</IconButton>
+                            <IconButton onClick={() => setViewDate(viewDate.add(1, 'month'))} size="small">›</IconButton>
+                        </div>
+                    </div>
+
+                    <div className="mui-calendar-weekdays">
+                        {['S','M','T','W','T','F','S'].map((w,i) => <span key={i}>{w}</span>)}
+                    </div>
+
+                    <div className="mui-calendar-grid">
+                        {days.map((d, i) => {
+                            const start = isStart(d);
+                            const end = isEnd(d);
+                            const middle = isInRange(d);
+                            return (
+                                <div 
+                                    key={i} 
+                                    className={`mui-cal-day ${!d ? 'empty' : ''} ${start ? 'is-start' : ''} ${end ? 'is-end' : ''} ${middle ? 'is-middle' : ''}`}
+                                    onClick={() => handleDayClick(d)}
+                                >
+                                    {d && (
+                                        <div className="day-highlight-cell">
+                                            <span className="day-text-val">{d.date()}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="mui-range-actions">
+                    <Button onClick={onClose} color="inherit">Cancel</Button>
+                    <Button 
+                        onClick={() => onConfirm(tempRange)}
+                        disabled={!tempRange.start || !tempRange.end}
+                        color="primary"
+                    >
+                        OK
+                    </Button>
+                </div>
+            </div>
+        </Dialog>
+    );
+};
+
 export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytics }) {
     const dispatch = useDispatch();
     const { investments, assetClasses, loading } = useSelector(state => state.finance);
@@ -96,6 +203,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [syncingPrices, setSyncingPrices] = useState(false);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+    const [showAndroidRange, setShowAndroidRange] = useState(false);
+    const [tempRange, setTempRange] = useState({ start: '', end: '' });
 
     const handleManualSync = async () => {
         setSyncingPrices(true);
@@ -374,6 +483,16 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
+            <AndroidRangeModal 
+                open={showAndroidRange}
+                onClose={() => setShowAndroidRange(false)}
+                tempRange={tempRange}
+                setTempRange={setTempRange}
+                onConfirm={(range) => {
+                    setDateRange(range);
+                    setShowAndroidRange(false);
+                }}
+            />
 
             {showAnalytics && (
                 <motion.div
@@ -702,40 +821,33 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                     </div>
                                 ))}
                             </div>
-                            {/* CUSTOM RANGE PICKERS - DELUXE UI */}
+                            {/* CUSTOM RANGE PICKER - SMART MUI TRIGGER */}
                             {period === 'CUSTOM' && (
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     className="filter-section-block custom-range-block"
                                 >
-                                    <div className="filter-section-label color-primary"><span>SELECT RANGE AUDIT</span></div>
-                                    <Stack spacing={1.5}>
-                                        <DatePicker
-                                            label="START DATE"
-                                            value={dateRange.start ? dayjs(dateRange.start) : null}
-                                            onChange={(val) => setDateRange(prev => ({ ...prev, start: val ? val.format('YYYY-MM-DD') : '' }))}
-                                            slotProps={{
-                                                textField: {
-                                                    size: 'small',
-                                                    fullWidth: true,
-                                                    className: "datepicker-premium"
-                                                }
-                                            }}
-                                        />
-                                        <DatePicker
-                                            label="END DATE"
-                                            value={dateRange.end ? dayjs(dateRange.end) : null}
-                                            onChange={(val) => setDateRange(prev => ({ ...prev, end: val ? val.format('YYYY-MM-DD') : '' }))}
-                                            slotProps={{
-                                                textField: {
-                                                    size: 'small',
-                                                    fullWidth: true,
-                                                    className: "datepicker-premium"
-                                                }
-                                            }}
-                                        />
-                                    </Stack>
+                                    <div className="filter-section-label color-primary"><span>SELECT PORTFOLIO RANGE</span></div>
+                                    <div 
+                                        className="mui-range-trigger"
+                                        onClick={() => {
+                                            setTempRange(dateRange);
+                                            setShowAndroidRange(true);
+                                        }}
+                                    >
+                                        <div className="trigger-icon"><Calendar size={16} /></div>
+                                        <div className="trigger-content">
+                                            <span className="trigger-date-text">
+                                                {dateRange.start ? dayjs(dateRange.start).format('MMM D, YYYY') : 'Start Date'}
+                                            </span>
+                                            <span className="trigger-sep">—</span>
+                                            <span className="trigger-date-text">
+                                                {dateRange.end ? dayjs(dateRange.end).format('MMM D, YYYY') : 'End Date'}
+                                            </span>
+                                        </div>
+                                        <Edit2 size={12} className="trigger-edit-icon" />
+                                    </div>
                                 </motion.div>
                             )}
                         </div>

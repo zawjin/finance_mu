@@ -591,9 +591,35 @@
 
 .unified-filter-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
     margin-top: 0.85rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+
+        .unified-filter-btn {
+            padding: 8px 4px !important;
+            flex-direction: column !important;
+            min-height: auto !important;
+
+            .th-icon {
+                margin-right: 0 !important;
+                margin-bottom: 4px;
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            .th-label {
+                font-size: 0.65rem !important;
+                text-align: center;
+            }
+        }
+    }
 }
 
 .unified-filter-btn {
@@ -601,16 +627,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.6rem 0.4rem;
-    border-radius: 12px;
+    padding: 0.85rem 0.5rem !important; // More padding for better tap target
+    border-radius: 16px !important;
     background: rgba(0, 0, 0, 0.03);
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
-    gap: 0.35rem;
+    gap: 0.5rem !important;
     position: relative;
     overflow: hidden;
+    min-height: 80px; // Consistent height
 
     &:hover:not(.active) {
         background: rgba(0, 0, 0, 0.06);
@@ -622,13 +649,21 @@
         color: #ffffff;
         box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
         border: 1px solid #6366f1;
-        
-        .th-icon { 
-            color: #ffffff !important; 
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+
+        .th-icon {
+            color: #ffffff !important;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
         }
-        .th-label { color: #ffffff; opacity: 1; }
-        .portal-dot { border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        .th-label {
+            color: #ffffff;
+            opacity: 1;
+        }
+
+        .portal-dot {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
     }
 
     .th-icon {
@@ -636,7 +671,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s;
-        
+
         svg {
             display: block;
         }
@@ -665,28 +700,254 @@
     }
 }
 
-.date-range-inputs {
+.mui-range-trigger {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-}
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 0.9rem 1.25rem;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 
-.datepicker-nano {
-    & .MuiOutlinedInput-root {
-        border-radius: 10px !important;
+    &:hover {
+        border-color: #0071e3;
+        background: #fdfdfd;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
     }
 
-    & .MuiOutlinedInput-input {
-        font-weight: 800 !important;
-        font-size: 0.8rem !important;
+    .trigger-icon {
+        color: #0071e3;
+        display: flex;
+        align-items: center;
+    }
+
+    .trigger-text {
+        flex: 1;
+        font-weight: 800;
+        font-size: 0.88rem;
+        color: #1e293b;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        letter-spacing: -0.01em;
+    }
+
+    .trigger-edit-icon {
+        color: #94a3b8;
+        opacity: 0.4;
     }
 }
 
-.datepicker-divider {
-    width: 8px;
-    height: 2px;
-    background: rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
+.mui-mobile-range-dialog {
+
+    /* Desktop Default (Normal Modal) */
+    & .MuiPaper-root {
+        border-radius: 28px !important;
+        width: 100% !important;
+        max-width: 360px !important;
+        background: #ffffff !important;
+    }
+
+    /* Mobile (Full Width Bottom Sheet) */
+    @media (max-width: 768px) {
+        & .MuiDialog-container {
+            align-items: flex-end !important;
+            justify-content: center !important;
+        }
+
+        & .MuiPaper-root {
+            border-radius: 28px 28px 0 0 !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+        }
+    }
+}
+
+.mui-mobile-range-card {
+    .mui-range-header {
+        background: #fdfdfd;
+        padding: 1.75rem 1.5rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+
+        .range-header-label {
+            font-size: 0.75rem;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .range-header-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: -0.02em;
+
+            .placeholder {
+                color: #cbd5e1;
+                font-weight: 500;
+            }
+
+            .range-sep {
+                color: #cbd5e1;
+                font-weight: 400;
+                font-size: 1.2rem;
+            }
+        }
+    }
+
+    .mui-range-calendar-content {
+        padding: 1rem;
+
+        .mui-calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+
+            .mui-month-label {
+                font-weight: 900;
+                font-size: 0.9rem;
+                color: #1e293b;
+            }
+        }
+
+        .mui-calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-top: 1rem;
+
+            span {
+                text-align: center;
+                font-size: 0.7rem;
+                font-weight: 900;
+                color: #94a3b8;
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        .mui-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+
+            .mui-cal-day {
+                aspect-ratio: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                position: relative;
+
+                &.empty {
+                    pointer-events: none;
+                }
+
+                .day-highlight-cell {
+                    width: 100%;
+                    height: 80%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .day-text-val {
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.82rem;
+                    font-weight: 800;
+                    color: #475569;
+                    border-radius: 50%;
+                    transition: all 0.2s;
+                    z-index: 2;
+                }
+
+                &:not(.empty):hover .day-text-val {
+                    background: #f1f5f9;
+                }
+
+                /* Range Logic */
+                &.is-middle {
+                    .day-highlight-cell {
+                        background: rgba(0, 113, 227, 0.08);
+                    }
+
+                    .day-text-val {
+                        color: #0071e3;
+                    }
+                }
+
+                &.is-start {
+                    .day-highlight-cell {
+                        background: linear-gradient(to left, rgba(0, 113, 227, 0.08) 50%, transparent 50%);
+                    }
+
+                    .day-text-val {
+                        background: #0071e3 !important;
+                        color: white !important;
+                        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+                    }
+                }
+
+                &.is-end {
+                    .day-highlight-cell {
+                        background: linear-gradient(to right, rgba(0, 113, 227, 0.08) 50%, transparent 50%);
+                    }
+
+                    .day-text-val {
+                        background: #0071e3 !important;
+                        color: white !important;
+                        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+                    }
+                }
+
+                /* Round caps for the range */
+                &.is-start:not(.is-end) {
+                    border-top-left-radius: 50%;
+                    border-bottom-left-radius: 50%;
+                }
+
+                &.is-end:not(.is-start) {
+                    border-top-right-radius: 50%;
+                    border-bottom-right-radius: 50%;
+                }
+            }
+        }
+    }
+
+    .mui-range-actions {
+        padding: 0.75rem 1.5rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+
+        button {
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1.25rem;
+            border-radius: 12px;
+            color: #0071e3;
+        }
+    }
 }
 
 /* MAIN CONTENT HEADER */
@@ -903,6 +1164,10 @@
         max-height: none;
         overflow: visible;
     }
+}
+
+.date-group-bank-details {
+    background: none !important;
 }
 
 .filters-sidebar-card {
@@ -1177,6 +1442,7 @@
     .spending-split-layout {
         padding: 0 !important;
         gap: 0.4em !important;
+        margin-top: 17px !important;
     }
 
     // Summary Cards: 3 boxes in one line (3/100%)
@@ -1498,9 +1764,10 @@
         }
     }
 
-    // Date header
-    .date-header-luxury {
-        padding: 0.5rem 0.85rem !important;
+    .data-table-premium .date-header-luxury {
+        padding: 15px 0.5rem 1rem 0.5rem !important;
+        background: transparent !important;
+        border-bottom: none !important;
         margin-bottom: 11px !important;
         font-size: 0.78rem;
     }
