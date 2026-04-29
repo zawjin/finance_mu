@@ -1,5 +1,4 @@
-# Exclude frontend as we are only deploying backend
-frontend/
+# Common exclusions
 node_modules/
 .git/
 .DS_Store

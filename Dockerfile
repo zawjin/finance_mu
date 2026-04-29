@@ -1,14 +1,22 @@
-# Production Dockerfile for Back4App Deployment
+# Combined Dockerfile for Frontend and Backend (Back4App/Production)
+
+# Stage 1: Build Frontend
+FROM node:18 AS frontend-builder
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Production Backend & Static File Server
 FROM python:3.11-slim
+WORKDIR /app
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-# Back4App Containers typically use port 8080
+# Back4App/Heroku/Standard containers typically use port 8080
 ENV PORT 8080
-
-# Set the working directory
-WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -16,15 +24,16 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-# Note: Since this is in the root, we reference the backend directory
+# Copy backend requirements first
 COPY backend/requirements.txt .
-
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the backend source code
 COPY backend/ .
+
+# Copy built frontend to the 'static' directory in the backend app root
+# This matches the 'static' path we added to backend/app/main.py
+COPY --from=frontend-builder /frontend/dist ./static
 
 # Expose the production port
 EXPOSE 8080

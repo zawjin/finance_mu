@@ -9,6 +9,9 @@ from app.api.ai_service import router as ai_router
 from app.api.auth import router as auth_router
 from app.api.user_mgmt import router as user_router
 from app.middleware.logging import RequestLoggingMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -29,6 +32,22 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(user_router, prefix="/api")
 app.include_router(api_router, prefix="/api")
 app.include_router(ai_router, prefix="/api/ai")
+
+# 4. Serve Frontend Static Files
+# We mount this LAST so it doesn't override /api routes
+static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static")
+
+if os.path.exists(static_dir):
+    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Check if the requested path exists as a file in static
+        file_path = os.path.join(static_dir, full_path)
+        if full_path != "" and os.path.exists(file_path):
+            return FileResponse(file_path)
+        # Otherwise serve index.html for SPA routing
+        return FileResponse(os.path.join(static_dir, "index.html"))
 
 # Removed market_watcher scheduler as requested
 

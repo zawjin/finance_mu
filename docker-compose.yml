@@ -1,12 +1,30 @@
+version: '3.8'
+
 services:
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "8001:8001"
+      - "8080:8080"
     volumes:
       - ./backend:/app
     environment:
       - DATABASE_URL=sqlite:///./finance.db
     restart: always
+
+  # For local development with hot reloading, you might still want a separate frontend service
+  # But the root Dockerfile above already handles both for production.
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    depends_on:
+      - backend
