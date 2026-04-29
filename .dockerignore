@@ -1,0 +1,13 @@
+# Exclude frontend as we are only deploying backend
+frontend/
+node_modules/
+.git/
+.DS_Store
+backend/__pycache__/
+backend/*.py[cod]
+backend/finance.db
+backend/nohup.out
+backend/check_out.txt
+docker-compose.yml
+Dockerfile.backend
+frontend/Dockerfile.prod
