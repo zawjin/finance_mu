@@ -10,3 +10,4 @@ motor
 dnspython
 python-jose[cryptography]
 passlib[bcrypt]
+gunicorn
