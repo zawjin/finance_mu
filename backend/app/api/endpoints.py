@@ -15,28 +15,56 @@ def format_doc(doc):
     doc["_id"] = str(doc["_id"])
     return doc
 
-@router.get("/daily-quote")
+@router.get("/daily-quote", tags=["Dashboard & Analytics"])
 async def get_daily_quote():
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    # 1. Check if we already fetched today's quote from DB
+    cached = await db.daily_quote.find_one({"date": today})
+    if cached:
+        return {
+            "quote": cached.get("quote"),
+            "author": cached.get("author"),
+            "tamil": cached.get("tamil")
+        }
+
     try:
         async with httpx.AsyncClient() as client:
-            # 1. Fetch from ZenQuotes
-            res = await client.get("https://zenquotes.io/api/today", timeout=5.0)
-            quote_data = res.json()[0]
-            eng_text = quote_data.get("q", "")
-            author = quote_data.get("a", "Unknown")
+            # 2. Fetch from API Ninjas (Only happens once per day)
+            headers = {"X-Api-Key": "c4SD92MB7EkKOIzd0UH1W8vD0kF6tSeFpF3PwyIZ"}
+            res = await client.get("https://api.api-ninjas.com/v2/quoteoftheday?category=inspirational", headers=headers, timeout=10.0)
+            
+            if res.status_code == 200 and len(res.json()) > 0:
+                quote_data = res.json()[0]
+                eng_text = quote_data.get("quote", "")
+                author = quote_data.get("author", "Unknown")
+            else:
+                raise Exception(f"API Error: {res.text}")
 
-            # 2. Translate to Tamil using a free Google Translate API bridge
-            # Fallback if translation fails
+            # 3. Translate to Tamil using a free Google Translate API bridge
+            import urllib.parse
             tamil_text = "நிச்சயமற்றது..." 
             try:
-                # client=gtx is the older translate bridge often used for simple free scripts
-                trans_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q={httpx.utils.quote(eng_text)}"
-                trans_res = await client.get(trans_url, timeout=5.0)
-                # Structure: [[[translated_part, original, ...], ...], ...]
-                tamil_text = "".join([part[0] for part in trans_res.json()[0]])
+                trans_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q={urllib.parse.quote(eng_text)}"
+                trans_headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+                trans_res = await client.get(trans_url, headers=trans_headers, timeout=10.0)
+                if trans_res.status_code == 200:
+                    parts = trans_res.json()[0]
+                    tamil_text = "".join([str(part[0]) for part in parts if part[0]])
+                else:
+                    raise Exception(f"Translate API Error: {trans_res.status_code}")
             except Exception as te:
                 print(f"Translation Error: {te}")
-                tamil_text = "நேர்மறையாக இருங்கள்."
+                tamil_text = f"Error: {str(te)}"
+
+            # 4. Save to DB (replace old one to keep DB small)
+            await db.daily_quote.delete_many({}) # clear old quotes
+            await db.daily_quote.insert_one({
+                "date": today,
+                "quote": eng_text,
+                "author": author,
+                "tamil": tamil_text
+            })
 
             return {
                 "quote": eng_text,
@@ -44,18 +72,28 @@ async def get_daily_quote():
                 "tamil": tamil_text
             }
     except Exception as e:
+        print(f"Daily Quote Error: {e}")
+        # Fallback: if API fails, try to return yesterday's quote from DB
+        last_known = await db.daily_quote.find_one()
+        if last_known:
+            return {
+                "quote": last_known.get("quote"),
+                "author": last_known.get("author"),
+                "tamil": last_known.get("tamil")
+            }
+            
         return {
             "quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
             "author": "Winston Churchill",
             "tamil": "வெற்றி இறுதியானது அல்ல, தோல்வி ஆபத்தானது அல்ல: தொடரும் தைரியமே முக்கியம்."
         }
 
-@router.get("/spending")
+@router.get("/spending", tags=["Transactions & Ledger"])
 async def get_spending():
     cursor = db.spending.find().sort("date", -1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/spending")
+@router.post("/spending", tags=["Transactions & Ledger"])
 async def add_spending(item: SpendingItem):
     # For credit card payments, default to unsettled until bill is paid
     if item.payment_method == "CARD":
@@ -98,7 +136,7 @@ async def add_spending(item: SpendingItem):
             
     return {"id": str(result.inserted_id)}
 
-@router.put("/spending/{item_id}")
+@router.put("/spending/{item_id}", tags=["Transactions & Ledger"])
 async def update_spending(item_id: str, item: SpendingItem):
     old_item = await db.spending.find_one({"_id": ObjectId(item_id)})
     if not old_item:
@@ -170,7 +208,7 @@ async def update_spending(item_id: str, item: SpendingItem):
 
     return {"status": "ok"}
 
-@router.delete("/spending/{item_id}")
+@router.delete("/spending/{item_id}", tags=["Transactions & Ledger"])
 async def delete_spending(item_id: str):
     old_item = await db.spending.find_one({"_id": ObjectId(item_id)})
     if not old_item:
@@ -212,12 +250,12 @@ async def delete_spending(item_id: str):
     await db.spending.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
-@router.get("/investments")
+@router.get("/investments", tags=["Investments & Assets"])
 async def get_investments():
     cursor = db.investments.find().sort("date", -1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/investments")
+@router.post("/investments", tags=["Investments & Assets"])
 async def add_investment(item: InvestmentItem):
     # 1. Store the main investment record
     today = datetime.now().strftime("%Y-%m-%d")
@@ -262,7 +300,7 @@ async def add_investment(item: InvestmentItem):
             
     return {"id": asset_id}
 
-@router.put("/investments/{item_id}")
+@router.put("/investments/{item_id}", tags=["Investments & Assets"])
 async def update_investment(item_id: str, item: InvestmentItem):
     today = datetime.now().strftime("%Y-%m-%d")
     # Exclude purchases from $set — they are managed via $push to avoid overwriting
@@ -311,64 +349,64 @@ async def update_investment(item_id: str, item: InvestmentItem):
     await db.investments.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
     return {"status": "ok"}
 
-@router.delete("/investments/{item_id}")
+@router.delete("/investments/{item_id}", tags=["Investments & Assets"])
 async def delete_investment(item_id: str):
     await db.investments.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
-@router.get("/categories")
+@router.get("/categories", tags=["System Configuration"])
 async def get_categories():
     cursor = db.categories.find().sort("name", 1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/categories")
+@router.post("/categories", tags=["System Configuration"])
 async def add_category(cat: CategorySchema):
     await db.categories.insert_one(cat.dict())
     return {"status": "ok"}
 
-@router.put("/categories/{cat_id}")
+@router.put("/categories/{cat_id}", tags=["System Configuration"])
 async def update_category(cat_id: str, cat: CategorySchema):
     await db.categories.update_one({"_id": ObjectId(cat_id)}, {"$set": cat.dict()})
     return {"status": "ok"}
 
-@router.delete("/categories/{cat_id}")
+@router.delete("/categories/{cat_id}", tags=["System Configuration"])
 async def delete_category(cat_id: str):
     await db.categories.delete_one({"_id": ObjectId(cat_id)})
     return {"status": "ok"}
 
 # Asset Classes (Investment Categories)
-@router.get("/asset_classes")
+@router.get("/asset_classes", tags=["System Configuration"])
 async def get_asset_classes():
     cursor = db.asset_classes.find().sort("name", 1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/asset_classes")
+@router.post("/asset_classes", tags=["System Configuration"])
 async def add_asset_class(cat: CategorySchema):
     result = await db.asset_classes.insert_one(cat.dict())
     return {"id": str(result.inserted_id)}
 
-@router.put("/asset_classes/{cat_id}")
+@router.put("/asset_classes/{cat_id}", tags=["System Configuration"])
 async def update_asset_class(cat_id: str, cat: CategorySchema):
     await db.asset_classes.update_one({"_id": ObjectId(cat_id)}, {"$set": cat.dict()})
     return {"status": "ok"}
 
-@router.delete("/asset_classes/{cat_id}")
+@router.delete("/asset_classes/{cat_id}", tags=["System Configuration"])
 async def delete_asset_class(cat_id: str):
     await db.asset_classes.delete_one({"_id": ObjectId(cat_id)})
     return {"status": "ok"}
 
 # DEBT LEDGER ENDPOINTS
-@router.get("/debt")
+@router.get("/debt", tags=["Debt Ledger"])
 async def get_debt():
     cursor = db.debt.find().sort("date", -1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/debt")
+@router.post("/debt", tags=["Debt Ledger"])
 async def add_debt(item: DebtItem):
     result = await db.debt.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
-@router.put("/debt/{item_id}")
+@router.put("/debt/{item_id}", tags=["Debt Ledger"])
 async def update_debt(item_id: str, item: DebtItem):
     today = datetime.now().strftime("%Y-%m-%d")
     old = await db.debt.find_one({"_id": ObjectId(item_id)})
@@ -403,55 +441,55 @@ async def update_debt(item_id: str, item: DebtItem):
         )
     return {"status": "ok"}
 
-@router.delete("/debt/{item_id}")
+@router.delete("/debt/{item_id}", tags=["Debt Ledger"])
 async def delete_debt(item_id: str):
     await db.debt.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
 # YEARLY FIXED EXPENSES ENDPOINTS
-@router.get("/yearly-expenses")
+@router.get("/yearly-expenses", tags=["Fixed Expenses"])
 async def get_yearly_expenses():
     cursor = db.yearly_expenses.find().sort("name", 1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/yearly-expenses")
+@router.post("/yearly-expenses", tags=["Fixed Expenses"])
 async def add_yearly_expense(item: YearlyExpenseItem):
     result = await db.yearly_expenses.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
-@router.put("/yearly-expenses/{item_id}")
+@router.put("/yearly-expenses/{item_id}", tags=["Fixed Expenses"])
 async def update_yearly_expense(item_id: str, item: YearlyExpenseItem):
     await db.yearly_expenses.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
     return {"status": "ok"}
 
-@router.delete("/yearly-expenses/{item_id}")
+@router.delete("/yearly-expenses/{item_id}", tags=["Fixed Expenses"])
 async def delete_yearly_expense(item_id: str):
     await db.yearly_expenses.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
 # RESERVES / LIQUIDITY ENDPOINTS
-@router.get("/reserves")
+@router.get("/reserves", tags=["Reserves & Accounts"])
 async def get_reserves():
     cursor = db.reserves.find().sort("account_name", 1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/reserves")
+@router.post("/reserves", tags=["Reserves & Accounts"])
 async def add_reserve(item: ReserveItem):
     result = await db.reserves.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
-@router.put("/reserves/{item_id}")
+@router.put("/reserves/{item_id}", tags=["Reserves & Accounts"])
 async def update_reserve(item_id: str, item: ReserveItem):
     await db.reserves.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
     return {"status": "ok"}
 
-@router.delete("/reserves/{item_id}")
+@router.delete("/reserves/{item_id}", tags=["Reserves & Accounts"])
 async def delete_reserve(item_id: str):
     await db.reserves.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
 # PRIVATE LENDING REGISTRY ENDPOINTS
-@router.get("/private-lending")
+@router.get("/private-lending", tags=["Private Lending"])
 async def get_private_lending():
     cursor = db.private_lending.find().sort("start_date", -1)
     items = []
@@ -459,22 +497,22 @@ async def get_private_lending():
         items.append(format_doc(doc))
     return items
 
-@router.post("/private-lending")
+@router.post("/private-lending", tags=["Private Lending"])
 async def add_private_lending(item: PrivateLendingItem):
     result = await db.private_lending.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
-@router.put("/private-lending/{item_id}")
+@router.put("/private-lending/{item_id}", tags=["Private Lending"])
 async def update_private_lending(item_id: str, item: PrivateLendingItem):
     await db.private_lending.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
     return {"status": "ok"}
 
-@router.delete("/private-lending/{item_id}")
+@router.delete("/private-lending/{item_id}", tags=["Private Lending"])
 async def delete_private_lending(item_id: str):
     await db.private_lending.delete_one({"_id": ObjectId(item_id)})
     return {"status": "ok"}
 
-@router.get("/summary")
+@router.get("/summary", tags=["Dashboard & Analytics"])
 async def get_summary():
     spending = await db.spending.find().to_list(2000)
     investments = await db.investments.find().to_list(100)
@@ -615,31 +653,63 @@ async def get_summary():
         "lending_active_value": total_lending_live
     }
 
+@router.get("/admin/db-health", tags=["System Configuration"])
+async def get_db_health():
+    try:
+        stats = await db.command("dbstats")
+        used_bytes = stats.get("storageSize", 0) + stats.get("indexSize", 0)
+        
+        collections = await db.list_collection_names()
+        col_stats = []
+        for col in collections:
+            c_stats = await db.command("collstats", col)
+            col_stats.append({
+                "name": col,
+                "count": c_stats.get("count", 0),
+                "size": c_stats.get("size", 0),
+                "storageSize": c_stats.get("storageSize", 0),
+                "indexSize": c_stats.get("totalIndexSize", 0)
+            })
+            
+        col_stats.sort(key=lambda x: x["storageSize"] + x["indexSize"], reverse=True)
+
+        return {
+            "overall": {
+                "used_bytes": used_bytes,
+                "total_bytes": 500 * 1024 * 1024,
+                "collections": stats.get("collections", 0),
+                "objects": stats.get("objects", 0)
+            },
+            "collections": col_stats
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 
 # HEALTH TRACKER ENDPOINTS
-@router.get("/health/habits")
+@router.get("/health/habits", tags=["Health & Wellbeing"])
 async def get_health_habits():
     cursor = db.health_habits.find().sort("name", 1)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/health/habits")
+@router.post("/health/habits", tags=["Health & Wellbeing"])
 async def add_health_habit(item: HealthHabit):
     result = await db.health_habits.insert_one(item.dict(exclude={"id"}))
     return {"id": str(result.inserted_id)}
 
-@router.put("/health/habits/{item_id}")
+@router.put("/health/habits/{item_id}", tags=["Health & Wellbeing"])
 async def update_health_habit(item_id: str, item: HealthHabit):
     await db.health_habits.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
     return {"status": "ok"}
 
-@router.delete("/health/habits/{item_id}")
+@router.delete("/health/habits/{item_id}", tags=["Health & Wellbeing"])
 async def delete_health_habit(item_id: str):
     await db.health_habits.delete_one({"_id": ObjectId(item_id)})
     # Also delete logs associated with this habit
     await db.health_logs.delete_many({"habit_id": item_id})
     return {"status": "ok"}
 
-@router.get("/health/logs")
+@router.get("/health/logs", tags=["Health & Wellbeing"])
 async def get_health_logs(start_date: str = None, end_date: str = None):
     query = {}
     if start_date and end_date:
@@ -650,7 +720,7 @@ async def get_health_logs(start_date: str = None, end_date: str = None):
     cursor = db.health_logs.find(query)
     return [format_doc(doc) async for doc in cursor]
 
-@router.post("/health/logs")
+@router.post("/health/logs", tags=["Health & Wellbeing"])
 async def toggle_health_log(log: HealthLog):
     # Check if exists
     existing = await db.health_logs.find_one({"habit_id": log.habit_id, "date": log.date})
@@ -675,7 +745,7 @@ CHROME_HEADERS = {
     'Accept': 'text/html,application/json'
 }
 
-@router.get("/market-price")
+@router.get("/market-price", tags=["Dashboard & Analytics"])
 async def get_market_price(ticker: str):
     # 1. INTELLIGENT CACHE CHECK (AI-Resilience)
     ticker_up = ticker.upper()
@@ -722,7 +792,7 @@ async def get_market_price(ticker: str):
             
         return {"ticker": ticker, "price": 0.0, "source": "SYNC_FAILED"}
 
-@router.get("/mf-search")
+@router.get("/mf-search", tags=["Dashboard & Analytics"])
 async def search_mutual_fund(q: str):
     async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS, verify=False) as client:
         try:
@@ -730,7 +800,7 @@ async def search_mutual_fund(q: str):
             return res.json()
         except: return []
 
-@router.get("/mf-nav")
+@router.get("/mf-nav", tags=["Dashboard & Analytics"])
 async def get_mf_nav(code: str):
     async with httpx.AsyncClient(timeout=10.0, headers=CHROME_HEADERS, verify=False) as client:
         try:
@@ -739,7 +809,7 @@ async def get_mf_nav(code: str):
             return {"nav": float(d['nav']), "scheme_name": d['meta']['scheme_name']}
         except: return {"nav": 0.0, "scheme_name": "API_TIMEOUT"}
 
-@router.get("/ai-insights")
+@router.get("/ai-insights", tags=["Dashboard & Analytics"])
 async def get_ai_insights():
     try:
         # Fetch all data for analysis
@@ -780,7 +850,7 @@ async def get_ai_insights():
         return []
 
 # NEW: MARKET ENGINE MANIFEST
-@router.post("/sync-prices")
+@router.post("/sync-prices", tags=["Dashboard & Analytics"])
 async def sync_all_prices():
     """Neural hub for background asset price auditing with Priority Quotas"""
     cursor = db.investments.find()

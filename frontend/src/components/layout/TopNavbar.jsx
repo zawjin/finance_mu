@@ -6,7 +6,7 @@ import {
     LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles,
     User, Globe, Banknote, Bookmark, Activity,
     X, ArrowLeft, Zap, ChevronRight, Home, TrendingUp,
-    Shield, Calculator, CreditCard, LogOut, Users, Key
+    Shield, Calculator, CreditCard, LogOut, Users, Key, Database
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { logout } from '../../store/authSlice';
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
 const ADMIN_ITEMS = [
     { to: '/admin/users', label: 'User Mgmt', module: 'User Management', icon: <Users size={22} />, color: '#6366f1', bg: '#eef2ff' },
     { to: '/admin/roles', label: 'Role Mgmt', module: 'Role Management', icon: <Key size={22} />,   color: '#0ea5e9', bg: '#e0f2fe' },
+    { to: '/admin/database', label: 'DB Health', module: 'System Settings', icon: <Database size={22} />, color: '#ec4899', bg: '#fdf2f8' },
 ];
 
 const TOOL_ITEMS = [

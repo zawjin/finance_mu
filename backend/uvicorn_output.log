@@ -1,0 +1,1020 @@
+INFO:     Will watch for changes in these directories: ['/Users/shajinva/Documents/D2C /Codes/Finance/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [27696] using WatchFiles
+INFO:     Started server process [27698]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0509s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:53207 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.2011s
+INFO:     127.0.0.1:53414 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0575s
+INFO:     127.0.0.1:53428 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0733s
+INFO:     127.0.0.1:53432 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.3002s
+INFO:     127.0.0.1:53415 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0498s
+INFO:     127.0.0.1:53435 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.3439s
+INFO:     127.0.0.1:53419 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.3496s
+INFO:     127.0.0.1:53420 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0497s
+INFO:     127.0.0.1:53441 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0543s
+INFO:     127.0.0.1:53438 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.3995s
+INFO:     127.0.0.1:53416 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1375s
+INFO:     127.0.0.1:53447 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1379s
+INFO:     127.0.0.1:53452 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.2071s
+INFO:     127.0.0.1:53444 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0590s
+INFO:     127.0.0.1:53466 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0603s
+INFO:     127.0.0.1:53464 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1607s
+INFO:     127.0.0.1:53456 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0511s
+INFO:     127.0.0.1:53475 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0517s
+INFO:     127.0.0.1:53473 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0527s
+INFO:     127.0.0.1:53471 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.3009s
+INFO:     127.0.0.1:53453 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.8332s
+INFO:     127.0.0.1:53421 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5277s
+INFO:     127.0.0.1:53480 - "GET /api/summary HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'clear_cache.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27698]
+INFO:     Started server process [27782]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2840s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:54619 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0604s
+INFO:     127.0.0.1:54637 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0642s
+INFO:     127.0.0.1:54640 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.4097s
+INFO:     127.0.0.1:54620 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.5280s
+INFO:     127.0.0.1:54618 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0597s
+INFO:     127.0.0.1:54644 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.4646s
+INFO:     127.0.0.1:54622 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0524s
+INFO:     127.0.0.1:54647 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1323s
+INFO:     127.0.0.1:54658 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1328s
+INFO:     127.0.0.1:54660 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2337s
+INFO:     127.0.0.1:54656 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.7047s
+INFO:     127.0.0.1:54626 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0947s
+INFO:     127.0.0.1:54669 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1536s
+INFO:     127.0.0.1:54670 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0547s
+INFO:     127.0.0.1:54678 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0550s
+INFO:     127.0.0.1:54677 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0545s
+INFO:     127.0.0.1:54680 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0576s
+INFO:     127.0.0.1:54683 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.8764s
+INFO:     127.0.0.1:54625 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.3727s
+INFO:     127.0.0.1:54686 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://api.api-ninjas.com/v2/quoteoftheday?category=inspirational "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=Each%20day%20offers%20a%20reason%20to%20celebrate.%20Find%20it%20and%20experience%20true%20bliss. "HTTP/1.1 200 OK"
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 1.8296s
+INFO:     127.0.0.1:54653 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0585s
+INFO:     127.0.0.1:54705 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0521s
+INFO:     127.0.0.1:54795 - "GET /api/daily-quote HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/core/database.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27782]
+INFO:     Started server process [27878]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/api/endpoints.py', 'add_tags.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27878]
+INFO:     Started server process [27906]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1863s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:56930 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0581s
+INFO:     127.0.0.1:56945 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0532s
+INFO:     127.0.0.1:56948 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1386s
+INFO:     127.0.0.1:56956 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.4649s
+INFO:     127.0.0.1:56931 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.4645s
+INFO:     127.0.0.1:56932 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.5436s
+INFO:     127.0.0.1:56929 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0634s
+INFO:     127.0.0.1:56963 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0660s
+INFO:     127.0.0.1:56960 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0630s
+INFO:     127.0.0.1:56972 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0629s
+INFO:     127.0.0.1:56974 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0632s
+INFO:     127.0.0.1:56973 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1777s
+INFO:     127.0.0.1:56965 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.6465s
+INFO:     127.0.0.1:56934 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0595s
+INFO:     127.0.0.1:56979 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0592s
+INFO:     127.0.0.1:56981 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0540s
+INFO:     127.0.0.1:56987 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0542s
+INFO:     127.0.0.1:56989 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1044s
+INFO:     127.0.0.1:56983 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0698s
+INFO:     127.0.0.1:56993 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.8308s
+INFO:     127.0.0.1:56933 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5088s
+INFO:     127.0.0.1:56996 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /docs | Status: 200 | Time: 0.0014s
+INFO:     127.0.0.1:57298 - "GET /docs HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /openapi.json | Status: 200 | Time: 0.0277s
+INFO:     127.0.0.1:57298 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0726s
+INFO:     127.0.0.1:57299 - "GET /api/daily-quote HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'test_db_stats.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27906]
+INFO:     Started server process [27981]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /docs | Status: 200 | Time: 0.0006s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:58355 - "GET /docs HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /openapi.json | Status: 200 | Time: 0.0361s
+INFO:     127.0.0.1:58355 - "GET /openapi.json HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/api/endpoints.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27981]
+INFO:     Started server process [28014]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1539s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:58946 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.2586s
+INFO:     127.0.0.1:58947 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1908s
+INFO:     127.0.0.1:58965 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.4512s
+INFO:     127.0.0.1:58948 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.4554s
+INFO:     127.0.0.1:58949 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0511s
+INFO:     127.0.0.1:58972 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0512s
+INFO:     127.0.0.1:58974 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1083s
+INFO:     127.0.0.1:58977 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.5679s
+INFO:     127.0.0.1:58951 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.0998s
+INFO:     127.0.0.1:58986 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1007s
+INFO:     127.0.0.1:58987 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0503s
+INFO:     127.0.0.1:58993 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0603s
+INFO:     127.0.0.1:59000 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0535s
+INFO:     127.0.0.1:59003 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0611s
+INFO:     127.0.0.1:58999 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.5941s
+INFO:     127.0.0.1:58958 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0553s
+INFO:     127.0.0.1:59008 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0595s
+INFO:     127.0.0.1:59012 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.3701s
+INFO:     127.0.0.1:58991 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.3543s
+INFO:     127.0.0.1:59009 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 1.5713s
+INFO:     127.0.0.1:58952 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5011s
+INFO:     127.0.0.1:59024 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.1336s
+INFO:     127.0.0.1:60103 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.1828s
+INFO:     127.0.0.1:60105 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.2793s
+INFO:     127.0.0.1:60095 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1507s
+INFO:     127.0.0.1:60108 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1490s
+INFO:     127.0.0.1:60113 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0934s
+INFO:     127.0.0.1:60116 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1045s
+INFO:     127.0.0.1:60123 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.1142s
+INFO:     127.0.0.1:60129 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.4941s
+INFO:     127.0.0.1:60099 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1900s
+INFO:     127.0.0.1:60137 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1567s
+INFO:     127.0.0.1:60144 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0647s
+INFO:     127.0.0.1:60150 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.7301s
+INFO:     127.0.0.1:60097 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0721s
+INFO:     127.0.0.1:60149 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.3629s
+INFO:     127.0.0.1:60133 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.4338s
+INFO:     127.0.0.1:60127 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0695s
+INFO:     127.0.0.1:60155 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0747s
+INFO:     127.0.0.1:60158 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0654s
+INFO:     127.0.0.1:60162 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.8723s
+INFO:     127.0.0.1:60104 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1754s
+INFO:     127.0.0.1:60159 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5144s
+INFO:     127.0.0.1:60165 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.1215s
+INFO:     127.0.0.1:61827 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1861s
+INFO:     127.0.0.1:61818 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0506s
+INFO:     127.0.0.1:61830 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.2015s
+INFO:     127.0.0.1:61821 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0703s
+INFO:     127.0.0.1:61833 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0629s
+INFO:     127.0.0.1:61836 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0504s
+INFO:     127.0.0.1:61839 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2602s
+INFO:     127.0.0.1:61819 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0608s
+INFO:     127.0.0.1:61845 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0680s
+INFO:     127.0.0.1:61842 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.3259s
+INFO:     127.0.0.1:61823 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0635s
+INFO:     127.0.0.1:61851 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1048s
+INFO:     127.0.0.1:61849 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0561s
+INFO:     127.0.0.1:61862 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0559s
+INFO:     127.0.0.1:61863 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0568s
+INFO:     127.0.0.1:61860 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0605s
+INFO:     127.0.0.1:61854 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0546s
+INFO:     127.0.0.1:61875 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0550s
+INFO:     127.0.0.1:61876 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1392s
+INFO:     127.0.0.1:61866 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5388s
+INFO:     127.0.0.1:61826 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4984s
+INFO:     127.0.0.1:61879 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 3.1229s
+INFO:     127.0.0.1:62213 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 3.1231s
+INFO:     127.0.0.1:62214 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 5.2291s
+INFO:     127.0.0.1:62210 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 5.2660s
+INFO:     127.0.0.1:62212 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 2.2170s
+INFO:     127.0.0.1:62257 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 2.2178s
+INFO:     127.0.0.1:62256 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 2.6663s
+INFO:     127.0.0.1:62280 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 2.6911s
+INFO:     127.0.0.1:62288 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 2.7257s
+INFO:     127.0.0.1:62294 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 2.7259s
+INFO:     127.0.0.1:62295 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 8.2379s
+INFO:     127.0.0.1:62211 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 1.2824s
+INFO:     127.0.0.1:62321 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 1.0390s
+INFO:     127.0.0.1:62337 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 1.1940s
+INFO:     127.0.0.1:62330 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0663s
+INFO:     127.0.0.1:62360 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1447s
+INFO:     127.0.0.1:62349 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0674s
+INFO:     127.0.0.1:62358 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1800s
+INFO:     127.0.0.1:62366 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 9.9766s
+INFO:     127.0.0.1:62216 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5161s
+INFO:     127.0.0.1:62375 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 2.6738s
+INFO:     127.0.0.1:62328 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 3.4299s
+INFO:     127.0.0.1:62324 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/habits | Status: 200 | Time: 0.0448s
+INFO:     127.0.0.1:62423 - "GET /api/health/habits HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/logs | Status: 200 | Time: 0.0964s
+INFO:     127.0.0.1:62429 - "GET /api/health/logs?start_date=2025-05-02&end_date=2026-06-02 HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/habits | Status: 200 | Time: 0.0995s
+INFO:     127.0.0.1:62426 - "GET /api/health/habits HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/logs | Status: 200 | Time: 0.0543s
+INFO:     127.0.0.1:62432 - "GET /api/health/logs?start_date=2025-05-02&end_date=2026-06-02 HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/api/endpoints.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [28014]
+INFO:     Started server process [28228]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/api/endpoints.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [28228]
+INFO:     Started server process [28237]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.2296s
+FRIDAY SYSTEM: Multi-threaded Async Core Active. Docs at /docs.
+INFO:     127.0.0.1:64410 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0495s
+INFO:     127.0.0.1:64435 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0545s
+INFO:     127.0.0.1:64439 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0524s
+INFO:     127.0.0.1:64443 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.3838s
+INFO:     127.0.0.1:64416 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.4307s
+INFO:     127.0.0.1:64414 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0502s
+INFO:     127.0.0.1:64447 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0566s
+INFO:     127.0.0.1:64449 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.4903s
+INFO:     127.0.0.1:64413 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0502s
+INFO:     127.0.0.1:64455 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0605s
+INFO:     127.0.0.1:64458 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.0947s
+INFO:     127.0.0.1:64452 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0565s
+INFO:     127.0.0.1:64461 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0541s
+INFO:     127.0.0.1:64467 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0447s
+INFO:     127.0.0.1:64470 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0445s
+INFO:     127.0.0.1:64473 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.2347s
+INFO:     127.0.0.1:64464 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.7323s
+INFO:     127.0.0.1:64418 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2177s
+INFO:     127.0.0.1:64476 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0575s
+INFO:     127.0.0.1:64479 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.7966s
+INFO:     127.0.0.1:64420 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.7004s
+INFO:     127.0.0.1:64482 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0614s
+INFO:     127.0.0.1:65402 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0686s
+INFO:     127.0.0.1:65401 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1191s
+INFO:     127.0.0.1:65394 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0589s
+INFO:     127.0.0.1:65411 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1302s
+INFO:     127.0.0.1:65400 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0575s
+INFO:     127.0.0.1:65414 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1450s
+INFO:     127.0.0.1:65424 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1523s
+INFO:     127.0.0.1:65422 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1659s
+INFO:     127.0.0.1:65417 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.1541s
+INFO:     127.0.0.1:65426 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2922s
+INFO:     127.0.0.1:65399 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0553s
+INFO:     127.0.0.1:65433 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0500s
+INFO:     127.0.0.1:65442 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0528s
+INFO:     127.0.0.1:65443 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0631s
+INFO:     127.0.0.1:65445 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1002s
+INFO:     127.0.0.1:65439 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0578s
+INFO:     127.0.0.1:65451 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0714s
+INFO:     127.0.0.1:65454 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0745s
+INFO:     127.0.0.1:65453 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4348s
+INFO:     127.0.0.1:65404 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1756s
+INFO:     127.0.0.1:65457 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5396s
+INFO:     127.0.0.1:65460 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.8334s
+INFO:     127.0.0.1:49254 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4309s
+INFO:     127.0.0.1:49271 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4911s
+INFO:     127.0.0.1:49738 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/habits | Status: 200 | Time: 0.0670s
+INFO:     127.0.0.1:49788 - "GET /api/health/habits HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/logs | Status: 200 | Time: 0.0535s
+INFO:     127.0.0.1:49794 - "GET /api/health/logs?start_date=2025-05-02&end_date=2026-06-02 HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/habits | Status: 200 | Time: 0.0587s
+INFO:     127.0.0.1:49791 - "GET /api/health/habits HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/health/logs | Status: 200 | Time: 0.0624s
+INFO:     127.0.0.1:49797 - "GET /api/health/logs?start_date=2025-05-02&end_date=2026-06-02 HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4808s
+INFO:     127.0.0.1:49902 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4328s
+INFO:     127.0.0.1:49921 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0618s
+INFO:     127.0.0.1:53126 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0989s
+INFO:     127.0.0.1:53121 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1384s
+INFO:     127.0.0.1:53118 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1167s
+INFO:     127.0.0.1:53122 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0492s
+INFO:     127.0.0.1:53134 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0573s
+INFO:     127.0.0.1:53137 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0540s
+INFO:     127.0.0.1:53150 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0661s
+INFO:     127.0.0.1:53144 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0597s
+INFO:     127.0.0.1:53149 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0524s
+INFO:     127.0.0.1:53153 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2462s
+INFO:     127.0.0.1:53117 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0446s
+INFO:     127.0.0.1:53162 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0621s
+INFO:     127.0.0.1:53157 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0629s
+INFO:     127.0.0.1:53167 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0488s
+INFO:     127.0.0.1:53171 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1120s
+INFO:     127.0.0.1:53159 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0944s
+INFO:     127.0.0.1:53174 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0895s
+INFO:     127.0.0.1:53177 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1096s
+INFO:     127.0.0.1:53181 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4521s
+INFO:     127.0.0.1:53125 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1853s
+INFO:     127.0.0.1:53183 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5426s
+INFO:     127.0.0.1:53186 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0583s
+INFO:     127.0.0.1:56457 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0682s
+INFO:     127.0.0.1:56452 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1322s
+INFO:     127.0.0.1:56447 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0585s
+INFO:     127.0.0.1:56460 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1282s
+INFO:     127.0.0.1:56454 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0793s
+INFO:     127.0.0.1:56463 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1410s
+INFO:     127.0.0.1:56472 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1417s
+INFO:     127.0.0.1:56470 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1421s
+INFO:     127.0.0.1:56469 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2978s
+INFO:     127.0.0.1:56449 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.1281s
+INFO:     127.0.0.1:56475 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0498s
+INFO:     127.0.0.1:56482 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0495s
+INFO:     127.0.0.1:56485 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0574s
+INFO:     127.0.0.1:56490 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0468s
+INFO:     127.0.0.1:56495 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0490s
+INFO:     127.0.0.1:56496 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1154s
+INFO:     127.0.0.1:56486 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1153s
+INFO:     127.0.0.1:56488 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0551s
+INFO:     127.0.0.1:56499 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4604s
+INFO:     127.0.0.1:56455 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1836s
+INFO:     127.0.0.1:56502 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4975s
+INFO:     127.0.0.1:56505 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0627s
+INFO:     127.0.0.1:57224 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0681s
+INFO:     127.0.0.1:57223 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1117s
+INFO:     127.0.0.1:57218 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1148s
+INFO:     127.0.0.1:57220 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0480s
+INFO:     127.0.0.1:57229 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0541s
+INFO:     127.0.0.1:57232 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1107s
+INFO:     127.0.0.1:57238 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1146s
+INFO:     127.0.0.1:57235 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1097s
+INFO:     127.0.0.1:57241 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.1567s
+INFO:     127.0.0.1:57244 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2955s
+INFO:     127.0.0.1:57219 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0580s
+INFO:     127.0.0.1:57250 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0965s
+INFO:     127.0.0.1:57253 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.0977s
+INFO:     127.0.0.1:57251 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0650s
+INFO:     127.0.0.1:57256 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0571s
+INFO:     127.0.0.1:57260 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0589s
+INFO:     127.0.0.1:57262 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0579s
+INFO:     127.0.0.1:57266 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0625s
+INFO:     127.0.0.1:57268 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4566s
+INFO:     127.0.0.1:57226 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1762s
+INFO:     127.0.0.1:57271 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4638s
+INFO:     127.0.0.1:57274 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.1141s
+INFO:     127.0.0.1:63389 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1780s
+INFO:     127.0.0.1:63383 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1783s
+INFO:     127.0.0.1:63386 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0485s
+INFO:     127.0.0.1:63403 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2375s
+INFO:     127.0.0.1:63387 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.2724s
+INFO:     127.0.0.1:63393 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0625s
+INFO:     127.0.0.1:63412 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0634s
+INFO:     127.0.0.1:63410 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0628s
+INFO:     127.0.0.1:63413 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0542s
+INFO:     127.0.0.1:63415 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0525s
+INFO:     127.0.0.1:63423 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0613s
+INFO:     127.0.0.1:63422 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0538s
+INFO:     127.0.0.1:63425 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1083s
+INFO:     127.0.0.1:63417 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0592s
+INFO:     127.0.0.1:63429 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0612s
+INFO:     127.0.0.1:63431 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0613s
+INFO:     127.0.0.1:63433 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1970s
+INFO:     127.0.0.1:63419 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0580s
+INFO:     127.0.0.1:63436 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0587s
+INFO:     127.0.0.1:63437 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 1.1675s
+INFO:     127.0.0.1:63392 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.7258s
+INFO:     127.0.0.1:63427 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0659s
+INFO:     127.0.0.1:63475 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0666s
+INFO:     127.0.0.1:63476 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0701s
+INFO:     127.0.0.1:63472 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1239s
+INFO:     127.0.0.1:63470 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1319s
+INFO:     127.0.0.1:63478 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1318s
+INFO:     127.0.0.1:63480 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1324s
+INFO:     127.0.0.1:63482 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.3037s
+INFO:     127.0.0.1:63466 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0562s
+INFO:     127.0.0.1:63485 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5566s
+INFO:     127.0.0.1:63473 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: POST | Path: /api/login | Status: 200 | Time: 0.0950s
+INFO:     127.0.0.1:63513 - "POST /api/login HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1218s
+INFO:     127.0.0.1:63515 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0596s
+INFO:     127.0.0.1:63533 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0598s
+INFO:     127.0.0.1:63534 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1147s
+INFO:     127.0.0.1:63528 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1207s
+INFO:     127.0.0.1:63525 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1294s
+INFO:     127.0.0.1:63539 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1299s
+INFO:     127.0.0.1:63540 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0649s
+INFO:     127.0.0.1:63543 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.3143s
+INFO:     127.0.0.1:63529 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0654s
+INFO:     127.0.0.1:63544 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0722s
+INFO:     127.0.0.1:63546 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5102s
+INFO:     127.0.0.1:63535 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0650s
+INFO:     127.0.0.1:49597 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0826s
+INFO:     127.0.0.1:49595 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1148s
+INFO:     127.0.0.1:49596 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0577s
+INFO:     127.0.0.1:49602 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1393s
+INFO:     127.0.0.1:49593 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0567s
+INFO:     127.0.0.1:49605 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1731s
+INFO:     127.0.0.1:49594 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0525s
+INFO:     127.0.0.1:49608 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0550s
+INFO:     127.0.0.1:49611 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0553s
+INFO:     127.0.0.1:49614 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0552s
+INFO:     127.0.0.1:49617 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0481s
+INFO:     127.0.0.1:49623 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0469s
+INFO:     127.0.0.1:49627 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0550s
+INFO:     127.0.0.1:49624 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0695s
+INFO:     127.0.0.1:49633 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0480s
+INFO:     127.0.0.1:49640 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0478s
+INFO:     127.0.0.1:49642 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1315s
+INFO:     127.0.0.1:49630 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0522s
+INFO:     127.0.0.1:49645 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1546s
+INFO:     127.0.0.1:49636 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5513s
+INFO:     127.0.0.1:49598 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5378s
+INFO:     127.0.0.1:49653 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 11.3898s
+INFO:     127.0.0.1:51341 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.9782s
+INFO:     127.0.0.1:51452 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4816s
+INFO:     127.0.0.1:52487 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/admin/db-health | Status: 200 | Time: 1.4726s
+INFO:     127.0.0.1:52502 - "GET /api/admin/db-health HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0701s
+INFO:     127.0.0.1:55759 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0843s
+INFO:     127.0.0.1:55755 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1374s
+INFO:     127.0.0.1:55756 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1498s
+INFO:     127.0.0.1:55751 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0586s
+INFO:     127.0.0.1:55764 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0876s
+INFO:     127.0.0.1:55766 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1782s
+INFO:     127.0.0.1:55752 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0597s
+INFO:     127.0.0.1:55774 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0626s
+INFO:     127.0.0.1:55775 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0729s
+INFO:     127.0.0.1:55769 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0459s
+INFO:     127.0.0.1:55779 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0521s
+INFO:     127.0.0.1:55781 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1261s
+INFO:     127.0.0.1:55787 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.1260s
+INFO:     127.0.0.1:55790 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0603s
+INFO:     127.0.0.1:55802 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1924s
+INFO:     127.0.0.1:55788 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0733s
+INFO:     127.0.0.1:55800 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0456s
+INFO:     127.0.0.1:55805 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4783s
+INFO:     127.0.0.1:55760 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2734s
+INFO:     127.0.0.1:55793 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.4793s
+INFO:     127.0.0.1:55796 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5159s
+INFO:     127.0.0.1:55808 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0763s
+INFO:     127.0.0.1:56375 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0801s
+INFO:     127.0.0.1:56374 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1909s
+INFO:     127.0.0.1:56371 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1980s
+INFO:     127.0.0.1:56370 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0498s
+INFO:     127.0.0.1:56380 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0606s
+INFO:     127.0.0.1:56378 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0507s
+INFO:     127.0.0.1:56385 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0527s
+INFO:     127.0.0.1:56386 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0696s
+INFO:     127.0.0.1:56388 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.4073s
+INFO:     127.0.0.1:56369 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.5548s
+INFO:     127.0.0.1:56376 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.9851s
+INFO:     127.0.0.1:57074 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 1.2834s
+INFO:     127.0.0.1:57072 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 1.2920s
+INFO:     127.0.0.1:57070 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.5040s
+INFO:     127.0.0.1:57104 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.2295s
+INFO:     127.0.0.1:57107 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.4300s
+INFO:     127.0.0.1:57110 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.3019s
+INFO:     127.0.0.1:57117 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.3017s
+INFO:     127.0.0.1:57120 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.3108s
+INFO:     127.0.0.1:57127 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 2.3662s
+INFO:     127.0.0.1:57078 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 2.3657s
+INFO:     127.0.0.1:57079 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.6773s
+INFO:     127.0.0.1:57133 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.1292s
+INFO:     127.0.0.1:57149 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1303s
+INFO:     127.0.0.1:57150 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.7151s
+INFO:     127.0.0.1:57130 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 2.5544s
+INFO:     127.0.0.1:57080 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0492s
+INFO:     127.0.0.1:57162 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0507s
+INFO:     127.0.0.1:57159 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0654s
+INFO:     127.0.0.1:57155 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0658s
+INFO:     127.0.0.1:57156 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.7234s
+INFO:     127.0.0.1:57139 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4674s
+INFO:     127.0.0.1:57165 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.7454s
+INFO:     127.0.0.1:57395 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.7470s
+INFO:     127.0.0.1:57393 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.8015s
+INFO:     127.0.0.1:57388 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.7994s
+INFO:     127.0.0.1:57390 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0508s
+INFO:     127.0.0.1:57412 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0575s
+INFO:     127.0.0.1:57413 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0666s
+INFO:     127.0.0.1:57416 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.8687s
+INFO:     127.0.0.1:57389 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0562s
+INFO:     127.0.0.1:57419 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0554s
+INFO:     127.0.0.1:57422 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0533s
+INFO:     127.0.0.1:57425 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0597s
+INFO:     127.0.0.1:57431 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0589s
+INFO:     127.0.0.1:57433 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0592s
+INFO:     127.0.0.1:57437 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0612s
+INFO:     127.0.0.1:57440 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1054s
+INFO:     127.0.0.1:57436 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1359s
+INFO:     127.0.0.1:57452 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1398s
+INFO:     127.0.0.1:57446 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1373s
+INFO:     127.0.0.1:57451 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2567s
+INFO:     127.0.0.1:57447 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 1.1903s
+INFO:     127.0.0.1:57396 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4734s
+INFO:     127.0.0.1:57459 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0678s
+INFO:     127.0.0.1:57503 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0686s
+INFO:     127.0.0.1:57502 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1222s
+INFO:     127.0.0.1:57499 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1263s
+INFO:     127.0.0.1:57495 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0518s
+INFO:     127.0.0.1:57510 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0565s
+INFO:     127.0.0.1:57511 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.1661s
+INFO:     127.0.0.1:57498 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0536s
+INFO:     127.0.0.1:57514 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0530s
+INFO:     127.0.0.1:57518 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0526s
+INFO:     127.0.0.1:57520 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0603s
+INFO:     127.0.0.1:57523 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0550s
+INFO:     127.0.0.1:57526 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0554s
+INFO:     127.0.0.1:57535 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0664s
+INFO:     127.0.0.1:57538 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1089s
+INFO:     127.0.0.1:57532 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1143s
+INFO:     127.0.0.1:57533 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0603s
+INFO:     127.0.0.1:57544 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0555s
+INFO:     127.0.0.1:57547 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0521s
+INFO:     127.0.0.1:57550 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4882s
+INFO:     127.0.0.1:57505 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2605s
+INFO:     127.0.0.1:57541 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4745s
+INFO:     127.0.0.1:57557 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0577s
+INFO:     127.0.0.1:57596 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0643s
+INFO:     127.0.0.1:57593 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.0991s
+INFO:     127.0.0.1:57586 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0559s
+INFO:     127.0.0.1:57607 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0613s
+INFO:     127.0.0.1:57605 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.1343s
+INFO:     127.0.0.1:57590 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.1356s
+INFO:     127.0.0.1:57610 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.1020s
+INFO:     127.0.0.1:57616 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/asset_classes | Status: 200 | Time: 0.0993s
+INFO:     127.0.0.1:57619 - "GET /api/asset_classes HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 0.2425s
+INFO:     127.0.0.1:57591 - "GET /api/spending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.1108s
+INFO:     127.0.0.1:57613 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/reserves | Status: 200 | Time: 0.0556s
+INFO:     127.0.0.1:57630 - "GET /api/reserves HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/categories | Status: 200 | Time: 0.0564s
+INFO:     127.0.0.1:57629 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/debt | Status: 200 | Time: 0.0631s
+INFO:     127.0.0.1:57632 - "GET /api/debt HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/investments | Status: 200 | Time: 0.0632s
+INFO:     127.0.0.1:57634 - "GET /api/investments HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/me | Status: 200 | Time: 0.1028s
+INFO:     127.0.0.1:57631 - "GET /api/me HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/daily-quote | Status: 200 | Time: 0.0549s
+INFO:     127.0.0.1:57640 - "GET /api/daily-quote HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/yearly-expenses | Status: 200 | Time: 0.0558s
+INFO:     127.0.0.1:57638 - "GET /api/yearly-expenses HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/private-lending | Status: 200 | Time: 0.0806s
+INFO:     127.0.0.1:57646 - "GET /api/private-lending HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/summary | Status: 200 | Time: 0.4544s
+INFO:     127.0.0.1:57597 - "GET /api/summary HTTP/1.1" 200 OK
+INFO:app.middleware.logging:Method: GET | Path: /api/spending | Status: 200 | Time: 4.1221s
+INFO:     127.0.0.1:57644 - "GET /api/spending HTTP/1.1" 200 OK

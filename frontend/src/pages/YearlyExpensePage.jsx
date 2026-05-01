@@ -100,8 +100,8 @@ export default function YearlyExpensePage({ onEdit }) {
             dispatch(fetchFinanceData());
             setPayModalItem(null);
             setPaySourceId('');
-        } catch (err) { 
-            console.error(err); 
+        } catch (err) {
+            console.error(err);
         } finally {
             setProcessing(false);
         }
@@ -118,8 +118,8 @@ export default function YearlyExpensePage({ onEdit }) {
             }
             dispatch(fetchFinanceData());
             setUndoConfirmItem(null);
-        } catch (err) { 
-            console.error(err); 
+        } catch (err) {
+            console.error(err);
         } finally {
             setProcessing(false);
         }
@@ -133,7 +133,7 @@ export default function YearlyExpensePage({ onEdit }) {
         setProcessing(true);
         try {
             await api.put(`/investments/${fund._id}`, { ...fund, value: (parseFloat(fund.value || 0) + amt) });
-            
+
             // Synchronize with Audit Log
             await api.post('/spending', {
                 date: new Date().toISOString().split('T')[0],
@@ -150,8 +150,8 @@ export default function YearlyExpensePage({ onEdit }) {
             dispatch(fetchFinanceData());
             setTopUpModal(false);
             setTopUpAmount('');
-        } catch (err) { 
-            console.error(err); 
+        } catch (err) {
+            console.error(err);
         } finally {
             setProcessing(false);
         }
@@ -164,8 +164,8 @@ export default function YearlyExpensePage({ onEdit }) {
             await api.delete(`/yearly-expenses/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
             setDeleteConfirmItem(null);
-        } catch (err) { 
-            console.error(err); 
+        } catch (err) {
+            console.error(err);
         } finally {
             setProcessing(false);
         }
@@ -183,10 +183,7 @@ export default function YearlyExpensePage({ onEdit }) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
 
             <Box className="expense-header-flex">
-                <Box>
-                    <Typography className="page-title-main">Fixed Expenses</Typography>
-                    <Typography className="page-subtitle-main">Consolidated tracking for routine and reserve commitments</Typography>
-                </Box>
+
                 <div className="expense-tab-system">
                     <Button
                         onClick={() => setActiveTab('YEARLY')}
@@ -209,7 +206,7 @@ export default function YearlyExpensePage({ onEdit }) {
                 <div className="expense-card-luxury yearly-gradient">
                     <div className="bg-icon-watermark"><CalendarDays size={140} /></div>
                     <Typography className="card-caption-premium">YEARLY OBLIGATIONS</Typography>
-                    
+
                     <Box className="card-main-stat-wrap">
                         <Typography className="main-stat-text">
                             {formatCurrency(totalYearlyCost)}
@@ -250,7 +247,7 @@ export default function YearlyExpensePage({ onEdit }) {
                         const fund = investments?.find(i => i.name === 'Nippon india corparate bond');
                         const fundBalance = fund ? parseFloat(fund.value || 0) : 0;
                         const topupNeeded = Math.max(0, yearlyRemaining - fundBalance);
-                        
+
                         return (
                             <Box className="expense-fund-console">
                                 <Box className="fund-info-row">
@@ -258,8 +255,8 @@ export default function YearlyExpensePage({ onEdit }) {
                                         <Typography className="fund-mini-label">AVAILABLE FUND</Typography>
                                         <Typography className="fund-mini-value">{formatCurrency(fundBalance)}</Typography>
                                     </Box>
-                                    <Button 
-                                        size="small" 
+                                    <Button
+                                        size="small"
                                         onClick={() => setTopUpModal(true)}
                                         className="btn-topup-luxury"
                                     >
@@ -301,89 +298,91 @@ export default function YearlyExpensePage({ onEdit }) {
             </div>
 
             {/* LIST SECTION */}
-            <Box className="glass-effect main-list-wrapper">
-                <div className="list-header-premium">
-                    <Typography className="list-header-title">{activeTab} OBLIGATIONS</Typography>
-                    <Chip label={`${activeTab === 'YEARLY' ? yearlyExpensesList.length : monthlyExpensesList.length} ITEMS`} size="small" className="list-count-chip" />
-                </div>
 
-                <Box sx={{ p: 2 }}>
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            className="ob-list-container"
-                        >
-                            {(activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).length === 0 ? (
-                                <Box className="empty-state-box">
-                                    <AlertCircle size={48} className="empty-icon" />
-                                    <Typography className="empty-text">No {activeTab.toLowerCase()} expenses found.</Typography>
-                                </Box>
-                            ) : (
-                                (activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).map(item => {
-                                    const isPaid = activeTab === 'YEARLY' ? item.last_paid_year === currentYear : item.last_paid_period === currentMonthPeriod;
-                                    return (
-                                        <div key={item._id} className="ob-item-row">
-                                            <div className="ob-item-icon">
+
+            <Box sx={{ p: 2 }} className="list-content-box p-0 ">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="debt-cards-list"
+                    >
+                        {(activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).length === 0 ? (
+                            <Box className="empty-state-box">
+                                <AlertCircle size={48} className="empty-icon" />
+                                <Typography className="empty-text">No {activeTab.toLowerCase()} expenses found.</Typography>
+                            </Box>
+                        ) : (
+                            (activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).map(item => {
+                                const isPaid = activeTab === 'YEARLY' ? item.last_paid_year === currentYear : item.last_paid_period === currentMonthPeriod;
+
+                                const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
+                                const isInsufficient = activeTab === 'YEARLY' && nipponFund && parseFloat(nipponFund.value || 0) < item.amount;
+                                const isLocked = activeTab === 'YEARLY' && upcomingYearly.length > 0 && item._id !== upcomingYearly[0]._id;
+
+                                return (
+                                    <div key={item._id} className="acct-card-mobile">
+                                        <div className="acct-top-row">
+                                            <div className="account-icon-box">
                                                 {getIconForCategory(item.category)}
                                             </div>
-                                            <Box className="flex-1">
-                                                <Typography className="item-name-text">{item.name}</Typography>
-                                                <Typography className="item-meta-text">
-                                                    {item.category} • {activeTab === 'YEARLY' 
-                                                        ? `Next Pay: ${item.due_month} ${currentYear + (item.last_paid_year === currentYear ? 1 : 0)}` 
-                                                        : `Next Due: ${dayjs().date() <= parseInt(item.due_month) 
-                                                            ? dayjs().date(parseInt(item.due_month)).format('MMM DD') 
-                                                            : dayjs().add(1, 'month').date(parseInt(item.due_month)).format('MMM DD')}`
-                                                    }
-                                                </Typography>
-                                            </Box>
-                                            <Box className="item-price-wrap">
-                                                <Typography className="item-price-text">{formatCurrency(item.amount)}</Typography>
-                                            </Box>
-                                            <Box className="item-actions-stack">
-                                                {isPaid ? (
-                                                    <Box className="paid-status-box">
-                                                        <Typography className="paid-label">PAID</Typography>
-                                                        <IconButton size="small" onClick={() => setUndoConfirmItem(item)} className="undo-pay-btn"><RotateCcw size={14} /></IconButton>
-                                                    </Box>
-                                                ) : (() => {
-                                                    const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
-                                                    const isInsufficient = activeTab === 'YEARLY' && nipponFund && parseFloat(nipponFund.value || 0) < item.amount;
-                                                    const isLocked = activeTab === 'YEARLY' && upcomingYearly.length > 0 && item._id !== upcomingYearly[0]._id;
-                                                    
-                                                    return (
-                                                        <Button 
-                                                            variant="contained" 
-                                                            size="small" 
-                                                            disabled={isInsufficient || isLocked}
-                                                            onClick={() => { 
-                                                                setPayModalItem(item); 
-                                                                if(activeTab === 'YEARLY' && nipponFund) {
-                                                                    setPaySourceId(nipponFund._id);
-                                                                } else {
-                                                                    setPaySourceId(''); 
-                                                                }
-                                                            }} 
-                                                            className={`btn-pay-status ${isInsufficient ? 'insufficient' : (isLocked ? 'insufficient' : (activeTab === 'YEARLY' ? 'yearly' : 'monthly'))}`}
-                                                        >
-                                                            {isLocked ? 'LOCKED' : (isInsufficient ? 'LOW BAL' : 'PAY')}
-                                                        </Button>
-                                                    );
-                                                })()}
-                                                <IconButton size="small" onClick={() => onEdit(item)} sx={{ color: '#86868b' }}><Edit2 size={16} /></IconButton>
-                                                <IconButton size="small" onClick={() => setDeleteConfirmItem(item)} sx={{ color: '#ff3b30' }}><Trash2 size={16} /></IconButton>
-                                            </Box>
+                                            <div className="acct-info">
+                                                <span className="account-main-name">{item.name}</span>
+                                                <div className="acct-badge-row">
+                                                    <span className="account-type-badge">{item.category}</span>
+                                                    <span className="due-date-badge due-normal">
+                                                        {activeTab === 'YEARLY'
+                                                            ? `Next Pay: ${item.due_month} ${currentYear + (item.last_paid_year === currentYear ? 1 : 0)}`
+                                                            : `Next Due: ${dayjs().date() <= parseInt(item.due_month)
+                                                                ? dayjs().date(parseInt(item.due_month)).format('MMM DD')
+                                                                : dayjs().add(1, 'month').date(parseInt(item.due_month)).format('MMM DD')}`
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="acct-balance account-val-stack">
+                                                <span className="account-main-val">{formatCurrency(item.amount)}</span>
+                                                {isPaid && <span className="account-avail-label" style={{ color: '#10b981' }}>PAID</span>}
+                                            </div>
                                         </div>
-                                    );
-                                })
-                            )}
-                        </motion.div>
-                    </AnimatePresence>
-                </Box>
+
+                                        <div className="acct-action-strip">
+                                            <div className="debt-action-label">ACTIONS</div>
+                                            <div className="acct-icon-btns">
+                                                {isPaid ? (
+                                                    <IconButton size="small" onClick={() => setUndoConfirmItem(item)} sx={{ color: '#10b981' }}><RotateCcw size={16} /></IconButton>
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        disabled={isInsufficient || isLocked}
+                                                        onClick={() => {
+                                                            setPayModalItem(item);
+                                                            if (activeTab === 'YEARLY' && nipponFund) {
+                                                                setPaySourceId(nipponFund._id);
+                                                            } else {
+                                                                setPaySourceId('');
+                                                            }
+                                                        }}
+                                                        className={`btn-pay-bill-small ${isInsufficient ? 'insufficient' : (isLocked ? 'insufficient' : (activeTab === 'YEARLY' ? 'yearly' : 'monthly'))}`}
+                                                    >
+                                                        {isLocked ? 'Locked' : (isInsufficient ? 'Low Bal' : 'Pay')}
+                                                    </Button>
+                                                )}
+                                                <IconButton size="small" onClick={() => onEdit(item)} sx={{ color: '#86868b' }}><Edit2 size={16} /></IconButton>
+                                                <IconButton size="small" onClick={() => setDeleteConfirmItem(item)} sx={{ color: '#f43f5e' }}><Trash2 size={16} /></IconButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </motion.div>
+                </AnimatePresence>
             </Box>
+
 
             {/* AUDIT LOG */}
             <div className="audit-log-section">
@@ -441,7 +440,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                 const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
                                 const bal = nipponFund ? parseFloat(nipponFund.value || 0) : 0;
                                 const isInsufficient = bal < payModalItem.amount;
-                                
+
                                 return (
                                     <Box className="asset-info-tile">
                                         <Typography className="asset-title-text">📈 {nipponFund?.name || 'Nippon Fund'}</Typography>
@@ -485,11 +484,11 @@ export default function YearlyExpensePage({ onEdit }) {
 
                         <div className="dialog-action-flex">
                             <Button fullWidth onClick={() => setPayModalItem(null)} disabled={processing} className="btn-abort-pill">CANCEL</Button>
-                            <Button 
-                                fullWidth 
-                                variant="contained" 
-                                onClick={handleConfirmPay} 
-                                disabled={processing || !paySourceId || (activeTab === 'YEARLY' && (investments?.find(i => i.name === 'Nippon india corparate bond')?.value || 0) < payModalItem.amount)} 
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleConfirmPay}
+                                disabled={processing || !paySourceId || (activeTab === 'YEARLY' && (investments?.find(i => i.name === 'Nippon india corparate bond')?.value || 0) < payModalItem.amount)}
                                 className={`btn-confirm-pill ${activeTab === 'YEARLY' ? 'yearly' : 'monthly'}`}
                                 startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}
                             >
@@ -536,7 +535,7 @@ export default function YearlyExpensePage({ onEdit }) {
             >
                 {undoConfirmItem && (
                     <Box className="dialog-content-premium">
-                         <div className="dialog-icon-wrap undo-bg">
+                        <div className="dialog-icon-wrap undo-bg">
                             <RotateCcw size={32} />
                         </div>
                         <Typography className="dialog-desc-text">Undo recent payment for <strong>{undoConfirmItem.name}</strong>?</Typography>
@@ -565,15 +564,15 @@ export default function YearlyExpensePage({ onEdit }) {
                 maxWidth="xs"
             >
                 <Box className="dialog-content-premium">
-                     <div className="dialog-icon-wrap topup-bg">
+                    <div className="dialog-icon-wrap topup-bg">
                         <TrendingUp size={32} />
                     </div>
-                    
+
                     {(() => {
                         const fund = investments?.find(i => i.name === 'Nippon india corparate bond');
                         const fundBalance = fund ? parseFloat(fund.value || 0) : 0;
                         const topupNeeded = Math.max(0, yearlyRemaining - fundBalance);
-                        
+
                         return (
                             <>
                                 <Box className="mini-info-card">
@@ -596,10 +595,10 @@ export default function YearlyExpensePage({ onEdit }) {
 
                                 <div className="dialog-action-flex">
                                     <Button fullWidth onClick={() => setTopUpModal(false)} disabled={processing} className="btn-abort-pill">CANCEL</Button>
-                                    <Button 
-                                        fullWidth 
-                                        variant="contained" 
-                                        onClick={handleTopUp} 
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        onClick={handleTopUp}
                                         disabled={processing || !topUpAmount || parseFloat(topUpAmount) <= 0}
                                         className="btn-add-fund-pill"
                                         startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}

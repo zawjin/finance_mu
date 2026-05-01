@@ -75,7 +75,6 @@ function PartialModal({ item, open, onClose, onSave }) {
                             placeholder="0.00"
                             value={paidAmt}
                             onChange={e => setPaidAmt(e.target.value)}
-                            autoFocus
                         />
                     </div>
 

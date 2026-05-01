@@ -29,6 +29,7 @@ import ReservePage from './pages/ReservePage';
 import LoginPage from './pages/LoginPage';
 import UserManagementPage from './pages/UserManagementPage';
 import RoleManagementPage from './pages/RoleManagementPage';
+import DatabaseHealthPage from './pages/DatabaseHealthPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { fetchCurrentUser } from './store/authSlice';
 import BaseDialog from './components/ui/BaseDialog';
@@ -429,6 +430,7 @@ export default function App() {
                                                     {/* RBAC Protected Modules */}
                                                     <Route path="/admin/users" element={<ProtectedRoute module="User Management"><UserManagementPage /></ProtectedRoute>} />
                                                     <Route path="/admin/roles" element={<ProtectedRoute module="Role Management"><RoleManagementPage /></ProtectedRoute>} />
+                                                    <Route path="/admin/database" element={<ProtectedRoute module="System Settings"><DatabaseHealthPage /></ProtectedRoute>} />
                                                 </Routes>
                                             </main>
                                         </div>

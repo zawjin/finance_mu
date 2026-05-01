@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import {
     TrendingUp, TrendingDown, Wallet, Shield, Flame,
     BarChart2, PieChart, ArrowRight, CreditCard, Landmark,
-    Activity, Calendar, Clock, Zap, Smartphone
+    Activity, Calendar, Clock, Zap, Smartphone, Database
 } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
 import './OverviewPage.scss';
@@ -101,8 +101,10 @@ const DailyQuoteBox = () => {
     );
 };
 
+
+
 export default function OverviewPage() {
-    const { loading, spending, reserves, investments, debt, yearlyExpenses } = useSelector(s => s.finance);
+    const { loading, spending, reserves, investments, debt, yearlyExpenses, summary } = useSelector(s => s.finance);
     const [activePeriod, setActivePeriod] = useState('month');
     const [currentTime, setCurrentTime] = useState(dayjs());
 
