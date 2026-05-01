@@ -74,6 +74,8 @@ class DebtItem(BaseModel):
     status: str = "ACTIVE" # ACTIVE, SETTLED, PARTIAL
     description: str = ""
     category: str = "PERSONAL" # PERSONAL, BANK, etc.
+    partial_amount: Optional[float] = 0.0   # Cumulative amount paid so far
+    payments: List[dict] = []               # [{date, amount, note}] payment history log
 
 class ReserveItem(BaseModel):
     id: Optional[str] = Field(None, alias="_id")

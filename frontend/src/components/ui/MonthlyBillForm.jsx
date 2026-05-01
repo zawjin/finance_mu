@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment } from '@mui/material';
+import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment, Stack, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { Bookmark, DollarSign, CalendarDays, Tag, Layers, Activity, FileText } from 'lucide-react';
 import './Forms.scss';
 
 export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
+    const [loading, setLoading] = useState(false);
     const { investments, reserves, categories: allCategories } = useSelector(state => state.finance);
 
     const categories = useMemo(() => {
@@ -47,13 +48,20 @@ export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
         }
     }, [initialData]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit({
-            ...formData,
-            name: formData.sub_category, // Use Sub-Category as Bill Name
-            amount: parseFloat(formData.amount)
-        });
+    const handleSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        setLoading(true);
+        try {
+            await onSubmit({
+                ...formData,
+                name: formData.sub_category, // Use Sub-Category as Bill Name
+                amount: parseFloat(formData.amount)
+            });
+        } catch (err) {
+            console.error("Submission error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
@@ -128,7 +136,15 @@ export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
 
                 <Box className="form-actions-row">
                     <Button onClick={onCancel} className="btn-dismiss-premium">CANCEL</Button>
-                    <Button type="submit" variant="contained" className="btn-submit-premium">SAVE BILL</Button>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={loading}
+                        className="btn-submit-premium"
+                        startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
+                    >
+                        {loading ? 'SAVING...' : 'SAVE BILL'}
+                    </Button>
                 </Box>
             </Stack>
         </Box>

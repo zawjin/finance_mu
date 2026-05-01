@@ -1,8 +1,112 @@
-import React from 'react';
-import { Box, Typography, Stack, Select, MenuItem, TextField, InputAdornment, IconButton, Chip } from '@mui/material';
-import { Handshake, Search, Filter, TrendingDown, TrendingUp, Sparkles, PieChart, Briefcase, Replace, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Typography, IconButton, Dialog, DialogContent } from '@mui/material';
+import { TrendingDown, TrendingUp, Sparkles, Replace, Trash2, X, IndianRupee, History } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
+const STATUSES = [
+    { value: 'ACTIVE',  label: 'Active',  color: '#2563eb', bg: '#eff6ff' },
+    { value: 'PARTIAL', label: 'Partial', color: '#d97706', bg: '#fffbeb' },
+    { value: 'SETTLED', label: 'Settled', color: '#16a34a', bg: '#f0fdf4' },
+];
+
+// ─── Partial Payment Modal ────────────────────────────────────────────────────
+function PartialModal({ item, open, onClose, onSave }) {
+    const [paidAmt, setPaidAmt] = useState('');
+    if (!item) return null;
+
+    const total        = item.amount || 0;
+    const alreadyPaid  = item.partial_amount || 0;
+    const payNow       = parseFloat(paidAmt) || 0;
+    const balance      = Math.max(0, total - alreadyPaid - payNow);
+    const isReceivable = item.direction === 'OWED_TO_ME';
+
+    const handleSave = () => {
+        if (!paidAmt || payNow <= 0) return;
+        onSave(item, payNow);
+        setPaidAmt('');
+    };
+
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="xs"
+            fullWidth
+            PaperProps={{ style: { borderRadius: 20, overflow: 'hidden', margin: 16 } }}
+        >
+            <div className="partial-modal-root">
+                {/* Header */}
+                <div className="partial-modal-header">
+                    <div>
+                        <p className="partial-modal-title">Partial Payment</p>
+                        <p className="partial-modal-sub">{item.person}</p>
+                    </div>
+                    <IconButton size="small" onClick={onClose} className="partial-close-btn">
+                        <X size={16} />
+                    </IconButton>
+                </div>
+
+                {/* Summary Row */}
+                <div className="partial-summary-row">
+                    <div className="partial-sum-card partial-sum-total">
+                        <span className="pscard-label">Total Amount</span>
+                        <span className="pscard-val">{formatCurrency(total)}</span>
+                    </div>
+                    {alreadyPaid > 0 && (
+                        <div className="partial-sum-card partial-sum-paid">
+                            <span className="pscard-label">Already Paid</span>
+                            <span className="pscard-val">{formatCurrency(alreadyPaid)}</span>
+                        </div>
+                    )}
+                    <div className="partial-sum-card partial-sum-balance">
+                        <span className="pscard-label">Balance Due</span>
+                        <span className="pscard-val pscard-balance">{formatCurrency(total - alreadyPaid)}</span>
+                    </div>
+                </div>
+
+                {/* Pay Now Input */}
+                <div className="partial-input-section">
+                    <label className="partial-input-label">How much to pay now?</label>
+                    <div className="partial-input-wrap">
+                        <span className="partial-rupee">₹</span>
+                        <input
+                            className="partial-amount-input"
+                            type="number"
+                            placeholder="0.00"
+                            value={paidAmt}
+                            onChange={e => setPaidAmt(e.target.value)}
+                            autoFocus
+                        />
+                    </div>
+
+                    {/* Live balance preview */}
+                    {payNow > 0 && (
+                        <div className="partial-live-preview">
+                            <span className="plp-label">Remaining after this payment</span>
+                            <span className={`plp-val ${balance === 0 ? 'plp-cleared' : ''}`}>
+                                {balance === 0 ? '✓ Fully Cleared' : formatCurrency(balance)}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Actions */}
+                <div className="partial-modal-actions">
+                    <button className="partial-cancel-btn" onClick={onClose}>Cancel</button>
+                    <button
+                        className="partial-save-btn"
+                        onClick={handleSave}
+                        disabled={!paidAmt || payNow <= 0}
+                    >
+                        <IndianRupee size={13} /> Record Payment
+                    </button>
+                </div>
+            </div>
+        </Dialog>
+    );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function DebtLedgerTab({ 
     debtSearch, 
     setDebtSearch, 
@@ -14,8 +118,26 @@ export default function DebtLedgerTab({
     onDebtStatusUpdate, 
     setDeleteConfirmDebt 
 }) {
+    const [partialItem, setPartialItem] = useState(null);
+
+    const handleStatusClick = (item, newStatus) => {
+        if (newStatus === 'PARTIAL') {
+            setPartialItem(item);
+        } else {
+            onDebtStatusUpdate(item, newStatus);
+        }
+    };
+
+    const handlePartialSave = (item, payNow) => {
+        const alreadyPaid = item.partial_amount || 0;
+        const newTotal    = alreadyPaid + payNow;
+        onDebtStatusUpdate(item, 'PARTIAL', newTotal);
+        setPartialItem(null);
+    };
+
     return (
         <div className="debt-ledger-viewport">
+            {/* ── Stats Row ── */}
             <div className="debt-stats-grid">
                 <div className="debt-stat-card card-red">
                     <div className="debt-stat-header">
@@ -40,76 +162,164 @@ export default function DebtLedgerTab({
                 </div>
             </div>
 
-            <div className="debt-filter-bar">
-                <div className="debt-search-wrap">
-                    <Search size={18} className="debt-search-icon" />
-                    <input
-                        className="filter-search-input debt-search-input"
-                        placeholder="Search by person or memo..."
-                        value={debtSearch}
-                        onChange={e => setDebtSearch(e.target.value)}
-                    />
-                </div>
-                <Select
-                    size="small"
-                    value={debtFilterType}
-                    onChange={e => setDebtFilterType(e.target.value)}
-                    className="debt-filter-select"
-                >
-                    <MenuItem value="ALL">ALL LEDGERS</MenuItem>
-                    <MenuItem value="RECEIVABLE">RECEIVABLES</MenuItem>
-                    <MenuItem value="LIABILITY">LIABILITIES</MenuItem>
-                </Select>
-            </div>
+            {/* ── Debt Cards ── */}
+            <div className="debt-cards-list">
+                {filteredDebt.length === 0 ? (
+                    <div className="ledger-empty-msg">No debt records found.</div>
+                ) : filteredDebt.map(item => {
+                    const isReceivable = item.direction === 'OWED_TO_ME';
+                    const statusClass  = item.status === 'SETTLED' ? 'ds-settled' : item.status === 'PARTIAL' ? 'ds-partial' : 'ds-active';
 
-            <div className="data-table-premium scroll-y-luxury">
-                <div className="date-group">
-                    <div className="date-header-luxury">
-                        <div className="flex-center-gap-1">
-                            <Handshake size={14} color="#1d1d1f" />
-                            <span className="ledger-portal-label">DEBT LEDGER</span>
-                        </div>
-                    </div>
-                    <div className="investment-items-luxury">
-                        {filteredDebt.map(item => (
-                            <div key={item._id} className="transaction-row-fancy debt-item-row">
-                                <div className={`debt-item-icon-box ${item.direction === 'OWED_TO_ME' ? 'bg-green-soft color-green' : 'bg-red-soft color-red'}`}>
-                                    {item.direction === 'OWED_TO_ME' ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                    return (
+                        <div key={item._id} className="acct-card-mobile">
+                            {/* TOP ROW */}
+                            <div className="acct-top-row">
+                                <div className={`account-icon-box ${isReceivable ? 'debt-icon-green' : 'debt-icon-red'}`}>
+                                    {isReceivable ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                                 </div>
-                                <div className="flex-1">
-                                    <div className="debt-item-name-row">
-                                        <Typography className="debt-person-name">{item.person}</Typography>
-                                        <Chip 
-                                            label={item.direction === 'OWED_TO_ME' ? 'RECEIVABLE' : 'LIABILITY'} 
-                                            size="small" 
-                                            className={`debt-type-chip ${item.direction === 'OWED_TO_ME' ? 'chip-green' : 'chip-red'}`} 
-                                        />
+                                <div className="acct-info">
+                                    <span className="account-main-name">{item.person}</span>
+                                    <div className="acct-badge-row">
+                                        <span className={`account-type-badge ${isReceivable ? 'debt-badge-green' : 'debt-badge-red'}`}>
+                                            {isReceivable ? 'RECEIVABLE' : 'LIABILITY'}
+                                        </span>
+                                        <span className={`debt-status-inline ${statusClass}`}>{item.status}</span>
                                     </div>
-                                    <Typography className="debt-item-desc">{item.description || 'No memo'}</Typography>
+                                    {item.description && (
+                                        <span className="debt-memo-text">{item.description}</span>
+                                    )}
                                 </div>
-                                <div className="debt-item-amt-col">
-                                    <Typography className="debt-item-amt">{formatCurrency(item.amount)}</Typography>
-                                    <Typography className="debt-item-date">{item.date}</Typography>
-                                </div>
-                                <div className="debt-item-actions">
-                                    <Select
-                                        size="small"
-                                        value={item.status}
-                                        onChange={(e) => onDebtStatusUpdate(item, e.target.value)}
-                                        className="debt-status-select"
-                                    >
-                                        <MenuItem value="ACTIVE">ACTIVE</MenuItem>
-                                        <MenuItem value="PARTIAL">PARTIAL</MenuItem>
-                                        <MenuItem value="SETTLED">SETTLED</MenuItem>
-                                    </Select>
-                                    <IconButton size="small" onClick={() => onEditDebt(item)} className="color-dark"><Replace size={16} /></IconButton>
-                                    <IconButton size="small" onClick={() => setDeleteConfirmDebt(item)} className="color-red"><Trash2 size={16} /></IconButton>
+                                <div className="acct-balance">
+                                    {item.partial_amount > 0 ? (
+                                        <>
+                                            {/* Show remaining balance as main value */}
+                                            <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
+                                                {formatCurrency(item.amount - item.partial_amount)}
+                                            </span>
+                                            <span className="account-avail-label" style={{ color: '#d97706' }}>
+                                                Paid {formatCurrency(item.partial_amount)}
+                                            </span>
+                                            <span className="account-avail-label">
+                                                of {formatCurrency(item.amount)}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
+                                            {formatCurrency(item.amount)}
+                                        </span>
+                                    )}
+                                    <span className="account-avail-label">{item.date}</span>
                                 </div>
                             </div>
-                        ))}
+
+                            {/* STATUS RADIO PILLS */}
+                            <div className="debt-radio-row">
+                                {STATUSES.map(s => (
+                                    <button
+                                        key={s.value}
+                                        className={`debt-radio-pill ${item.status === s.value ? 'dpill-active' : ''}`}
+                                        style={item.status === s.value ? { background: s.bg, color: s.color, borderColor: s.color } : {}}
+                                        onClick={() => handleStatusClick(item, s.value)}
+                                    >
+                                        <span className="dpill-dot" style={item.status === s.value ? { background: s.color } : {}} />
+                                        {s.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* BOTTOM ACTION STRIP */}
+                            <div className="acct-action-strip">
+                                <span className="debt-action-label">Actions</span>
+                                <div className="acct-icon-btns">
+                                    <IconButton size="small" onClick={() => onEditDebt(item)} className="bg-faint-grey">
+                                        <Replace size={13} />
+                                    </IconButton>
+                                    <IconButton size="small" onClick={() => setDeleteConfirmDebt(item)} className="bg-faint-red">
+                                        <Trash2 size={13} />
+                                    </IconButton>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* UNIFIED DEBT ACTIVITY LOG - SEPARATE CARD AT THE BOTTOM */}
+            <div className="spending-split-layout margin-t-1">
+                <div className="spending-main-content grid-col-all">
+                    <div className="ledger-activity-card">
+                        <div className="ledger-activity-header">
+                            <div className="ledger-activity-title">
+                                <History size={18} color="#d97706" />
+                                <span className="ledger-activity-text">CONSOLIDATED PARTIAL PAYMENTS</span>
+                            </div>
+                            <div className="ledger-activity-divider" />
+                            <span className="ledger-activity-meta">RECENT RECOVERIES & PAYMENTS</span>
+                        </div>
+
+                        <div className="flex-col-gap-02">
+                            {(() => {
+                                const unifiedHistory = [];
+                                (filteredDebt || []).forEach(item => {
+                                    if (item.payments && item.payments.length > 0) {
+                                        item.payments.forEach(p => {
+                                            unifiedHistory.push({ ...p, person: item.person, direction: item.direction });
+                                        });
+                                    }
+                                });
+                                unifiedHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                                if (unifiedHistory.length === 0) {
+                                    return (
+                                        <div className="ledger-empty-msg">
+                                            No partial payments recorded yet.
+                                        </div>
+                                    );
+                                }
+
+                                return unifiedHistory.map((p, idx) => {
+                                    const isReceivable = p.direction === 'OWED_TO_ME';
+                                    return (
+                                        <div key={idx} className="transaction-row-fancy ledger-activity-row">
+                                            <div className={`ledger-activity-icon-box ${isReceivable ? 'bg-green-soft' : 'bg-red-soft'}`}>
+                                                {isReceivable ? <TrendingUp size={16} color="#34c759" /> : <TrendingDown size={16} color="#ff3b30" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="ledger-activity-desc">{p.note || 'Partial Payment'}</div>
+                                                <div className="ledger-activity-meta-row">
+                                                    <span className="ledger-activity-date">{new Date(p.date).toLocaleDateString()}</span>
+                                                    <div className="ledger-activity-dot" />
+                                                    <span className="ledger-activity-to">PERSON: {p.person}</span>
+                                                    <div className="ledger-activity-dot" />
+                                                    <span className="ledger-activity-from">BALANCE: {p.balance === 0 ? 'Cleared' : `₹${p.balance?.toLocaleString('en-IN')}`}</span>
+                                                </div>
+                                            </div>
+                                            <div className="ledger-activity-actions">
+                                                <div className="text-right">
+                                                    <div className={`ledger-activity-amt ${isReceivable ? 'color-green' : 'color-red'}`}>
+                                                        {isReceivable ? '+' : '-'}₹{p.amount?.toLocaleString('en-IN')}
+                                                    </div>
+                                                    <div className="ledger-activity-type">
+                                                        {isReceivable ? 'Recovery' : 'Paid'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                });
+                            })()}
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* ── Partial Payment Modal ── */}
+            <PartialModal
+                item={partialItem}
+                open={!!partialItem}
+                onClose={() => setPartialItem(null)}
+                onSave={handlePartialSave}
+            />
         </div>
     );
 }

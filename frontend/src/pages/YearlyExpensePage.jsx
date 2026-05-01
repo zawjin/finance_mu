@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Replace, Trash2, Edit2, AlertCircle, Bookmark, ShieldAlert, Church, MonitorPlay, Activity, Wallet, CalendarDays, ArrowRightCircle, ArrowUpCircle, RotateCcw, ReceiptText, TrendingUp } from 'lucide-react';
 import BaseDialog from '../components/ui/BaseDialog';
-import { Box, Typography, Button, IconButton, Dialog, Grow, Table, TableBody, TableCell, TableHead, TableRow, Chip, Select, MenuItem, FormControl, Tab, Tabs, TextField, InputAdornment } from '@mui/material';
+import { Box, Typography, Button, IconButton, Dialog, Grow, Table, TableBody, TableCell, TableHead, TableRow, Chip, Select, MenuItem, FormControl, Tab, Tabs, TextField, InputAdornment, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
 import api from '../utils/api';
@@ -24,6 +24,7 @@ export default function YearlyExpensePage({ onEdit }) {
     const [topUpAmount, setTopUpAmount] = useState('');
     const [paySourceId, setPaySourceId] = useState('');
     const [payMethod, setPayMethod] = useState('BANK');
+    const [processing, setProcessing] = useState(false);
 
     const currentYear = new Date().getFullYear();
     const currentMonthPeriod = dayjs().format('YYYY-MM');
@@ -66,6 +67,7 @@ export default function YearlyExpensePage({ onEdit }) {
         const fund = investments?.find(i => i._id === paySourceId) || reserves?.find(r => r._id === paySourceId);
         if (!fund) return;
 
+        setProcessing(true);
         try {
             // Deduct balance
             if (fund.type) {
@@ -98,11 +100,16 @@ export default function YearlyExpensePage({ onEdit }) {
             dispatch(fetchFinanceData());
             setPayModalItem(null);
             setPaySourceId('');
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleUndoPay = async (item) => {
         if (!item) return;
+        setProcessing(true);
         try {
             if (item.frequency === 'MONTHLY') {
                 await api.put(`/yearly-expenses/${item._id}`, { ...item, last_paid_period: null });
@@ -111,7 +118,11 @@ export default function YearlyExpensePage({ onEdit }) {
             }
             dispatch(fetchFinanceData());
             setUndoConfirmItem(null);
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleTopUp = async () => {
@@ -119,6 +130,7 @@ export default function YearlyExpensePage({ onEdit }) {
         if (!amt || amt <= 0) return;
         const fund = investments?.find(i => i.name === 'Nippon india corparate bond');
         if (!fund) return;
+        setProcessing(true);
         try {
             await api.put(`/investments/${fund._id}`, { ...fund, value: (parseFloat(fund.value || 0) + amt) });
             
@@ -138,16 +150,25 @@ export default function YearlyExpensePage({ onEdit }) {
             dispatch(fetchFinanceData());
             setTopUpModal(false);
             setTopUpAmount('');
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
+        setProcessing(true);
         try {
             await api.delete(`/yearly-expenses/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
             setDeleteConfirmItem(null);
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const getIconForCategory = (category) => {
@@ -215,7 +236,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                 <Box className="stat-divider" />
                                 <Box className="flex-1">
                                     <Typography className="stat-mini-label">NEXT DUE</Typography>
-                                    <Typography className="stat-mini-value" sx={{ fontSize: '1rem !important' }}>
+                                    <Typography component="div" className="stat-mini-value" sx={{ fontSize: '1rem !important' }}>
                                         {upcomingYearly[0].due_month}
                                         <div style={{ fontSize: '0.6rem', opacity: 0.8, fontWeight: 700, marginTop: '-2px' }}>{upcomingYearly[0].name}</div>
                                     </Typography>
@@ -463,15 +484,16 @@ export default function YearlyExpensePage({ onEdit }) {
                         </FormControl>
 
                         <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setPayModalItem(null)} className="btn-abort-pill">CANCEL</Button>
+                            <Button fullWidth onClick={() => setPayModalItem(null)} disabled={processing} className="btn-abort-pill">CANCEL</Button>
                             <Button 
                                 fullWidth 
                                 variant="contained" 
                                 onClick={handleConfirmPay} 
-                                disabled={!paySourceId || (activeTab === 'YEARLY' && (investments?.find(i => i.name === 'Nippon india corparate bond')?.value || 0) < payModalItem.amount)} 
+                                disabled={processing || !paySourceId || (activeTab === 'YEARLY' && (investments?.find(i => i.name === 'Nippon india corparate bond')?.value || 0) < payModalItem.amount)} 
                                 className={`btn-confirm-pill ${activeTab === 'YEARLY' ? 'yearly' : 'monthly'}`}
+                                startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}
                             >
-                                CONFIRM
+                                {processing ? 'AUTHORIZING...' : 'CONFIRM'}
                             </Button>
                         </div>
                     </Box>
@@ -489,8 +511,17 @@ export default function YearlyExpensePage({ onEdit }) {
                     <Box className="dialog-content-premium">
                         <Typography className="dialog-desc-text">Are you sure you want to stop tracking <strong>{deleteConfirmItem.name}</strong>?</Typography>
                         <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-pill">CANCEL</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-delete-pill">DELETE</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} disabled={processing} className="btn-abort-pill">CANCEL</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemove}
+                                disabled={processing}
+                                className="btn-delete-pill"
+                                startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {processing ? 'DELETING...' : 'DELETE'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -510,8 +541,17 @@ export default function YearlyExpensePage({ onEdit }) {
                         </div>
                         <Typography className="dialog-desc-text">Undo recent payment for <strong>{undoConfirmItem.name}</strong>?</Typography>
                         <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setUndoConfirmItem(null)} className="btn-abort-pill">KEEP PAID</Button>
-                            <Button fullWidth variant="contained" onClick={() => handleUndoPay(undoConfirmItem)} className="btn-undo-pill">UNDO NOW</Button>
+                            <Button fullWidth onClick={() => setUndoConfirmItem(null)} disabled={processing} className="btn-abort-pill">KEEP PAID</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={() => handleUndoPay(undoConfirmItem)}
+                                disabled={processing}
+                                className="btn-undo-pill"
+                                startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {processing ? 'UNDOING...' : 'UNDO NOW'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -555,15 +595,16 @@ export default function YearlyExpensePage({ onEdit }) {
                                 />
 
                                 <div className="dialog-action-flex">
-                                    <Button fullWidth onClick={() => setTopUpModal(false)} className="btn-abort-pill">CANCEL</Button>
+                                    <Button fullWidth onClick={() => setTopUpModal(false)} disabled={processing} className="btn-abort-pill">CANCEL</Button>
                                     <Button 
                                         fullWidth 
                                         variant="contained" 
                                         onClick={handleTopUp} 
-                                        disabled={!topUpAmount || parseFloat(topUpAmount) <= 0}
+                                        disabled={processing || !topUpAmount || parseFloat(topUpAmount) <= 0}
                                         className="btn-add-fund-pill"
+                                        startIcon={processing ? <CircularProgress size={16} color="inherit" /> : null}
                                     >
-                                        ADD FUNDS
+                                        {processing ? 'ADDING...' : 'ADD FUNDS'}
                                     </Button>
                                 </div>
                             </>

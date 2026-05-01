@@ -55,100 +55,73 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                             <Skeleton variant="rectangular" width="100%" height={200} className="radius-28" />
                         ) : (
                             <div className="date-group date-group-bank-details">
-                                <div className="date-header-luxury">
-                                    <div className="flex-center-gap-1">
-                                        <Activity size={14} color="#1d1d1f" />
-                                        <span className="ledger-portal-label">ACCOUNT LEDGER PORTALS</span>
-                                    </div>
-                                </div>
+
                                 <div className="investment-items-luxury">
                                     {(reserves || []).map(r => {
                                         const style = getTypeStyle(r.account_type);
+                                        const getDueDiff = () => {
+                                            const rawDue = r.due_date;
+                                            if (!rawDue) return null;
+                                            const today = new Date().getDate();
+                                            const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
+                                            let diff = due - today;
+                                            if (diff < 0) {
+                                                const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+                                                diff = daysInMonth - today + due;
+                                            }
+                                            return diff;
+                                        };
+                                        const dueDiff = getDueDiff();
                                         return (
-                                            <div key={r._id} className="margin-b-15">
-                                                {/* Main Account Card */}
-                                                <div className="transaction-row-fancy account-card-glass">
+                                            <div key={r._id} className="acct-card-mobile">
+                                                {/* ── TOP ROW: icon · name · balance ── */}
+                                                <div className="acct-top-row">
                                                     <div className={`account-icon-box ${style.className}`}>
                                                         {style.icon}
                                                     </div>
-                                                    <div className="flex-1">
-                                                        <div className={`account-name-row ${r.account_type === 'CREDIT_CARD' ? 'margin-b-02' : 'margin-b-0'}`}>
-                                                            <span className="account-main-name">{r.account_name}</span>
-                                                            <div className="flex-gap-04">
-                                                                <span className={`account-type-badge ${style.className}`}>{r.account_type}</span>
-                                                                {r.account_type === 'CREDIT_CARD' && (
-                                                                    <div className={`due-date-badge ${(() => {
-                                                                        const rawDue = r.due_date;
-                                                                        if (!rawDue) return 'due-faint';
-                                                                        const today = new Date().getDate();
-                                                                        const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
-                                                                        let diff = due - today;
-                                                                        if (diff < 0) {
-                                                                            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-                                                                            diff = daysInMonth - today + due;
-                                                                        }
-                                                                        return diff <= 5 ? 'due-urgent' : 'due-normal';
-                                                                    })()}`}>
-                                                                        <Calendar size={11} fill="currentColor" opacity={0.4} />
-                                                                        {(() => {
-                                                                            const rawDue = r.due_date;
-                                                                            if (!rawDue) return 'SET DUE DATE';
-                                                                            const today = new Date().getDate();
-                                                                            const due = typeof rawDue === 'string' ? parseInt(rawDue) : rawDue;
-                                                                            let diff = due - today;
-                                                                            if (diff < 0) {
-                                                                                const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-                                                                                diff = daysInMonth - today + due;
-                                                                            }
-                                                                            return diff === 0 ? 'Deduct Today' : `${diff} DAYS LEFT`;
-                                                                        })()}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* PROGRESS BAR */}
-                                                        {r.account_type === 'CREDIT_CARD' && (r.credit_limit || 0) > 0 && (
-                                                            <div className="account-progress-track">
-                                                                <div
-                                                                    className="account-progress-fill"
-                                                                    style={{
-                                                                        width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`,
-                                                                        backgroundColor: (r.balance / r.credit_limit) > 0.7 ? '#ff3b30' : '#6366f1'
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="account-actions-col">
-                                                        <div className="account-val-stack">
-                                                            <Typography className="account-main-val">{formatCurrency(r.balance)}</Typography>
-                                                            {r.account_type === 'CREDIT_CARD' && (
-                                                                <span className="account-avail-label">
-                                                                    AVAIL: {formatCurrency((r.credit_limit || 0) - (r.balance || 0))}
+                                                    <div className="acct-info">
+                                                        <span className="account-main-name">{r.account_name}</span>
+                                                        <div className="acct-badge-row">
+                                                            <span className={`account-type-badge ${style.className}`}>{r.account_type.replace('_', ' ')}</span>
+                                                            {r.account_type === 'CREDIT_CARD' && dueDiff !== null && (
+                                                                <span className={`due-date-badge ${dueDiff <= 5 ? 'due-urgent' : 'due-normal'}`}>
+                                                                    <Calendar size={10} />
+                                                                    {dueDiff === 0 ? 'Due Today' : `${dueDiff}d left`}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="flex-gap-05">
-                                                            {r.account_type === 'CREDIT_CARD' ? (
-                                                                <Button
-                                                                    size="small" variant="contained"
-                                                                    onClick={() => onPayBill(r)}
-                                                                    startIcon={<CreditCard size={14} />}
-                                                                    className="btn-pay-bill-small"
-                                                                >PAY BILL</Button>
-                                                            ) : (
-                                                                <Button
-                                                                    size="small" variant="contained"
-                                                                    onClick={() => onAddFunds(r)}
-                                                                    startIcon={<Plus size={14} />}
-                                                                    className="btn-add-money-small"
-                                                                >ADD MONEY</Button>
-                                                            )}
-                                                            <IconButton size="small" onClick={() => onEdit(r)} className="bg-faint-grey"><Edit2 size={13} /></IconButton>
-                                                            <IconButton size="small" onClick={() => onDelete(r)} className="bg-faint-red"><Trash2 size={13} /></IconButton>
-                                                        </div>
+                                                    </div>
+                                                    <div className="acct-balance">
+                                                        <span className="account-main-val">{formatCurrency(r.balance)}</span>
+                                                        {r.account_type === 'CREDIT_CARD' && (
+                                                            <span className="account-avail-label">Avail {formatCurrency((r.credit_limit || 0) - (r.balance || 0))}</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Credit progress bar */}
+                                                {r.account_type === 'CREDIT_CARD' && (r.credit_limit || 0) > 0 && (
+                                                    <div className="account-progress-track">
+                                                        <div
+                                                            className="account-progress-fill"
+                                                            style={{
+                                                                width: `${Math.min(100, (r.balance / r.credit_limit) * 100)}%`,
+                                                                backgroundColor: (r.balance / r.credit_limit) > 0.7 ? '#ef4444' : '#6366f1'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* ── BOTTOM ACTION STRIP ── */}
+                                                <div className="acct-action-strip">
+                                                    {r.account_type === 'CREDIT_CARD' ? (
+                                                        <Button size="small" variant="contained" onClick={() => onPayBill(r)} startIcon={<CreditCard size={13} />} className="btn-pay-bill-small">Pay Bill</Button>
+                                                    ) : (
+                                                        <Button size="small" variant="contained" onClick={() => onAddFunds(r)} startIcon={<Plus size={13} />} className="btn-add-money-small">Add Money</Button>
+                                                    )}
+                                                    <div className="acct-icon-btns">
+                                                        <IconButton size="small" onClick={() => onEdit(r)} className="bg-faint-grey"><Edit2 size={13} /></IconButton>
+                                                        <IconButton size="small" onClick={() => onDelete(r)} className="bg-faint-red"><Trash2 size={13} /></IconButton>
                                                     </div>
                                                 </div>
                                             </div>

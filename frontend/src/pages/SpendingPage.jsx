@@ -15,7 +15,7 @@ import Loader from '../components/ui/Loader';
 import Modal from '../components/ui/Modal';
 import BaseDialog from '../components/ui/BaseDialog';
 import './SpendingPage.scss';
-import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField } from '@mui/material';
+import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField, CircularProgress } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 
@@ -36,7 +36,7 @@ const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }
     const startOfMonth = viewDate.startOf('month');
     const daysInMonth = viewDate.daysInMonth();
     const startDay = startOfMonth.day();
-    
+
     const days = [];
     for (let i = 0; i < startDay; i++) days.push(null);
     for (let i = 1; i <= daysInMonth; i++) {
@@ -66,8 +66,8 @@ const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }
     const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
 
     return (
-        <Dialog 
-            open={open} 
+        <Dialog
+            open={open}
             onClose={onClose}
             fullWidth
             maxWidth={false}
@@ -98,7 +98,7 @@ const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }
                     </div>
 
                     <div className="mui-calendar-weekdays">
-                        {['S','M','T','W','T','F','S'].map((w,i) => <span key={i}>{w}</span>)}
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((w, i) => <span key={i}>{w}</span>)}
                     </div>
 
                     <div className="mui-calendar-grid">
@@ -107,8 +107,8 @@ const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }
                             const end = isEnd(d);
                             const middle = isInRange(d);
                             return (
-                                <div 
-                                    key={i} 
+                                <div
+                                    key={i}
                                     className={`mui-cal-day ${!d ? 'empty' : ''} ${start ? 'is-start' : ''} ${end ? 'is-end' : ''} ${middle ? 'is-middle' : ''}`}
                                     onClick={() => handleDayClick(d)}
                                 >
@@ -125,7 +125,7 @@ const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }
 
                 <div className="mui-range-actions">
                     <Button onClick={onClose} color="inherit">Cancel</Button>
-                    <Button 
+                    <Button
                         onClick={() => onConfirm(tempRange)}
                         disabled={!tempRange.start || !tempRange.end}
                         color="primary"
@@ -161,6 +161,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [refreshing, setRefreshing] = useState(false);
     const [showAndroidRange, setShowAndroidRange] = useState(false);
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
+    const [purging, setPurging] = useState(false);
 
     const handlePullToRefresh = async () => {
         setRefreshing(true);
@@ -214,6 +215,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
+        setPurging(true);
         try {
             await api.delete(`/spending/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
@@ -221,6 +223,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         } catch (err) {
             console.error(err);
             alert("Purge failed.");
+        } finally {
+            setPurging(false);
         }
     };
 
@@ -378,7 +382,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-            <AndroidRangeModal 
+            <AndroidRangeModal
                 open={showAndroidRange}
                 onClose={() => setShowAndroidRange(false)}
                 tempRange={tempRange}
@@ -513,8 +517,17 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         </div>
 
                         <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-action">ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-confirm-purge">PROCEED PURGE</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} disabled={purging} className="btn-abort-action">ABORT</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemove}
+                                disabled={purging}
+                                className="btn-confirm-purge"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'PURGING...' : 'PROCEED PURGE'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -580,9 +593,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             }}
                                             onClick={() => { setSelectedCat(cat); setSelectedSub('ALL'); }}
                                         >
-                                            {getIcon(cat, categories, { 
-                                                size: 20, 
-                                                color: selectedCat === cat ? 'white' : style.color, 
+                                            {getIcon(cat, categories, {
+                                                size: 20,
+                                                color: selectedCat === cat ? 'white' : style.color,
                                                 fill: 'none',
                                                 strokeWidth: 2.4
                                             })}
@@ -626,7 +639,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 {/* Pull to Refresh Indicator */}
                 <AnimatePresence>
                     {refreshing && (
-                        <motion.div 
+                        <motion.div
                             initial={{ y: -50, opacity: 0 }}
                             animate={{ y: 20, opacity: 1 }}
                             exit={{ y: -50, opacity: 0 }}
@@ -638,7 +651,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     )}
                 </AnimatePresence>
 
-                <div 
+                <div
                     className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}
                     onTouchStart={e => {
                         touchStartRef.current = e.touches[0].clientY;
@@ -683,13 +696,13 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                             .map(c => {
                                                 const style = getCatStyle(c.name, categories);
                                                 return (
-                                                    <div 
-                                                        key={c.name} 
-                                                        className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`} 
-                                                        onClick={(e) => { 
+                                                    <div
+                                                        key={c.name}
+                                                        className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`}
+                                                        onClick={(e) => {
                                                             e.stopPropagation(); // Prevent bubbling that might close sidebar
-                                                            setSelectedCat(c.name); 
-                                                            setSelectedSub('ALL'); 
+                                                            setSelectedCat(c.name);
+                                                            setSelectedSub('ALL');
                                                         }}
                                                     >
                                                         <span className="th-icon">
@@ -720,9 +733,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
                                     { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
                                 ].map(p => (
-                                    <div 
-                                        key={p.id} 
-                                        className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} 
+                                    <div
+                                        key={p.id}
+                                        className={`unified-filter-btn ${period === p.id ? 'active' : ''}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setPeriod(p.id);
@@ -737,13 +750,13 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         {period === 'CUSTOM' && (
                             <div className="filter-section-block margin-t-1-5" onClick={(e) => e.stopPropagation()}>
                                 <div className="filter-section-label"><CalendarDays size={13} /><span>SELECT AUDIT RANGE</span></div>
-                                <div 
+                                <div
                                     className="mui-range-trigger"
                                     onClick={() => setShowAndroidRange(true)}
                                 >
                                     <div className="trigger-icon"><Calendar size={18} /></div>
                                     <div className="trigger-text">
-                                        {dateRange.start && dateRange.end 
+                                        {dateRange.start && dateRange.end
                                             ? `${dayjs(dateRange.start).format('MMM D')} — ${dayjs(dateRange.end).format('MMM D, YYYY')}`
                                             : (dateRange.start ? `From ${dayjs(dateRange.start).format('MMM D')}...` : 'Select Date Range')}
                                     </div>

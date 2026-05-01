@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Replace, Trash2, Edit2, AlertCircle, Banknote, Wallet, ArrowRightLeft, History, PieChart, Activity, Briefcase, TrendingUp, TrendingDown, Landmark, Receipt, FileText, BarChart3, Handshake, Calendar, CheckCircle2, ArrowRight, Sigma, Sparkles, ShieldCheck } from 'lucide-react';
 import BaseDialog from '../components/ui/BaseDialog';
-import { Box, Typography, Button, IconButton, Dialog, Grow, Stack, TextField, InputAdornment, LinearProgress, Skeleton, Grid } from '@mui/material';
+import { Box, Typography, Button, IconButton, Dialog, Grow, Stack, TextField, InputAdornment, LinearProgress, Skeleton, Grid, CircularProgress } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 import { formatCurrency } from '../utils/formatters';
@@ -53,6 +53,9 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
     const [settlementDate, setSettlementDate] = React.useState(dayjs().format('YYYY-MM-DD'));
     const [settling, setSettling] = React.useState(false);
     const [settlementAmount, setSettlementAmount] = React.useState('');
+    const [purging, setPurging] = React.useState(false);
+    const [reverting, setReverting] = React.useState(false);
+    const [updatingStatus, setUpdatingStatus] = React.useState(false);
 
     React.useEffect(() => {
         if (settlementItem) {
@@ -64,6 +67,7 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
 
 
     const handleRevertSettlement = async (item) => {
+        setReverting(true);
         try {
             // Updated logic: DO NOT DELETE THE LOGS.
             // We only reset the status to ACTIVE to allow for re-settling.
@@ -85,6 +89,8 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
         } catch (error) {
             console.error('Revert failed:', error);
             alert('Revert operation failed.');
+        } finally {
+            setReverting(false);
         }
     };
 
@@ -226,6 +232,7 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
+        setPurging(true);
         try {
             await api.delete(`/reserves/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
@@ -233,17 +240,22 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
         } catch (err) {
             console.error(err);
             alert("Removal failed.");
+        } finally {
+            setPurging(false);
         }
     };
 
     const handleRemoveLending = async () => {
         if (!deleteConfirmLending) return;
+        setPurging(true);
         try {
             await api.delete(`/private-lending/${deleteConfirmLending._id}`);
             dispatch(fetchFinanceData());
             setDeleteConfirmLending(null);
         } catch (err) {
             console.error(err);
+        } finally {
+            setPurging(false);
         }
     };
 
@@ -258,23 +270,33 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
         }
     };
 
-    const handleDebtStatusUpdate = async (item, newStatus) => {
+    const handleDebtStatusUpdate = async (item, newStatus, partialAmount) => {
+        setUpdatingStatus(true);
         try {
-            await api.put(`/debt/${item._id}`, { ...item, status: newStatus });
+            const payload = { ...item, status: newStatus };
+            if (newStatus === 'PARTIAL' && partialAmount !== undefined) {
+                payload.partial_amount = partialAmount;
+            }
+            await api.put(`/debt/${item._id}`, payload);
             dispatch(fetchFinanceData());
         } catch (err) {
             console.error(err);
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
     const handleRemoveDebt = async () => {
         if (!deleteConfirmDebt) return;
+        setPurging(true);
         try {
             await api.delete(`/debt/${deleteConfirmDebt._id}`);
             dispatch(fetchFinanceData());
             setDeleteConfirmDebt(null);
         } catch (err) {
             console.error(err);
+        } finally {
+            setPurging(false);
         }
     };
 
@@ -304,8 +326,17 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
                     <Box className="dialog-content-premium text-center">
                         <Typography className="dialog-desc-text">Remove {deleteConfirmItem.account_name} from tracking?</Typography>
                         <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-pill">ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-delete-pill">DELETE</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} disabled={purging} className="btn-abort-pill">ABORT</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemove}
+                                disabled={purging}
+                                className="btn-delete-pill"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'DELETING...' : 'DELETE'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -404,8 +435,17 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
                         </div>
                         <Typography className="dialog-title-purge">PURGE DEBT LOG</Typography>
                         <div className="dialog-action-flex margin-t-2">
-                            <Button fullWidth onClick={() => setDeleteConfirmDebt(null)} className="btn-purge-abort">ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemoveDebt} className="btn-purge-confirm">PROCEED</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmDebt(null)} disabled={purging} className="btn-purge-abort">ABORT</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemoveDebt}
+                                disabled={purging}
+                                className="btn-purge-confirm"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'PURGING...' : 'PROCEED'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -420,8 +460,17 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
                         <Typography className="dialog-title-purge">DELETE LENDING RECORD</Typography>
                         <Typography className="dialog-desc-purge">This will permanently remove the record for {deleteConfirmLending.borrower}.</Typography>
                         <div className="dialog-action-flex margin-t-2">
-                            <Button fullWidth onClick={() => setDeleteConfirmLending(null)} className="btn-purge-abort">CANCEL</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemoveLending} className="btn-purge-confirm">DELETE</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmLending(null)} disabled={purging} className="btn-purge-abort">CANCEL</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemoveLending}
+                                disabled={purging}
+                                className="btn-purge-confirm"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'DELETING...' : 'DELETE'}
+                            </Button>
                         </div>
                     </Box>
                 )}

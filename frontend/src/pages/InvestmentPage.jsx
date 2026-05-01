@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
 import Modal from '../components/ui/Modal';
 import BaseDialog from '../components/ui/BaseDialog';
-import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper, Stack } from '@mui/material';
+import { Skeleton, Box, Button, Typography, IconButton, Dialog, Grow, Grid, Paper, Stack, CircularProgress } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
 import { getIcon, IconMap } from '../utils/iconMap';
@@ -205,6 +205,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [showAndroidRange, setShowAndroidRange] = useState(false);
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
+    const [purging, setPurging] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     const handleManualSync = async () => {
         setSyncingPrices(true);
@@ -220,6 +222,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
     const handleToggleStatus = async (item) => {
         const newStatus = item.status === 'COLLECTED' ? 'ACTIVE' : 'COLLECTED';
+        setUpdatingStatus(true);
         try {
             // We need to send the full item with the updated status
             const updated = { ...item, status: newStatus };
@@ -227,11 +230,14 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             dispatch(fetchFinanceData());
         } catch (err) {
             console.error(err);
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
+        setPurging(true);
         try {
             await api.delete(`/investments/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
@@ -239,6 +245,8 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         } catch (err) {
             console.error(err);
             alert("Purge failed. Cloud link unstable.");
+        } finally {
+            setPurging(false);
         }
     };
 
@@ -658,9 +666,18 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         <Typography className="dialog-desc-audit">
                             Permanently remove <strong className="text-dark">{deleteConfirmItem.name}</strong> from the portfolio?
                         </Typography>
-                        <div className="dialog-action-flex">
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-abort-action">ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-confirm-purge">PROCEED</Button>
+                        <div className="day-totals-flex">
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} disabled={purging} className="btn-purge-abort">ABORT</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemove}
+                                disabled={purging}
+                                className="btn-purge-confirm"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'PURGING...' : 'PROCEED'}
+                            </Button>
                         </div>
                     </Box>
                 )}
@@ -694,18 +711,6 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     </div>
                 </div>
 
-                <div className="intelligence-toggle-card glass-effect" onClick={onToggleAnalytics}>
-                    <div className="itc-left">
-                        <div className="itc-icon"><Sparkles size={20} color="#f97316" /></div>
-                        <div className="itc-info">
-                            <div className="itc-label">NEURAL DASHBOARD</div>
-                            <div className="itc-sub">Toggle Rebalancing & Passive Projections</div>
-                        </div>
-                    </div>
-                    <div className={`itc-status-chip ${showAnalytics ? 'active' : ''}`}>
-                        {showAnalytics ? 'LIVE' : 'OPEN'}
-                    </div>
-                </div>
             </div>
 
             {/* CATEGORY SUMMARY PILLS - ORIGINAL LARGE DESIGN RESTORED */}
@@ -960,13 +965,13 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                         </div>
                                         <div className="row-action-cluster">
                                             {normalizedType === 'Chit Fund' && (
-                                                <IconButton 
-                                                    size="small" 
-                                                    onClick={() => handleToggleStatus(s)} 
-                                                    sx={{ color: s.status === 'COLLECTED' ? '#10b981' : '#86868b' }}
-                                                    title={s.status === 'COLLECTED' ? "Mark as Active" : "Mark as Collected"}
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleToggleStatus(s)}
+                                                    disabled={updatingStatus}
+                                                    className={`btn-action-status ${s.status === 'COLLECTED' ? 'collected' : ''}`}
                                                 >
-                                                    <CheckCircle2 size={12} />
+                                                    {updatingStatus ? <CircularProgress size={16} color="inherit" /> : <CheckCircle2 size={16} />}
                                                 </IconButton>
                                             )}
                                             <IconButton size="small" onClick={() => onEdit(s)} sx={{ color: '#6366f1' }}><Edit2 size={12} /></IconButton>

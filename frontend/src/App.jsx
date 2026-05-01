@@ -43,6 +43,7 @@ import SettleCardTermForm from './components/ui/SettleCardTermForm';
 import TransferFundsForm from './components/ui/TransferFundsForm';
 import AddFundsForm from './components/ui/AddFundsForm';
 import AiAnalysisModal from './components/ui/AiAnalysisModal';
+import Loader from './components/ui/Loader';
 
 const appleTheme = createTheme({
     typography: {
@@ -387,16 +388,6 @@ export default function App() {
         return 'SYNC';
     };
 
-    if (token && !user) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', gap: '20px' }}>
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                    <Activity size={40} color="#0071e3" />
-                </motion.div>
-                <Typography sx={{ fontWeight: 800, color: '#1d1d1f', letterSpacing: '-0.02em' }}>Initializing Secure Session...</Typography>
-            </div>
-        );
-    }
 
     return (
         <ThemeProvider theme={appleTheme}>
@@ -525,7 +516,7 @@ export default function App() {
                             <BaseDialog
                                 open={!!settlingTerm}
                                 onClose={handleCloseModal}
-                                title=""
+                                title="Settle Outstanding Term"
                                 maxWidth="xs"
                             >
                                 {settlingTerm && (
@@ -543,7 +534,7 @@ export default function App() {
                             <BaseDialog
                                 open={showTransferModal}
                                 onClose={handleCloseModal}
-                                title=""
+                                title="Bill Pay"
                                 maxWidth="xs"
                             >
                                 <TransferFundsForm reserves={reserves} onSubmit={handleTransferSubmit} onCancel={handleCloseModal} />
@@ -552,7 +543,7 @@ export default function App() {
                             <BaseDialog
                                 open={!!addingFundsTo}
                                 onClose={handleCloseModal}
-                                title=""
+                                title="Add Liquidity"
                                 maxWidth="xs"
                             >
                                 {addingFundsTo && <AddFundsForm account={addingFundsTo} onSubmit={handleAddFundsSubmit} onCancel={handleCloseModal} />}

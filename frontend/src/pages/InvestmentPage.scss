@@ -379,8 +379,8 @@
     gap: 1.5rem;
     border: 1px solid rgba(99, 102, 241, 0.08);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    flex: 2;
-    min-width: 320px;
+    flex: 1;
+    width: 100%;
 
     .summary-card-left {
         flex-shrink: 0;
@@ -1366,47 +1366,76 @@
         color: #1d1d1f !important;
     }
 
-    // Transaction rows: native layout
+    // Transaction rows: native layout (Small & Cute Overhaul)
     .transaction-row-fancy {
-        padding: 0.8rem 1rem !important;
-        gap: 0.65rem !important;
+        padding: 0.65rem 0.85rem !important; // Tighter, cuter padding
+        gap: 0.6rem !important;
         flex-wrap: nowrap !important;
         flex-direction: row !important;
-        align-items: flex-start !important; // Changed to flex-start so content can wrap vertically
+        align-items: center !important; // Center items vertically
+        border-radius: 14px !important; // Cuter rounding
+        margin-bottom: 0.5rem !important; // Smaller gaps between rows
+        background: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
     }
 
     .pill-icon-box {
-        width: 36px !important;
-        height: 36px !important;
-        border-radius: 10px !important;
+        width: 34px !important; // Slightly smaller, cuter size
+        height: 34px !important;
+        border-radius: 9px !important;
         flex-shrink: 0 !important;
-        margin-top: 2px !important; // Adjust for flex-start alignment
+        margin-top: 0 !important; // Reset for center alignment
 
         svg {
-            width: 16px !important;
-            height: 16px !important;
+            width: 15px !important;
+            height: 15px !important;
         }
     }
 
     .asset-header-flex {
         display: flex;
-        align-items: flex-start;
-        flex-wrap: wrap; // Allow wrapping so name and badge don't collide
-        gap: 4px;
-        margin-bottom: 2px;
+        align-items: center;
+        flex-wrap: nowrap !important; // Keep on one line if possible
+        gap: 0.35rem;
+        margin-bottom: 1px;
     }
 
     .asset-name-text {
-        font-size: 0.8rem !important;
-        word-wrap: break-word !important;
+        font-size: 0.78rem !important;
+        font-weight: 800 !important;
+        color: #1e293b !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .asset-ticker-tag {
+        font-size: 0.5rem !important;
+        padding: 1px 4px !important;
+        border-radius: 4px !important;
+        background: rgba(0, 0, 0, 0.04) !important;
+        color: #64748b !important;
+        font-weight: 900 !important;
+    }
+
+    .collected-badge {
+        font-size: 0.45rem !important;
+        padding: 1px 4px !important;
+        border-radius: 4px !important;
+        background: rgba(16, 185, 129, 0.1) !important;
+        color: #10b981 !important;
     }
 
     .asset-meta-flex {
-        font-size: 0.55rem !important;
-        flex-wrap: wrap !important;
-        white-space: normal !important;
-        gap: 0.3rem !important;
-        line-height: 1.4 !important;
+        font-size: 0.52rem !important; // Micro font for metadata
+        font-weight: 700 !important;
+        color: #94a3b8 !important;
+        flex-wrap: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        gap: 0.25rem !important;
+        line-height: 1.1 !important;
     }
 
     .tx-category-col {
@@ -1422,20 +1451,33 @@
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-end !important;
-        gap: 1px !important;
+        gap: 0 !important;
         border-top: none !important;
         padding-top: 0 !important;
         position: static !important;
     }
 
     .tx-val-main {
-        font-size: 0.85rem !important;
+        font-size: 0.82rem !important; // Perfectly crisp size
         font-weight: 900 !important;
+        color: #0f172a !important;
     }
 
     .tx-cost-label {
-        font-size: 0.55rem !important;
+        font-size: 0.5rem !important;
         font-weight: 800 !important;
+        color: #94a3b8 !important;
+    }
+
+    .asset-pnl-indicator {
+        font-size: 0.48rem !important;
+        font-weight: 900 !important;
+        padding: 1px 4px !important;
+        border-radius: 4px !important;
+        margin-top: 2px !important;
+        
+        &.positive { background: rgba(52, 199, 89, 0.08) !important; color: #34c759 !important; }
+        &.negative { background: rgba(255, 59, 48, 0.08) !important; color: #ff3b30 !important; }
     }
 
     // Action buttons: stay inline
@@ -1726,75 +1768,4 @@
     font-size: 0.85rem;
     font-weight: 900;
     color: #1d1d1f;
-}
-/* INTELLIGENCE TOGGLE CARD */
-.intelligence-toggle-card {
-    flex: 1;
-    min-width: 280px;
-    padding: 1.25rem 1.5rem;
-    border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-
-    &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.05);
-        border-color: #f9731630;
-    }
-
-    &.glass-effect {
-        background: rgba(255, 255, 255, 0.8) !important;
-        backdrop-filter: blur(12px);
-    }
-
-    .itc-left {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-    }
-
-    .itc-icon {
-        width: 48px;
-        height: 48px;
-        background: #fff7ed;
-        border-radius: 16px;
-        display: grid;
-        place-items: center;
-    }
-
-    .itc-label {
-        font-size: 0.85rem;
-        font-weight: 900;
-        color: #1d1d1f;
-        letter-spacing: 0.02em;
-    }
-
-    .itc-sub {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #86868b;
-        margin-top: 2px;
-    }
-
-    .itc-status-chip {
-        padding: 6px 12px;
-        border-radius: 100px;
-        font-size: 0.65rem;
-        font-weight: 900;
-        background: #f4f4f7;
-        color: #86868b;
-        transition: all 0.3s ease;
-
-        &.active {
-            background: #f9731615;
-            color: #f97316;
-            box-shadow: 0 0 15px #f9731620;
-        }
-    }
 }

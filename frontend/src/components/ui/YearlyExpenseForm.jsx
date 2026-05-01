@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment } from '@mui/material';
-import { Bookmark, DollarSign, CalendarDays, Wallet, Tag, Layers, Activity, FileText } from 'lucide-react';
-import { Stack } from '@mui/material';
+import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment, Stack, CircularProgress } from '@mui/material';
+import { Tag, Layers, CalendarDays, Wallet } from 'lucide-react';
 import './Forms.scss';
 
 export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
+    const [loading, setLoading] = useState(false);
     const { investments, reserves, categories: allCategories } = useSelector(state => state.finance);
 
     const categories = useMemo(() => {
@@ -51,13 +51,20 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
         }
     }, [initialData]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit({
-            ...formData,
-            name: formData.sub_category, // Use Sub-Category as Bill Name
-            amount: parseFloat(formData.amount)
-        });
+    const handleSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        setLoading(true);
+        try {
+            await onSubmit({
+                ...formData,
+                name: formData.sub_category, // Use Sub-Category as Bill Name
+                amount: parseFloat(formData.amount)
+            });
+        } catch (err) {
+            console.error("Submission error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -138,8 +145,14 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                     <Button onClick={onCancel} className="btn-dismiss-premium">
                         CANCEL
                     </Button>
-                    <Button type="submit" variant="contained" className="btn-submit-premium">
-                        {initialData ? 'UPDATE EXTRACT' : 'REGISTER EXPENSE'}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={loading}
+                        className="btn-submit-premium"
+                        startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
+                    >
+                        {loading ? 'SAVING...' : (initialData ? 'UPDATE EXTRACT' : 'REGISTER EXPENSE')}
                     </Button>
                 </Box>
             </Stack>

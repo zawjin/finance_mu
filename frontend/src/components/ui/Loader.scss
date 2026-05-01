@@ -1,0 +1,129 @@
+.salf-loader-root {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a14;
+    overflow: hidden;
+}
+
+/* ── orbs ── */
+.sl-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+}
+
+.sl-orb-blue {
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, #00AEEF 0%, #0080c0 50%, transparent 100%);
+    top: -120px;
+    left: -80px;
+}
+
+.sl-orb-purple {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, #A855F7 0%, #7c3aed 50%, transparent 100%);
+    bottom: -100px;
+    right: -60px;
+}
+
+.sl-orb-green {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #10B981 0%, #059669 50%, transparent 100%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sl-mesh {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at center, rgba(10,10,20,0.3) 0%, rgba(10,10,20,0.88) 70%);
+}
+
+/* ── content ── */
+.sl-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+/* ── logo ── */
+.sl-logo {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sl-letter-box {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(255,255,255,0.08) inset;
+
+    span {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.4rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 1;
+    }
+}
+
+/* ── tagline ── */
+.sl-tagline {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* ── dots ── */
+.sl-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sl-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* ── progress rail ── */
+.sl-rail {
+    width: 180px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    margin-top: -8px;
+}
+
+.sl-rail-fill {
+    width: 80px;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #A855F7, #00AEEF, transparent);
+}

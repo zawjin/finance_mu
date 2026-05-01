@@ -1,155 +1,324 @@
-.login-page-root {
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
+
+/* ===== ROOT LAYOUT ===== */
+.android-login-root {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f2f5;
+    flex-direction: column;
     position: relative;
-    padding: 24px;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+    background: #0a0a14;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.android-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     overflow: hidden;
 }
 
-.login-mesh-bg {
+.orb {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 10% 20%, rgba(0, 113, 227, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
-    z-index: 1;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
 }
 
-.login-glass-card {
+.orb-blue {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, #00AEEF 0%, #0080c0 60%, transparent 100%);
+    top: -80px;
+    left: -80px;
+}
+
+.orb-purple {
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, #A855F7 0%, #7c3aed 60%, transparent 100%);
+    top: 40px;
+    right: -60px;
+}
+
+.orb-green {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, #10B981 0%, #059669 60%, transparent 100%);
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mesh-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at top, rgba(10, 10, 20, 0.2) 0%, rgba(10, 10, 20, 0.7) 60%),
+        linear-gradient(180deg, rgba(10, 10, 20, 0) 0%, rgba(10, 10, 20, 0.95) 55%);
+}
+
+/* ===== HERO TOP SECTION ===== */
+.android-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
     position: relative;
     z-index: 2;
-    width: 100%;
-    max-width: 440px;
-    background: #ffffff;
-    border-radius: 32px;
-    padding: 3.5rem 3rem;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-
-    @media (max-width: 576px) {
-        padding: 2.5rem 1.5rem;
-        border-radius: 24px;
-    }
+    padding: 60px 24px 32px;
 }
 
-.login-card-header {
+.hero-text-block {
     text-align: center;
-    margin-bottom: 2.5rem;
 }
 
-.sal-logo-modern {
-    font-size: 2.5rem;
+.hero-title {
+    font-size: 2rem;
     font-weight: 900;
-    color: #1d1d1f;
-    letter-spacing: -0.05em;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #1d1d1f 0%, #424245 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+    margin: 0 0 6px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
-.login-welcome {
-    font-size: 1.5rem !important;
-    font-weight: 900 !important;
-    color: #1d1d1f !important;
-    letter-spacing: -0.03em !important;
+.hero-sub {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    letter-spacing: 0.02em;
 }
 
-.login-subtitle {
-    font-size: 0.85rem !important;
-    color: #86868b !important;
-    font-weight: 600 !important;
-    margin-top: 4px !important;
+/* ===== BOTTOM SHEET ===== */
+.android-bottom-sheet {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px 32px 0 0;
+    padding: 16px 24px 40px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+
+    /* On desktop, show as centered card */
+    @media (min-width: 600px) {
+        position: fixed;
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        border-radius: 32px;
+        padding: 32px;
+        max-width: 440px;
+    }
 }
 
-.login-form-body {
+.sheet-handle {
+    width: 44px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 auto 24px;
+
+    @media (min-width: 600px) {
+        display: none;
+    }
+}
+
+.sheet-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.sheet-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(0, 174, 239, 0.3));
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.sheet-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 2px;
+    letter-spacing: -0.03em;
+}
+
+.sheet-sub {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+}
+
+/* ===== FORM ===== */
+.android-form {
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 16px;
 }
 
-.login-alert-premium {
-    border-radius: 14px !important;
+.android-alert {
+    border-radius: 16px !important;
     font-weight: 700 !important;
-    font-size: 0.8rem !important;
-    margin-bottom: 1rem;
-    border: 1px solid rgba(239, 68, 68, 0.1);
+    font-size: 0.82rem !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    backdrop-filter: blur(8px);
+
+    .MuiAlert-icon { color: #f87171 !important; }
 }
 
-.login-input-group {
+.android-field-wrap {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 6px;
 }
 
-.login-field-luxury {
-    .MuiOutlinedInput-root {
-        border-radius: 16px !important;
-        background: #fbfbfd !important;
-        transition: all 0.2s ease !important;
-        border: 1px solid transparent !important;
+.android-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-left: 4px;
+}
 
-        &.Mui-focused {
-            background: #ffffff !important;
-            border-color: rgba(0, 113, 227, 0.1) !important;
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.05) !important;
-        }
+.android-input-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 0 16px;
+    height: 58px;
+    transition: all 0.2s ease;
 
-        input {
-            font-weight: 700 !important;
-            font-size: 0.95rem !important;
-            color: #1d1d1f !important;
-            padding: 14px 12px !important;
+    &:focus-within {
+        border-color: rgba(168, 85, 247, 0.7);
+        background: rgba(168, 85, 247, 0.08);
+        box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.12);
+    }
 
-            &::placeholder {
-                color: #86868b !important;
-                opacity: 0.6 !important;
-                font-weight: 600 !important;
-            }
-        }
+    .field-icon {
+        color: rgba(255, 255, 255, 0.35);
+        flex-shrink: 0;
+        transition: color 0.2s;
+    }
 
-        fieldset {
-            border: none !important;
-        }
+    &:focus-within .field-icon {
+        color: #A855F7;
     }
 }
 
-.login-btn-premium {
-    background: #1d1d1f !important;
-    color: white !important;
-    padding: 16px !important;
-    border-radius: 18px !important;
-    font-size: 0.85rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.05em !important;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+.android-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
+    min-width: 0;
 
-    &:hover {
-        background: #000000 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    &:active {
-        transform: translateY(0);
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.25);
+        font-weight: 500;
     }
 }
 
-.login-card-footer {
+.eye-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0;
+    transition: color 0.2s;
+    flex-shrink: 0;
+
+    &:hover { color: #A855F7; }
+}
+
+/* ===== LOGIN BUTTON ===== */
+.android-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 60px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #A855F7 0%, #00AEEF 100%);
+    color: #ffffff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.35), 0 0 0 1px rgba(255,255,255,0.1) inset;
+    transition: box-shadow 0.2s, opacity 0.2s;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-arrow {
+        position: relative;
+        z-index: 1;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ===== FOOTER ===== */
+.android-footer-tag {
     text-align: center;
-    margin-top: 2.5rem;
-}
-
-.footer-status {
-    font-size: 0.65rem !important;
-    font-weight: 800 !important;
-    color: #86868b !important;
-    letter-spacing: 0.15em !important;
-    text-transform: uppercase !important;
+    margin: 20px 0 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.04em;
 }

@@ -212,6 +212,367 @@ $indigo: #4f46e5;
         padding: 1rem !important;
     }
 }
+// ─── Account Ledger Card (new unified structure, desktop) ─────────────────────
+.acct-card-mobile {
+    padding: 1.25rem 1.5rem;
+    border-radius: 20px;
+    background: $surface;
+    border: 1px solid $border;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    margin-bottom: 0.75rem;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+        border-color: rgba(14, 165, 233, 0.2);
+    }
+}
+
+.acct-top-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+}
+
+.acct-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.acct-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.acct-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    flex-shrink: 0;
+}
+
+.acct-action-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0 0 0;
+    margin-top: 0.75rem;
+    border-top: 1px solid $border;
+    gap: 0.75rem;
+}
+
+.acct-icon-btns {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+// Debt badge styles (global)
+.debt-icon-green { background: rgba(16, 185, 129, 0.1); svg { color: #10b981; } }
+.debt-icon-red   { background: rgba(239, 68, 68, 0.1);  svg { color: #ef4444; } }
+.debt-badge-green { background: rgba(16, 185, 129, 0.12) !important; color: #059669 !important; }
+.debt-badge-red   { background: rgba(239, 68, 68, 0.1)  !important; color: #dc2626 !important; }
+.debt-val-green   { color: #059669 !important; }
+.debt-val-red     { color: #dc2626 !important; }
+
+.debt-status-inline {
+    font-size: 0.55rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    &.ds-active  { background: #eff6ff; color: #2563eb; }
+    &.ds-partial { background: #fffbeb; color: #d97706; }
+    &.ds-settled { background: #f0fdf4; color: #16a34a; }
+}
+
+.debt-memo-text {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// ─── Debt Status Radio Pills ──────────────────────────────────────────────────
+.debt-radio-row {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding: 8px 14px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    background: #fafafa;
+}
+
+.debt-radio-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: transparent;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.03em;
+    font-family: inherit;
+
+    &:hover {
+        border-color: rgba(0,0,0,0.2);
+        background: #f1f5f9;
+    }
+
+    &.dpill-active {
+        font-weight: 800;
+    }
+}
+
+.dpill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #94a3b8;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+// ─── Partial Amount Panel ─────────────────────────────────────────────────────
+// ─── Partial Payment Modal ────────────────────────────────────────────────────
+.partial-modal-root {
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.partial-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.partial-modal-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 2px;
+}
+
+.partial-modal-sub {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin: 0;
+}
+
+.partial-close-btn {
+    background: #f1f5f9 !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    flex-shrink: 0;
+    svg { color: #64748b; }
+}
+
+// 3 summary cards
+.partial-summary-row {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.partial-sum-card {
+    flex: 1;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border: 1px solid transparent;
+}
+
+.partial-sum-total   { background: #f8fafc; border-color: #e2e8f0; }
+.partial-sum-paid    { background: #fffbeb; border-color: rgba(217,119,6,0.2); }
+.partial-sum-balance { background: #fef2f2; border-color: rgba(239,68,68,0.15); }
+
+.pscard-label {
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.pscard-val {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+}
+
+.pscard-balance { color: #dc2626; }
+
+// Input section
+.partial-input-section {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.partial-input-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #475569;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.partial-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+    background: #fff;
+
+    &:focus-within {
+        border-color: #d97706;
+    }
+}
+
+.partial-rupee {
+    padding: 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #d97706;
+    background: #fffbeb;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    border-right: 1.5px solid #fde68a;
+}
+
+.partial-amount-input {
+    flex: 1;
+    height: 46px;
+    border: none !important;
+    outline: none !important;
+    padding: 0 14px !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    color: #1e293b !important;
+    background: transparent !important;
+    font-family: inherit !important;
+
+    &::placeholder { color: #cbd5e1; font-weight: 600; }
+}
+
+// Live balance preview
+.partial-live-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 8px 12px;
+    animation: slideDown 0.15s ease;
+}
+
+.plp-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.03em;
+}
+
+.plp-val {
+    font-size: 0.78rem;
+    font-weight: 900;
+    color: #dc2626;
+    letter-spacing: -0.02em;
+}
+
+.plp-cleared {
+    color: #16a34a;
+}
+
+// Modal action buttons
+.partial-modal-actions {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.partial-cancel-btn {
+    flex: 1;
+    height: 40px;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    &:hover { background: #f1f5f9; }
+}
+
+.partial-save-btn {
+    flex: 2;
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    background: #d97706;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s;
+    &:hover { background: #b45309; }
+    &:disabled { opacity: 0.4; cursor: default; }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.debt-action-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.debt-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 
 .account-icon-box {
     width: 42px;
@@ -1391,56 +1752,67 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         font-size: 0.65rem !important;
     }
 
-    // 3. Ledger Pill Scroll & Group Containers
+    // 3. Ledger Pill Scroll — single horizontal row, 3 equal cards
     .ledger-pill-scroll-wrap {
-        margin-bottom: 0 !important;
+        margin-bottom: 1rem !important;
     }
 
     .ledger-pill-scroll {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 0.5rem !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        flex-direction: unset !important;
+        gap: 8px !important;
         overflow-x: visible !important;
         padding: 0 !important;
 
         .apple-category-pill {
             width: 100% !important;
-            padding: 0.85rem 1rem !important;
-            border-radius: 16px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
-            gap: 0.75rem !important;
+            min-width: unset !important;
+            padding: 10px 8px !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+            gap: 0 !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .pill-icon-box {
-            width: 38px !important;
-            height: 38px !important;
-            border-radius: 10px !important;
-            margin: 0 !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 9px !important;
+            margin: 0 0 6px 0 !important;
             box-shadow: none !important;
 
             svg {
-                width: 18px !important;
-                height: 18px !important;
+                width: 15px !important;
+                height: 15px !important;
             }
         }
 
         .pill-info-box {
-            flex: 1 !important;
-            flex-direction: row !important;
-            justify-content: space-between !important;
+            flex: unset !important;
+            flex-direction: column !important;
+            justify-content: center !important;
             align-items: center !important;
             width: 100% !important;
+            gap: 1px !important;
         }
 
         .pill-cat-label {
-            font-size: 0.85rem !important;
+            font-size: 0.58rem !important;
             font-weight: 800 !important;
-            color: #1e293b !important;
+            color: #64748b !important;
+            letter-spacing: 0.06em !important;
+            text-transform: uppercase !important;
+            text-align: center !important;
         }
 
         .pill-amt-val {
-            font-size: 1rem !important;
+            font-size: 0.82rem !important;
             font-weight: 900 !important;
+            text-align: center !important;
+            letter-spacing: -0.02em !important;
         }
     }
 
@@ -1462,168 +1834,358 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         margin-bottom: 6px !important; // Let the card itself handle the margin
     }
 
-    // 4. Account Ledger Row (Floating Elevated Card Style via Grid - Small & Cute)
+    // 4a. New mobile card structure classes
+    .acct-card-mobile {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        padding: 0 !important;           // block global desktop padding
+        margin-bottom: 10px !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05) !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        transform: none !important;       // block hover lift on mobile
+
+        &:hover {
+            transform: none !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05) !important;
+        }
+    }
+
+    .acct-top-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 14px 14px 12px !important;
+    }
+
+    .acct-info {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+
+    .acct-badge-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 5px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .acct-balance {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 2px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .acct-action-strip {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 8px 14px !important;
+        margin-top: 0 !important;
+        background: #f8fafc !important;
+        border-top: 1px solid rgba(0,0,0,0.05) !important;
+    }
+
+    .acct-icon-btns {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 6px !important;
+        align-items: center !important;
+    }
+
+    // 4b. Account Ledger Cards — clean light card redesign (fallback for desktop card)
     .account-card-glass {
         background: #ffffff !important;
         border-radius: 16px !important;
-        padding: 0.85rem 1rem !important; // Smaller padding
-        margin-bottom: 0.75rem !important; // Smaller gap between cards
-
-        &:last-child {
-            margin-bottom: 0 !important;
-        }
-
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important; // Softer shadow
-        border: none !important;
-
-        display: grid !important;
-        grid-template-columns: 1fr auto !important;
-        grid-template-areas: "text icon"
-        "actions actions" !important;
-        gap: 0.4rem 0.75rem !important; // Smaller gaps
-        align-items: flex-start !important;
-    }
-
-    .account-icon-box {
-        grid-area: icon !important;
-        width: 38px !important; // Scaled down
-        height: 38px !important;
-        border-radius: 10px !important;
-        background: #f8fafc !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-
-        svg {
-            width: 18px !important;
-            height: 18px !important;
-            color: #64748b !important;
-        }
-    }
-
-    .account-card-glass>.flex-1 {
-        grid-area: text !important;
+        padding: 0 !important;
+        margin-bottom: 10px !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0,0,0,0.04) !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: flex-start !important;
+        gap: 0 !important;
+        align-items: unset !important;
+        grid-template-areas: unset !important;
+        grid-template-columns: unset !important;
+        overflow: hidden !important;
+    }
+
+    // Icon box: colorful, rounded, stays as-is
+    .account-icon-box {
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        svg { width: 18px !important; height: 18px !important; }
+    }
+
+    // Row 1: icon + name/badge (flex-1) + balance on right
+    .account-card-glass > .flex-1 {
+        grid-area: unset !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        padding: 14px 14px 10px !important;
     }
 
     .account-name-row {
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        gap: 0.25rem !important; // Tighter stacking
+        gap: 4px !important;
+        flex: 1 !important;
+        min-width: 0 !important;
     }
 
     .account-main-name {
-        font-size: 0.85rem !important; // Even smaller, cuter font
+        font-size: 0.88rem !important;
         font-weight: 800 !important;
         color: #1e293b !important;
-        white-space: normal !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 160px !important;
         line-height: 1.2 !important;
     }
 
-    .account-type-badge,
-    .due-date-badge {
-        font-size: 0.55rem !important; // Scaled down
-        padding: 0.15rem 0.45rem !important;
-        margin-left: 0 !important;
-        border-radius: 6px !important;
-        background: rgba(16, 185, 129, 0.1) !important;
-        color: #10b981 !important;
-        font-weight: 700 !important;
-    }
-
-    .account-actions-col {
-        grid-area: actions !important;
+    // Badge row wrapper: use existing flex-gap-04
+    .flex-gap-04 {
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .account-type-badge {
+        font-size: 0.55rem !important;
+        padding: 2px 7px !important;
+        margin-left: 0 !important;
+        border-radius: 20px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+    }
+    .due-date-badge {
+        font-size: 0.55rem !important;
+        padding: 2px 7px !important;
+        margin-left: 0 !important;
+        border-radius: 20px !important;
+        font-weight: 800 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+
+    // Credit progress bar: full width inside card
+    .account-progress-track {
+        height: 3px !important;
+        border-radius: 0 !important;
+        background: #f1f5f9 !important;
+        margin: 0 !important;
+    }
+
+    // Balance column (sits right-aligned in row 1)
+    .account-actions-col {
+        grid-area: unset !important;
+        display: flex !important;
+        flex-direction: column !important;
         align-items: flex-end !important;
-        width: 100% !important;
-        margin-top: 0.4rem !important; // Tighter
-        padding-left: 0 !important;
-        gap: 0.5rem !important;
+        justify-content: center !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+        margin-top: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
     }
 
     .account-val-stack {
-        align-items: flex-start !important;
-        flex: 1 1 auto !important;
+        align-items: flex-end !important;
+        flex: unset !important;
     }
-
     .account-main-val {
-        font-size: 1rem !important; // Scaled down further
+        font-size: 1.05rem !important;
         font-weight: 900 !important;
-        color: #0f172a !important;
+        color: #1e293b !important;
+        letter-spacing: -0.03em !important;
         line-height: 1.1 !important;
     }
-
     .account-avail-label {
-        font-size: 0.6rem !important; // Scaled down
-        color: #64748b !important;
-        margin-top: 0.15rem !important;
+        font-size: 0.52rem !important;
+        color: #94a3b8 !important;
+        margin-top: 1px !important;
+        text-align: right !important;
+        font-weight: 600 !important;
     }
 
-    .account-actions-col>.flex-gap-05 {
-        flex: 0 0 auto !important;
+    .account-actions-col > .flex-gap-05 {
         display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
         justify-content: flex-end !important;
-        gap: 0.35rem !important; // Tighter buttons
-    }
-
-    .btn-add-money-small,
-    .btn-pay-bill-small {
-        height: 28px !important; // Scaled down
-        padding: 0 0.75rem !important;
-        font-size: 0.6rem !important;
-        border-radius: 8px !important;
-        box-shadow: none !important;
-    }
-
-    .account-actions-col .MuiIconButton-root {
-        padding: 4px 10px !important; // Scaled down with horizontal padding
-        background: rgba(0, 0, 0, 0.03) !important;
-        border-radius: 8px !important;
-
-        svg {
-            width: 14px !important;
-            height: 14px !important;
-        }
-    }
-
-    // 5. Debt Ledger Overrides (Small & Cute)
-    .debt-item-row {
-        background: #ffffff !important;
-        border-radius: 16px !important;
-        padding: 0.85rem 1rem !important;
-        margin-bottom: 0.75rem !important;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
-        border: none !important;
-
-        display: grid !important;
-        grid-template-columns: 1fr auto !important;
-        grid-template-areas:
-            "text icon"
-            "amount actions" !important;
-        gap: 0.5rem 0.75rem !important;
-        align-items: flex-end !important;
-    }
-
-    .debt-item-icon-box {
-        grid-area: icon !important;
-        width: 38px !important;
-        height: 38px !important;
-        border-radius: 10px !important;
+        gap: 6px !important;
+        padding: 8px 14px !important;
         background: #f8fafc !important;
-        margin: 0 !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-        align-self: flex-start !important;
+        border-top: 1px solid rgba(0,0,0,0.05) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .btn-add-money-small {
+        height: 26px !important;
+        padding: 0 8px !important;
+        font-size: 0.58rem !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        background: #e0f2fe !important;
+        color: #0284c7 !important;
+        font-weight: 800 !important;
+        min-width: unset !important;
+    }
+    .btn-pay-bill-small {
+        height: 26px !important;
+        padding: 0 8px !important;
+        font-size: 0.58rem !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        background: #fce7f3 !important;
+        color: #be185d !important;
+        font-weight: 800 !important;
+        min-width: unset !important;
+    }
+    .acct-icon-btns .MuiIconButton-root,
+    .account-actions-col .MuiIconButton-root {
+        padding: 7px !important;
+        border-radius: 10px !important;
+        svg { width: 13px !important; height: 13px !important; }
+        &.bg-faint-red { background: #fff0f0 !important; svg { color: #ef4444 !important; } }
+        &.bg-faint-grey { background: #f1f5f9 !important; svg { color: #475569 !important; } }
+    }
 
-        svg {
-            width: 18px !important;
-            height: 18px !important;
-            color: #64748b !important;
+    // 5. Debt Ledger — same card design as Account Ledger
+
+    // 3 stat cards in single horizontal row (matching Account Ledger pills)
+    .debt-stats-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .debt-stat-card {
+        padding: 10px 8px !important;
+        border-radius: 14px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 4px !important;
+    }
+
+    .debt-stat-header {
+        flex-direction: column !important;
+        gap: 3px !important;
+        margin-bottom: 0 !important;
+        align-items: center !important;
+        svg { width: 15px !important; height: 15px !important; }
+    }
+
+    .debt-stat-label {
+        font-size: 0.52rem !important;
+        text-align: center !important;
+    }
+
+    .debt-stat-val {
+        font-size: 0.82rem !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    // Icon boxes: green for receivable, red for liability
+    .debt-icon-green {
+        background: rgba(16, 185, 129, 0.1) !important;
+        svg { color: #10b981 !important; }
+    }
+    .debt-icon-red {
+        background: rgba(239, 68, 68, 0.1) !important;
+        svg { color: #ef4444 !important; }
+    }
+
+    // Direction badges
+    .debt-badge-green {
+        background: rgba(16, 185, 129, 0.12) !important;
+        color: #059669 !important;
+    }
+    .debt-badge-red {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: #dc2626 !important;
+    }
+
+    // Status inline badge
+    .debt-status-inline {
+        font-size: 0.52rem !important;
+        font-weight: 800 !important;
+        padding: 2px 6px !important;
+        border-radius: 20px !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+
+        &.ds-active  { background: #eff6ff !important; color: #2563eb !important; }
+        &.ds-partial { background: #fffbeb !important; color: #d97706 !important; }
+        &.ds-settled { background: #f0fdf4 !important; color: #16a34a !important; }
+    }
+
+    // Memo text
+    .debt-memo-text {
+        font-size: 0.62rem !important;
+        color: #94a3b8 !important;
+        font-weight: 500 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 160px !important;
+    }
+
+    // Amount color
+    .debt-val-green { color: #059669 !important; }
+    .debt-val-red   { color: #dc2626 !important; }
+
+    // Inline status select in action strip
+    .debt-status-select-inline {
+        height: 26px !important;
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        border-radius: 20px !important;
+
+        .MuiSelect-select {
+            padding: 0 8px !important;
+            font-size: 0.6rem !important;
+            font-weight: 700 !important;
+            min-height: unset !important;
+            line-height: 26px !important;
         }
+        .MuiOutlinedInput-notchedOutline {
+            border-radius: 20px !important;
+            border-color: rgba(0,0,0,0.1) !important;
+        }
+    }
+
+    .debt-cards-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0 !important;
     }
 
     .debt-item-name-row {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Target, Clock, CalendarDays, Activity } from 'lucide-react';
-import { Box, TextField, Select, MenuItem, Button, Typography, InputAdornment, Stack } from '@mui/material';
+import { Box, TextField, Select, MenuItem, Button, Typography, InputAdornment, Stack, CircularProgress } from '@mui/material';
 import './Forms.scss';
 
 export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
@@ -14,6 +14,8 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
         frequency_days: initialHabit?.frequency_days || []
     });
 
+    const [loading, setLoading] = useState(false);
+
     const [errors, setErrors] = useState({});
 
     const validate = () => {
@@ -23,14 +25,21 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = async () => {
         if (validate()) {
-            onSubmit({
-                name: formData.name,
-                duration: Number(formData.duration) || 0,
-                type: formData.type,
-                frequency_days: formData.type === 'Daily' ? formData.frequency_days : []
-            });
+            setLoading(true);
+            try {
+                await onSubmit({
+                    name: formData.name,
+                    duration: Number(formData.duration) || 0,
+                    type: formData.type,
+                    frequency_days: formData.type === 'Daily' ? formData.frequency_days : []
+                });
+            } catch (err) {
+                console.error("Submission error:", err);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -148,9 +157,11 @@ export default function HealthHabitForm({ onSubmit, onCancel, initialHabit }) {
                 <Button
                     variant="contained"
                     onClick={handleFormSubmit}
+                    disabled={loading}
                     className="btn-submit-premium"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
                 >
-                    {isEdit ? 'Save Changes' : 'Configure Habit'}
+                    {loading ? 'Processing...' : (isEdit ? 'Save Changes' : 'Configure Habit')}
                 </Button>
             </Box>
         </Box>

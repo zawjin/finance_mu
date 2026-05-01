@@ -145,6 +145,7 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
     }, [formData.quantity, formData.current_price, isMarketAsset]);
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const activeCat = assetClasses.find(c => c.name === formData.type);
     const activeSubs = activeCat?.sub_categories || [];
@@ -179,31 +180,38 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
         return true;
     });
 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = async () => {
         if (validate()) {
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(20);
+            setLoading(true);
+            try {
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(20);
+                }
+                await onSubmit({
+                    name: formData.name,
+                    value: parseFloat(formData.value),
+                    type: formData.type,
+                    sub_category: formData.sub || '-',
+                    details: formData.details || '-',
+                    date: formData.date.format('YYYY-MM-DD'),
+                    withdrawals: formData.withdrawals,
+                    contributions: formData.contributions, // Ensure EPF contribs are passed
+                    payment_method: formData.payment_method || null,
+                    payment_source_id: formData.payment_source_id || null,
+                    recentPurchase: formData._recentPurchaseAmt || null,
+                    recentPurchaseQty: formData._recentPurchaseQty || null,
+                    ...(isMarketAsset && {
+                        quantity: parseFloat(formData.quantity) || null,
+                        buy_price: parseFloat(formData.buy_price) || null,
+                        current_price: parseFloat(formData.current_price) || null,
+                        ticker: formData.ticker || null,
+                    })
+                });
+            } catch (err) {
+                console.error("Submission error:", err);
+            } finally {
+                setLoading(false);
             }
-            onSubmit({
-                name: formData.name,
-                value: parseFloat(formData.value),
-                type: formData.type,
-                sub_category: formData.sub || '-',
-                details: formData.details || '-',
-                date: formData.date.format('YYYY-MM-DD'),
-                withdrawals: formData.withdrawals,
-                contributions: formData.contributions, // Ensure EPF contribs are passed
-                payment_method: formData.payment_method || null,
-                payment_source_id: formData.payment_source_id || null,
-                recentPurchase: formData._recentPurchaseAmt || null,
-                recentPurchaseQty: formData._recentPurchaseQty || null,
-                ...(isMarketAsset && {
-                    quantity: parseFloat(formData.quantity) || null,
-                    buy_price: parseFloat(formData.buy_price) || null,
-                    current_price: parseFloat(formData.current_price) || null,
-                    ticker: formData.ticker || null,
-                })
-            });
         }
     };
 
@@ -515,9 +523,9 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                         }}
                         startAdornment={
                             <InputAdornment position="start" sx={{ ml: -0.5, mr: 1 }}>
-                                <Box className="form-icon-vibrant" sx={{ 
-                                    bgcolor: formData.type ? `${assetClasses.find(c => c.name === formData.type)?.color}15` : 'rgba(88, 86, 214, 0.1)', 
-                                    color: formData.type ? assetClasses.find(c => c.name === formData.type)?.color : '#5856d6' 
+                                <Box className="form-icon-vibrant" sx={{
+                                    bgcolor: formData.type ? `${assetClasses.find(c => c.name === formData.type)?.color}15` : 'rgba(88, 86, 214, 0.1)',
+                                    color: formData.type ? assetClasses.find(c => c.name === formData.type)?.color : '#5856d6'
                                 }}>
                                     {formData.type ? getIcon(formData.type, assetClasses, { size: 18 }) : <Tag size={18} />}
                                 </Box>
@@ -822,9 +830,11 @@ export default function InvestmentForm({ assetClasses = [], onSubmit, onCancel, 
                 <Button
                     variant="contained"
                     onClick={handleFormSubmit}
+                    disabled={loading}
                     className="btn-submit-premium"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
                 >
-                    {initialData ? 'Update Asset' : 'Commit Asset'}
+                    {loading ? 'Processing...' : (initialData ? 'Update Asset' : 'Commit Asset')}
                 </Button>
             </Box>
         </Box>

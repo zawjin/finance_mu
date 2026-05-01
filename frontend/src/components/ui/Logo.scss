@@ -1,0 +1,60 @@
+.sale-logo-container {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+
+    .logo-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0,0,0,0.15);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .logo-letter {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+    }
+
+    &.small {
+        gap: 2px;
+        .logo-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            .logo-letter {
+                font-size: 1rem;
+            }
+        }
+    }
+
+    &.large {
+        gap: 8px;
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            .logo-letter {
+                font-size: 3.5rem;
+            }
+        }
+    }
+
+    &.xlarge {
+        gap: 12px;
+        .logo-box {
+            width: 120px;
+            height: 120px;
+            border-radius: 32px;
+            .logo-letter {
+                font-size: 5rem;
+            }
+        }
+    }
+}

@@ -6,12 +6,18 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
         const formData = new FormData();
         formData.append('username', credentials.username);
         formData.append('password', credentials.password);
-        
+
         const response = await api.post('/login', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        localStorage.setItem('token', response.data.access_token);
-        return response.data;
+        const token = response.data.access_token;
+        localStorage.setItem('token', token);
+
+        // Immediately fetch user so we never get stuck in "token but no user" state
+        const meResponse = await api.get('/me', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return { access_token: token, user: meResponse.data };
     } catch (err) {
         return rejectWithValue(err.response?.data?.detail || 'Login failed');
     }
@@ -33,12 +39,13 @@ const authSlice = createSlice({
         token: localStorage.getItem('token'),
         loading: false,
         error: null,
-        initialized: false
+        initialized: !localStorage.getItem('token') // If no token, we are initialized (logged out)
     },
     reducers: {
         logout: (state) => {
             state.user = null;
             state.token = null;
+            state.initialized = true;
             localStorage.removeItem('token');
         },
         clearError: (state) => {
@@ -51,6 +58,8 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload.access_token;
+                state.user = action.payload.user;    // user is set immediately
+                state.initialized = true;             // no loader gap
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography, TextField, MenuItem, Stack } from '@mui/material';
+import { Box, Button, Typography, TextField, MenuItem, Stack, CircularProgress, InputAdornment } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Banknote, Calendar, CreditCard, ChevronDown, FileText, Tag, Wallet, Landmark } from 'lucide-react';
-import { InputAdornment } from '@mui/material';
 import './Forms.scss';
 import dayjs from 'dayjs';
 
@@ -9,30 +9,32 @@ import dayjs from 'dayjs';
 export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, reserves, onSubmit, onCancel }) {
     const remaining = requiredAmount - alreadyPaid;
     const [amount, setAmount] = useState(remaining);
+    const [loading, setLoading] = useState(false);
     const [sourceId, setSourceId] = useState('');
-    const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+    const [date, setDate] = useState(dayjs());
     const [comment, setComment] = useState('');
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const sourceAccount = reserves.find(r => r._id === sourceId);
-        onSubmit({
-            term_number: term,
-            amount: parseFloat(amount),
-            date,
-            source_id: sourceId,
-            source_name: sourceAccount?.account_name || 'Direct Pay',
-            comment: comment || `Settle Term #${term}`
-        });
+        setLoading(true);
+        try {
+            await onSubmit({
+                term_number: term,
+                amount: parseFloat(amount),
+                date: date.format('YYYY-MM-DD'),
+                source_id: sourceId,
+                source_name: sourceAccount?.account_name || 'Direct Pay',
+                comment: comment || `Settle Term #${term}`
+            });
+        } catch (err) {
+            console.error("Submission error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <Box component="form" className="form-container-premium">
-            <Box sx={{ textAlign: 'center', mb: 2 }}>
-                <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: '#1d1d1f', letterSpacing: '-0.02em' }}>
-                    SETTLE LENDING RECORD
-                </Typography>
-            </Box>
-
             {/* TOTAL STAKE BOX - PREMIUM VIBRANT ORANGE */}
             <Box sx={{
                 p: 2, bgcolor: '#fffaf5', borderRadius: '18px',
@@ -66,6 +68,7 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
                 <Typography className="form-label-premium">AMOUNT TO PAY NOW</Typography>
                 <TextField
                     fullWidth
+                    size="small"
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
@@ -83,6 +86,7 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
                 <TextField
                     select
                     fullWidth
+                    size="small"
                     value={sourceId}
                     onChange={(e) => setSourceId(e.target.value)}
                     className="form-input-premium"
@@ -102,14 +106,25 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
             {/* DATE INPUT */}
             <Box>
                 <Typography className="form-label-premium">PAYMENT DATE</Typography>
-                <TextField
-                    fullWidth
-                    type="date"
+                <DatePicker
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="form-input-premium"
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
+                    onChange={(val) => setDate(val)}
+                    sx={{ width: '100%' }}
+                    slotProps={{
+                        textField: {
+                            fullWidth: true, size: 'small',
+                            inputProps: { readOnly: true },
+                            InputProps: {
+                                className: "form-input-premium",
+                                startAdornment: (
+                                    <InputAdornment position="start" sx={{ ml: -0.5 }}>
+                                        <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}>
+                                            <Calendar size={18} />
+                                        </Box>
+                                    </InputAdornment>
+                                )
+                            }
+                        }
                     }}
                 />
             </Box>
@@ -119,6 +134,7 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
                 <Typography className="form-label-premium">TRANSACTION NOTE / COMMENT</Typography>
                 <TextField
                     fullWidth
+                    size="small"
                     placeholder="e.g. Partial pay for this month"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
@@ -151,9 +167,11 @@ export default function SettleCardTermForm({ term, requiredAmount, alreadyPaid, 
                 <Button
                     variant="contained"
                     onClick={handleSubmit}
+                    disabled={loading}
                     className="btn-submit-premium"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
                 >
-                    CONFIRM PAY
+                    {loading ? 'CONFIRMING...' : 'CONFIRM PAY'}
                 </Button>
             </Box>
         </Box>

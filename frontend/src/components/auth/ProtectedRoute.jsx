@@ -3,18 +3,14 @@ import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+import Loader from '../ui/Loader';
 
 const ProtectedRoute = ({ children, module, action = 'view' }) => {
     const { user, token, initialized } = useSelector(state => state.auth);
     const location = useLocation();
 
     if (!initialized) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', gap: '20px' }}>
-                <div className="dot-pulse"></div>
-                <Typography sx={{ fontWeight: 700, fontSize: '0.8rem', color: '#86868b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Verifying Identity</Typography>
-            </div>
-        );
+        return <Loader message="Verifying Identity..." />;
     }
 
     if (!token || !user) {

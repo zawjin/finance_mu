@@ -13,7 +13,7 @@ import {
     Card, Button, Typography,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    TextField, IconButton, Chip, Box, Tooltip, Stack, Paper, Divider, Avatar, Skeleton, Grow
+    TextField, IconButton, Chip, Box, Tooltip, Stack, Paper, Divider, Avatar, Skeleton, Grow, CircularProgress
 } from '@mui/material';
 
 import { getIcon, IconMap } from '../utils/iconMap';
@@ -415,11 +415,12 @@ export default function CategoryPage() {
                             fullWidth
                             variant="contained"
                             onClick={handleSave}
-                            disabled={!newName}
+                            disabled={isSaving || !newName}
                             style={{ backgroundColor: newColor, boxShadow: `0 8px 24px ${newColor}25` }}
                             className="btn-finalize-pill"
+                            startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : null}
                         >
-                            {editingId ? "Update Identity" : "Finalize Infrastructure"}
+                            {isSaving ? "Saving..." : (editingId ? "Update Identity" : "Finalize Infrastructure")}
                         </Button>
                     </Stack>
                 </Box>

@@ -370,7 +370,37 @@ async def add_debt(item: DebtItem):
 
 @router.put("/debt/{item_id}")
 async def update_debt(item_id: str, item: DebtItem):
-    await db.debt.update_one({"_id": ObjectId(item_id)}, {"$set": item.dict(exclude={"id"})})
+    today = datetime.now().strftime("%Y-%m-%d")
+    old = await db.debt.find_one({"_id": ObjectId(item_id)})
+
+    # Base update (all fields except payments — managed separately via $push)
+    update_data = item.dict(exclude={"id", "payments"})
+
+    # Detect a new partial payment: status=PARTIAL and partial_amount increased
+    old_partial = float(old.get("partial_amount", 0)) if old else 0.0
+    new_partial  = float(item.partial_amount or 0)
+    payment_this_time = round(new_partial - old_partial, 2)
+
+    if item.status == "PARTIAL" and payment_this_time > 0:
+        new_payment = {
+            "date": today,
+            "amount": payment_this_time,
+            "total_paid": new_partial,
+            "balance": round(float(item.amount) - new_partial, 2),
+            "note": f"Partial payment of ₹{payment_this_time:,.2f}"
+        }
+        await db.debt.update_one(
+            {"_id": ObjectId(item_id)},
+            {
+                "$set": update_data,
+                "$push": {"payments": new_payment}
+            }
+        )
+    else:
+        await db.debt.update_one(
+            {"_id": ObjectId(item_id)},
+            {"$set": update_data}
+        )
     return {"status": "ok"}
 
 @router.delete("/debt/{item_id}")

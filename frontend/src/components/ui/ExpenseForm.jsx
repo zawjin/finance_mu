@@ -7,7 +7,7 @@ import {
 import dayjs from 'dayjs';
 import {
     Box, TextField, Select, MenuItem, Button, Typography,
-    InputAdornment, FormHelperText, Stack, Autocomplete
+    InputAdornment, FormHelperText, Stack, Autocomplete, CircularProgress
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
     });
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const activeCat = categories.find(c => c.name === formData.category);
     const activeSubs = activeCat?.sub_categories || [];
@@ -46,23 +47,30 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = async () => {
         if (validate()) {
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(20);
+            setLoading(true);
+            try {
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(20);
+                }
+                await onSubmit({
+                    amount: parseFloat(formData.amount),
+                    description: formData.description,
+                    category: formData.category,
+                    sub_category: formData.sub || '-',
+                    date: formData.date.format('YYYY-MM-DD'),
+                    recovered: parseFloat(formData.recovered) || 0,
+                    recovery_description: formData.recovery_desc || "",
+                    payment_method: formData.payment_method || null,
+                    payment_source_id: formData.payment_source_id || null,
+                    target_account_id: formData.target_account_id || null
+                });
+            } catch (err) {
+                console.error("Submission error:", err);
+            } finally {
+                setLoading(false);
             }
-            onSubmit({
-                amount: parseFloat(formData.amount),
-                description: formData.description,
-                category: formData.category,
-                sub_category: formData.sub || '-',
-                date: formData.date.format('YYYY-MM-DD'),
-                recovered: parseFloat(formData.recovered) || 0,
-                recovery_description: formData.recovery_desc || "",
-                payment_method: formData.payment_method || null,
-                payment_source_id: formData.payment_source_id || null,
-                target_account_id: formData.target_account_id || null
-            });
         }
     };
 
@@ -382,9 +390,11 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 <Button
                     variant="contained"
                     onClick={handleFormSubmit}
+                    disabled={loading}
                     className="btn-submit-premium"
+                    startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
                 >
-                    {initialData ? 'Update Entry' : 'Complete Entry'}
+                    {loading ? 'Processing...' : (initialData ? 'Update Entry' : 'Complete Entry')}
                 </Button>
             </Box>
         </Box>

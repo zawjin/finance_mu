@@ -10,7 +10,7 @@ import {
 import {
     Box, Typography, Button, IconButton, Grid,
     Skeleton, Table, TableBody, TableCell, TableHead,
-    TableRow, Chip, Dialog, Grow, TextField, InputAdornment
+    TableRow, Chip, Dialog, Grow, TextField, InputAdornment, CircularProgress
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { formatCurrency } from '../utils/formatters';
@@ -24,6 +24,8 @@ export default function DebtPage({ onEdit }) {
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('ALL'); // ALL, RECEIVABLE, LIABILITY
     const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
+    const [purging, setPurging] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     const filteredDebt = useMemo(() => {
         return debt.filter(item => {
@@ -49,21 +51,27 @@ export default function DebtPage({ onEdit }) {
 
     const handleRemove = async () => {
         if (!deleteConfirmItem) return;
+        setPurging(true);
         try {
             await api.delete(`/debt/${deleteConfirmItem._id}`);
             dispatch(fetchFinanceData());
             setDeleteConfirmItem(null);
         } catch (err) {
             console.error(err);
+        } finally {
+            setPurging(false);
         }
     };
 
     const handleStatusUpdate = async (item, newStatus) => {
+        setUpdatingStatus(true);
         try {
             await api.put(`/debt/${item._id}`, { ...item, status: newStatus });
             dispatch(fetchFinanceData());
         } catch (err) {
             console.error(err);
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
@@ -184,8 +192,8 @@ export default function DebtPage({ onEdit }) {
                                             <TableCell className="td-cell cell-pr-5 text-right">
                                                 <div className="ledger-action-cluster">
                                                     {item.status !== 'SETTLED' && (
-                                                        <IconButton size="small" onClick={() => handleStatusUpdate(item, 'SETTLED')} className="btn-action-settle">
-                                                            <CheckCircle2 size={16} />
+                                                        <IconButton size="small" onClick={() => handleStatusUpdate(item, 'SETTLED')} disabled={updatingStatus} className="btn-action-settle">
+                                                            {updatingStatus ? <CircularProgress size={16} color="inherit" /> : <CheckCircle2 size={16} />}
                                                         </IconButton>
                                                     )}
                                                     <IconButton size="small" onClick={() => onEdit(item)} className="btn-action-edit">
@@ -224,8 +232,17 @@ export default function DebtPage({ onEdit }) {
                             Permanently remove debt from <strong>{deleteConfirmItem.person}</strong>?
                         </Typography>
                         <div className="day-totals-flex">
-                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} className="btn-purge-abort">ABORT</Button>
-                            <Button fullWidth variant="contained" onClick={handleRemove} className="btn-purge-confirm">PROCEED</Button>
+                            <Button fullWidth onClick={() => setDeleteConfirmItem(null)} disabled={purging} className="btn-purge-abort">ABORT</Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={handleRemove}
+                                disabled={purging}
+                                className="btn-purge-confirm"
+                                startIcon={purging ? <CircularProgress size={16} color="inherit" /> : null}
+                            >
+                                {purging ? 'PURGING...' : 'PROCEED'}
+                            </Button>
                         </div>
                     </Box>
                 )}
