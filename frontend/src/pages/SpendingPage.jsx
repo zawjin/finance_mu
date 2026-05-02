@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -162,6 +163,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [showAndroidRange, setShowAndroidRange] = useState(false);
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
     const [purging, setPurging] = useState(false);
+    const [filterPortalTarget, setFilterPortalTarget] = useState(null);
+
+    useEffect(() => {
+        setFilterPortalTarget(document.getElementById('mobile-filter-portal-target'));
+    }, []);
 
     const handlePullToRefresh = async () => {
         setRefreshing(true);
@@ -625,16 +631,31 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             <div className="spending-split-layout">
                 {/* Mobile Filter Toggle */}
-                <button className="mobile-filter-toggle" onClick={() => setMobileFiltersOpen(o => !o)}>
-                    <span className="mft-left">
-                        <Filter size={13} />
-                        <span>Filters</span>
+                {filterPortalTarget ? createPortal(
+                    <button
+                        onClick={() => setMobileFiltersOpen(o => !o)}
+                        className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
+                        aria-label="Toggle filters"
+                        style={{ position: 'relative' }}
+                    >
+                        <Filter size={18} />
                         {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
-                            <span className="mft-badge">Active</span>
+                            <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
                         )}
-                    </span>
-                    <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
-                </button>
+                    </button>,
+                    filterPortalTarget
+                ) : (
+                    <button className="mobile-filter-toggle" onClick={() => setMobileFiltersOpen(o => !o)}>
+                        <span className="mft-left">
+                            <Filter size={13} />
+                            <span>Filters</span>
+                            {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
+                                <span className="mft-badge">Active</span>
+                            )}
+                        </span>
+                        <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                    </button>
+                )}
 
                 {/* Pull to Refresh Indicator */}
                 <AnimatePresence>

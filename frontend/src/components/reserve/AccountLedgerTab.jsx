@@ -32,17 +32,17 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                         </div>
                     </div>
                     <div className="apple-category-pill glass-effect min-w-180">
-                        <div className="pill-icon-box type-style-cash"><Banknote size={18} /></div>
-                        <div className="pill-info-box">
-                            <span className="pill-cat-label">CASH</span>
-                            <span className="pill-amt-val color-amber">{formatCurrency(totalCash)}</span>
-                        </div>
-                    </div>
-                    <div className="apple-category-pill glass-effect min-w-180">
                         <div className="pill-icon-box type-style-wallet"><Wallet size={18} /></div>
                         <div className="pill-info-box">
                             <span className="pill-cat-label">WALLETS</span>
                             <span className="pill-amt-val color-green">{formatCurrency(totalWallet)}</span>
+                        </div>
+                    </div>
+                    <div className="apple-category-pill glass-effect min-w-180">
+                        <div className="pill-icon-box type-style-cash"><Banknote size={18} /></div>
+                        <div className="pill-info-box">
+                            <span className="pill-cat-label">CASH</span>
+                            <span className="pill-amt-val color-amber">{formatCurrency(totalCash)}</span>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,10 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                             <div className="date-group date-group-bank-details">
 
                                 <div className="investment-items-luxury">
-                                    {(reserves || []).map(r => {
+                                    {(reserves || []).slice().sort((a, b) => {
+                                        const order = { 'BANK': 1, 'WALLET': 2, 'CASH': 3, 'CREDIT_CARD': 4 };
+                                        return (order[a.account_type] || 5) - (order[b.account_type] || 5);
+                                    }).map(r => {
                                         const style = getTypeStyle(r.account_type);
                                         const getDueDiff = () => {
                                             const rawDue = r.due_date;

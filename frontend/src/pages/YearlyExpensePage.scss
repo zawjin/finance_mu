@@ -30,6 +30,10 @@ $amber: #f59e0b;
     .main-content:has(.page-container-super) {
         padding: 4.75rem 0.25rem 2rem 0.25rem !important;
     }
+
+    .hide-on-mobile {
+        display: none !important;
+    }
 }
 
 // ─── Header Row ──────────────────────────────────────────────────────────────
@@ -93,9 +97,17 @@ $amber: #f59e0b;
         }
 
         &.active {
-            background: $ink !important;
             color: #fff !important;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2) !important;
+
+            &.yearly-active {
+                background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%) !important;
+                box-shadow: 0 4px 12px rgba(76, 29, 149, 0.3) !important;
+            }
+
+            &.monthly-active {
+                background: linear-gradient(135deg, #075985 0%, #0ea5e9 100%) !important;
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+            }
         }
     }
 }
@@ -173,7 +185,7 @@ $amber: #f59e0b;
 }
 
 .main-stat-text {
-    font-size: 2.4rem !important;
+    font-size: 2rem !important;
     font-weight: 900 !important;
     letter-spacing: -0.045em !important;
     line-height: 1 !important;
@@ -350,7 +362,8 @@ $amber: #f59e0b;
 
     @media (max-width: 768px) {
         border: none;
-        margin-top: 10px;
+        margin-top: 0px !important;
+        padding-top: 8px !important;
     }
 }
 
@@ -982,6 +995,15 @@ $amber: #f59e0b;
     align-items: center;
 }
 
+// Final override for text truncation
+.debt-cards-list .acct-card-mobile .acct-top-row .acct-info .name-status-row .account-main-name {
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    display: inline !important;
+    word-break: normal !important;
+}
+
 .btn-pay-bill-small {
     font-size: 0.65rem !important;
     font-weight: 800 !important;
@@ -1034,5 +1056,258 @@ $amber: #f59e0b;
     .MuiOutlinedInput-root {
         border-radius: 14px !important;
         background: #fafbfc !important;
+    }
+}
+
+// ─── Highlight Styles ────────────────────────────────────────────────────────
+.highlight-next-due {
+    border: 2px solid #6366f1 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%) !important;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15) !important;
+    transform: scale(1.02);
+    z-index: 2;
+    margin-bottom: 0.75rem !important;
+    margin-top: 0.25rem !important;
+
+    .account-main-name {
+        color: #4338ca !important;
+        font-weight: 900 !important;
+    }
+}
+
+.next-due-chip-lite {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    height: 18px !important;
+    letter-spacing: 0.05em;
+    padding: 0 8px;
+    border-radius: 6px !important;
+}
+
+.highlight-icon {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+    border-color: #6366f1 !important;
+
+    svg {
+        color: #ffffff !important;
+    }
+}
+
+.due-urgent {
+    color: #ef4444 !important;
+    font-weight: 800 !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.paid-icon {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border-color: #10b981 !important;
+
+    svg {
+        color: #ffffff !important;
+    }
+}
+
+.overdue-pulse {
+    border: 2px solid #ef4444 !important;
+    background: rgba(239, 68, 68, 0.04) !important;
+    animation: overdue-glow 2s infinite ease-in-out;
+}
+
+@keyframes overdue-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2);
+    }
+}
+
+.overdue-chip-lite {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    height: 18px !important;
+    letter-spacing: 0.05em;
+    padding: 0 8px;
+    border-radius: 6px !important;
+}
+
+.overdue-icon {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+}
+
+.due-overdue {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    background: #ef4444 !important;
+}
+
+// ─── Lite Card System ────────────────────────────────────────────────────────
+.lite-card {
+    min-height: auto !important;
+    padding: 0.85rem 1rem !important;
+    gap: 0.65rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.card-top-lite {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.lite-icon-wrap {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.lite-main-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.lite-stats-row {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.45rem 0.75rem;
+    border-radius: 12px;
+    gap: 0.75rem;
+    backdrop-filter: blur(4px);
+}
+
+.lite-stat-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.lite-stat-label {
+    font-size: 0.52rem;
+    font-weight: 800;
+    opacity: 0.65;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.lite-stat-val {
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.lite-stat-divider {
+    width: 1px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.lite-sip-box {
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    align-self: flex-start;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lite-fund-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.18);
+    padding: 0.35rem 0.65rem;
+    border-radius: 10px;
+    margin-top: 2px;
+}
+
+.fund-info {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    .lbl {
+        font-size: 0.55rem;
+        font-weight: 800;
+        opacity: 0.7;
+    }
+
+    .val {
+        font-size: 0.75rem;
+        font-weight: 900;
+    }
+}
+
+.lite-btn-topup {
+    background: #ffffff !important;
+    color: #1e1b4b !important;
+    font-weight: 900 !important;
+    font-size: 0.55rem !important;
+    height: 20px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    min-width: auto !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.lite-alert-dot {
+    width: 7px;
+    height: 7px;
+    background: #ff4d4d;
+    border-radius: 50%;
+    margin-left: 4px;
+    box-shadow: 0 0 10px #ff4d4d;
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+// Mobile override for Fund Bar button
+@media (max-width: 768px) {
+    .lite-fund-bar>.MuiButton-root {
+        border-radius: 5px !important;
+        font-size: 0.50rem !important;
+        font-weight: 900 !important;
+        min-height: 30px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
     }
 }

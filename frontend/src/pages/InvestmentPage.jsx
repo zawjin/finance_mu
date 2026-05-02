@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import {
@@ -207,6 +208,11 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
     const [purging, setPurging] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [filterPortalTarget, setFilterPortalTarget] = useState(null);
+
+    useEffect(() => {
+        setFilterPortalTarget(document.getElementById('mobile-filter-portal-target'));
+    }, []);
 
     const handleManualSync = async () => {
         setSyncingPrices(true);
@@ -759,17 +765,32 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
 
             <div className="spending-split-layout">
                 {/* Mobile Filter Toggle Button */}
-                <button 
-                    className="mobile-filter-toggle"
-                    onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                >
-                    <div className="mft-left">
-                        <Filter size={15} />
-                        <span>Filters</span>
-                        {hasActiveFilters && <span className="mft-badge">Active</span>}
-                    </div>
-                    <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
-                </button>
+                {filterPortalTarget ? createPortal(
+                    <button
+                        onClick={() => setMobileFiltersOpen(o => !o)}
+                        className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
+                        aria-label="Toggle filters"
+                        style={{ position: 'relative' }}
+                    >
+                        <Filter size={18} />
+                        {hasActiveFilters && (
+                            <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
+                        )}
+                    </button>,
+                    filterPortalTarget
+                ) : (
+                    <button 
+                        className="mobile-filter-toggle"
+                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                    >
+                        <div className="mft-left">
+                            <Filter size={15} />
+                            <span>Filters</span>
+                            {hasActiveFilters && <span className="mft-badge">Active</span>}
+                        </div>
+                        <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                    </button>
+                )}
 
                 <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
                     <div className="sidebar-sticky-wrap">
@@ -964,7 +985,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             )}
                                         </div>
                                         <div className="row-action-cluster">
-                                            {normalizedType === 'Chit Fund' && (
+                                            {(normalizedType === 'Chit Fund' || normalizedType === 'EPFO' || normalizedType === 'EPF') && (
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => handleToggleStatus(s)}

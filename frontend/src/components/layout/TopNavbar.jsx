@@ -194,6 +194,7 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                     </div>
 
                     <div className="mh-right">
+                        <div id="mobile-filter-portal-target" style={{ display: 'flex' }}></div>
                         {showAnalyticsBtn && (
                             <button
                                 onClick={onToggleAnalytics}

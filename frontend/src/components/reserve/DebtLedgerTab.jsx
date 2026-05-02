@@ -4,7 +4,7 @@ import { TrendingDown, TrendingUp, Sparkles, Replace, Trash2, X, IndianRupee, Hi
 import { formatCurrency } from '../../utils/formatters';
 
 const STATUSES = [
-    { value: 'ACTIVE',  label: 'Active',  color: '#2563eb', bg: '#eff6ff' },
+    { value: 'ACTIVE', label: 'Active', color: '#2563eb', bg: '#eff6ff' },
     { value: 'PARTIAL', label: 'Partial', color: '#d97706', bg: '#fffbeb' },
     { value: 'SETTLED', label: 'Settled', color: '#16a34a', bg: '#f0fdf4' },
 ];
@@ -14,10 +14,10 @@ function PartialModal({ item, open, onClose, onSave }) {
     const [paidAmt, setPaidAmt] = useState('');
     if (!item) return null;
 
-    const total        = item.amount || 0;
-    const alreadyPaid  = item.partial_amount || 0;
-    const payNow       = parseFloat(paidAmt) || 0;
-    const balance      = Math.max(0, total - alreadyPaid - payNow);
+    const total = item.amount || 0;
+    const alreadyPaid = item.partial_amount || 0;
+    const payNow = parseFloat(paidAmt) || 0;
+    const balance = Math.max(0, total - alreadyPaid - payNow);
     const isReceivable = item.direction === 'OWED_TO_ME';
 
     const handleSave = () => {
@@ -106,16 +106,16 @@ function PartialModal({ item, open, onClose, onSave }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function DebtLedgerTab({ 
-    debtSearch, 
-    setDebtSearch, 
-    debtFilterType, 
-    setDebtFilterType, 
-    debtStats, 
-    filteredDebt, 
-    onEditDebt, 
-    onDebtStatusUpdate, 
-    setDeleteConfirmDebt 
+export default function DebtLedgerTab({
+    debtSearch,
+    setDebtSearch,
+    debtFilterType,
+    setDebtFilterType,
+    debtStats,
+    filteredDebt,
+    onEditDebt,
+    onDebtStatusUpdate,
+    setDeleteConfirmDebt
 }) {
     const [partialItem, setPartialItem] = useState(null);
 
@@ -129,7 +129,7 @@ export default function DebtLedgerTab({
 
     const handlePartialSave = (item, payNow) => {
         const alreadyPaid = item.partial_amount || 0;
-        const newTotal    = alreadyPaid + payNow;
+        const newTotal = alreadyPaid + payNow;
         onDebtStatusUpdate(item, 'PARTIAL', newTotal);
         setPartialItem(null);
     };
@@ -165,82 +165,105 @@ export default function DebtLedgerTab({
             <div className="debt-cards-list">
                 {filteredDebt.length === 0 ? (
                     <div className="ledger-empty-msg">No debt records found.</div>
-                ) : filteredDebt.map(item => {
-                    const isReceivable = item.direction === 'OWED_TO_ME';
-                    const statusClass  = item.status === 'SETTLED' ? 'ds-settled' : item.status === 'PARTIAL' ? 'ds-partial' : 'ds-active';
+                ) : (
+                    ['ACTIVE', 'PARTIAL', 'SETTLED'].map(status => {
+                        const items = filteredDebt.filter(i => i.status === (status === 'ACTIVE' && !i.status ? 'ACTIVE' : status));
+                        if (items.length === 0) return null;
+                        
+                        return (
+                            <div key={status} className="debt-status-group-section">
+                                <div className="debt-group-header">
+                                    <div className={`status-dot-indicator dot-${status.toLowerCase()}`} />
+                                    <span className="debt-group-title">{status} RECORDS</span>
+                                    <div className="debt-group-count">{items.length}</div>
+                                </div>
+                                {items.map(item => {
+                                    const isReceivable = item.direction === 'OWED_TO_ME';
+                                    const statusClass = item.status === 'SETTLED' ? 'ds-settled' : item.status === 'PARTIAL' ? 'ds-partial' : 'ds-active';
 
-                    return (
-                        <div key={item._id} className="acct-card-mobile">
-                            {/* TOP ROW */}
-                            <div className="acct-top-row">
-                                <div className={`account-icon-box ${isReceivable ? 'debt-icon-green' : 'debt-icon-red'}`}>
-                                    {isReceivable ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
-                                </div>
-                                <div className="acct-info">
-                                    <span className="account-main-name">{item.person}</span>
-                                    <div className="acct-badge-row">
-                                        <span className={`account-type-badge ${isReceivable ? 'debt-badge-green' : 'debt-badge-red'}`}>
-                                            {isReceivable ? 'RECEIVABLE' : 'LIABILITY'}
-                                        </span>
-                                        <span className={`debt-status-inline ${statusClass}`}>{item.status}</span>
-                                    </div>
-                                    {item.description && (
-                                        <span className="debt-memo-text">{item.description}</span>
-                                    )}
-                                </div>
-                                <div className="acct-balance">
-                                    {item.partial_amount > 0 ? (
-                                        <>
-                                            {/* Show remaining balance as main value */}
-                                            <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
-                                                {formatCurrency(item.amount - item.partial_amount)}
-                                            </span>
-                                            <span className="account-avail-label" style={{ color: '#d97706' }}>
-                                                Paid {formatCurrency(item.partial_amount)}
-                                            </span>
-                                            <span className="account-avail-label">
-                                                of {formatCurrency(item.amount)}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
-                                            {formatCurrency(item.amount)}
-                                        </span>
-                                    )}
-                                    <span className="account-avail-label">{item.date}</span>
-                                </div>
-                            </div>
+                                    return (
+                                        <div key={item._id} className="acct-card-mobile">
+                                            {/* TOP ROW */}
+                                            <div className="acct-top-row">
+                                                <div className={`account-icon-box ${isReceivable ? 'debt-icon-green' : 'debt-icon-red'}`}>
+                                                    {isReceivable ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+                                                </div>
+                                                <div className="acct-info">
+                                                    <span className="account-main-name">{item.person}</span>
+                                                    <div className="acct-badge-row">
+                                                        <span className={`account-type-badge ${isReceivable ? 'debt-badge-green' : 'debt-badge-red'}`}>
+                                                            {isReceivable ? 'RECEIVABLE' : 'LIABILITY'}
+                                                        </span>
+                                                        <span className={`debt-status-inline ${statusClass}`} style={{ 
+                                                            background: STATUSES.find(s => s.value === item.status)?.bg,
+                                                            color: STATUSES.find(s => s.value === item.status)?.color
+                                                        }}>
+                                                            {item.status || 'ACTIVE'}
+                                                        </span>
+                                                    </div>
+                                                    {item.description && (
+                                                        <span className="debt-memo-text">{item.description}</span>
+                                                    )}
+                                                </div>
+                                                <div className="acct-balance">
+                                                    {item.partial_amount > 0 ? (
+                                                        <>
+                                                            <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
+                                                                {formatCurrency(item.amount - item.partial_amount)}
+                                                            </span>
+                                                            <span className="account-avail-label" style={{ color: '#d97706' }}>
+                                                                Paid {formatCurrency(item.partial_amount)}
+                                                            </span>
+                                                            <span className="account-avail-label">
+                                                                of {formatCurrency(item.amount)}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className={`account-main-val ${isReceivable ? 'debt-val-green' : 'debt-val-red'}`}>
+                                                            {formatCurrency(item.amount)}
+                                                        </span>
+                                                    )}
+                                                    <span className="account-avail-label">{item.date}</span>
+                                                </div>
+                                            </div>
 
-                            {/* STATUS RADIO PILLS */}
-                            <div className="debt-radio-row">
-                                {STATUSES.map(s => (
-                                    <button
-                                        key={s.value}
-                                        className={`debt-radio-pill ${item.status === s.value ? 'dpill-active' : ''}`}
-                                        style={item.status === s.value ? { background: s.bg, color: s.color, borderColor: s.color } : {}}
-                                        onClick={() => handleStatusClick(item, s.value)}
-                                    >
-                                        <span className="dpill-dot" style={item.status === s.value ? { background: s.color } : {}} />
-                                        {s.label}
-                                    </button>
-                                ))}
-                            </div>
+                                            {/* STATUS RADIO PILLS */}
+                                            <div className="debt-radio-row" style={{ 
+                                                background: status === 'ACTIVE' ? 'rgba(99, 102, 241, 0.12)' : 
+                                                            status === 'PARTIAL' ? 'rgba(245, 158, 11, 0.12)' : 
+                                                            'rgba(16, 185, 129, 0.12)' 
+                                            }}>
+                                                {STATUSES.map(s => (
+                                                    <button
+                                                        key={s.value}
+                                                        className={`debt-radio-pill ${item.status === s.value ? 'dpill-active' : ''}`}
+                                                        style={item.status === s.value ? { background: '#ffffff', color: s.color, borderColor: s.color } : {}}
+                                                        onClick={() => handleStatusClick(item, s.value)}
+                                                    >
+                                                        {s.label}
+                                                    </button>
+                                                ))}
+                                            </div>
 
-                            {/* BOTTOM ACTION STRIP */}
-                            <div className="acct-action-strip">
-                                <span className="debt-action-label">Actions</span>
-                                <div className="acct-icon-btns">
-                                    <IconButton size="small" onClick={() => onEditDebt(item)} className="bg-faint-grey">
-                                        <Replace size={13} />
-                                    </IconButton>
-                                    <IconButton size="small" onClick={() => setDeleteConfirmDebt(item)} className="bg-faint-red">
-                                        <Trash2 size={13} />
-                                    </IconButton>
-                                </div>
+                                            {/* BOTTOM ACTION STRIP */}
+                                            <div className="acct-action-strip">
+                                                <span className="debt-action-label">Actions</span>
+                                                <div className="acct-icon-btns">
+                                                    <IconButton size="small" onClick={() => onEditDebt(item)} className="bg-faint-grey">
+                                                        <Replace size={13} />
+                                                    </IconButton>
+                                                    <IconButton size="small" onClick={() => setDeleteConfirmDebt(item)} className="bg-faint-red">
+                                                        <Trash2 size={13} />
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })
+                )}
             </div>
 
             {/* UNIFIED DEBT ACTIVITY LOG - SEPARATE CARD AT THE BOTTOM */}

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment, Stack, CircularProgress } from '@mui/material';
-import { Tag, Layers, CalendarDays, Wallet } from 'lucide-react';
+import { Tag, Layers, CalendarDays, Wallet, ShieldCheck } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 import './Forms.scss';
 
 export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
@@ -27,7 +28,9 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
         description: '',
         funding_source: 'Nippon india corparate bond',
         status: 'ACTIVE',
-        frequency: 'YEARLY'
+        frequency: 'YEARLY',
+        last_paid_year: null,
+        payment_method: 'BANK'
     });
 
     const activeSubs = useMemo(() => {
@@ -46,7 +49,9 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                 description: initialData.description || '',
                 funding_source: initialData.funding_source || 'Nippon india corparate bond',
                 status: initialData.status || 'ACTIVE',
-                frequency: initialData.frequency || 'YEARLY'
+                frequency: initialData.frequency || 'YEARLY',
+                last_paid_year: initialData.last_paid_year || null,
+                payment_method: initialData.payment_method || 'BANK'
             });
         }
     }, [initialData]);
@@ -68,8 +73,6 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
     };
 
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const targetFund = investments?.find(inv => inv.name === 'Nippon india corparate bond');
-    const targetValueStr = targetFund ? ` (Value: ₹${Number(targetFund.value || 0).toLocaleString()})` : '';
 
     return (
         <Box component="form" onSubmit={handleSubmit} className="form-container-premium">
@@ -130,15 +133,52 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                 </Box>
 
                 <Box>
+                    <Typography className="form-label-premium">Mark as Settled (Year)</Typography>
+                    <Select
+                        fullWidth value={formData.last_paid_year || ''} 
+                        onChange={e => setFormData({ ...formData, last_paid_year: e.target.value || null })}
+                        className="form-input-premium"
+                        displayEmpty
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><ShieldCheck size={18} /></Box></InputAdornment>}
+                    >
+                        <MenuItem value="">NOT SETTLED</MenuItem>
+                        <MenuItem value={new Date().getFullYear()}>{new Date().getFullYear()} (CURRENT)</MenuItem>
+                        <MenuItem value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</MenuItem>
+                    </Select>
+                    <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5, px: 1 }}>
+                        Manual override to mark this bill as "Already Done" for the selected year.
+                    </Typography>
+                </Box>
+
+                <Box>
                     <Typography className="form-label-premium">Funding Source / Backing Fund</Typography>
                     <Select
-                        fullWidth value="Nippon india corparate bond" disabled
+                        fullWidth value={formData.funding_source} 
+                        onChange={e => setFormData({ ...formData, funding_source: e.target.value })}
                         className="form-input-premium"
                         startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><Wallet size={18} /></Box></InputAdornment>}
-                        sx={{ color: '#1d1d1f' }}
                     >
-                        <MenuItem value="Nippon india corparate bond" sx={{ fontWeight: 800 }}>📈 Nippon india corparate bond{targetValueStr}</MenuItem>
+                        {reserves?.filter(r => r.account_type === 'BANK' || r.account_type === 'CREDIT_CARD').map(r => (
+                            <MenuItem key={r._id} value={r.account_name}>
+                                {r.account_type === 'BANK' ? '🏦' : '💳'} {r.account_name} (₹{formatCurrency(r.balance)})
+                            </MenuItem>
+                        ))}
                     </Select>
+                </Box>
+
+                <Box>
+                    <Typography className="form-label-premium">Preferred Payment Method</Typography>
+                    <Box className="debt-radio-row">
+                        {['UPI', 'BANK', 'CASH'].map((method) => (
+                            <Box
+                                key={method}
+                                className={`debt-radio-item ${formData.payment_method === method ? 'active' : ''}`}
+                                onClick={() => setFormData({ ...formData, payment_method: method })}
+                            >
+                                <Typography className="radio-label">{method}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
                 </Box>
 
                 <Box className="form-actions-row">

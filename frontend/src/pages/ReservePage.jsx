@@ -107,6 +107,9 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
                 (debtFilterType === 'RECEIVABLE' && item.direction === 'OWED_TO_ME') ||
                 (debtFilterType === 'LIABILITY' && item.direction === 'I_OWE');
             return matchesSearch && matchesType;
+        }).sort((a, b) => {
+            const order = { 'ACTIVE': 1, 'PARTIAL': 2, 'SETTLED': 3 };
+            return (order[a.status] || 4) - (order[b.status] || 4);
         });
     }, [debt, debtSearch, debtFilterType]);
 
@@ -207,7 +210,12 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
 
 
     const sortedInvestments = useMemo(() => {
-        return [...localInvestments].sort((a, b) => b._id.localeCompare(a._id));
+        return [...localInvestments].sort((a, b) => {
+            const order = { 'ACTIVE': 1, 'PARTIAL': 2, 'SETTLED': 3 };
+            const statusDiff = (order[a.status] || 4) - (order[b.status] || 4);
+            if (statusDiff !== 0) return statusDiff;
+            return b._id.localeCompare(a._id);
+        });
     }, [localInvestments]);
 
     const lendingStats = useMemo(() => {

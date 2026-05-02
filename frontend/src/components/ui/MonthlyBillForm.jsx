@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment, Stack, CircularProgress } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { Bookmark, DollarSign, CalendarDays, Tag, Layers, Activity, FileText } from 'lucide-react';
+import { Bookmark, DollarSign, CalendarDays, Tag, Layers, Activity, FileText, ShieldCheck, Wallet } from 'lucide-react';
+import dayjs from 'dayjs';
+import { formatCurrency } from '../../utils/formatters';
 import './Forms.scss';
 
 export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
@@ -25,7 +27,10 @@ export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
         due_month: '1',
         description: '',
         status: 'ACTIVE',
-        frequency: 'MONTHLY'
+        frequency: 'MONTHLY',
+        last_paid_period: null,
+        funding_source: reserves?.[0]?.account_name || '',
+        payment_method: 'BANK'
     });
 
     const activeSubs = useMemo(() => {
@@ -43,10 +48,13 @@ export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
                 due_month: initialData.due_month || '1',
                 description: initialData.description || '',
                 status: initialData.status || 'ACTIVE',
-                frequency: 'MONTHLY'
+                frequency: 'MONTHLY',
+                last_paid_period: initialData.last_paid_period || null,
+                funding_source: initialData.funding_source || reserves?.[0]?.account_name || '',
+                payment_method: initialData.payment_method || 'BANK'
             });
         }
-    }, [initialData]);
+    }, [initialData, reserves]);
 
     const handleSubmit = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -120,6 +128,55 @@ export default function MonthlyBillForm({ onSubmit, onCancel, initialData }) {
                     >
                         {days.map(d => <MenuItem key={d} value={d}>Day {d}</MenuItem>)}
                     </Select>
+                </Box>
+
+                <Box>
+                    <Typography className="form-label-premium">Mark as Settled (Month)</Typography>
+                    <Select
+                        fullWidth value={formData.last_paid_period || ''} 
+                        onChange={e => setFormData({ ...formData, last_paid_period: e.target.value || null })}
+                        className="form-input-premium"
+                        displayEmpty
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><ShieldCheck size={18} /></Box></InputAdornment>}
+                    >
+                        <MenuItem value="">NOT SETTLED</MenuItem>
+                        <MenuItem value={dayjs().format('YYYY-MM')}>{dayjs().format('MMMM YYYY')} (CURRENT)</MenuItem>
+                        <MenuItem value={dayjs().subtract(1, 'month').format('YYYY-MM')}>{dayjs().subtract(1, 'month').format('MMMM YYYY')}</MenuItem>
+                    </Select>
+                    <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5, px: 1 }}>
+                        Manual override to mark this bill as "Already Done" for the selected month.
+                    </Typography>
+                </Box>
+
+                <Box>
+                    <Typography className="form-label-premium">Funding Source / Primary Account</Typography>
+                    <Select
+                        fullWidth value={formData.funding_source} 
+                        onChange={e => setFormData({ ...formData, funding_source: e.target.value })}
+                        className="form-input-premium"
+                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><Wallet size={18} /></Box></InputAdornment>}
+                    >
+                        {reserves?.filter(r => r.account_type === 'BANK' || r.account_type === 'CREDIT_CARD').map(r => (
+                            <MenuItem key={r._id} value={r.account_name}>
+                                {r.account_type === 'BANK' ? '🏦' : '💳'} {r.account_name} (₹{formatCurrency(r.balance)})
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Box>
+
+                <Box>
+                    <Typography className="form-label-premium">Preferred Payment Method</Typography>
+                    <Box className="debt-radio-row">
+                        {['UPI', 'BANK', 'CASH'].map((method) => (
+                            <Box
+                                key={method}
+                                className={`debt-radio-item ${formData.payment_method === method ? 'active' : ''}`}
+                                onClick={() => setFormData({ ...formData, payment_method: method })}
+                            >
+                                <Typography className="radio-label">{method}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
                 </Box>
 
                 <Box>

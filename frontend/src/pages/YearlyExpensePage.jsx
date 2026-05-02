@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Replace, Trash2, Edit2, AlertCircle, Bookmark, ShieldAlert, Church, MonitorPlay, Activity, Wallet, CalendarDays, ArrowRightCircle, ArrowUpCircle, RotateCcw, ReceiptText, TrendingUp } from 'lucide-react';
+import { Plus, Replace, Trash2, Edit2, AlertCircle, Bookmark, ShieldAlert, ShieldCheck, Church, MonitorPlay, Activity, Wallet, CalendarDays, ArrowRightCircle, ArrowUpCircle, RotateCcw, ReceiptText, TrendingUp } from 'lucide-react';
 import BaseDialog from '../components/ui/BaseDialog';
 import { Box, Typography, Button, IconButton, Dialog, Grow, Table, TableBody, TableCell, TableHead, TableRow, Chip, Select, MenuItem, FormControl, Tab, Tabs, TextField, InputAdornment, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
@@ -59,6 +59,16 @@ export default function YearlyExpensePage({ onEdit }) {
     const totalMonthlyCost = useMemo(() => monthlyExpensesList.reduce((s, e) => s + (e.amount || 0), 0), [monthlyExpensesList]);
     const monthlyPaid = useMemo(() => monthlyExpensesList.filter(e => e.last_paid_period === currentMonthPeriod).reduce((s, e) => s + (e.amount || 0), 0), [monthlyExpensesList, currentMonthPeriod]);
     const monthlyRemaining = totalMonthlyCost - monthlyPaid;
+
+    const sortedMonthlyList = useMemo(() => {
+        const unpaid = monthlyExpensesList.filter(e => e.last_paid_period !== currentMonthPeriod).sort((a, b) => (parseInt(a.due_month) || 1) - (parseInt(b.due_month) || 1));
+        const paid = monthlyExpensesList.filter(e => e.last_paid_period === currentMonthPeriod).sort((a, b) => (parseInt(a.due_month) || 1) - (parseInt(b.due_month) || 1));
+        return [...unpaid, ...paid];
+    }, [monthlyExpensesList, currentMonthPeriod]);
+
+    const upcomingMonthly = useMemo(() => {
+        return monthlyExpensesList.filter(e => e.last_paid_period !== currentMonthPeriod).sort((a, b) => (parseInt(a.due_month) || 1) - (parseInt(b.due_month) || 1));
+    }, [monthlyExpensesList, currentMonthPeriod]);
 
     // COMMON HANDLERS
     const handleConfirmPay = async () => {
@@ -171,13 +181,26 @@ export default function YearlyExpensePage({ onEdit }) {
         }
     };
 
-    const getIconForCategory = (category) => {
+    const getIconForCategory = (category, forceColor = null) => {
         const cat = category.toLowerCase();
-        if (cat.includes('insurance')) return <ShieldAlert size={20} color="#3b82f6" />;
-        if (cat.includes('rent') || cat.includes('housing')) return <ShieldAlert size={20} color="#0ea5e9" />;
-        if (cat.includes('utilit')) return <Activity size={20} color="#10b981" />;
-        return <Bookmark size={20} color="#8b5cf6" />;
+        if (cat.includes('insurance')) return <ShieldAlert size={20} color={forceColor || "#3b82f6"} />;
+        if (cat.includes('rent') || cat.includes('housing')) return <ShieldAlert size={20} color={forceColor || "#0ea5e9"} />;
+        if (cat.includes('utilit')) return <Activity size={20} color={forceColor || "#10b981"} />;
+        return <Bookmark size={20} color={forceColor || "#8b5cf6"} />;
     };
+
+    const sortedYearlyList = useMemo(() => {
+        const currentMonthIndex = new Date().getMonth();
+        const unpaid = yearlyExpensesList.filter(e => e.last_paid_year !== currentYear).sort((a, b) => {
+            let aDiff = monthOrder[a.due_month] - currentMonthIndex;
+            if (aDiff < 0) aDiff += 12;
+            let bDiff = monthOrder[b.due_month] - currentMonthIndex;
+            if (bDiff < 0) bDiff += 12;
+            return aDiff - bDiff;
+        });
+        const paid = yearlyExpensesList.filter(e => e.last_paid_year === currentYear).sort((a, b) => monthOrder[a.due_month] - monthOrder[b.due_month]);
+        return [...unpaid, ...paid];
+    }, [yearlyExpensesList, currentYear, monthOrder]);
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
@@ -187,13 +210,13 @@ export default function YearlyExpensePage({ onEdit }) {
                 <div className="expense-tab-system">
                     <Button
                         onClick={() => setActiveTab('YEARLY')}
-                        className={`tab-btn ${activeTab === 'YEARLY' ? 'active' : ''}`}
+                        className={`tab-btn ${activeTab === 'YEARLY' ? 'active yearly-active' : ''}`}
                     >
                         YEARLY RESERVES
                     </Button>
                     <Button
                         onClick={() => setActiveTab('MONTHLY')}
-                        className={`tab-btn ${activeTab === 'MONTHLY' ? 'active' : ''}`}
+                        className={`tab-btn ${activeTab === 'MONTHLY' ? 'active monthly-active' : ''}`}
                     >
                         MONTHLY BILLS
                     </Button>
@@ -202,97 +225,78 @@ export default function YearlyExpensePage({ onEdit }) {
 
             {/* KPI ROW */}
             <div className="expense-kpi-grid">
-                {/* YEARLY CARD */}
-                <div className="expense-card-luxury yearly-gradient">
-                    <div className="bg-icon-watermark"><CalendarDays size={140} /></div>
-                    <Typography className="card-caption-premium">YEARLY OBLIGATIONS</Typography>
+                {/* YEARLY CARD - LITE */}
+                <div className={`expense-card-luxury yearly-gradient lite-card ${(activeTab === 'MONTHLY') ? 'hide-on-mobile' : ''}`}>
+                    <div className="card-top-lite">
+                        <div className="lite-icon-wrap"><CalendarDays size={20} /></div>
+                        <div className="lite-main-info">
 
-                    <Box className="card-main-stat-wrap">
-                        <Typography className="main-stat-text">
-                            {formatCurrency(totalYearlyCost)}
-                            <span className="stat-unit-text">/ year</span>
-                        </Typography>
-                        <div className="expense-card-sip-box">
-                            <Typography className="sip-label">MONTHLY SIP</Typography>
-                            <Typography className="sip-value">{formatCurrency(monthlyObligation)}<span className="sip-unit">/mo</span></Typography>
+                            <div className="main-stat-text">
+                                {formatCurrency(totalYearlyCost)}
+                                <span className="stat-unit-text">/yr</span>
+                            </div>
                         </div>
-                    </Box>
-
-                    <div className="expense-card-stat-group">
-                        <Box className="flex-1">
-                            <Typography className="stat-mini-label">SETTLED</Typography>
-                            <Typography className="stat-mini-value">{formatCurrency(yearlyPaid)}</Typography>
-                        </Box>
-                        <Box className="stat-divider" />
-                        <Box className="flex-1">
-                            <Typography className="stat-mini-label">REMAINING</Typography>
-                            <Typography className="stat-mini-value">{formatCurrency(yearlyRemaining)}</Typography>
-                        </Box>
-                        {upcomingYearly.length > 0 && (
-                            <>
-                                <Box className="stat-divider" />
-                                <Box className="flex-1">
-                                    <Typography className="stat-mini-label">NEXT DUE</Typography>
-                                    <Typography component="div" className="stat-mini-value" sx={{ fontSize: '1rem !important' }}>
-                                        {upcomingYearly[0].due_month}
-                                        <div style={{ fontSize: '0.6rem', opacity: 0.8, fontWeight: 700, marginTop: '-2px' }}>{upcomingYearly[0].name}</div>
-                                    </Typography>
-                                </Box>
-                            </>
-                        )}
                     </div>
 
-                    {/* TOP UP SECTION */}
+                    <div className="lite-stats-row">
+                        <div className="lite-stat-item">
+                            <span className="lite-stat-label">PAID</span>
+                            <span className="lite-stat-val">{formatCurrency(yearlyPaid)}</span>
+                        </div>
+                        <div className="lite-stat-divider" />
+                        <div className="lite-stat-item">
+                            <span className="lite-stat-label">LEFT</span>
+                            <span className="lite-stat-val">{formatCurrency(yearlyRemaining)}</span>
+                        </div>
+                    </div>
+
+                    {/* SIP BOX SMALL */}
+                    <div className="lite-sip-box">
+                        <span className="sip-label">MONTHLY SIP: </span>
+                        <span className="sip-value">{formatCurrency(monthlyObligation)}</span>
+                    </div>
+
+                    {/* TOP UP SECTION - LITE */}
                     {activeTab === 'YEARLY' && (() => {
                         const fund = investments?.find(i => i.name === 'Nippon india corparate bond');
                         const fundBalance = fund ? parseFloat(fund.value || 0) : 0;
                         const topupNeeded = Math.max(0, yearlyRemaining - fundBalance);
-
                         return (
-                            <Box className="expense-fund-console">
-                                <Box className="fund-info-row">
-                                    <Box>
-                                        <Typography className="fund-mini-label">AVAILABLE FUND</Typography>
-                                        <Typography className="fund-mini-value">{formatCurrency(fundBalance)}</Typography>
-                                    </Box>
-                                    <Button
-                                        size="small"
-                                        onClick={() => setTopUpModal(true)}
-                                        className="btn-topup-luxury"
-                                    >
-                                        TOP UP
-                                    </Button>
-                                </Box>
-                                {topupNeeded > 0 && (
-                                    <div className="expense-topup-alert">
-                                        <AlertCircle size={14} color="#ff3b30" />
-                                        <Typography className="deficiency-text"> Deficiency: {formatCurrency(topupNeeded)} needed </Typography>
-                                    </div>
-                                )}
-                            </Box>
+                            <div className="lite-fund-bar">
+                                <div className="fund-info">
+                                    <span className="lbl">FUND:</span>
+                                    <span className="val">{formatCurrency(fundBalance)}</span>
+                                </div>
+                                <Button size="small" onClick={() => setTopUpModal(true)} className="lite-btn-topup">TOP UP</Button>
+                                {topupNeeded > 0 && <div className="lite-alert-dot" title={`Deficiency: ${formatCurrency(topupNeeded)}`} />}
+                            </div>
                         );
                     })()}
                 </div>
 
-                {/* MONTHLY CARD */}
-                <div className="expense-card-luxury monthly-gradient">
-                    <div className="bg-icon-watermark"><Activity size={140} /></div>
-                    <Typography className="card-caption-premium">MONTHLY OBLIGATIONS</Typography>
-                    <Typography className="main-stat-text">
-                        {formatCurrency(totalMonthlyCost)}
-                        <span className="stat-unit-text">/ month</span>
-                    </Typography>
+                {/* MONTHLY CARD - LITE */}
+                <div className={`expense-card-luxury monthly-gradient lite-card ${(activeTab === 'YEARLY') ? 'hide-on-mobile' : ''}`}>
+                    <div className="card-top-lite">
+                        <div className="lite-icon-wrap"><Activity size={20} /></div>
+                        <div className="lite-main-info">
 
-                    <div className="expense-card-stat-group flex-end-margin">
-                        <Box className="flex-1">
-                            <Typography className="stat-mini-label">SETTLED</Typography>
-                            <Typography className="stat-mini-value">{formatCurrency(monthlyPaid)}</Typography>
-                        </Box>
-                        <Box className="stat-divider" />
-                        <Box className="flex-1">
-                            <Typography className="stat-mini-label">REMAINING</Typography>
-                            <Typography className="stat-mini-value">{formatCurrency(monthlyRemaining)}</Typography>
-                        </Box>
+                            <div className="main-stat-text">
+                                {formatCurrency(totalMonthlyCost)}
+                                <span className="stat-unit-text">/mo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="lite-stats-row">
+                        <div className="lite-stat-item">
+                            <span className="lite-stat-label">PAID</span>
+                            <span className="lite-stat-val">{formatCurrency(monthlyPaid)}</span>
+                        </div>
+                        <div className="lite-stat-divider" />
+                        <div className="lite-stat-item">
+                            <span className="lite-stat-label">LEFT</span>
+                            <span className="lite-stat-val">{formatCurrency(monthlyRemaining)}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -309,42 +313,63 @@ export default function YearlyExpensePage({ onEdit }) {
                         exit={{ opacity: 0, x: -10 }}
                         className="debt-cards-list"
                     >
-                        {(activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).length === 0 ? (
+                        {(activeTab === 'YEARLY' ? sortedYearlyList : sortedMonthlyList).length === 0 ? (
                             <Box className="empty-state-box">
                                 <AlertCircle size={48} className="empty-icon" />
                                 <Typography className="empty-text">No {activeTab.toLowerCase()} expenses found.</Typography>
                             </Box>
                         ) : (
-                            (activeTab === 'YEARLY' ? yearlyExpensesList : monthlyExpensesList).map(item => {
+                            (activeTab === 'YEARLY' ? sortedYearlyList : sortedMonthlyList).map(item => {
                                 const isPaid = activeTab === 'YEARLY' ? item.last_paid_year === currentYear : item.last_paid_period === currentMonthPeriod;
 
                                 const nipponFund = investments?.find(i => i.name === 'Nippon india corparate bond');
                                 const isInsufficient = activeTab === 'YEARLY' && nipponFund && parseFloat(nipponFund.value || 0) < item.amount;
-                                const isLocked = activeTab === 'YEARLY' && upcomingYearly.length > 0 && item._id !== upcomingYearly[0]._id;
+                                const isLocked = activeTab === 'YEARLY' && upcomingYearly.length > 0 && item._id !== upcomingYearly[0]._id && !isPaid;
+
+                                // Highlight if it's the very first unpaid item
+                                const isNextDue = activeTab === 'YEARLY'
+                                    ? (upcomingYearly.length > 0 && item._id === upcomingYearly[0]._id)
+                                    : (upcomingMonthly.length > 0 && item._id === upcomingMonthly[0]._id);
+
+                                // Overdue Logic
+                                let isOverdue = false;
+                                if (!isPaid) {
+                                    if (activeTab === 'MONTHLY') {
+                                        const dueDay = parseInt(item.due_month) || 1;
+                                        if (dayjs().date() > dueDay) isOverdue = true;
+                                    } else {
+                                        const currentMonthIdx = new Date().getMonth();
+                                        const dueMonthIdx = monthOrder[item.due_month];
+                                        if (currentMonthIdx > dueMonthIdx) isOverdue = true;
+                                    }
+                                }
 
                                 return (
-                                    <div key={item._id} className="acct-card-mobile">
+                                    <div key={item._id} className={`acct-card-mobile ${isNextDue ? 'highlight-next-due' : ''} ${isOverdue ? 'overdue-pulse' : ''}`}>
                                         <div className="acct-top-row">
-                                            <div className="account-icon-box">
-                                                {getIconForCategory(item.category)}
+                                            <div className={`account-icon-box ${isPaid ? 'paid-icon' : (isNextDue ? 'highlight-icon' : (isOverdue ? 'overdue-icon' : ''))}`}>
+                                                {isPaid ? <ShieldCheck size={20} color="#ffffff" /> : getIconForCategory(item.category, (isNextDue || isOverdue) ? "#ffffff" : null)}
                                             </div>
-                                            <div className="acct-info">
-                                                <span className="account-main-name">{item.name}</span>
+                                            <div className="acct-info" style={{ overflow: 'visible' }}>
+                                                <div className="name-status-row" style={{ display: 'block', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                                                    <span className="account-main-name" style={{ verticalAlign: 'middle' }}>{item.name}</span>
+                                                    {isOverdue && <Chip label="OVERDUE" size="small" className="overdue-chip-lite" style={{ marginLeft: '4px', verticalAlign: 'middle' }} />}
+                                                    {isNextDue && !isOverdue && <Chip label="NEXT DUE" size="small" className="next-due-chip-lite" style={{ marginLeft: '4px', verticalAlign: 'middle' }} />}
+                                                </div>
                                                 <div className="acct-badge-row">
                                                     <span className="account-type-badge">{item.category}</span>
-                                                    <span className="due-date-badge due-normal">
+                                                    <span className={`due-date-badge ${isOverdue ? 'due-overdue' : (isNextDue ? 'due-urgent' : 'due-normal')}`}>
                                                         {activeTab === 'YEARLY'
-                                                            ? `Next Pay: ${item.due_month} ${currentYear + (item.last_paid_year === currentYear ? 1 : 0)}`
-                                                            : `Next Due: ${dayjs().date() <= parseInt(item.due_month)
-                                                                ? dayjs().date(parseInt(item.due_month)).format('MMM DD')
-                                                                : dayjs().add(1, 'month').date(parseInt(item.due_month)).format('MMM DD')}`
+                                                            ? `Due: ${item.due_month} ${currentYear + (item.last_paid_year === currentYear ? 1 : 0)}`
+                                                            : `Due: Day ${item.due_month}`
                                                         }
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="acct-balance account-val-stack">
-                                                <span className="account-main-val">{formatCurrency(item.amount)}</span>
+                                                <span className="account-main-val" style={{ color: isOverdue ? '#ef4444' : 'inherit' }}>{formatCurrency(item.amount)}</span>
                                                 {isPaid && <span className="account-avail-label" style={{ color: '#10b981' }}>PAID</span>}
+                                                {isOverdue && <span className="account-avail-label" style={{ color: '#ef4444' }}>LATE</span>}
                                             </div>
                                         </div>
 

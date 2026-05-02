@@ -212,6 +212,7 @@ $indigo: #4f46e5;
         padding: 1rem !important;
     }
 }
+
 // ─── Account Ledger Card (new unified structure, desktop) ─────────────────────
 .acct-card-mobile {
     padding: 1.25rem 1.5rem;
@@ -276,12 +277,39 @@ $indigo: #4f46e5;
 }
 
 // Debt badge styles (global)
-.debt-icon-green { background: rgba(16, 185, 129, 0.1); svg { color: #10b981; } }
-.debt-icon-red   { background: rgba(239, 68, 68, 0.1);  svg { color: #ef4444; } }
-.debt-badge-green { background: rgba(16, 185, 129, 0.12) !important; color: #059669 !important; }
-.debt-badge-red   { background: rgba(239, 68, 68, 0.1)  !important; color: #dc2626 !important; }
-.debt-val-green   { color: #059669 !important; }
-.debt-val-red     { color: #dc2626 !important; }
+.debt-icon-green {
+    background: rgba(16, 185, 129, 0.1);
+
+    svg {
+        color: #10b981;
+    }
+}
+
+.debt-icon-red {
+    background: rgba(239, 68, 68, 0.1);
+
+    svg {
+        color: #ef4444;
+    }
+}
+
+.debt-badge-green {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #059669 !important;
+}
+
+.debt-badge-red {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #dc2626 !important;
+}
+
+.debt-val-green {
+    color: #059669 !important;
+}
+
+.debt-val-red {
+    color: #dc2626 !important;
+}
 
 .debt-status-inline {
     font-size: 0.55rem;
@@ -290,9 +318,21 @@ $indigo: #4f46e5;
     border-radius: 20px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    &.ds-active  { background: #eff6ff; color: #2563eb; }
-    &.ds-partial { background: #fffbeb; color: #d97706; }
-    &.ds-settled { background: #f0fdf4; color: #16a34a; }
+
+    &.ds-active {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    &.ds-partial {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    &.ds-settled {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
 }
 
 .debt-memo-text {
@@ -309,9 +349,10 @@ $indigo: #4f46e5;
     display: flex;
     flex-direction: row;
     gap: 6px;
-    padding: 8px 14px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-    background: #fafafa;
+    padding: 8px 12px;
+    margin: 8px;
+    border-radius: 14px;
+    background: #e9e9e9;
 }
 
 .debt-radio-pill {
@@ -320,7 +361,7 @@ $indigo: #4f46e5;
     gap: 5px;
     padding: 4px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     background: transparent;
     font-size: 0.6rem;
     font-weight: 700;
@@ -331,7 +372,7 @@ $indigo: #4f46e5;
     font-family: inherit;
 
     &:hover {
-        border-color: rgba(0,0,0,0.2);
+        border-color: rgba(0, 0, 0, 0.2);
         background: #f1f5f9;
     }
 
@@ -340,13 +381,52 @@ $indigo: #4f46e5;
     }
 }
 
-.dpill-dot {
-    width: 6px;
-    height: 6px;
+// ─── Debt Status Groups ──────────────────────────────────────────────────────
+.debt-status-group-section {
+    margin-bottom: 1.25rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.debt-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0.5rem 0.65rem 0.5rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.debt-group-title {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #64748b;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.debt-group-count {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 0.55rem;
+    font-weight: 900;
+    padding: 1px 7px;
+    border-radius: 50px;
+    margin-left: auto;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.status-dot-indicator {
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #94a3b8;
-    flex-shrink: 0;
-    transition: background 0.15s ease;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.02);
+    
+    &.dot-active { background: #6366f1; }
+    &.dot-partial { background: #f59e0b; }
+    &.dot-settled { background: #10b981; }
 }
 
 // ─── Partial Amount Panel ─────────────────────────────────────────────────────
@@ -383,7 +463,10 @@ $indigo: #4f46e5;
     border-radius: 8px !important;
     padding: 6px !important;
     flex-shrink: 0;
-    svg { color: #64748b; }
+
+    svg {
+        color: #64748b;
+    }
 }
 
 // 3 summary cards
@@ -405,9 +488,20 @@ $indigo: #4f46e5;
     border: 1px solid transparent;
 }
 
-.partial-sum-total   { background: #f8fafc; border-color: #e2e8f0; }
-.partial-sum-paid    { background: #fffbeb; border-color: rgba(217,119,6,0.2); }
-.partial-sum-balance { background: #fef2f2; border-color: rgba(239,68,68,0.15); }
+.partial-sum-total {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.partial-sum-paid {
+    background: #fffbeb;
+    border-color: rgba(217, 119, 6, 0.2);
+}
+
+.partial-sum-balance {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.15);
+}
 
 .pscard-label {
     font-size: 0.5rem;
@@ -424,7 +518,9 @@ $indigo: #4f46e5;
     letter-spacing: -0.02em;
 }
 
-.pscard-balance { color: #dc2626; }
+.pscard-balance {
+    color: #dc2626;
+}
 
 // Input section
 .partial-input-section {
@@ -480,7 +576,10 @@ $indigo: #4f46e5;
     background: transparent !important;
     font-family: inherit !important;
 
-    &::placeholder { color: #cbd5e1; font-weight: 600; }
+    &::placeholder {
+        color: #cbd5e1;
+        font-weight: 600;
+    }
 }
 
 // Live balance preview
@@ -532,7 +631,10 @@ $indigo: #4f46e5;
     cursor: pointer;
     font-family: inherit;
     transition: background 0.15s;
-    &:hover { background: #f1f5f9; }
+
+    &:hover {
+        background: #f1f5f9;
+    }
 }
 
 .partial-save-btn {
@@ -551,13 +653,27 @@ $indigo: #4f46e5;
     justify-content: center;
     gap: 6px;
     transition: background 0.15s;
-    &:hover { background: #b45309; }
-    &:disabled { opacity: 0.4; cursor: default; }
+
+    &:hover {
+        background: #b45309;
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .debt-action-label {
@@ -1839,15 +1955,15 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         background: #ffffff !important;
         border-radius: 16px !important;
         overflow: hidden !important;
-        padding: 0 !important;           // block global desktop padding
+        padding: 0 !important; // block global desktop padding
         margin-bottom: 10px !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05) !important;
-        border: 1px solid rgba(0,0,0,0.05) !important;
-        transform: none !important;       // block hover lift on mobile
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        transform: none !important; // block hover lift on mobile
 
         &:hover {
             transform: none !important;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05) !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05) !important;
         }
     }
 
@@ -1891,7 +2007,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         padding: 8px 14px !important;
         margin-top: 0 !important;
         background: #f8fafc !important;
-        border-top: 1px solid rgba(0,0,0,0.05) !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
     }
 
     .acct-icon-btns {
@@ -1907,7 +2023,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         border-radius: 16px !important;
         padding: 0 !important;
         margin-bottom: 10px !important;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0,0,0,0.04) !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
         border: 1px solid rgba(0, 0, 0, 0.05) !important;
         display: flex !important;
         flex-direction: column !important;
@@ -1927,11 +2043,15 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         margin: 0 !important;
         box-shadow: none !important;
         border: none !important;
-        svg { width: 18px !important; height: 18px !important; }
+
+        svg {
+            width: 18px !important;
+            height: 18px !important;
+        }
     }
 
     // Row 1: icon + name/badge (flex-1) + balance on right
-    .account-card-glass > .flex-1 {
+    .account-card-glass>.flex-1 {
         grid-area: unset !important;
         display: flex !important;
         flex-direction: row !important;
@@ -1979,6 +2099,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
     }
+
     .due-date-badge {
         font-size: 0.55rem !important;
         padding: 2px 7px !important;
@@ -2017,6 +2138,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         align-items: flex-end !important;
         flex: unset !important;
     }
+
     .account-main-val {
         font-size: 1.05rem !important;
         font-weight: 900 !important;
@@ -2024,6 +2146,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         letter-spacing: -0.03em !important;
         line-height: 1.1 !important;
     }
+
     .account-avail-label {
         font-size: 0.52rem !important;
         color: #94a3b8 !important;
@@ -2032,7 +2155,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         font-weight: 600 !important;
     }
 
-    .account-actions-col > .flex-gap-05 {
+    .account-actions-col>.flex-gap-05 {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
@@ -2040,10 +2163,11 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         gap: 6px !important;
         padding: 8px 14px !important;
         background: #f8fafc !important;
-        border-top: 1px solid rgba(0,0,0,0.05) !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
+
     .btn-add-money-small {
         height: 26px !important;
         padding: 0 8px !important;
@@ -2055,6 +2179,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         font-weight: 800 !important;
         min-width: unset !important;
     }
+
     .btn-pay-bill-small {
         height: 26px !important;
         padding: 0 8px !important;
@@ -2066,13 +2191,32 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         font-weight: 800 !important;
         min-width: unset !important;
     }
+
     .acct-icon-btns .MuiIconButton-root,
     .account-actions-col .MuiIconButton-root {
         padding: 7px !important;
         border-radius: 10px !important;
-        svg { width: 13px !important; height: 13px !important; }
-        &.bg-faint-red { background: #fff0f0 !important; svg { color: #ef4444 !important; } }
-        &.bg-faint-grey { background: #f1f5f9 !important; svg { color: #475569 !important; } }
+
+        svg {
+            width: 13px !important;
+            height: 13px !important;
+        }
+
+        &.bg-faint-red {
+            background: #fff0f0 !important;
+
+            svg {
+                color: #ef4444 !important;
+            }
+        }
+
+        &.bg-faint-grey {
+            background: #f1f5f9 !important;
+
+            svg {
+                color: #475569 !important;
+            }
+        }
     }
 
     // 5. Debt Ledger — same card design as Account Ledger
@@ -2100,7 +2244,11 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         gap: 3px !important;
         margin-bottom: 0 !important;
         align-items: center !important;
-        svg { width: 15px !important; height: 15px !important; }
+
+        svg {
+            width: 15px !important;
+            height: 15px !important;
+        }
     }
 
     .debt-stat-label {
@@ -2116,11 +2264,18 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     // Icon boxes: green for receivable, red for liability
     .debt-icon-green {
         background: rgba(16, 185, 129, 0.1) !important;
-        svg { color: #10b981 !important; }
+
+        svg {
+            color: #10b981 !important;
+        }
     }
+
     .debt-icon-red {
         background: rgba(239, 68, 68, 0.1) !important;
-        svg { color: #ef4444 !important; }
+
+        svg {
+            color: #ef4444 !important;
+        }
     }
 
     // Direction badges
@@ -2128,6 +2283,7 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         background: rgba(16, 185, 129, 0.12) !important;
         color: #059669 !important;
     }
+
     .debt-badge-red {
         background: rgba(239, 68, 68, 0.1) !important;
         color: #dc2626 !important;
@@ -2142,9 +2298,20 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
         letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
 
-        &.ds-active  { background: #eff6ff !important; color: #2563eb !important; }
-        &.ds-partial { background: #fffbeb !important; color: #d97706 !important; }
-        &.ds-settled { background: #f0fdf4 !important; color: #16a34a !important; }
+        &.ds-active {
+            background: #eff6ff !important;
+            color: #2563eb !important;
+        }
+
+        &.ds-partial {
+            background: #fffbeb !important;
+            color: #d97706 !important;
+        }
+
+        &.ds-settled {
+            background: #f0fdf4 !important;
+            color: #16a34a !important;
+        }
     }
 
     // Memo text
@@ -2159,8 +2326,13 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
     }
 
     // Amount color
-    .debt-val-green { color: #059669 !important; }
-    .debt-val-red   { color: #dc2626 !important; }
+    .debt-val-green {
+        color: #059669 !important;
+    }
+
+    .debt-val-red {
+        color: #dc2626 !important;
+    }
 
     // Inline status select in action strip
     .debt-status-select-inline {
@@ -2176,9 +2348,10 @@ $col-template: 50px 1fr 1fr 1fr 1fr 1.2fr 1fr 80px;
             min-height: unset !important;
             line-height: 26px !important;
         }
+
         .MuiOutlinedInput-notchedOutline {
             border-radius: 20px !important;
-            border-color: rgba(0,0,0,0.1) !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
         }
     }
 

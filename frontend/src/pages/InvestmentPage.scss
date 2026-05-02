@@ -1216,6 +1216,12 @@
     margin-left: 1rem;
 }
 
+.btn-action-status {
+    &.collected {
+        color: #10b981 !important;
+    }
+}
+
 // ── Desktop defaults (these elements are mobile-only controls) ──────
 .mobile-filter-toggle {
     display: none; // Hidden on desktop
@@ -1230,6 +1236,9 @@
 // Native iOS-style: edge-to-edge, compact, single-line rows
 // ═══════════════════════════════════════════════════════════════════
 @media (max-width: 768px) {
+    .spending-split-layout {
+        margin-top: 6px !important;
+    }
 
     // Mobile Filter Toggle Button
     .mobile-filter-toggle {
@@ -1503,6 +1512,10 @@
     }
 
     // Summary Cards
+    .investment-summary-grid {
+        margin-bottom: 0rem !important;
+    }
+
     .summary-card-investment {
         flex-direction: column;
         align-items: flex-start;

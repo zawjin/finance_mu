@@ -51,17 +51,31 @@ export default function LocalInvestmentTab({
 
 
             <Box>
-                {filteredInvestments.map((lending, idx) => (
-                    <LendingInstrumentItem
-                        key={lending._id || idx}
-                        lending={lending}
-                        idx={idx}
-                        onEdit={onEditLending}
-                        onDelete={setDeleteConfirmLending}
-                        onSettle={onSettle}
-                        onRevert={onRevert}
-                    />
-                ))}
+                {['ACTIVE', 'SETTLED'].map(status => {
+                    const items = filteredInvestments.filter(inv => (inv.status === 'SETTLED' ? 'SETTLED' : 'ACTIVE') === status);
+                    if (items.length === 0) return null;
+
+                    return (
+                        <div key={status} className="debt-status-group-section">
+                            <div className="debt-group-header">
+                                <div className={`status-dot-indicator dot-${status.toLowerCase()}`} />
+                                <span className="debt-group-title">{status} ASSETS</span>
+                                <div className="debt-group-count">{items.length}</div>
+                            </div>
+                            {items.map((lending, idx) => (
+                                <LendingInstrumentItem
+                                    key={lending._id || idx}
+                                    lending={lending}
+                                    idx={idx}
+                                    onEdit={onEditLending}
+                                    onDelete={setDeleteConfirmLending}
+                                    onSettle={onSettle}
+                                    onRevert={onRevert}
+                                />
+                            ))}
+                        </div>
+                    );
+                })}
             </Box>
         </div>
     );

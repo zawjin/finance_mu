@@ -29,7 +29,7 @@ export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaul
     const investVal = parseFloat(invest) || 0;
     const netIncomeVal = parseFloat(income) || 0;
     const otherIncomeVal = parseFloat(otherIncome) || 0;
-    
+
     const totalIncomeVal = netIncomeVal + otherIncomeVal;
 
     const totalExpenses = yearlySip + monthlyObligations + ccVal + othersVal + investVal;
@@ -132,12 +132,12 @@ export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaul
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                     <Typography className="group-label" sx={{ mb: 0 }}>VARIABLE INPUTS</Typography>
                                     <Box className="cycle-toggle">
-                                        <button 
-                                            className={ccMode === 'current' ? 'active' : ''} 
+                                        <button
+                                            className={ccMode === 'current' ? 'active' : ''}
                                             onClick={() => handleModeChange('current')}
                                         >Live</button>
-                                        <button 
-                                            className={ccMode === 'previous' ? 'active' : ''} 
+                                        <button
+                                            className={ccMode === 'previous' ? 'active' : ''}
                                             onClick={() => handleModeChange('previous')}
                                         >Prev</button>
                                     </Box>

@@ -424,7 +424,7 @@
 
     @media (max-width: 768px) {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.75rem;
         mask-image: none;
         overflow-x: visible;
@@ -1442,7 +1442,7 @@
     .spending-split-layout {
         padding: 0 !important;
         gap: 0.4em !important;
-        margin-top: 17px !important;
+        margin-top: 6px !important;
     }
 
     // Summary Cards: 3 boxes in one line (3/100%)

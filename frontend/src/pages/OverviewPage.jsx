@@ -406,7 +406,7 @@ export default function OverviewPage() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="ov-hero-bottom">
                             <DailyQuoteBox />
                         </div>
@@ -579,7 +579,6 @@ export default function OverviewPage() {
                             </div>
                             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
-                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Yearly Obligations</div>
                                     <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#78350f', marginTop: '0.1rem' }}>{formatCurrency(pulse.totalYearly)}</div>
                                     <div style={{ fontSize: '0.7rem', color: '#92400e', opacity: 0.8, marginTop: '0.15rem' }}>Annual recurring overheads</div>
                                 </div>
@@ -596,7 +595,6 @@ export default function OverviewPage() {
                                 <Clock size={20} color="#4338ca" />
                             </div>
                             <div>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4338ca', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Monthly Obligations</div>
                                 <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#312e81', marginTop: '0.1rem' }}>{formatCurrency(pulse.totalMonthly)}</div>
                                 <div style={{ fontSize: '0.7rem', color: '#4338ca', opacity: 0.8, marginTop: '0.15rem' }}>Fixed monthly bills</div>
                             </div>
@@ -839,10 +837,10 @@ export default function OverviewPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
                     </div>
-                </div>
-            </motion.div>
-        )}
+                </motion.div>
+            )}
 
             {/* ── Recent Transactions ───────────────────────── */}
             <motion.div {...fadeUp(0.35)}>
