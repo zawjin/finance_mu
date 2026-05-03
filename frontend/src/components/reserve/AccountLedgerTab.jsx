@@ -76,7 +76,7 @@ export default function AccountLedgerTab({ reserves, loading, spending, totalBan
                                         };
                                         const dueDiff = getDueDiff();
                                         return (
-                                            <div key={r._id} className="acct-card-mobile">
+                                            <div key={r._id} className={`acct-card-mobile theme-card-${r.account_type.toLowerCase()}`}>
                                                 {/* ── TOP ROW: icon · name · balance ── */}
                                                 <div className="acct-top-row">
                                                     <div className={`account-icon-box ${style.className}`}>

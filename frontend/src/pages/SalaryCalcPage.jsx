@@ -19,13 +19,13 @@ function deriveFromTotalCTC(totalCTC) {
 }
 
 export default function SalaryCalcPage() {
-    const [basic, setBasic] = useState(59620);
-    const [hra, setHra] = useState(29810);
-    const [specialAllowance, setSpecialAllowance] = useState(44710);
-    const [lta, setLta] = useState(7760);
-    const [pfYearly, setPfYearly] = useState(85853);
+    const [basic, setBasic] = useState(0);
+    const [hra, setHra] = useState(0);
+    const [specialAllowance, setSpecialAllowance] = useState(0);
+    const [lta, setLta] = useState(0);
+    const [pfYearly, setPfYearly] = useState(0);
     const [grossInput, setGrossInput] = useState('');
-    const [bonusYearly, setBonusYearly] = useState(315700);
+    const [bonusYearly, setBonusYearly] = useState(0);
 
     const handleGrossChange = (val) => {
         setGrossInput(val);
@@ -126,7 +126,7 @@ export default function SalaryCalcPage() {
                             <span>₹</span>
                             <input
                                 type="number"
-                                placeholder="e.g. 21,04,360"
+                                placeholder="Enter your annual CTC"
                                 value={grossInput}
                                 onChange={e => handleGrossChange(e.target.value)}
                             />

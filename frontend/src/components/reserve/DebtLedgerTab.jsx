@@ -181,8 +181,10 @@ export default function DebtLedgerTab({
                                     const isReceivable = item.direction === 'OWED_TO_ME';
                                     const statusClass = item.status === 'SETTLED' ? 'ds-settled' : item.status === 'PARTIAL' ? 'ds-partial' : 'ds-active';
 
+                                    const themeClass = item.status === 'SETTLED' ? 'theme-card-wallet' : item.status === 'PARTIAL' ? 'theme-card-cash' : 'theme-card-bank';
+
                                     return (
-                                        <div key={item._id} className="acct-card-mobile">
+                                        <div key={item._id} className={`acct-card-mobile ${themeClass}`}>
                                             {/* TOP ROW */}
                                             <div className="acct-top-row">
                                                 <div className={`account-icon-box ${isReceivable ? 'debt-icon-green' : 'debt-icon-red'}`}>

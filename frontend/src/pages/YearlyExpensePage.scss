@@ -25,16 +25,6 @@ $amber: #f59e0b;
     min-height: 100vh;
 }
 
-// Override global layout padding for this page specifically
-@media (max-width: 768px) {
-    .main-content:has(.page-container-super) {
-        padding: 4.75rem 0.25rem 2rem 0.25rem !important;
-    }
-
-    .hide-on-mobile {
-        display: none !important;
-    }
-}
 
 // ─── Header Row ──────────────────────────────────────────────────────────────
 .expense-header-flex {
@@ -125,7 +115,7 @@ $amber: #f59e0b;
 }
 
 .expense-card-luxury {
-    padding: 2rem 2.25rem !important;
+    padding: 1.25rem 1.75rem !important;
     border-radius: 24px !important;
     color: #ffffff !important;
     position: relative;
@@ -368,7 +358,7 @@ $amber: #f59e0b;
 }
 
 .list-header-premium {
-    padding: 1.1rem 1.75rem;
+    padding: 0.75rem 1.25rem;
     background: #fafbfc;
     border-bottom: 1px solid $border;
     display: flex;
@@ -395,16 +385,16 @@ $amber: #f59e0b;
 .ob-list-container {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    padding: 1rem 1.25rem !important;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem !important;
 }
 
 // ─── Item Row ─────────────────────────────────────────────────────────────────
 .ob-item-row {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    padding: 1.1rem 1.25rem;
+    gap: 1rem;
+    padding: 0.65rem 1rem;
     background: #ffffff;
     border-radius: 16px;
     border: 1px solid $border;
@@ -539,19 +529,19 @@ $amber: #f59e0b;
 }
 
 .audit-log-header {
-    padding: 1.1rem 2rem;
+    padding: 0.75rem 1.5rem;
     background: #fafbfc;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.65rem;
     border-bottom: 1px solid $border;
 }
 
 .audit-header-text {
     font-weight: 800 !important;
     color: $ink !important;
-    letter-spacing: 0.06em !important;
-    font-size: 0.78rem !important;
+    letter-spacing: 0.05em !important;
+    font-size: 0.7rem !important;
 }
 
 .audit-table-head {
@@ -561,14 +551,14 @@ $amber: #f59e0b;
 .audit-th-cell {
     font-weight: 700 !important;
     color: $ink-subtle !important;
-    font-size: 0.68rem !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    font-size: 0.6rem !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.08em !important;
 
     &.cell-pl-4 {
-        padding-left: 2rem !important;
+        padding-left: 1.25rem !important;
     }
 
     &.cell-pr-4 {
@@ -583,28 +573,28 @@ $amber: #f59e0b;
 .audit-td-cell {
     font-weight: 600 !important;
     color: $ink !important;
-    padding-top: 1.1rem !important;
-    padding-bottom: 1.1rem !important;
-    font-size: 0.88rem !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+    font-size: 0.75rem !important;
     border-bottom: 1px solid #f1f5f9 !important;
 
     &.cell-pl-4 {
-        padding-left: 2rem !important;
+        padding-left: 1.25rem !important;
     }
 }
 
 .audit-cat-text {
-    font-size: 0.68rem !important;
+    font-size: 0.6rem !important;
     color: $ink-subtle !important;
     font-weight: 500 !important;
-    margin-top: 0.2rem !important;
+    margin-top: 0.1rem !important;
 }
 
 .audit-td-amount {
     font-weight: 800 !important;
     text-align: right !important;
     color: $rose !important;
-    font-size: 0.95rem !important;
+    font-size: 0.82rem !important;
     letter-spacing: -0.01em !important;
 
     &.cell-pr-4 {
@@ -862,9 +852,9 @@ $amber: #f59e0b;
 }
 
 .acct-card-mobile {
-    padding: 1.25rem 1.5rem;
+    padding: 0.75rem 1rem;
     border-radius: 20px;
-    background: #ffffff;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     transition: all 0.2s ease;
@@ -1061,10 +1051,11 @@ $amber: #f59e0b;
 
 // ─── Highlight Styles ────────────────────────────────────────────────────────
 .highlight-next-due {
-    border: 2px solid #6366f1 !important;
-    background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%) !important;
-    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15) !important;
-    transform: scale(1.02);
+    border: 1px solid rgba(99, 102, 241, 0.25) !important;
+    border-left: 6px solid #6366f1 !important;
+    background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%) !important;
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2), inset 0 0 20px rgba(99, 102, 241, 0.05) !important;
+    // transform: scale(.02);
     z-index: 2;
     margin-bottom: 0.75rem !important;
     margin-top: 0.25rem !important;
@@ -1112,10 +1103,28 @@ $amber: #f59e0b;
     }
 }
 
+.highlight-paid {
+    border: 1.5px solid rgba(16, 185, 129, 0.3) !important;
+    border-left: 6px solid #10b981 !important;
+    background: linear-gradient(135deg, rgba(240, 253, 244, 0.85), rgba(255, 255, 255, 0.95)) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12) !important;
+
+    .account-main-name {
+        color: #065f46 !important;
+    }
+}
+
 .overdue-pulse {
-    border: 2px solid #ef4444 !important;
-    background: rgba(239, 68, 68, 0.04) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.3) !important;
+    border-left: 6px solid #ef4444 !important;
+    background: linear-gradient(135deg, rgba(254, 242, 242, 0.85), rgba(255, 255, 255, 0.95)) !important;
+    backdrop-filter: blur(12px) !important;
     animation: overdue-glow 2s infinite ease-in-out;
+
+    .account-main-name {
+        color: #b91c1c !important;
+    }
 }
 
 @keyframes overdue-glow {
@@ -1221,17 +1230,21 @@ $amber: #f59e0b;
     background: rgba(255, 255, 255, 0.15);
 }
 
-.lite-sip-box {
+.lite-sip-box-inside {
     font-size: 0.62rem;
     font-weight: 700;
     background: rgba(255, 255, 255, 0.08);
-    padding: 0.35rem 0.6rem;
-    border-radius: 8px;
-    display: inline-flex;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
-    align-self: flex-start;
+    gap: 0.25rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
+
+    .sip-label {
+        opacity: 0.6;
+        font-size: 0.5rem;
+    }
 }
 
 .lite-fund-bar {
@@ -1239,9 +1252,10 @@ $amber: #f59e0b;
     align-items: center;
     justify-content: space-between;
     background: rgba(0, 0, 0, 0.18);
-    padding: 0.35rem 0.65rem;
+    padding: 0.4rem 0.65rem !important;
     border-radius: 10px;
-    margin-top: 2px;
+    margin-top: 8px !important;
+    min-height: 10px !important;
 }
 
 .fund-info {
@@ -1300,14 +1314,52 @@ $amber: #f59e0b;
     }
 }
 
-// Mobile override for Fund Bar button
+
+
+
+// Mobile overrides
 @media (max-width: 768px) {
-    .lite-fund-bar>.MuiButton-root {
+    .main-content:has(.page-container-super) {
+        padding: 4.75rem 0.25rem 2rem 0.25rem !important;
+    }
+
+    .hide-on-mobile {
+        display: none !important;
+    }
+
+    .flex-center-gap-1>.MuiButton-root {
         border-radius: 5px !important;
         font-size: 0.50rem !important;
         font-weight: 900 !important;
-        min-height: 30px !important;
+        min-height: 23px !important;
         text-transform: none !important;
         letter-spacing: 0 !important;
+    }
+
+    .flex-center-gap-1>.MuiButton-root {
+        border-radius: 5px !important;
+        font-size: 0.50rem !important;
+        font-weight: 900 !important;
+        min-height: 23px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    .acct-card-mobile.highlight-next-due {
+        background: linear-gradient(135deg, rgba(248, 250, 255, 0.9), rgba(255, 255, 255, 0.95)) !important;
+        border-left: 6px solid #6366f1 !important;
+    }
+
+    .acct-card-mobile.highlight-paid {
+        background: linear-gradient(135deg, rgba(240, 253, 244, 0.9), rgba(255, 255, 255, 0.95)) !important;
+        border-left: 6px solid #10b981 !important;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1) !important;
+    }
+
+    .acct-card-mobile.overdue-pulse {
+        border: 1.5px solid rgba(239, 68, 68, 0.3) !important;
+        border-left: 6px solid #ef4444 !important;
+        background: linear-gradient(135deg, rgba(254, 242, 242, 0.85), rgba(255, 255, 255, 0.95)) !important;
+
     }
 }

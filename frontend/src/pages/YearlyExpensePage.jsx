@@ -250,12 +250,6 @@ export default function YearlyExpensePage({ onEdit }) {
                         </div>
                     </div>
 
-                    {/* SIP BOX SMALL */}
-                    <div className="lite-sip-box">
-                        <span className="sip-label">MONTHLY SIP: </span>
-                        <span className="sip-value">{formatCurrency(monthlyObligation)}</span>
-                    </div>
-
                     {/* TOP UP SECTION - LITE */}
                     {activeTab === 'YEARLY' && (() => {
                         const fund = investments?.find(i => i.name === 'Nippon india corparate bond');
@@ -267,8 +261,14 @@ export default function YearlyExpensePage({ onEdit }) {
                                     <span className="lbl">FUND:</span>
                                     <span className="val">{formatCurrency(fundBalance)}</span>
                                 </div>
-                                <Button size="small" onClick={() => setTopUpModal(true)} className="lite-btn-topup">TOP UP</Button>
-                                {topupNeeded > 0 && <div className="lite-alert-dot" title={`Deficiency: ${formatCurrency(topupNeeded)}`} />}
+                                <div className="lite-sip-box-inside">
+                                    <span className="sip-label">SIP:</span>
+                                    <span className="sip-value">{formatCurrency(monthlyObligation)}</span>
+                                </div>
+                                <div className="flex-center-gap-1">
+                                    <Button size="small" onClick={() => setTopUpModal(true)} className="lite-btn-topup">TOP UP</Button>
+                                    {topupNeeded > 0 && <div className="lite-alert-dot" title={`Deficiency: ${formatCurrency(topupNeeded)}`} />}
+                                </div>
                             </div>
                         );
                     })()}
@@ -345,7 +345,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                 }
 
                                 return (
-                                    <div key={item._id} className={`acct-card-mobile ${isNextDue ? 'highlight-next-due' : ''} ${isOverdue ? 'overdue-pulse' : ''}`}>
+                                    <div key={item._id} className={`acct-card-mobile ${isPaid ? 'highlight-paid' : ''} ${isNextDue ? (activeTab === 'MONTHLY' ? 'highlight-next-due-monthly' : 'highlight-next-due') : ''} ${isOverdue ? 'overdue-pulse' : ''}`}>
                                         <div className="acct-top-row">
                                             <div className={`account-icon-box ${isPaid ? 'paid-icon' : (isNextDue ? 'highlight-icon' : (isOverdue ? 'overdue-icon' : ''))}`}>
                                                 {isPaid ? <ShieldCheck size={20} color="#ffffff" /> : getIconForCategory(item.category, (isNextDue || isOverdue) ? "#ffffff" : null)}

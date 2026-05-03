@@ -230,6 +230,72 @@ $indigo: #4f46e5;
     }
 }
 
+// ─── Color-Coded Accent Designs ──────────────────────────────────────────────
+.investment-items-luxury .acct-card-mobile,
+.debt-cards-list .acct-card-mobile {
+    margin-bottom: 0.75rem !important;
+    margin-top: 0.25rem !important;
+
+    .account-icon-box {
+        color: #ffffff !important;
+        svg { color: #ffffff !important; }
+    }
+    .account-main-name {
+        font-weight: 900 !important;
+    }
+    .account-type-badge {
+        color: #ffffff !important;
+    }
+    
+    // BANK Theme
+    &.theme-card-bank {
+        border: 1px solid rgba(99, 102, 241, 0.25) !important;
+        border-left: 6px solid #6366f1 !important;
+        background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%) !important;
+        
+        .account-icon-box { background: #6366f1 !important; border-color: #6366f1 !important; }
+        .account-main-name { color: #4338ca !important; }
+        .account-main-val { color: #4338ca !important; }
+        .account-type-badge { background: #6366f1 !important; }
+    }
+    
+    // WALLET Theme
+    &.theme-card-wallet {
+        border: 1px solid rgba(16, 185, 129, 0.25) !important;
+        border-left: 6px solid #10b981 !important;
+        background: linear-gradient(135deg, #f4fdf8 0%, #ffffff 100%) !important;
+        
+        .account-icon-box { background: #10b981 !important; border-color: #10b981 !important; }
+        .account-main-name { color: #047857 !important; }
+        .account-main-val { color: #047857 !important; }
+        .account-type-badge { background: #10b981 !important; }
+    }
+    
+    // CASH Theme
+    &.theme-card-cash {
+        border: 1px solid rgba(245, 158, 11, 0.25) !important;
+        border-left: 6px solid #f59e0b !important;
+        background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important;
+        
+        .account-icon-box { background: #f59e0b !important; border-color: #f59e0b !important; }
+        .account-main-name { color: #b45309 !important; }
+        .account-main-val { color: #b45309 !important; }
+        .account-type-badge { background: #f59e0b !important; }
+    }
+    
+    // CREDIT CARD Theme
+    &.theme-card-credit_card {
+        border: 1px solid rgba(244, 63, 94, 0.25) !important;
+        border-left: 6px solid #f43f5e !important;
+        background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%) !important;
+        
+        .account-icon-box { background: #f43f5e !important; border-color: #f43f5e !important; }
+        .account-main-name { color: #be123c !important; }
+        .account-main-val { color: #be123c !important; }
+        .account-type-badge { background: #f43f5e !important; }
+    }
+}
+
 .acct-top-row {
     display: flex;
     align-items: center;
@@ -415,18 +481,26 @@ $indigo: #4f46e5;
     padding: 1px 7px;
     border-radius: 50px;
     margin-left: auto;
-    border: 1px solid rgba(0,0,0,0.04);
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .status-dot-indicator {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.02);
-    
-    &.dot-active { background: #6366f1; }
-    &.dot-partial { background: #f59e0b; }
-    &.dot-settled { background: #10b981; }
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.02);
+
+    &.dot-active {
+        background: #6366f1;
+    }
+
+    &.dot-partial {
+        background: #f59e0b;
+    }
+
+    &.dot-settled {
+        background: #10b981;
+    }
 }
 
 // ─── Partial Amount Panel ─────────────────────────────────────────────────────
