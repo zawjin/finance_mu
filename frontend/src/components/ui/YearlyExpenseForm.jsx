@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Button, TextField, Select, MenuItem, InputAdornment, Stack, CircularProgress } from '@mui/material';
-import { Tag, Layers, CalendarDays, Wallet, ShieldCheck } from 'lucide-react';
+import { Tag, Layers, CalendarDays, Wallet, ShieldCheck, Banknote, Landmark, CreditCard, Smartphone, Gift, CircleDollarSign } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import './Forms.scss';
 
@@ -55,6 +55,26 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
             });
         }
     }, [initialData]);
+
+    const PAYMENT_METHODS = [
+        { key: 'CASH', label: 'Cash', icon: <Banknote size={16} />, color: '#f59e0b', deductsReserve: true },
+        { key: 'BANK', label: 'Bank', icon: <Landmark size={16} />, color: '#6366f1', deductsReserve: true },
+        { key: 'WALLET', label: 'Wallet', icon: <Wallet size={16} />, color: '#10b981', deductsReserve: true },
+        { key: 'CARD', label: 'Card', icon: <CreditCard size={16} />, color: '#ff3b30', deductsReserve: true },
+        { key: 'UPI', label: 'UPI', icon: <Smartphone size={16} />, color: '#0071e3', deductsReserve: false },
+        { key: 'GIFT', label: 'Gift', icon: <Gift size={16} />, color: '#ff9500', deductsReserve: false },
+        { key: 'OTHER', label: 'Other', icon: <CircleDollarSign size={16} />, color: '#86868b', deductsReserve: false },
+    ];
+
+    const selectedMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
+    const filteredReserves = reserves.filter(r => {
+        if (formData.payment_method === 'CASH') return r.account_type === 'CASH';
+        if (formData.payment_method === 'BANK') return r.account_type === 'BANK';
+        if (formData.payment_method === 'WALLET') return r.account_type === 'WALLET';
+        if (formData.payment_method === 'CARD') return r.account_type === 'CREDIT_CARD';
+        return true;
+    });
+    const showSourcePicker = selectedMethod?.deductsReserve && filteredReserves.length > 1;
 
     const handleSubmit = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -150,36 +170,93 @@ export default function YearlyExpenseForm({ onSubmit, onCancel, initialData }) {
                     </Typography>
                 </Box>
 
+                {/* PAYMENT METHOD */}
                 <Box>
-                    <Typography className="form-label-premium">Funding Source / Backing Fund</Typography>
-                    <Select
-                        fullWidth value={formData.funding_source} 
-                        onChange={e => setFormData({ ...formData, funding_source: e.target.value })}
-                        className="form-input-premium"
-                        startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)', color: '#94a3b8' }}><Wallet size={18} /></Box></InputAdornment>}
-                    >
-                        {reserves?.filter(r => r.account_type === 'BANK' || r.account_type === 'CREDIT_CARD').map(r => (
-                            <MenuItem key={r._id} value={r.account_name}>
-                                {r.account_type === 'BANK' ? '🏦' : '💳'} {r.account_name} (₹{formatCurrency(r.balance)})
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </Box>
+                    <Typography className="form-label-premium">PAYMENT METHOD</Typography>
+                    <Box className="payment-method-pill-group">
+                        {PAYMENT_METHODS.map(m => {
+                            let matchingReserves = [];
+                            if (m.key === 'CASH') matchingReserves = reserves.filter(r => r.account_type === 'CASH');
+                            if (m.key === 'BANK') matchingReserves = reserves.filter(r => r.account_type === 'BANK');
+                            if (m.key === 'WALLET') matchingReserves = reserves.filter(r => r.account_type === 'WALLET');
+                            if (m.key === 'CARD') matchingReserves = reserves.filter(r => r.account_type === 'CREDIT_CARD');
 
-                <Box>
-                    <Typography className="form-label-premium">Preferred Payment Method</Typography>
-                    <Box className="debt-radio-row">
-                        {['UPI', 'BANK', 'CASH'].map((method) => (
-                            <Box
-                                key={method}
-                                className={`debt-radio-item ${formData.payment_method === method ? 'active' : ''}`}
-                                onClick={() => setFormData({ ...formData, payment_method: method })}
-                            >
-                                <Typography className="radio-label">{method}</Typography>
-                            </Box>
-                        ))}
+                            const isSingleAccount = matchingReserves.length === 1;
+                            const isSelected = formData.payment_method === m.key;
+
+                            return (
+                                <Box
+                                    key={m.key}
+                                    onClick={() => setFormData({ 
+                                        ...formData, 
+                                        payment_method: m.key, 
+                                        funding_source: isSingleAccount ? matchingReserves[0].account_name : '' 
+                                    })}
+                                    className={`method-pill ${isSelected ? `active method-${m.key.toLowerCase()}` : `method-${m.key.toLowerCase()}`}`}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <Box className="pill-icon">{m.icon}</Box>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <Typography className="pill-label">{m.label}</Typography>
+                                            {isSelected && isSingleAccount && (
+                                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, mt: -0.2, opacity: 0.9 }}>
+                                                    ₹{parseFloat(matchingReserves[0].balance).toLocaleString('en-IN')}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            );
+                        })}
                     </Box>
                 </Box>
+
+                {/* FUNDING SOURCE */}
+                {showSourcePicker && (
+                    <Box>
+                        <Typography className="form-label-premium">FUNDING SOURCE — <span style={{ color: selectedMethod?.color || '#94a3b8' }}>DEDUCT FROM</span></Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mt: 1 }}>
+                            {filteredReserves.map(r => {
+                                const isSelected = formData.funding_source === r.account_name;
+                                return (
+                                    <Box
+                                        key={r._id}
+                                        onClick={() => setFormData({ ...formData, funding_source: r.account_name })}
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'flex-start',
+                                            padding: '10px 8px',
+                                            borderRadius: '12px',
+                                            border: `1.5px solid ${isSelected ? selectedMethod?.color : '#e2e8f0'}`,
+                                            backgroundColor: isSelected ? `${selectedMethod?.color}10` : '#f8fafc',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                borderColor: !isSelected ? '#cbd5e1' : undefined,
+                                                transform: !isSelected ? 'translateY(-2px)' : 'none',
+                                                boxShadow: !isSelected ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5, width: '100%' }}>
+                                            <Box sx={{ color: isSelected ? selectedMethod?.color : '#94a3b8' }}>
+                                                {r.account_type === 'BANK' ? <Landmark size={14} /> : <CreditCard size={14} />}
+                                            </Box>
+                                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: isSelected ? '#1d1d1f' : '#64748b', textTransform: 'uppercase', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                {r.account_name}
+                                            </Typography>
+                                        </Box>
+                                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 900, color: '#1d1d1f' }}>
+                                            ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                        </Typography>
+                                    </Box>
+                                );
+                            })}
+                        </Box>
+                    </Box>
+                )}
 
                 <Box className="form-actions-row">
                     <Button onClick={onCancel} className="btn-dismiss-premium">

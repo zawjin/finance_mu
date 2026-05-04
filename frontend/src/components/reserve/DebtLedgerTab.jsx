@@ -169,14 +169,10 @@ export default function DebtLedgerTab({
                     ['ACTIVE', 'PARTIAL', 'SETTLED'].map(status => {
                         const items = filteredDebt.filter(i => i.status === (status === 'ACTIVE' && !i.status ? 'ACTIVE' : status));
                         if (items.length === 0) return null;
-                        
+
                         return (
-                            <div key={status} className="debt-status-group-section">
-                                <div className="debt-group-header">
-                                    <div className={`status-dot-indicator dot-${status.toLowerCase()}`} />
-                                    <span className="debt-group-title">{status} RECORDS</span>
-                                    <div className="debt-group-count">{items.length}</div>
-                                </div>
+                            <>
+
                                 {items.map(item => {
                                     const isReceivable = item.direction === 'OWED_TO_ME';
                                     const statusClass = item.status === 'SETTLED' ? 'ds-settled' : item.status === 'PARTIAL' ? 'ds-partial' : 'ds-active';
@@ -196,7 +192,7 @@ export default function DebtLedgerTab({
                                                         <span className={`account-type-badge ${isReceivable ? 'debt-badge-green' : 'debt-badge-red'}`}>
                                                             {isReceivable ? 'RECEIVABLE' : 'LIABILITY'}
                                                         </span>
-                                                        <span className={`debt-status-inline ${statusClass}`} style={{ 
+                                                        <span className={`debt-status-inline ${statusClass}`} style={{
                                                             background: STATUSES.find(s => s.value === item.status)?.bg,
                                                             color: STATUSES.find(s => s.value === item.status)?.color
                                                         }}>
@@ -230,10 +226,10 @@ export default function DebtLedgerTab({
                                             </div>
 
                                             {/* STATUS RADIO PILLS */}
-                                            <div className="debt-radio-row" style={{ 
-                                                background: status === 'ACTIVE' ? 'rgba(99, 102, 241, 0.12)' : 
-                                                            status === 'PARTIAL' ? 'rgba(245, 158, 11, 0.12)' : 
-                                                            'rgba(16, 185, 129, 0.12)' 
+                                            <div className="debt-radio-row" style={{
+                                                background: status === 'ACTIVE' ? 'rgba(99, 102, 241, 0.12)' :
+                                                    status === 'PARTIAL' ? 'rgba(245, 158, 11, 0.12)' :
+                                                        'rgba(16, 185, 129, 0.12)'
                                             }}>
                                                 {STATUSES.map(s => (
                                                     <button
@@ -262,7 +258,7 @@ export default function DebtLedgerTab({
                                         </div>
                                     );
                                 })}
-                            </div>
+                            </>
                         );
                     })
                 )}

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Replace, Trash2, Edit2, AlertCircle, Bookmark, ShieldAlert, ShieldCheck, Church, MonitorPlay, Activity, Wallet, CalendarDays, ArrowRightCircle, ArrowUpCircle, RotateCcw, ReceiptText, TrendingUp } from 'lucide-react';
+import { Plus, Replace, Trash2, Edit2, AlertCircle, Bookmark, ShieldAlert, ShieldCheck, Church, MonitorPlay, Activity, Wallet, CalendarDays, ArrowRightCircle, ArrowUpCircle, RotateCcw, ReceiptText, TrendingUp, Landmark, CreditCard } from 'lucide-react';
 import BaseDialog from '../components/ui/BaseDialog';
 import { Box, Typography, Button, IconButton, Dialog, Grow, Table, TableBody, TableCell, TableHead, TableRow, Chip, Select, MenuItem, FormControl, Tab, Tabs, TextField, InputAdornment, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
@@ -475,35 +475,48 @@ export default function YearlyExpensePage({ onEdit }) {
                                     </Box>
                                 );
                             })() : (
-                                <Select value={paySourceId} onChange={e => setPaySourceId(e.target.value)} displayEmpty className="dialog-select-premium">
-                                    <MenuItem value="" disabled>Select Source</MenuItem>
-                                    {reserves?.map(r => {
-                                        const isInsufficient = parseFloat(r.balance || 0) < payModalItem.amount && r.account_type !== 'CREDIT_CARD';
+                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mt: 1 }}>
+                                    {reserves?.filter(r => r.account_type !== 'CREDIT_CARD').map(r => {
+                                        const isInsufficient = parseFloat(r.balance || 0) < payModalItem.amount;
+                                        const isSelected = paySourceId === r._id;
                                         return (
-                                            <MenuItem key={r._id} value={r._id} disabled={isInsufficient}>
-                                                <Box className="select-item-flex">
-                                                    <Typography className="select-item-title">🏦 {r.account_name}</Typography>
-                                                    <Typography className={`select-item-bal ${isInsufficient ? 'error' : 'success'}`}>
-                                                        {formatCurrency(r.balance || 0)} {isInsufficient && <span className="nano-text">LOW</span>}
+                                            <Box
+                                                key={r._id}
+                                                onClick={() => !isInsufficient && setPaySourceId(r._id)}
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'flex-start',
+                                                    padding: '10px 8px',
+                                                    borderRadius: '12px',
+                                                    border: `1.5px solid ${isSelected ? '#6366f1' : '#e2e8f0'}`,
+                                                    backgroundColor: isSelected ? `#6366f110` : '#f8fafc',
+                                                    cursor: isInsufficient ? 'not-allowed' : 'pointer',
+                                                    opacity: isInsufficient ? 0.5 : 1,
+                                                    transition: 'all 0.2s ease',
+                                                    '&:hover': {
+                                                        borderColor: !isInsufficient && !isSelected ? '#cbd5e1' : undefined,
+                                                        transform: !isInsufficient && !isSelected ? 'translateY(-2px)' : 'none',
+                                                        boxShadow: !isInsufficient && !isSelected ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+                                                    }
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5, width: '100%' }}>
+                                                    <Box sx={{ color: isSelected ? '#6366f1' : '#94a3b8' }}>
+                                                        {r.account_type === 'BANK' ? <Landmark size={14} /> : <Wallet size={14} />}
+                                                    </Box>
+                                                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: isSelected ? '#1d1d1f' : '#64748b', textTransform: 'uppercase', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        {r.account_name}
                                                     </Typography>
                                                 </Box>
-                                            </MenuItem>
+                                                <Typography sx={{ fontSize: '0.85rem', fontWeight: 900, color: '#1d1d1f' }}>
+                                                    ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                                </Typography>
+                                            </Box>
                                         );
                                     })}
-                                    {investments?.map(i => {
-                                        const isInsufficient = parseFloat(i.value || 0) < payModalItem.amount;
-                                        return (
-                                            <MenuItem key={i._id} value={i._id} disabled={isInsufficient}>
-                                                <Box className="select-item-flex">
-                                                    <Typography className="select-item-title">📈 {i.name}</Typography>
-                                                    <Typography className={`select-item-bal ${isInsufficient ? 'error' : 'success'}`}>
-                                                        {formatCurrency(i.value || 0)} {isInsufficient && <span className="nano-text">LOW</span>}
-                                                    </Typography>
-                                                </Box>
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Select>
+                                </Box>
                             )}
                         </FormControl>
 

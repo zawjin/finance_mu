@@ -85,7 +85,6 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
     ];
 
     const selectedMethod = PAYMENT_METHODS.find(m => m.key === formData.payment_method);
-    const showSourcePicker = selectedMethod?.deductsReserve && reserves.length > 0;
     const filteredReserves = reserves.filter(r => {
         if (formData.payment_method === 'CASH') return r.account_type === 'CASH';
         if (formData.payment_method === 'BANK') return r.account_type === 'BANK';
@@ -93,6 +92,7 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         if (formData.payment_method === 'CARD') return r.account_type === 'CREDIT_CARD';
         return true;
     });
+    const showSourcePicker = selectedMethod?.deductsReserve && filteredReserves.length > 1;
 
 
     return (
@@ -293,16 +293,40 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 <Box>
                     <Typography className="form-label-premium">PAYMENT METHOD</Typography>
                     <Box className="payment-method-pill-group">
-                        {PAYMENT_METHODS.map(m => (
-                            <Box
-                                key={m.key}
-                                onClick={() => setFormData({ ...formData, payment_method: m.key, payment_source_id: '' })}
-                                className={`method-pill ${formData.payment_method === m.key ? `active method-${m.key.toLowerCase()}` : `method-${m.key.toLowerCase()}`}`}
-                            >
-                                <Box className="pill-icon">{m.icon}</Box>
-                                <Typography className="pill-label">{m.label}</Typography>
-                            </Box>
-                        ))}
+                        {PAYMENT_METHODS.map(m => {
+                            let matchingReserves = [];
+                            if (m.key === 'CASH') matchingReserves = reserves.filter(r => r.account_type === 'CASH');
+                            if (m.key === 'BANK') matchingReserves = reserves.filter(r => r.account_type === 'BANK');
+                            if (m.key === 'WALLET') matchingReserves = reserves.filter(r => r.account_type === 'WALLET');
+                            if (m.key === 'CARD') matchingReserves = reserves.filter(r => r.account_type === 'CREDIT_CARD');
+
+                            const isSingleAccount = matchingReserves.length === 1;
+                            const isSelected = formData.payment_method === m.key;
+
+                            return (
+                                <Box
+                                    key={m.key}
+                                    onClick={() => setFormData({ 
+                                        ...formData, 
+                                        payment_method: m.key, 
+                                        payment_source_id: isSingleAccount ? matchingReserves[0]._id : '' 
+                                    })}
+                                    className={`method-pill ${isSelected ? `active method-${m.key.toLowerCase()}` : `method-${m.key.toLowerCase()}`}`}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <Box className="pill-icon">{m.icon}</Box>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                            <Typography className="pill-label">{m.label}</Typography>
+                                            {isSelected && isSingleAccount && (
+                                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, mt: -0.2, opacity: 0.9 }}>
+                                                    ₹{parseFloat(matchingReserves[0].balance).toLocaleString('en-IN')}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            );
+                        })}
                     </Box>
                 </Box>
 
@@ -310,72 +334,100 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                 {showSourcePicker && (
                     <Box>
                         <Typography className="form-label-premium">SOURCE ACCOUNT — <span style={{ color: selectedMethod.color }}>DEBIT FROM</span></Typography>
-                        <Select
-                            fullWidth
-                            size="small"
-                            value={formData.payment_source_id}
-                            onChange={e => setFormData({ ...formData, payment_source_id: e.target.value })}
-                            displayEmpty
-                            renderValue={(selected) => {
-                                if (!selected) return <span style={{ opacity: 0.6 }}>No deduction (manual only)</span>;
-                                const account = filteredReserves.find(r => r._id === selected);
-                                return account ? account.account_name : selected;
-                            }}
-                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}><Landmark size={18} /></Box></InputAdornment>}
-                            className="form-input-premium"
-                        >
-                            <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>No deduction (manual only)</em></MenuItem>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mt: 1 }}>
                             {filteredReserves.map(r => {
                                 const isInsufficient = parseFloat(r.balance) < (parseFloat(formData.amount) || 0) && r.account_type !== 'CREDIT_CARD';
+                                const isSelected = formData.payment_source_id === r._id;
                                 return (
-                                    <MenuItem key={r._id} value={r._id} disabled={isInsufficient}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', opacity: isInsufficient ? 0.5 : 1 }}>
-                                            <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
-                                            <Box sx={{ textAlign: 'right' }}>
-                                                <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: isInsufficient ? '#ff3b30' : '#10b981' }}>
-                                                    ₹{parseFloat(r.balance).toLocaleString('en-IN')}
-                                                </Typography>
-                                                {isInsufficient && <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: '#ff3b30' }}>INSUFFICIENT</Typography>}
+                                    <Box
+                                        key={r._id}
+                                        onClick={() => !isInsufficient && setFormData({ ...formData, payment_source_id: r._id })}
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'flex-start',
+                                            padding: '10px 8px',
+                                            borderRadius: '12px',
+                                            border: `1.5px solid ${isSelected ? selectedMethod.color : '#e2e8f0'}`,
+                                            backgroundColor: isSelected ? `${selectedMethod.color}10` : '#f8fafc',
+                                            cursor: isInsufficient ? 'not-allowed' : 'pointer',
+                                            opacity: isInsufficient ? 0.5 : 1,
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                borderColor: !isInsufficient && !isSelected ? '#cbd5e1' : undefined,
+                                                transform: !isInsufficient && !isSelected ? 'translateY(-2px)' : 'none',
+                                                boxShadow: !isInsufficient && !isSelected ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5, width: '100%' }}>
+                                            <Box sx={{ color: isSelected ? selectedMethod.color : '#94a3b8' }}>
+                                                <Landmark size={14} />
                                             </Box>
+                                            <Typography sx={{ fontWeight: 800, fontSize: '0.65rem', color: isSelected ? selectedMethod.color : '#475569', textTransform: 'uppercase', letterSpacing: '0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {r.account_name}
+                                            </Typography>
                                         </Box>
-                                    </MenuItem>
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: isInsufficient ? '#ff3b30' : (isSelected ? selectedMethod.color : '#0f172a') }} noWrap>
+                                                ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                            </Typography>
+                                            {isInsufficient && <Typography sx={{ fontSize: '0.55rem', fontWeight: 800, color: '#ff3b30', mt: 0.5, letterSpacing: '0.04em' }}>INSUFF.</Typography>}
+                                        </Box>
+                                    </Box>
                                 );
                             })}
-                        </Select>
+                        </Box>
                     </Box>
                 )}
 
                 {/* TARGET ACCOUNT (For Settlements/Transfers) */}
-                {formData.category === 'Financial' || formData.payment_method === 'BANK' ? (
+                {formData.category === 'Financial' ? (
                     <Box>
-                        <Typography className="form-label-premium">TARGET SETTLEMENT — <span style={{ color: '#6366f1' }}>CREDIT TO / PAY OFF</span></Typography>
-                        <Select
-                            fullWidth
-                            size="small"
-                            value={formData.target_account_id}
-                            onChange={e => setFormData({ ...formData, target_account_id: e.target.value })}
-                            displayEmpty
-                            renderValue={(selected) => {
-                                if (!selected) return <span style={{ opacity: 0.6 }}>None (Standard Expense)</span>;
-                                const account = reserves.find(r => r._id === selected);
-                                return account ? account.account_name : selected;
-                            }}
-                            className="form-input-premium"
-                            startAdornment={<InputAdornment position="start" sx={{ ml: -0.5 }}><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}><CreditCard size={18} /></Box></InputAdornment>}
-                        >
-                            <MenuItem value=""><em style={{ color: '#86868b', fontStyle: 'normal', fontWeight: 600 }}>None (Standard Expense)</em></MenuItem>
-                            {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => (
-                                <MenuItem key={r._id} value={r._id}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                        <Typography sx={{ fontWeight: 800, fontSize: '0.9rem' }}>{r.account_name}</Typography>
-                                        <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: '#ff3b30' }}>
-                                            ₹{parseFloat(r.balance).toLocaleString('en-IN')} DUO
-                                        </Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mt: 1.5 }}>
+                            {reserves.filter(r => r.account_type === 'CREDIT_CARD').map(r => {
+                                const isSelected = formData.target_account_id === r._id;
+                                return (
+                                    <Box
+                                        key={r._id}
+                                        onClick={() => setFormData({ ...formData, target_account_id: r._id })}
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'flex-start',
+                                            padding: '10px 8px',
+                                            borderRadius: '12px',
+                                            border: `1.5px solid ${isSelected ? '#6366f1' : '#e2e8f0'}`,
+                                            backgroundColor: isSelected ? `#6366f110` : '#f8fafc',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                borderColor: !isSelected ? '#cbd5e1' : undefined,
+                                                transform: !isSelected ? 'translateY(-2px)' : 'none',
+                                                boxShadow: !isSelected ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5, width: '100%' }}>
+                                            <Box sx={{ color: isSelected ? '#6366f1' : '#94a3b8' }}>
+                                                <CreditCard size={14} />
+                                            </Box>
+                                            <Typography sx={{ fontWeight: 800, fontSize: '0.65rem', color: isSelected ? '#6366f1' : '#475569', textTransform: 'uppercase', letterSpacing: '0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {r.account_name}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography sx={{ fontWeight: 900, fontSize: '0.85rem', color: isSelected ? '#6366f1' : '#0f172a' }} noWrap>
+                                                ₹{parseFloat(r.balance).toLocaleString('en-IN')}
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                </MenuItem>
-                            ))}
-                        </Select>
-                        <FormHelperText sx={{ fontWeight: 700, ml: 1, mt: 1 }}>Selecting a card will automatically reduce its debt by the valuation amount.</FormHelperText>
+                                );
+                            })}
+                        </Box>
+
                     </Box>
                 ) : null}
             </Stack>
