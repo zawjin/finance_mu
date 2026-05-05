@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
 
 /* ===== ROOT LAYOUT ===== */
-.android-login-root {
+.portal-login-root {
     min-height: 100vh;
     min-height: 100dvh;
     display: flex;
@@ -13,7 +13,7 @@
 }
 
 /* ===== ANIMATED BACKGROUND ===== */
-.android-bg {
+.portal-bg {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -61,7 +61,7 @@
 }
 
 /* ===== HERO TOP SECTION ===== */
-.android-hero {
+.portal-hero {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -95,7 +95,7 @@
 }
 
 /* ===== BOTTOM SHEET ===== */
-.android-bottom-sheet {
+.portal-bottom-sheet {
     position: relative;
     z-index: 10;
     background: rgba(255, 255, 255, 0.04);
@@ -168,13 +168,13 @@
 }
 
 /* ===== FORM ===== */
-.android-form {
+.portal-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.android-alert {
+.portal-alert {
     border-radius: 16px !important;
     font-weight: 700 !important;
     font-size: 0.82rem !important;
@@ -186,13 +186,13 @@
     .MuiAlert-icon { color: #f87171 !important; }
 }
 
-.android-field-wrap {
+.portal-field-wrap {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.android-label {
+.portal-label {
     font-size: 0.75rem;
     font-weight: 800;
     color: rgba(255, 255, 255, 0.5);
@@ -201,7 +201,7 @@
     padding-left: 4px;
 }
 
-.android-input-box {
+.portal-input-box {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -229,7 +229,7 @@
     }
 }
 
-.android-input {
+.portal-input {
     flex: 1;
     background: transparent;
     border: none;
@@ -271,7 +271,7 @@
 }
 
 /* ===== LOGIN BUTTON ===== */
-.android-login-btn {
+.portal-login-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -324,7 +324,7 @@
 }
 
 /* ===== FOOTER ===== */
-.android-footer-tag {
+.portal-footer-tag {
     text-align: center;
     margin: 20px 0 0;
     font-size: 0.7rem;

@@ -32,38 +32,6 @@ ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScal
 // Universal Icon Map Projection
 import { getIcon } from '../utils/iconMap';
 
-const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
-    const [viewDate, setViewDate] = useState(dayjs());
-    const startOfMonth = viewDate.startOf('month');
-    const daysInMonth = viewDate.daysInMonth();
-    const startDay = startOfMonth.day();
-
-    const days = [];
-    for (let i = 0; i < startDay; i++) days.push(null);
-    for (let i = 1; i <= daysInMonth; i++) {
-        days.push(startOfMonth.date(i));
-    }
-
-    const handleDayClick = (d) => {
-        if (!d) return;
-        const dateStr = d.format('YYYY-MM-DD');
-        if (!tempRange.start || (tempRange.start && tempRange.end)) {
-            setTempRange({ start: dateStr, end: '' });
-        } else {
-            if (dayjs(dateStr).isBefore(dayjs(tempRange.start))) {
-                setTempRange({ start: dateStr, end: tempRange.start });
-            } else {
-                setTempRange({ ...tempRange, end: dateStr });
-            }
-        }
-    };
-
-    const isInRange = (d) => {
-        if (!d || !tempRange.start || !tempRange.end) return false;
-        return d.isAfter(dayjs(tempRange.start)) && d.isBefore(dayjs(tempRange.end));
-    };
-
-    const isStart = (d) => d && d.format('YYYY-MM-DD') === tempRange.start;
     const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
 
     return (
@@ -160,7 +128,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [selectedSourceId, setSelectedSourceId] = useState('ALL');
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [showAndroidRange, setShowAndroidRange] = useState(false);
+
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
     const [purging, setPurging] = useState(false);
     const [filterPortalTarget, setFilterPortalTarget] = useState(null);
@@ -234,8 +202,8 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         }
     };
 
-    const filteredSpending = useMemo(() => {
-        let result = spending.filter(item => {
+    const baseFilteredSpending = useMemo(() => {
+        return spending.filter(item => {
             // EXCLUDE INVESTMENT LOGS FROM SPENDING AUDIT AS REQUESTED
             const investmentCategories = [
                 'investment', 'investments', 'investment settlement', 'stocks',
@@ -246,7 +214,6 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             const matchesSearch = (item.description || '').toLowerCase().includes(search.toLowerCase()) ||
                 (item.category || '').toLowerCase().includes(search.toLowerCase());
-            const matchesCat = selectedCat === 'ALL' || item.category === selectedCat;
 
             let matchesPeriod = true;
             const itemDate = dayjs(item.date);
@@ -267,8 +234,12 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
             const matchesSource = selectedSourceId === 'ALL' || item.payment_source_id === selectedSourceId;
 
-            return matchesSearch && matchesCat && matchesPeriod && matchesSource;
+            return matchesSearch && matchesPeriod && matchesSource;
         });
+    }, [spending, search, period, dateRange, selectedSourceId]);
+
+    const filteredSpending = useMemo(() => {
+        let result = baseFilteredSpending.filter(item => selectedCat === 'ALL' || item.category === selectedCat);
 
         // Sort
         result = [...result];
@@ -278,7 +249,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         else if (sortBy === 'AMT_ASC') result.sort((a, b) => (a.amount || 0) - (b.amount || 0));
 
         return result;
-    }, [spending, search, selectedCat, period, dateRange, sortBy, selectedSourceId]);
+    }, [baseFilteredSpending, selectedCat, sortBy]);
 
     // Global Position (Unfiltered Persistent State)
     const globalSummary = useMemo(() => {
@@ -297,7 +268,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         let grossRecovered = 0;
         const catStats = {}; // { category: { spend: 0, recovered: 0, net: 0 } }
 
-        filteredSpending.forEach(item => {
+        baseFilteredSpending.forEach(item => {
             const amt = item.amount || 0;
             const rec = item.recovered || 0;
             const cat = item.category;
@@ -312,7 +283,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         });
 
         return { grossSpend, grossRecovered, net: grossSpend - grossRecovered, catStats };
-    }, [filteredSpending]);
+    }, [baseFilteredSpending]);
 
     const trendAnalysis = useMemo(() => {
         const dailyNet = {};
@@ -386,18 +357,143 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         document.body.removeChild(link);
     };
 
+    const renderFilters = () => (
+        <div className="sidebar-sticky-wrap">
+            <div className="filter-section-block">
+                <div className="search-input-wrapper">
+                    <Search size={15} className="search-icon-fixed" />
+                    <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Description, category..." />
+                </div>
+            </div>
+
+            <div className="filter-section-block margin-t-1-75">
+                <div className="filter-section-label"><span>TIME HORIZON</span></div>
+                <div className="unified-filter-grid">
+                    {[
+                        { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
+                        { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
+                        { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
+                        { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
+                        { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
+                        { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
+                    ].map(p => (
+                        <div
+                            key={p.id}
+                            className={`unified-filter-btn ${period === p.id ? 'active' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setPeriod(p.id);
+                            }}
+                        >
+                            <span className="th-icon" style={{ color: period === p.id ? 'white' : 'var(--primary)' }}>{p.icon}</span>
+                            <span className="th-label">{p.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            {period === 'CUSTOM' && (
+                <div className="filter-section-block margin-t-1-5" onClick={(e) => e.stopPropagation()}>
+                    <div className="filter-section-label"><CalendarDays size={13} /><span>SELECT AUDIT RANGE</span></div>
+                    {/* Standard Range Picker or similar could go here */}
+                </div>
+            )}
+
+            <div className="filter-section-block margin-t-1-75">
+                <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
+                <div className="unified-filter-grid">
+                    <div
+                        className={`unified-filter-btn ${selectedSourceId === 'ALL' ? 'active' : ''}`}
+                        onClick={() => setSelectedSourceId('ALL')}
+                    >
+                        <span className="th-icon" style={{ color: selectedSourceId === 'ALL' ? 'white' : '#6366f1' }}><Activity size={20} /></span>
+                        <span className="th-label">All Portals</span>
+                    </div>
+                    {reserves.map(r => (
+                        <div
+                            key={r._id}
+                            className={`unified-filter-btn ${selectedSourceId === r._id ? 'active' : ''}`}
+                            onClick={() => setSelectedSourceId(r._id)}
+                            style={{
+                                '--portal-color': r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
+                                '--portal-border': selectedSourceId === r._id ? (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1') : 'transparent'
+                            }}
+                        >
+                            <div className="portal-dot" />
+                            <span className="th-label">{r.account_name}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderMetaStatusBar = () => (
+        <div className="meta-status-bar">
+            <div className="badge-status">
+                <span className="badge-count-text">{filteredSpending.length}</span> LOGS FOUND
+            </div>
+            <div className="action-hub-right">
+                <div className="sort-group-premium">
+                    {[
+                        { id: 'DATE_DESC', label: 'Latest' },
+                        { id: 'DATE_ASC', label: 'Oldest' },
+                        { id: 'AMT_DESC', label: 'High' },
+                        { id: 'AMT_ASC', label: 'Low' },
+                    ].map(s => (
+                        <button
+                            key={s.id}
+                            onClick={() => setSortBy(s.id)}
+                            className={`sort-pill-btn ${sortBy === s.id ? 'active' : ''}`}
+                        >{s.label}</button>
+                    ))}
+                </div>
+                <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
+                <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> </button>
+            </div>
+        </div>
+    );
+
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-            <AndroidRangeModal
-                open={showAndroidRange}
-                onClose={() => setShowAndroidRange(false)}
-                tempRange={tempRange}
-                setTempRange={setTempRange}
-                onConfirm={(range) => {
-                    setDateRange(range);
-                    setShowAndroidRange(false);
-                }}
-            />
+
+            {/* MOBILE-ONLY TOP FILTER & META PANEL */}
+            <div className="mobile-only-top-controls">
+                <div className="mobile-only-filter-wrapper">
+                    {filterPortalTarget ? createPortal(
+                        <button
+                            onClick={() => setMobileFiltersOpen(o => !o)}
+                            className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
+                            aria-label="Toggle filters"
+                            style={{ position: 'relative' }}
+                        >
+                            <Filter size={18} />
+                            {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
+                                <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
+                            )}
+                        </button>,
+                        filterPortalTarget
+                    ) : (
+                        <button className="mobile-filter-toggle" onClick={() => setMobileFiltersOpen(o => !o)}>
+                            <span className="mft-left">
+                                <Filter size={13} />
+                                <span>Filters</span>
+                                {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
+                                    <span className="mft-badge">Active</span>
+                                )}
+                            </span>
+                            <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                        </button>
+                    )}
+
+                    <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
+                        {renderFilters()}
+                    </div>
+                </div>
+
+                <div className="mobile-only-meta-wrapper">
+                    {renderMetaStatusBar()}
+                </div>
+            </div>
             {/* ANALYTICS HUB - TRIPLE BOX CONVERGENCE */}
             {showAnalytics && (
                 <motion.div
@@ -572,90 +668,107 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                             <Skeleton key={i} variant="rectangular" width={140} height={60} className="skeleton-pill-box" />
                         ))
                     ) : (
-                        [...categories]
-                            .filter(c => ![
-                                'investment', 'investments', 'investment settlement', 'stocks',
-                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
-                                'chit fund', 'local investment', 'transfer', 'inflow'
-                            ].includes((c.name || '').toLowerCase()))
-                            .sort((a, b) => {
-                                const statsA = totals.catStats[a.name] || { net: 0 };
-                                const statsB = totals.catStats[b.name] || { net: 0 };
-                                return Math.abs(statsB.net) - Math.abs(statsA.net);
-                            })
-                            .map((catObj) => {
-                                const cat = catObj.name;
-                                const stats = totals.catStats[cat] || { spend: 0, recovered: 0, net: 0 };
-                                const style = getCatStyle(cat, categories);
-                                const hasActivity = stats.spend > 0;
+                        <>
+                            <motion.div 
+                                key="ALL"
+                                className="apple-category-pill glass-effect category-pill-wrapper"
+                                onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}
+                                style={{ 
+                                    cursor: 'pointer',
+                                    '--card-border': selectedCat === 'ALL' ? '#6366f140' : 'rgba(0,0,0,0.05)'
+                                }}
+                            >
+                                <div
+                                    className={`pill-icon-box ${selectedCat === 'ALL' ? 'active' : 'inactive'}`}
+                                    style={{
+                                        '--pill-bg': selectedCat === 'ALL' ? '#6366f1' : 'rgba(0,0,0,0.03)',
+                                        '--pill-color': selectedCat === 'ALL' ? 'white' : '#6366f1'
+                                    }}
+                                >
+                                    <Layers size={20} color={selectedCat === 'ALL' ? 'white' : '#6366f1'} strokeWidth={2.4} />
+                                </div>
+                                <div className="pill-info-box">
+                                    <div className="tx-sub-flex">
+                                        <span className={`pill-cat-label ${selectedCat === 'ALL' ? 'active' : 'inactive'}`}>All Activity</span>
+                                    </div>
+                                    <div className="content-shell">
+                                        <span className={`pill-amt-val ${selectedCat === 'ALL' ? 'active' : 'inactive'}`} style={{ '--text-color': '#6366f1' }}>
+                                            {formatCurrency(totals.net)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                            {[...categories]
+                                .filter(c => ![
+                                    'investment', 'investments', 'investment settlement', 'stocks',
+                                    'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
+                                    'chit fund', 'local investment', 'transfer', 'inflow'
+                                ].includes((c.name || '').toLowerCase()))
+                                .sort((a, b) => {
+                                    const statsA = totals.catStats[a.name] || { net: 0 };
+                                    const statsB = totals.catStats[b.name] || { net: 0 };
+                                    return Math.abs(statsB.net) - Math.abs(statsA.net);
+                                })
+                                .map((catObj) => {
+                                    const cat = catObj.name;
+                                    const stats = totals.catStats[cat] || { spend: 0, recovered: 0, net: 0 };
+                                    const style = getCatStyle(cat, categories);
+                                    const hasActivity = stats.spend > 0;
 
-                                return (
-                                    <motion.div key={cat} className="apple-category-pill glass-effect category-pill-wrapper">
-                                        <div
-                                            className={`pill-icon-box ${selectedCat === cat ? 'active' : 'inactive'}`}
-                                            style={{
-                                                '--pill-bg': selectedCat === cat ? '#6366f1' : 'rgba(0,0,0,0.03)',
-                                                '--pill-color': selectedCat === cat ? 'white' : style.color
+                                    return (
+                                        <motion.div 
+                                            key={cat} 
+                                            className="apple-category-pill glass-effect category-pill-wrapper"
+                                            onClick={() => { setSelectedCat(selectedCat === cat ? 'ALL' : cat); setSelectedSub('ALL'); }}
+                                            style={{ 
+                                                cursor: 'pointer',
+                                                '--card-border': selectedCat === cat ? `${style.color}40` : 'rgba(0,0,0,0.05)'
                                             }}
-                                            onClick={() => { setSelectedCat(cat); setSelectedSub('ALL'); }}
                                         >
-                                            {getIcon(cat, categories, {
-                                                size: 20,
-                                                color: selectedCat === cat ? 'white' : style.color,
-                                                fill: 'none',
-                                                strokeWidth: 2.4
-                                            })}
-                                        </div>
-                                        <div className="pill-info-box">
-                                            <div className="tx-sub-flex">
-                                                <span className={`pill-cat-label ${hasActivity ? 'active' : 'inactive'}`}>{cat}</span>
+                                            <div
+                                                className={`pill-icon-box ${selectedCat === cat ? 'active' : 'inactive'}`}
+                                                style={{
+                                                    '--pill-bg': selectedCat === cat ? '#6366f1' : 'rgba(0,0,0,0.03)',
+                                                    '--pill-color': selectedCat === cat ? 'white' : style.color
+                                                }}
+                                            >
+                                                {getIcon(cat, categories, {
+                                                    size: 20,
+                                                    color: selectedCat === cat ? 'white' : style.color,
+                                                    fill: 'none',
+                                                    strokeWidth: 2.4
+                                                })}
                                             </div>
-                                            <div className="content-shell">
-                                                <span className={`pill-amt-val ${hasActivity ? 'active' : 'inactive'}`} style={{ '--text-color': hasActivity ? style.color : '#8e8e93' }}>
-                                                    {formatCurrency(stats.net)}
-                                                </span>
-                                                {(stats.recovered > 0) && (
-                                                    <div className="tx-recovery-small">
-                                                        <span className="recovery-up">↑{formatCurrency(stats.spend)}</span>
-                                                        <span className="recovery-down">↓{formatCurrency(stats.recovered)}</span>
-                                                    </div>
-                                                )}
+                                            <div className="pill-info-box">
+                                                <div className="tx-sub-flex">
+                                                    <span className={`pill-cat-label ${hasActivity ? 'active' : 'inactive'}`}>{cat}</span>
+                                                </div>
+                                                <div className="content-shell">
+                                                    <span className={`pill-amt-val ${hasActivity ? 'active' : 'inactive'}`} style={{ '--text-color': hasActivity ? style.color : '#8e8e93' }}>
+                                                        {formatCurrency(stats.net)}
+                                                    </span>
+                                                    {(stats.recovered > 0) && (
+                                                        <div className="tx-recovery-small">
+                                                            <span className="recovery-up">↑{formatCurrency(stats.spend)}</span>
+                                                            <span className="recovery-down">↓{formatCurrency(stats.recovered)}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })
+                                        </motion.div>
+                                    );
+                                })}
+                        </>
                     )}
                 </div>
             </div>
 
             <div className="spending-split-layout">
-                {/* Mobile Filter Toggle */}
-                {filterPortalTarget ? createPortal(
-                    <button
-                        onClick={() => setMobileFiltersOpen(o => !o)}
-                        className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
-                        aria-label="Toggle filters"
-                        style={{ position: 'relative' }}
-                    >
-                        <Filter size={18} />
-                        {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
-                            <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
-                        )}
-                    </button>,
-                    filterPortalTarget
-                ) : (
-                    <button className="mobile-filter-toggle" onClick={() => setMobileFiltersOpen(o => !o)}>
-                        <span className="mft-left">
-                            <Filter size={13} />
-                            <span>Filters</span>
-                            {(selectedCat !== 'ALL' || selectedSourceId !== 'ALL' || period !== 'THIS MONTH' || search) && (
-                                <span className="mft-badge">Active</span>
-                            )}
-                        </span>
-                        <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
-                    </button>
-                )}
+                <div className="desktop-only-filter-wrapper desktop-only">
+                    <div className="filters-sidebar-card glass-effect">
+                        {renderFilters()}
+                    </div>
+                </div>
 
                 {/* Pull to Refresh Indicator */}
                 <AnimatePresence>
@@ -672,177 +785,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     )}
                 </AnimatePresence>
 
-                <div
-                    className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}
-                    onTouchStart={e => {
-                        touchStartRef.current = e.touches[0].clientY;
-                    }}
-                    onTouchMove={e => {
-                        const touchEnd = e.touches[0].clientY;
-                        if (touchEnd - touchStartRef.current > 150 && window.scrollY === 0 && !refreshing) {
-                            handlePullToRefresh();
-                        }
-                    }}
-                >
-                    <div className="sidebar-sticky-wrap">
-
-
-                        <div className="filter-section-block">
-
-                            <div className="search-input-wrapper">
-                                <Search size={15} className="search-icon-fixed" />
-                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Description, category..." />
-                            </div>
-                        </div>
-
-                        <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>CATEGORY ENTITY</span></div>
-                            <div className="unified-filter-grid">
-                                {loading ? (
-                                    [...Array(6)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
-                                ) : (
-                                    <>
-                                        <div className={`unified-filter-btn ${selectedCat === 'ALL' ? 'active' : ''}`} onClick={() => { setSelectedCat('ALL'); }}>
-                                            <span className="th-icon"><Layers size={13} /></span>
-                                            <span className="th-label">All</span>
-                                        </div>
-                                        {categories
-                                            .filter(c => ![
-                                                'investment', 'investments', 'investment settlement', 'stocks',
-                                                'mutual funds', 'gold', 'property', 'crypto', 'fixed deposit',
-                                                'chit fund', 'local investment', 'transfer', 'inflow'
-                                            ].includes((c.name || '').toLowerCase()))
-                                            .slice()
-                                            .sort((a, b) => a.name.localeCompare(b.name))
-                                            .map(c => {
-                                                const style = getCatStyle(c.name, categories);
-                                                return (
-                                                    <div
-                                                        key={c.name}
-                                                        className={`unified-filter-btn ${selectedCat === c.name ? 'active' : ''}`}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); // Prevent bubbling that might close sidebar
-                                                            setSelectedCat(c.name);
-                                                            setSelectedSub('ALL');
-                                                        }}
-                                                    >
-                                                        <span className="th-icon">
-                                                            {getIcon(c.name, categories, {
-                                                                color: selectedCat === c.name ? 'white' : style.color,
-                                                                fill: 'none',
-                                                                size: 20,
-                                                                strokeWidth: 2.4
-                                                            })}
-                                                        </span>
-                                                        <span className="th-label">{c.name.split(' ')[0]}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>TIME HORIZON</span></div>
-                            <div className="unified-filter-grid">
-                                {[
-                                    { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
-                                    { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
-                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
-                                    { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
-                                    { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
-                                    { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
-                                ].map(p => (
-                                    <div
-                                        key={p.id}
-                                        className={`unified-filter-btn ${period === p.id ? 'active' : ''}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setPeriod(p.id);
-                                        }}
-                                    >
-                                        <span className="th-icon" style={{ color: period === p.id ? 'white' : 'var(--primary)' }}>{p.icon}</span>
-                                        <span className="th-label">{p.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        {period === 'CUSTOM' && (
-                            <div className="filter-section-block margin-t-1-5" onClick={(e) => e.stopPropagation()}>
-                                <div className="filter-section-label"><CalendarDays size={13} /><span>SELECT AUDIT RANGE</span></div>
-                                <div
-                                    className="mui-range-trigger"
-                                    onClick={() => setShowAndroidRange(true)}
-                                >
-                                    <div className="trigger-icon"><Calendar size={18} /></div>
-                                    <div className="trigger-text">
-                                        {dateRange.start && dateRange.end
-                                            ? `${dayjs(dateRange.start).format('MMM D')} — ${dayjs(dateRange.end).format('MMM D, YYYY')}`
-                                            : (dateRange.start ? `From ${dayjs(dateRange.start).format('MMM D')}...` : 'Select Date Range')}
-                                    </div>
-                                    <Edit2 size={14} className="trigger-edit-icon" />
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>ACCOUNT SOURCE PORTALS</span></div>
-                            <div className="unified-filter-grid">
-                                <div
-                                    className={`unified-filter-btn ${selectedSourceId === 'ALL' ? 'active' : ''}`}
-                                    onClick={() => setSelectedSourceId('ALL')}
-                                >
-                                    <span className="th-icon" style={{ color: selectedSourceId === 'ALL' ? 'white' : '#6366f1' }}><Activity size={20} /></span>
-                                    <span className="th-label">All Portals</span>
-                                </div>
-                                {reserves.map(r => (
-                                    <div
-                                        key={r._id}
-                                        className={`unified-filter-btn ${selectedSourceId === r._id ? 'active' : ''}`}
-                                        onClick={() => setSelectedSourceId(r._id)}
-                                        style={{
-                                            '--portal-color': r.account_type === 'BANK' ? '#6366f1' : (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : (r.account_type === 'CASH' ? '#f59e0b' : '#10b981')),
-                                            '--portal-border': selectedSourceId === r._id ? (r.account_type === 'CREDIT_CARD' ? '#ff3b30' : '#6366f1') : 'transparent'
-                                        }}
-                                    >
-                                        <div className="portal-dot" />
-                                        <span className="th-label">{r.account_name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-
-
-                    </div>
-                </div>
-
                 <div className="spending-main-content">
-                    <div className="meta-status-bar">
-                        <div className="badge-status">
-                            <span className="badge-count-text">{filteredSpending.length}</span> LOGS FOUND
-                        </div>
-                        <div className="action-hub-right">
-                            {/* SORT CONTROL */}
-                            <div className="sort-group-premium">
-
-                                {[
-                                    { id: 'DATE_DESC', label: 'Latest' },
-                                    { id: 'DATE_ASC', label: 'Oldest' },
-                                    { id: 'AMT_DESC', label: 'High' },
-                                    { id: 'AMT_ASC', label: 'Low' },
-                                ].map(s => (
-                                    <button
-                                        key={s.id}
-                                        onClick={() => setSortBy(s.id)}
-                                        className={`sort-pill-btn ${sortBy === s.id ? 'active' : ''}`}
-                                    >{s.label}</button>
-                                ))}
-                            </div>
-                            <button onClick={() => { setSearch(''); setSelectedCat('ALL'); setPeriod('THIS MONTH'); setSortBy('DATE_DESC'); }} className="btn-clear-minimal">CLEAR ALL</button>
-                            <button onClick={handleExportCSV} className="btn-export-minimal"><Download size={13} /> </button>
-                        </div>
+                    <div className="desktop-only-meta-wrapper desktop-only">
+                        {renderMetaStatusBar()}
                     </div>
 
                     <div className="data-table-premium scroll-y-luxury scroll-y-luxury_jj">

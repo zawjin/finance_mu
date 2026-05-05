@@ -22,113 +22,6 @@ import './InvestmentPage.scss';
 // Charting
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
 
-const AndroidRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
-    const [viewDate, setViewDate] = useState(dayjs());
-    const startOfMonth = viewDate.startOf('month');
-    const daysInMonth = viewDate.daysInMonth();
-    const startDay = startOfMonth.day();
-    
-    const days = [];
-    for (let i = 0; i < startDay; i++) days.push(null);
-    for (let i = 1; i <= daysInMonth; i++) {
-        days.push(startOfMonth.date(i));
-    }
-
-    const handleDayClick = (d) => {
-        if (!d) return;
-        const dateStr = d.format('YYYY-MM-DD');
-        if (!tempRange.start || (tempRange.start && tempRange.end)) {
-            setTempRange({ start: dateStr, end: '' });
-        } else {
-            if (dayjs(dateStr).isBefore(dayjs(tempRange.start))) {
-                setTempRange({ start: dateStr, end: tempRange.start });
-            } else {
-                setTempRange({ ...tempRange, end: dateStr });
-            }
-        }
-    };
-
-    const isInRange = (d) => {
-        if (!d || !tempRange.start || !tempRange.end) return false;
-        return d.isAfter(dayjs(tempRange.start)) && d.isBefore(dayjs(tempRange.end));
-    };
-
-    const isStart = (d) => d && d.format('YYYY-MM-DD') === tempRange.start;
-    const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
-
-    return (
-        <Dialog 
-            open={open} 
-            onClose={onClose}
-            fullWidth
-            maxWidth={false}
-            className="mui-mobile-range-dialog"
-            TransitionComponent={Grow}
-        >
-            <div className="mui-mobile-range-card">
-                <div className="mui-range-header">
-                    <Typography className="range-header-label">Select date range</Typography>
-                    <div className="range-header-display">
-                        <span className={!tempRange.start ? 'placeholder' : ''}>
-                            {tempRange.start ? dayjs(tempRange.start).format('MMM D') : 'Start Date'}
-                        </span>
-                        <span className="range-sep">—</span>
-                        <span className={!tempRange.end ? 'placeholder' : ''}>
-                            {tempRange.end ? dayjs(tempRange.end).format('MMM D') : 'End Date'}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="mui-range-calendar-content">
-                    <div className="mui-calendar-nav">
-                        <Typography className="mui-month-label">{viewDate.format('MMMM YYYY')}</Typography>
-                        <div className="mui-nav-actions">
-                            <IconButton onClick={() => setViewDate(viewDate.subtract(1, 'month'))} size="small">‹</IconButton>
-                            <IconButton onClick={() => setViewDate(viewDate.add(1, 'month'))} size="small">›</IconButton>
-                        </div>
-                    </div>
-
-                    <div className="mui-calendar-weekdays">
-                        {['S','M','T','W','T','F','S'].map((w,i) => <span key={i}>{w}</span>)}
-                    </div>
-
-                    <div className="mui-calendar-grid">
-                        {days.map((d, i) => {
-                            const start = isStart(d);
-                            const end = isEnd(d);
-                            const middle = isInRange(d);
-                            return (
-                                <div 
-                                    key={i} 
-                                    className={`mui-cal-day ${!d ? 'empty' : ''} ${start ? 'is-start' : ''} ${end ? 'is-end' : ''} ${middle ? 'is-middle' : ''}`}
-                                    onClick={() => handleDayClick(d)}
-                                >
-                                    {d && (
-                                        <div className="day-highlight-cell">
-                                            <span className="day-text-val">{d.date()}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div className="mui-range-actions">
-                    <Button onClick={onClose} color="inherit">Cancel</Button>
-                    <Button 
-                        onClick={() => onConfirm(tempRange)}
-                        disabled={!tempRange.start || !tempRange.end}
-                        color="primary"
-                    >
-                        OK
-                    </Button>
-                </div>
-            </div>
-        </Dialog>
-    );
-};
-
 export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytics }) {
     const dispatch = useDispatch();
     const { investments, assetClasses, loading } = useSelector(state => state.finance);
@@ -204,7 +97,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     const [sortBy, setSortBy] = useState('DATE_DESC');
     const [syncingPrices, setSyncingPrices] = useState(false);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-    const [showAndroidRange, setShowAndroidRange] = useState(false);
+
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
     const [purging, setPurging] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -256,12 +149,11 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         }
     };
 
-    const filteredInvestments = useMemo(() => {
+    const baseFilteredInvestments = useMemo(() => {
         return investments.filter(item => {
             const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
             const matchesSearch = (item.name || '').toLowerCase().includes(search.toLowerCase()) ||
                 type.toLowerCase().includes(search.toLowerCase());
-            const matchesType = selectedType === 'ALL' || type === selectedType;
 
             const itemDate = dayjs(item.date);
             const now = dayjs();
@@ -285,7 +177,6 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     return false;
                 };
 
-                // Match if either original date OR last_updated date falls in period
                 const originalMatches = checkDate(itemDate, p);
                 const updateMatches = updatedDate ? checkDate(updatedDate, p) : false;
 
@@ -307,15 +198,22 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                         if (dateRange.end) matches = matches && wDate.isBefore(dayjs(dateRange.end).add(1, 'day'));
                         return matches;
                     }
-                    return false; // ALL case (ignore withdrawals for pure listing)
+                    return false;
                 });
             };
 
             const matchesPeriod = period === 'ALL' || isItemDateMatch(period) || isWithdrawalDateMatch(period);
 
-            return matchesSearch && matchesType && matchesPeriod;
+            return matchesSearch && matchesPeriod;
         });
-    }, [investments, search, selectedType, period, dateRange]);
+    }, [investments, search, period, dateRange]);
+
+    const filteredInvestments = useMemo(() => {
+        return baseFilteredInvestments.filter(item => {
+            const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
+            return selectedType === 'ALL' || type === selectedType;
+        });
+    }, [baseFilteredInvestments, selectedType]);
 
     // Helper to check if a specific date matches the current UI period filter
     const isMatch = (dateStr) => {
@@ -344,7 +242,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         let grossWithdrawn = 0;
         const typeStats = {};
 
-        filteredInvestments.forEach(item => {
+        baseFilteredInvestments.forEach(item => {
             const type = item.type === 'Local Investment' ? 'Chit Fund' : item.type;
             if (!typeStats[type]) typeStats[type] = { current: 0, invested: 0 };
 
@@ -353,7 +251,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             if (period === 'ALL') {
                 // ALL TIME: show full live portfolio value
                 const { current, invested, withdrawn } = getLiveVal(item);
-                
+
                 if (!isCollected) {
                     grossValue += current;
                     typeStats[type].current += current;
@@ -392,12 +290,12 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
         const grossProfitPct = grossInvested > 0 ? (grossProfitAmt / grossInvested) * 100 : 0;
 
         return { grossValue, grossInvested, grossWithdrawn, grossProfitAmt, grossProfitPct, typeStats };
-    }, [filteredInvestments, period, dateRange]);
+    }, [baseFilteredInvestments, period, dateRange]);
 
     const trendAnalysis = useMemo(() => {
         const dailyNet = {};
 
-        filteredInvestments.forEach(s => {
+        baseFilteredInvestments.forEach(s => {
             // 1. Process all historical purchases (ADDITIONS)
             const purchases = s.purchases || [];
             let hasInitial = false;
@@ -441,7 +339,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
             daily: dates.map(d => dailyNet[d]),
             cumulative: cumulativeData
         };
-    }, [filteredInvestments, period, dateRange]);
+    }, [baseFilteredInvestments, period, dateRange]);
 
     const chartConfig = useMemo(() => {
         const typeLabels = Object.keys(totals.typeStats);
@@ -495,18 +393,167 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
     }, [investments, assetClasses]);
     const hasActiveFilters = search !== '' || selectedType !== 'ALL' || period !== 'ALL';
 
+    const renderFilters = () => (
+        <div className="sidebar-sticky-wrap">
+            <div className="filter-section-block">
+                <div className="search-input-wrapper">
+                    <Search size={15} className="search-icon-fixed" />
+                    <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class, category..." />
+                </div>
+            </div>
+
+            <div className="filter-section-block margin-t-1-75">
+                <div className="filter-section-label"><span>TIME HORIZON</span></div>
+                <div className="unified-filter-grid">
+                    {[
+                        { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
+                        { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
+                        { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
+                        { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
+                        { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
+                        { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
+                    ].map(p => (
+                        <div key={p.id} className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
+                            <span className="th-icon" style={{ color: period === p.id ? 'white' : '#6366f1' }}>{p.icon}</span>
+                            <span className="th-label">{p.label}</span>
+                        </div>
+                    ))}
+                </div>
+                {period === 'CUSTOM' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="filter-section-block custom-range-block"
+                    >
+                        <div className="filter-section-label color-primary"><span>SELECT PORTFOLIO RANGE</span></div>
+                        <div className="mui-range-trigger">
+                            <CalendarDays size={16} />
+                            <span>{dateRange.start ? `${dayjs(dateRange.start).format('MMM D')} - ${dayjs(dateRange.end).format('MMM D')}` : 'Choose dates'}</span>
+                        </div>
+                    </motion.div>
+                )}
+            </div>
+
+
+        </div>
+    );
+
+    const renderMetaStatusBar = () => (
+        <div className="meta-status-bar">
+            <div className="badge-status">
+                <span className="badge-count-text">{filteredInvestments.length}</span> ASSETS FOUND
+            </div>
+
+            <div className="action-hub-right">
+                <button
+                    onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
+                    className={`sort-pill-btn ${sortBy === 'PNL_DESC' || sortBy === 'PNL_ASC' ? 'active' : ''}`}>
+                    {sortBy === 'PNL_DESC' ? '▼ P&L' : sortBy === 'PNL_ASC' ? '▲ P&L' : 'P&L'}
+                </button>
+
+                <button
+                    onClick={() => setSortBy('DATE_DESC')}
+                    className={`sort-pill-btn ${sortBy === 'DATE_DESC' ? 'active' : ''}`}>
+                    BY DATE
+                </button>
+
+                <button
+                    onClick={handleManualSync}
+                    disabled={syncingPrices}
+                    className="btn-pill-sync-minimal">
+                    {syncingPrices ? '...' : <><Zap size={11} /> SYNC</>}
+                </button>
+
+                <button
+                    onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }}
+                    className="btn-clear-minimal">
+                    CLEAR
+                </button>
+
+                <button
+                    onClick={handleExportCSV}
+                    className="btn-export-minimal">
+                    <Download size={13} /> EXPORT
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
-            <AndroidRangeModal 
-                open={showAndroidRange}
-                onClose={() => setShowAndroidRange(false)}
-                tempRange={tempRange}
-                setTempRange={setTempRange}
-                onConfirm={(range) => {
-                    setDateRange(range);
-                    setShowAndroidRange(false);
-                }}
-            />
+
+            {/* MOBILE-ONLY TOP FILTER & META PANEL */}
+            <div className="mobile-only-top-controls">
+
+
+                {/* FINANCIAL SUMMARY CORE - LEGACY DESIGN RESTORED */}
+                <div className="investment-summary-grid">
+                    <div className="summary-card-investment">
+                        <div className="summary-card-left">
+                            <div className="pill-icon-box"><Activity size={20} /></div>
+                        </div>
+                        <div className="summary-card-right">
+                            <div className="summary-main-line">
+                                <div className="summary-label-primary">TOTAL ASSETS</div>
+                                <div className="summary-value-main">{formatCurrency(totals.grossValue)}</div>
+                            </div>
+
+                            <div className="summary-secondary-line">
+                                <span className="summary-label-secondary">Invested: {formatCurrency(totals.grossInvested)}</span>
+                                {totals.grossValue > 0 && (
+                                    <div className="pnl-chips-flex">
+                                        <span className={`pnl-chip ${totals.grossProfitAmt >= 0 ? 'positive' : 'negative'}`}>
+                                            {totals.grossProfitAmt >= 0 ? '+' : ''}{formatCurrency(Math.abs(totals.grossProfitAmt))}
+                                        </span>
+                                        <span className={`pnl-chip ${totals.grossProfitPct >= 0 ? 'positive' : 'negative'}`}>
+                                            {totals.grossProfitPct >= 0 ? '▲' : '▼'}{Math.abs(totals.grossProfitPct).toFixed(2)}%
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div className="mobile-only-filter-wrapper">
+                    {filterPortalTarget ? createPortal(
+                        <button
+                            onClick={() => setMobileFiltersOpen(o => !o)}
+                            className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
+                            aria-label="Toggle filters"
+                            style={{ position: 'relative' }}
+                        >
+                            <Filter size={18} />
+                            {hasActiveFilters && (
+                                <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
+                            )}
+                        </button>,
+                        filterPortalTarget
+                    ) : (
+                        <button
+                            className="mobile-filter-toggle"
+                            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                        >
+                            <div className="mft-left">
+                                <Filter size={15} />
+                                <span>Filters</span>
+                                {hasActiveFilters && <span className="mft-badge">Active</span>}
+                            </div>
+                            <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
+                        </button>
+                    )}
+
+                    <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
+                        {renderFilters()}
+                    </div>
+                </div>
+
+                <div className="mobile-only-meta-wrapper">
+                    {renderMetaStatusBar()}
+                </div>
+            </div>
 
             {showAnalytics && (
                 <motion.div
@@ -581,7 +628,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                         {Object.entries(totals.typeStats).map(([type, stats]) => {
                                             const weight = (stats.current / (totals.grossValue || 1)) * 100;
                                             const typeLower = type.toLowerCase();
-                                            
+
                                             // INTELLIGENT TARGET MAPPING
                                             let target = 0;
                                             if (typeLower.includes('stock') || typeLower.includes('equity')) target = 40;
@@ -589,7 +636,7 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                                             else if (typeLower.includes('gold') || typeLower.includes('metal')) target = 15;
                                             else if (typeLower.includes('fund') || typeLower.includes('mutual')) target = 25;
                                             else if (typeLower.includes('chit') || typeLower.includes('fixed')) target = 10;
-                                            
+
                                             const diff = weight - target;
                                             const style = getAssetStyle(type);
 
@@ -689,35 +736,6 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                 )}
             </BaseDialog>
 
-            {/* FINANCIAL SUMMARY CORE - LEGACY DESIGN RESTORED */}
-            <div className="investment-summary-grid">
-                <div className="summary-card-investment">
-                    <div className="summary-card-left">
-                        <div className="pill-icon-box"><Activity size={20} /></div>
-                    </div>
-                    <div className="summary-card-right">
-                        <div className="summary-main-line">
-                            <div className="summary-label-primary">TOTAL ASSETS</div>
-                            <div className="summary-value-main">{formatCurrency(totals.grossValue)}</div>
-                        </div>
-                        
-                        <div className="summary-secondary-line">
-                            <span className="summary-label-secondary">Invested: {formatCurrency(totals.grossInvested)}</span>
-                            {totals.grossValue > 0 && (
-                                <div className="pnl-chips-flex">
-                                    <span className={`pnl-chip ${totals.grossProfitAmt >= 0 ? 'positive' : 'negative'}`}>
-                                        {totals.grossProfitAmt >= 0 ? '+' : ''}{formatCurrency(Math.abs(totals.grossProfitAmt))}
-                                    </span>
-                                    <span className={`pnl-chip ${totals.grossProfitPct >= 0 ? 'positive' : 'negative'}`}>
-                                        {totals.grossProfitPct >= 0 ? '▲' : '▼'}{Math.abs(totals.grossProfitPct).toFixed(2)}%
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
             {/* CATEGORY SUMMARY PILLS - ORIGINAL LARGE DESIGN RESTORED */}
             <div className="category-pills-row">
@@ -725,199 +743,98 @@ export default function InvestmentPage({ onEdit, showAnalytics, onToggleAnalytic
                     {loading ? (
                         [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" width={140} height={60} className="skeleton-pill-box" />)
                     ) : (
-                        Object.keys(totals.typeStats).map((type) => {
-                            const style = getAssetStyle(type);
-                            return (
-                                <motion.div key={type} className="investment-category-pill glass-effect">
-                                    <div
-                                        className="pill-icon-box"
-                                        style={{ '--pill-bg': style.bg, '--pill-color': style.color }}
+                        <>
+                            <motion.div
+                                key="ALL"
+                                className="investment-category-pill glass-effect"
+                                onClick={() => setSelectedType('ALL')}
+                                style={{
+                                    cursor: 'pointer',
+                                    '--card-border': selectedType === 'ALL' ? '#6366f140' : 'rgba(0,0,0,0.05)'
+                                }}
+                            >
+                                <div
+                                    className={`pill-icon-box ${selectedType === 'ALL' ? 'active' : 'inactive'}`}
+                                    style={{
+                                        '--pill-bg': selectedType === 'ALL' ? '#6366f1' : 'rgba(0,0,0,0.03)',
+                                        '--pill-color': selectedType === 'ALL' ? 'white' : '#6366f1'
+                                    }}
+                                >
+                                    <Layers size={20} color={selectedType === 'ALL' ? 'white' : '#6366f1'} strokeWidth={2.4} />
+                                </div>
+                                <div className="pill-info-box">
+                                    <Typography className="pill-type-label" style={{ opacity: selectedType === 'ALL' ? 1 : 0.6 }}>All Assets</Typography>
+                                    <div className="pill-value-stack">
+                                        <span className="pill-amt-val" style={{ '--text-color': '#6366f1', opacity: selectedType === 'ALL' ? 1 : 0.6 }}>
+                                            {formatCurrency(totals.grossValue)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {uniqueTypes.map((type) => {
+                                const stats = totals.typeStats[type] || { current: 0, invested: 0 };
+                                const style = getAssetStyle(type);
+                                const isSelected = selectedType === type;
+
+                                return (
+                                    <motion.div
+                                        key={type}
+                                        className="investment-category-pill glass-effect"
+                                        onClick={() => setSelectedType(isSelected ? 'ALL' : type)}
+                                        style={{
+                                            cursor: 'pointer',
+                                            '--card-border': isSelected ? `${style.color}40` : 'rgba(0,0,0,0.05)'
+                                        }}
                                     >
-                                        {style.icon}
-                                    </div>
-                                    <div className="pill-info-box">
-                                        <Typography className="pill-type-label">{type}</Typography>
-                                        <div className="pill-value-stack">
-                                            <span className="pill-amt-val" style={{ '--text-color': style.color }}>
-                                                {formatCurrency(totals.typeStats[type].current)}
-                                            </span>
-                                            <span className="pill-cost-label">
-                                                Invested: {formatCurrency(totals.typeStats[type].invested)}
-                                            </span>
-                                            {totals.typeStats[type].invested > 0 && (
-                                                <div className="pill-yield-meta">
-                                                    <span className={totals.typeStats[type].current >= totals.typeStats[type].invested ? 'yield-up' : 'yield-down'}>
-                                                        {totals.typeStats[type].current >= totals.typeStats[type].invested ? '+' : ''}{formatCurrency(Math.abs(totals.typeStats[type].current - totals.typeStats[type].invested))}
-                                                    </span>
-                                                    <span className={`${totals.typeStats[type].current >= totals.typeStats[type].invested ? 'yield-up' : 'yield-down'} yield-pct`}>
-                                                        ({totals.typeStats[type].current >= totals.typeStats[type].invested ? '▲' : '▼'}{Math.abs(((totals.typeStats[type].current - totals.typeStats[type].invested) / totals.typeStats[type].invested) * 100).toFixed(4)}%)
-                                                    </span>
-                                                </div>
-                                            )}
+                                        <div
+                                            className="pill-icon-box"
+                                            style={{
+                                                '--pill-bg': isSelected ? style.color : style.bg,
+                                                '--pill-color': isSelected ? 'white' : style.color
+                                            }}
+                                        >
+                                            {React.cloneElement(style.icon, { color: isSelected ? 'white' : style.color })}
                                         </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })
+                                        <div className="pill-info-box">
+                                            <Typography className="pill-type-label" style={{ opacity: isSelected ? 1 : 0.6 }}>{type}</Typography>
+                                            <div className="pill-value-stack">
+                                                <span className="pill-amt-val" style={{ '--text-color': style.color, opacity: isSelected ? 1 : 0.6 }}>
+                                                    {formatCurrency(stats.current)}
+                                                </span>
+                                                <span className="pill-cost-label" style={{ opacity: isSelected ? 1 : 0.6 }}>
+                                                    Invested: {formatCurrency(stats.invested)}
+                                                </span>
+                                                {stats.invested > 0 && (
+                                                    <div className="pill-yield-meta">
+                                                        <span className={stats.current >= stats.invested ? 'yield-up' : 'yield-down'}>
+                                                            {stats.current >= stats.invested ? '+' : ''}{formatCurrency(Math.abs(stats.current - stats.invested))}
+                                                        </span>
+                                                        <span className={`${stats.current >= stats.invested ? 'yield-up' : 'yield-down'} yield-pct`}>
+                                                            ({stats.current >= stats.invested ? '▲' : '▼'}{Math.abs(((stats.current - stats.invested) / stats.invested) * 100).toFixed(2)}%)
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </>
                     )}
                 </div>
             </div>
 
             <div className="spending-split-layout">
-                {/* Mobile Filter Toggle Button */}
-                {filterPortalTarget ? createPortal(
-                    <button
-                        onClick={() => setMobileFiltersOpen(o => !o)}
-                        className={`mh-icon-btn ${mobileFiltersOpen ? 'active' : ''}`}
-                        aria-label="Toggle filters"
-                        style={{ position: 'relative' }}
-                    >
-                        <Filter size={18} />
-                        {hasActiveFilters && (
-                            <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, background: '#ff3b30', borderRadius: '50%', border: '2px solid var(--app-bg, #f8fafc)' }}></span>
-                        )}
-                    </button>,
-                    filterPortalTarget
-                ) : (
-                    <button 
-                        className="mobile-filter-toggle"
-                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                    >
-                        <div className="mft-left">
-                            <Filter size={15} />
-                            <span>Filters</span>
-                            {hasActiveFilters && <span className="mft-badge">Active</span>}
-                        </div>
-                        <span className={`mft-chevron ${mobileFiltersOpen ? 'open' : ''}`}>▾</span>
-                    </button>
-                )}
-
-                <div className={`filters-sidebar-card glass-effect${mobileFiltersOpen ? ' mobile-open' : ''}`}>
-                    <div className="sidebar-sticky-wrap">
-
-
-                        <div className="filter-section-block">
-                            <div className="search-input-wrapper">
-                                <Search size={15} className="search-icon-fixed" />
-                                <input className="filter-search-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, class, category..." />
-                            </div>
-                        </div>
-
-                        <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>ASSET CLASS ENTITY</span></div>
-                            <div className="unified-filter-grid">
-                                {loading ? (
-                                    [...Array(4)].map((_, i) => <Skeleton key={i} variant="rectangular" height={36} className="skeleton-cat-filter" />)
-                                ) : (
-                                    <>
-                                        <div className={`unified-filter-btn ${selectedType === 'ALL' ? 'active' : ''}`} onClick={() => setSelectedType('ALL')}>
-                                            <span className="th-icon"><Layers size={20} /></span>
-                                            <span className="th-label">All</span>
-                                        </div>
-                                        {uniqueTypes.map(c => {
-                                            const style = getAssetStyle(c);
-                                            return (
-                                                <div key={c} className={`unified-filter-btn ${selectedType === c ? 'active' : ''}`} onClick={() => setSelectedType(c)}>
-                                                    <span className="th-icon" style={{ color: selectedType === c ? 'white' : style.color }}>
-                                                        {React.cloneElement(style.icon, { size: 20, strokeWidth: 2.4 })}
-                                                    </span>
-                                                    <span className="th-label">{c.split(' ')[0]}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="filter-section-block margin-t-1-75">
-                            <div className="filter-section-label"><span>TIME HORIZON</span></div>
-                            <div className="unified-filter-grid">
-                                {[
-                                    { id: 'TODAY', label: 'Today', icon: <Zap size={20} /> },
-                                    { id: 'THIS WEEK', label: 'This Week', icon: <Calendar size={20} /> },
-                                    { id: 'THIS MONTH', label: 'This Month', icon: <PieChart size={20} /> },
-                                    { id: 'PREVIOUS MONTH', label: 'Last Month', icon: <CalendarDays size={20} /> },
-                                    { id: 'ALL', label: 'All Time', icon: <Globe size={20} /> },
-                                    { id: 'CUSTOM', label: 'Custom Range', icon: <Filter size={20} /> },
-                                ].map(p => (
-                                    <div key={p.id} className={`unified-filter-btn ${period === p.id ? 'active' : ''}`} onClick={() => setPeriod(p.id)}>
-                                        <span className="th-icon" style={{ color: period === p.id ? 'white' : '#6366f1' }}>{p.icon}</span>
-                                        <span className="th-label">{p.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            {/* CUSTOM RANGE PICKER - SMART MUI TRIGGER */}
-                            {period === 'CUSTOM' && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="filter-section-block custom-range-block"
-                                >
-                                    <div className="filter-section-label color-primary"><span>SELECT PORTFOLIO RANGE</span></div>
-                                    <div 
-                                        className="mui-range-trigger"
-                                        onClick={() => {
-                                            setTempRange(dateRange);
-                                            setShowAndroidRange(true);
-                                        }}
-                                    >
-                                        <div className="trigger-icon"><Calendar size={16} /></div>
-                                        <div className="trigger-content">
-                                            <span className="trigger-date-text">
-                                                {dateRange.start ? dayjs(dateRange.start).format('MMM D, YYYY') : 'Start Date'}
-                                            </span>
-                                            <span className="trigger-sep">—</span>
-                                            <span className="trigger-date-text">
-                                                {dateRange.end ? dayjs(dateRange.end).format('MMM D, YYYY') : 'End Date'}
-                                            </span>
-                                        </div>
-                                        <Edit2 size={12} className="trigger-edit-icon" />
-                                    </div>
-                                </motion.div>
-                            )}
-                        </div>
+                <div className="desktop-only-filter-wrapper desktop-only">
+                    <div className="filters-sidebar-card glass-effect">
+                        {renderFilters()}
                     </div>
                 </div>
 
                 <div className="spending-main-content">
-                    <div className="meta-status-bar">
-                        <div className="badge-status">
-                            <span className="badge-count-text">{filteredInvestments.length}</span> ASSETS FOUND
-                        </div>
-
-                        <div className="action-hub-right">
-                            <button
-                                onClick={() => setSortBy(prev => prev === 'PNL_DESC' ? 'PNL_ASC' : 'PNL_DESC')}
-                                className={`sort-pill-btn ${sortBy === 'PNL_DESC' || sortBy === 'PNL_ASC' ? 'active' : ''}`}>
-                                {sortBy === 'PNL_DESC' ? '▼ P&L' : sortBy === 'PNL_ASC' ? '▲ P&L' : 'P&L'}
-                            </button>
-
-                            <button
-                                onClick={() => setSortBy('DATE_DESC')}
-                                className={`sort-pill-btn ${sortBy === 'DATE_DESC' ? 'active' : ''}`}>
-                                BY DATE
-                            </button>
-
-                            <button
-                                onClick={handleManualSync}
-                                disabled={syncingPrices}
-                                className="btn-pill-sync-minimal">
-                                {syncingPrices ? '...' : <><Zap size={11} /> SYNC</>}
-                            </button>
-
-                            <button
-                                onClick={() => { setSearch(''); setSelectedType('ALL'); setPeriod('ALL'); }}
-                                className="btn-clear-minimal">
-                                CLEAR
-                            </button>
-
-                            <button
-                                onClick={handleExportCSV}
-                                className="btn-export-minimal">
-                                <Download size={13} /> EXPORT
-                            </button>
-                        </div>
+                    <div className="desktop-only-meta-wrapper desktop-only">
+                        {renderMetaStatusBar()}
                     </div>
 
                     <div className="data-table-premium scroll-y-luxury">

@@ -19,19 +19,19 @@
     overflow: hidden;
 
     @media (max-width: 768px) {
-        margin-left: -0.75rem;  // Perfectly offset App.scss .main-content padding
+        margin-left: -0.75rem; // Perfectly offset App.scss .main-content padding
         margin-right: -0.75rem;
         margin-bottom: 1.5rem;
         width: calc(100% + 1.5rem); // Ensure it expands
 
-        .MuiGrid-container, 
+        .MuiGrid-container,
         .MuiGrid-root.MuiGrid-container {
             margin: 0 !important;
             width: 100% !important;
             padding: 0 !important;
-            
-            > .MuiGrid-item,
-            > .MuiGrid-root.MuiGrid-item {
+
+            >.MuiGrid-item,
+            >.MuiGrid-root.MuiGrid-item {
                 padding: 0 !important;
                 padding-bottom: 1.25rem !important;
                 width: 100% !important;
@@ -153,8 +153,13 @@
             .th-icon {
                 margin-right: 0 !important;
                 margin-bottom: 4px;
-                svg { width: 16px; height: 16px; }
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                }
             }
+
             .th-label {
                 font-size: 0.65rem !important;
                 text-align: center;
@@ -714,7 +719,7 @@
     padding: 1rem 1.25rem;
     border-radius: 1.25rem;
     background: white;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.05)) !important;
     transition: transform 0.2s;
 
     &:hover {
@@ -1222,11 +1227,6 @@
     }
 }
 
-// ── Desktop defaults (these elements are mobile-only controls) ──────
-.mobile-filter-toggle {
-    display: none; // Hidden on desktop
-}
-
 .filters-sidebar-card {
     display: block; // Always visible on desktop
 }
@@ -1290,7 +1290,7 @@
         display: none;
         padding: 1.1rem 1rem !important;
         border-radius: 20px !important;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0rem;
 
         &.mobile-open {
             display: block;
@@ -1484,9 +1484,16 @@
         padding: 1px 4px !important;
         border-radius: 4px !important;
         margin-top: 2px !important;
-        
-        &.positive { background: rgba(52, 199, 89, 0.08) !important; color: #34c759 !important; }
-        &.negative { background: rgba(255, 59, 48, 0.08) !important; color: #ff3b30 !important; }
+
+        &.positive {
+            background: rgba(52, 199, 89, 0.08) !important;
+            color: #34c759 !important;
+        }
+
+        &.negative {
+            background: rgba(255, 59, 48, 0.08) !important;
+            color: #ff3b30 !important;
+        }
     }
 
     // Action buttons: stay inline
@@ -1521,6 +1528,7 @@
         align-items: flex-start;
         padding: 1rem !important;
         gap: 0.75rem !important;
+        margin-bottom: 0 !important;
     }
 
     .summary-header-flex {
@@ -1607,6 +1615,7 @@
         font-size: 0.8rem !important;
     }
 }
+
 /* ADVANCED INTELLIGENCE CARDS */
 .intelligence-card-sub {
     padding: 1.5rem !important;
@@ -1632,7 +1641,8 @@
         width: 100% !important;
         margin-bottom: 1rem;
 
-        &.glass-effect, &.no-glass-mobile {
+        &.glass-effect,
+        &.no-glass-mobile {
             background: #ffffff !important; // Override glass on mobile
             backdrop-filter: none !important;
         }
@@ -1700,6 +1710,7 @@
     height: 14px;
     background: #1d1d1f;
     z-index: 2;
+
     &::after {
         content: '';
         position: absolute;
@@ -1717,10 +1728,18 @@
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    
-    &.neutral { color: #34c759; }
-    &.overweight { color: #ff3b30; }
-    &.underweight { color: #ff9500; }
+
+    &.neutral {
+        color: #34c759;
+    }
+
+    &.overweight {
+        color: #ff3b30;
+    }
+
+    &.underweight {
+        color: #ff9500;
+    }
 }
 
 .income-projection-wrap {
@@ -1751,6 +1770,7 @@
     font-weight: 900;
     color: #1d1d1f;
     letter-spacing: -0.04em;
+
     @media (max-width: 600px) {
         font-size: 1.8rem;
     }

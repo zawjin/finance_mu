@@ -1740,6 +1740,38 @@ body {
       min-width: 800px !important;
     }
   }
+
+  // GLOBAL MOBILE-ONLY TOP CONTROLS (FILTER + META)
+  .mobile-only-top-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.30rem !important;
+    padding: 0 0rem !important;
+    margin-bottom: 0.5rem !important;
+    width: 100% !important;
+
+    .mobile-only-filter-wrapper,
+    .mobile-only-meta-wrapper {
+      width: 100% !important;
+    }
+
+    .meta-status-bar {
+      margin-bottom: 0 !important;
+      border-radius: 16px !important;
+      background: rgba(255, 255, 255, 0.7) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+// Ensure top controls hidden on desktop
+.mobile-only-top-controls {
+  display: none;
 }
 
 // Mobile Viewport

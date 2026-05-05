@@ -204,6 +204,15 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                                 <BarChart2 size={18} />
                             </button>
                         )}
+                        {location.pathname === '/' && hasPermission('Audit Ledger') && (
+                            <button
+                                onClick={() => navigate('/spending')}
+                                className="mh-icon-btn"
+                                aria-label="Audit Ledger"
+                            >
+                                <Wallet size={18} />
+                            </button>
+                        )}
                         {showAddBtn && (
                             <button onClick={onAdd} className="mh-add-btn" aria-label="Add entry">
                                 <Plus size={20} strokeWidth={2.5} />

@@ -27,9 +27,9 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="android-login-root">
+        <div className="portal-login-root">
             {/* Animated Background */}
-            <div className="android-bg">
+            <div className="portal-bg">
                 <motion.div className="orb orb-blue"
                     animate={{ scale: [1, 1.2, 1], x: [0, 20, 0], y: [0, -15, 0] }}
                     transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -46,7 +46,7 @@ export default function LoginPage() {
             </div>
 
             {/* Top Hero Section */}
-            <div className="android-hero">
+            <div className="portal-hero">
                 <motion.div
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
             {/* Bottom Sheet Login Panel */}
             <motion.div
-                className="android-bottom-sheet"
+                className="portal-bottom-sheet"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.2 }}
@@ -84,7 +84,7 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <form onSubmit={handleLogin} className="android-form">
+                <form onSubmit={handleLogin} className="portal-form">
                     <AnimatePresence>
                         {error && (
                             <motion.div
@@ -92,18 +92,18 @@ export default function LoginPage() {
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
                             >
-                                <Alert severity="error" className="android-alert">{error}</Alert>
+                                <Alert severity="error" className="portal-alert">{error}</Alert>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    <div className="android-field-wrap">
-                        <label className="android-label">Username</label>
-                        <div className="android-input-box">
+                    <div className="portal-field-wrap">
+                        <label className="portal-label">Username</label>
+                        <div className="portal-input-box">
                             <User size={18} className="field-icon" />
                             <input
                                 type="text"
-                                className="android-input"
+                                className="portal-input"
                                 placeholder="Enter your username"
                                 value={credentials.username}
                                 onChange={e => setCredentials({ ...credentials, username: e.target.value })}
@@ -112,13 +112,13 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <div className="android-field-wrap">
-                        <label className="android-label">Password</label>
-                        <div className="android-input-box">
+                    <div className="portal-field-wrap">
+                        <label className="portal-label">Password</label>
+                        <div className="portal-input-box">
                             <Lock size={18} className="field-icon" />
                             <input
                                 type={showPassword ? 'text' : 'password'}
-                                className="android-input"
+                                className="portal-input"
                                 placeholder="Enter your password"
                                 value={credentials.password}
                                 onChange={e => setCredentials({ ...credentials, password: e.target.value })}
@@ -133,7 +133,7 @@ export default function LoginPage() {
                     <motion.button
                         type="submit"
                         disabled={loading}
-                        className="android-login-btn"
+                        className="portal-login-btn"
                         whileTap={{ scale: 0.97 }}
                         whileHover={{ scale: 1.01 }}
                     >
@@ -150,7 +150,7 @@ export default function LoginPage() {
                     </motion.button>
                 </form>
 
-                <p className="android-footer-tag">🔒 End-to-end encrypted · Neural Security Active</p>
+                <p className="portal-footer-tag">🔒 End-to-end encrypted · Neural Security Active</p>
             </motion.div>
         </div>
     );

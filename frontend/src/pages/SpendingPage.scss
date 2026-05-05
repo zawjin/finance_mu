@@ -440,7 +440,7 @@
 .apple-category-pill {
     padding: 0.75rem 1rem !important;
     border-radius: 1.25rem !important;
-    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.05)) !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.85rem !important;
