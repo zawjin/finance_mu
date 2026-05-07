@@ -140,6 +140,16 @@ class HealthLog(BaseModel):
     date: str # YYYY-MM-DD
     completed: bool = True
 
+class FamilyMember(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    name: str
+    age: int
+    relation: str
+    fatherId: Optional[str] = None
+    motherId: Optional[str] = None
+    spouseId: Optional[str] = None
+    photo: Optional[str] = None
+
 # --- AUTH & RBAC SCHEMAS ---
 
 class PermissionSchema(BaseModel):

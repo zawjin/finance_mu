@@ -30,6 +30,7 @@ import LoginPage from './pages/LoginPage';
 import UserManagementPage from './pages/UserManagementPage';
 import RoleManagementPage from './pages/RoleManagementPage';
 import DatabaseHealthPage from './pages/DatabaseHealthPage';
+import FamilyTreePage from './pages/FamilyTreePage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { fetchCurrentUser } from './store/authSlice';
 import BaseDialog from './components/ui/BaseDialog';
@@ -305,7 +306,7 @@ export default function App() {
                 api.get('/spending'),
                 api.get('/investments')
             ]);
-            
+
             const spendItem = (spendingRes.data || []).find(s => s.description === searchSpending);
             const investItem = (investRes.data || []).find(i => i.details === searchInvest);
 
@@ -398,7 +399,7 @@ export default function App() {
                     <AnimatePresence mode="wait">
                         <Routes>
                             <Route path="/login" element={!token ? <LoginPage /> : <Navigate to="/" replace />} />
-                            
+
                             <Route path="/*" element={
                                 <ProtectedRoute>
                                     <div className="app-shell">
@@ -426,11 +427,12 @@ export default function App() {
                                                     <Route path="/site-settings" element={<ProtectedRoute module="Role Management"><SiteSettingsPage /></ProtectedRoute>} />
                                                     <Route path="/salary-calculation" element={<ProtectedRoute module="Salary Calculation"><SalaryCalcPage /></ProtectedRoute>} />
                                                     <Route path="/health" element={<ProtectedRoute module="Health"><HealthPage showAnalytics={showAnalytics} /></ProtectedRoute>} />
-                                                    
+
                                                     {/* RBAC Protected Modules */}
                                                     <Route path="/admin/users" element={<ProtectedRoute module="User Management"><UserManagementPage /></ProtectedRoute>} />
                                                     <Route path="/admin/roles" element={<ProtectedRoute module="Role Management"><RoleManagementPage /></ProtectedRoute>} />
                                                     <Route path="/admin/database" element={<ProtectedRoute module="System Settings"><DatabaseHealthPage /></ProtectedRoute>} />
+                                                    <Route path="/management/family-tree" element={<ProtectedRoute module="Dashboard"><FamilyTreePage /></ProtectedRoute>} />
                                                 </Routes>
                                             </main>
                                         </div>
@@ -442,118 +444,118 @@ export default function App() {
 
                     {/* REFACTORED DYNAMIC MODALS */}
 
-                            <BaseDialog
-                                open={showAddModal || !!editingItem}
-                                onClose={handleCloseModal}
-                                title={editingItem ? 'Edit Audit Log' : 'Sync Audit Log'}
-                            >
-                                <ExpenseForm categories={categories} onSubmit={handleExpenseSubmit} onCancel={handleCloseModal} initialData={editingItem} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddModal || !!editingItem}
+                        onClose={handleCloseModal}
+                        title={editingItem ? 'Edit Audit Log' : 'Sync Audit Log'}
+                    >
+                        <ExpenseForm categories={categories} onSubmit={handleExpenseSubmit} onCancel={handleCloseModal} initialData={editingItem} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showAddInvestmentModal || !!editingInvestment}
-                                onClose={handleCloseModal}
-                                title={editingInvestment ? 'Edit Asset' : 'Sync Asset'}
-                            >
-                                <InvestmentForm assetClasses={assetClasses} onSubmit={handleInvestmentSubmit} onCancel={handleCloseModal} initialData={editingInvestment} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddInvestmentModal || !!editingInvestment}
+                        onClose={handleCloseModal}
+                        title={editingInvestment ? 'Edit Asset' : 'Sync Asset'}
+                    >
+                        <InvestmentForm assetClasses={assetClasses} onSubmit={handleInvestmentSubmit} onCancel={handleCloseModal} initialData={editingInvestment} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showAddDebtModal || !!editingDebt}
-                                onClose={handleCloseModal}
-                                title={editingDebt ? 'Edit Debt Exposure' : 'Sync Debt Exposure'}
-                            >
-                                <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddDebtModal || !!editingDebt}
+                        onClose={handleCloseModal}
+                        title={editingDebt ? 'Edit Debt Exposure' : 'Sync Debt Exposure'}
+                    >
+                        <DebtForm onSubmit={handleDebtSubmit} onCancel={handleCloseModal} initialData={editingDebt} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showAddLendingModal || !!editingLending}
-                                onClose={handleCloseModal}
-                                title={editingLending ? 'Update Chit Fund Card' : 'Add New Chit Fund Card'}
-                            >
-                                <LendingForm onSubmit={handleLendingSubmit} onCancel={handleCloseModal} initialData={editingLending} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddLendingModal || !!editingLending}
+                        onClose={handleCloseModal}
+                        title={editingLending ? 'Update Chit Fund Card' : 'Add New Chit Fund Card'}
+                    >
+                        <LendingForm onSubmit={handleLendingSubmit} onCancel={handleCloseModal} initialData={editingLending} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showAddReserveModal || !!editingReserve}
-                                onClose={handleCloseModal}
-                                title={editingReserve ? 'Add New Account' : 'Add New Account'}
-                            >
-                                <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddReserveModal || !!editingReserve}
+                        onClose={handleCloseModal}
+                        title={editingReserve ? 'Add New Account' : 'Add New Account'}
+                    >
+                        <ReserveForm onSubmit={handleReserveSubmit} onCancel={handleCloseModal} initialData={editingReserve} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showAddYearlyModal || !!editingYearly}
-                                onClose={handleCloseModal}
-                                title={editingYearly ? 'Modify obligation' : 'Register obligation'}
-                                borderRadius="32px"
-                            >
-                                {!editingYearly && (
-                                    <div className="modal-switcher-wrap">
-                                        <div className="switcher-pill-group">
-                                            <Button
-                                                onClick={() => setAddingFrequency('YEARLY')}
-                                                startIcon={<CalendarDays size={16} />}
-                                                className={`switcher-btn ${addingFrequency === 'YEARLY' ? 'active' : 'inactive'}`}
-                                            >
-                                                YEARLY RESERVE
-                                            </Button>
-                                            <Button
-                                                onClick={() => setAddingFrequency('MONTHLY')}
-                                                startIcon={<Repeat size={16} />}
-                                                className={`switcher-btn ${addingFrequency === 'MONTHLY' ? 'active' : 'inactive'}`}
-                                            >
-                                                MONTHLY BILL
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                                {(editingYearly?.frequency === 'MONTHLY' || (!editingYearly && addingFrequency === 'MONTHLY')) ? (
-                                    <MonthlyBillForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
-                                ) : (
-                                    <YearlyExpenseForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
-                                )}
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showAddYearlyModal || !!editingYearly}
+                        onClose={handleCloseModal}
+                        title={editingYearly ? 'Modify obligation' : 'Register obligation'}
+                        borderRadius="32px"
+                    >
+                        {!editingYearly && (
+                            <div className="modal-switcher-wrap">
+                                <div className="switcher-pill-group">
+                                    <Button
+                                        onClick={() => setAddingFrequency('YEARLY')}
+                                        startIcon={<CalendarDays size={16} />}
+                                        className={`switcher-btn ${addingFrequency === 'YEARLY' ? 'active' : 'inactive'}`}
+                                    >
+                                        YEARLY RESERVE
+                                    </Button>
+                                    <Button
+                                        onClick={() => setAddingFrequency('MONTHLY')}
+                                        startIcon={<Repeat size={16} />}
+                                        className={`switcher-btn ${addingFrequency === 'MONTHLY' ? 'active' : 'inactive'}`}
+                                    >
+                                        MONTHLY BILL
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                        {(editingYearly?.frequency === 'MONTHLY' || (!editingYearly && addingFrequency === 'MONTHLY')) ? (
+                            <MonthlyBillForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
+                        ) : (
+                            <YearlyExpenseForm onSubmit={handleYearlySubmit} onCancel={handleCloseModal} initialData={editingYearly} />
+                        )}
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={!!settlingTerm}
-                                onClose={handleCloseModal}
-                                title="Settle Outstanding Term"
-                                maxWidth="xs"
-                            >
-                                {settlingTerm && (
-                                    <SettleCardTermForm
-                                        term={settlingTerm.term}
-                                        requiredAmount={settlingTerm.requiredAmount}
-                                        alreadyPaid={settlingTerm.alreadyPaid}
-                                        reserves={reserves}
-                                        onSubmit={handleTermSettle}
-                                        onCancel={handleCloseModal}
-                                    />
-                                )}
-                            </BaseDialog>
+                    <BaseDialog
+                        open={!!settlingTerm}
+                        onClose={handleCloseModal}
+                        title="Settle Outstanding Term"
+                        maxWidth="xs"
+                    >
+                        {settlingTerm && (
+                            <SettleCardTermForm
+                                term={settlingTerm.term}
+                                requiredAmount={settlingTerm.requiredAmount}
+                                alreadyPaid={settlingTerm.alreadyPaid}
+                                reserves={reserves}
+                                onSubmit={handleTermSettle}
+                                onCancel={handleCloseModal}
+                            />
+                        )}
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={showTransferModal}
-                                onClose={handleCloseModal}
-                                title="Bill Pay"
-                                maxWidth="xs"
-                            >
-                                <TransferFundsForm reserves={reserves} onSubmit={handleTransferSubmit} onCancel={handleCloseModal} />
-                            </BaseDialog>
+                    <BaseDialog
+                        open={showTransferModal}
+                        onClose={handleCloseModal}
+                        title="Bill Pay"
+                        maxWidth="xs"
+                    >
+                        <TransferFundsForm reserves={reserves} onSubmit={handleTransferSubmit} onCancel={handleCloseModal} />
+                    </BaseDialog>
 
-                            <BaseDialog
-                                open={!!addingFundsTo}
-                                onClose={handleCloseModal}
-                                title="Add Liquidity"
-                                maxWidth="xs"
-                            >
-                                {addingFundsTo && <AddFundsForm account={addingFundsTo} onSubmit={handleAddFundsSubmit} onCancel={handleCloseModal} />}
-                            </BaseDialog>
+                    <BaseDialog
+                        open={!!addingFundsTo}
+                        onClose={handleCloseModal}
+                        title="Add Liquidity"
+                        maxWidth="xs"
+                    >
+                        {addingFundsTo && <AddFundsForm account={addingFundsTo} onSubmit={handleAddFundsSubmit} onCancel={handleCloseModal} />}
+                    </BaseDialog>
 
-                            <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />
-                        </LocalizationProvider>
-                    </Router>
-                </ThemeProvider>
-            );
+                    <AiAnalysisModal open={showAiModal} onClose={() => setShowAiModal(false)} />
+                </LocalizationProvider>
+            </Router>
+        </ThemeProvider>
+    );
 }

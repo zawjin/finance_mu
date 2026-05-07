@@ -6,7 +6,7 @@ import {
     Search, Filter, PieChart, Download, Activity,
     TrendingUp, Calendar, Trash2, Edit2, Zap, CalendarDays,
     Globe, Home, Gem, DollarSign, Briefcase, Landmark, CreditCard, Settings, CheckCircle2, Layers,
-    Plus, X, PlusCircle, Fingerprint
+    Plus, X, PlusCircle, Fingerprint, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -32,6 +32,233 @@ ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScal
 // Universal Icon Map Projection
 import { getIcon } from '../utils/iconMap';
 
+const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
+    const [viewDate, setViewDate] = useState(dayjs());
+    const [showYearPicker, setShowYearPicker] = useState(false);
+    
+    const startOfMonth = viewDate.startOf('month');
+    const daysInMonth = viewDate.daysInMonth();
+    const startDay = startOfMonth.day();
+
+    const days = [];
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) {
+        days.push(startOfMonth.date(i));
+    }
+
+    const handleDayClick = (d) => {
+        if (!d) return;
+        const dateStr = d.format('YYYY-MM-DD');
+        if (!tempRange.start || (tempRange.start && tempRange.end)) {
+            setTempRange({ start: dateStr, end: '' });
+        } else {
+            if (dayjs(dateStr).isBefore(dayjs(tempRange.start))) {
+                setTempRange({ start: dateStr, end: tempRange.start });
+            } else {
+                setTempRange({ ...tempRange, end: dateStr });
+            }
+        }
+    };
+
+    const isInRange = (d) => {
+        if (!d || !tempRange.start || !tempRange.end) return false;
+        return d.isAfter(dayjs(tempRange.start)) && d.isBefore(dayjs(tempRange.end));
+    };
+
+    const isStart = (d) => d && d.format('YYYY-MM-DD') === tempRange.start;
+    const isEnd = (d) => d && d.format('YYYY-MM-DD') === tempRange.end;
+
+    const years = [];
+    const currentYear = dayjs().year();
+    for (let y = currentYear - 10; y <= currentYear + 2; y++) years.push(y);
+
+    return (
+        <Dialog 
+            open={open} 
+            onClose={onClose} 
+            fullWidth 
+            maxWidth="xs" 
+            PaperProps={{ 
+                sx: { 
+                    borderRadius: '32px', 
+                    p: 0, 
+                    overflow: 'hidden',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
+                } 
+            }}
+        >
+            <Box sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: '1.2rem', letterSpacing: '-0.02em', color: '#1d1d1f' }}>Select Range</Typography>
+                    <IconButton onClick={onClose} size="small" sx={{ bgcolor: 'rgba(0,0,0,0.05)' }}><X size={18} /></IconButton>
+                </Box>
+
+                <Box sx={{ position: 'relative' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, px: 1 }}>
+                        <IconButton onClick={() => setViewDate(viewDate.subtract(1, 'month'))} size="small" sx={{ border: '1px solid rgba(0,0,0,0.05)' }}>
+                            <ChevronLeft size={20} />
+                        </IconButton>
+                        
+                        <Button 
+                            onClick={() => setShowYearPicker(!showYearPicker)}
+                            sx={{ 
+                                fontWeight: 900, 
+                                fontSize: '1rem', 
+                                color: '#6366f1',
+                                borderRadius: '12px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                            }}
+                        >
+                            {viewDate.format('MMMM YYYY')}
+                        </Button>
+
+                        <IconButton onClick={() => setViewDate(viewDate.add(1, 'month'))} size="small" sx={{ border: '1px solid rgba(0,0,0,0.05)' }}>
+                            <ChevronRight size={20} />
+                        </IconButton>
+                    </Box>
+
+                    <AnimatePresence>
+                        {showYearPicker && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                style={{
+                                    position: 'absolute',
+                                    top: '40px',
+                                    left: 0,
+                                    right: 0,
+                                    background: 'white',
+                                    zIndex: 10,
+                                    padding: '1rem',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(3, 1fr)',
+                                    gap: '8px',
+                                    maxHeight: '200px',
+                                    overflowY: 'auto'
+                                }}
+                            >
+                                {years.map(y => (
+                                    <Button 
+                                        key={y} 
+                                        onClick={() => {
+                                            setViewDate(viewDate.year(y));
+                                            setShowYearPicker(false);
+                                        }}
+                                        sx={{ 
+                                            borderRadius: '10px',
+                                            fontWeight: viewDate.year() === y ? 900 : 500,
+                                            bgcolor: viewDate.year() === y ? '#6366f1' : 'transparent',
+                                            color: viewDate.year() === y ? 'white' : 'inherit',
+                                            '&:hover': { bgcolor: viewDate.year() === y ? '#6366f1' : 'rgba(0,0,0,0.05)' }
+                                        }}
+                                    >
+                                        {y}
+                                    </Button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </Box>
+
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', mb: 3 }}>
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                        <Typography key={`day-label-${i}`} sx={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#86868b', py: 1 }}>{d}</Typography>
+                    ))}
+                    {days.map((d, i) => {
+                        if (!d) return <Box key={`empty-${i}`} />;
+                        const dateStr = d.format('YYYY-MM-DD');
+                        const start = isStart(d);
+                        const end = isEnd(d);
+                        const inRange = isInRange(d);
+
+                        return (
+                            <Box
+                                key={dateStr}
+                                onClick={() => handleDayClick(d)}
+                                sx={{
+                                    height: '42px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    borderRadius: '14px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: (start || end) ? 900 : 600,
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    position: 'relative',
+                                    bgcolor: (start || end) ? '#6366f1' : (inRange ? 'rgba(99,102,241,0.08)' : 'transparent'),
+                                    color: (start || end) ? 'white' : (inRange ? '#6366f1' : 'inherit'),
+                                    '&:hover': { 
+                                        bgcolor: (start || end) ? '#6366f1' : 'rgba(0,0,0,0.04)',
+                                        transform: 'scale(1.05)'
+                                    },
+                                    '&:active': { transform: 'scale(0.95)' }
+                                }}
+                            >
+                                {d.date()}
+                                {(start || end) && (
+                                    <motion.div 
+                                        layoutId="active-dot"
+                                        style={{ 
+                                            position: 'absolute', 
+                                            bottom: '6px', 
+                                            width: '4px', 
+                                            height: '4px', 
+                                            background: 'white', 
+                                            borderRadius: '50%' 
+                                        }} 
+                                    />
+                                )}
+                            </Box>
+                        );
+                    })}
+                </Box>
+
+                <Box sx={{ display: 'flex', gap: 1.5 }}>
+                    <Button 
+                        fullWidth 
+                        onClick={onClose} 
+                        sx={{ 
+                            borderRadius: '16px', 
+                            py: 1.5,
+                            fontWeight: 900, 
+                            color: '#1d1d1f', 
+                            bgcolor: 'rgba(0,0,0,0.05)',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        fullWidth 
+                        variant="contained" 
+                        onClick={() => onConfirm(tempRange)} 
+                        disabled={!tempRange.start || !tempRange.end}
+                        sx={{ 
+                            borderRadius: '16px', 
+                            py: 1.5,
+                            fontWeight: 900, 
+                            bgcolor: '#6366f1', 
+                            color: 'white',
+                            boxShadow: '0 10px 20px -5px rgba(99,102,241,0.3)',
+                            '&:hover': { bgcolor: '#4f46e5' }
+                        }}
+                    >
+                        Confirm
+                    </Button>
+                </Box>
+            </Box>
+        </Dialog>
+    );
+};
+
 
 const getCatStyle = (catName, categories = []) => {
     const cat = categories.find(c => c.name === catName);
@@ -47,6 +274,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     // Filters State
     const [search, setSearch] = useState('');
     const [selectedCat, setSelectedCat] = useState('ALL');
+    const [selectedSub, setSelectedSub] = useState('ALL');
     const [period, setPeriod] = useState('THIS MONTH');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [sortBy, setSortBy] = useState('DATE_DESC');
@@ -54,6 +282,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
     const [selectedSourceId, setSelectedSourceId] = useState('ALL');
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [showRangeModal, setShowRangeModal] = useState(false);
 
     const [tempRange, setTempRange] = useState({ start: '', end: '' });
     const [purging, setPurging] = useState(false);
@@ -166,6 +395,9 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     const filteredSpending = useMemo(() => {
         let result = baseFilteredSpending.filter(item => selectedCat === 'ALL' || item.category === selectedCat);
+        if (selectedSub !== 'ALL') {
+            result = result.filter(item => (item.sub_category || '').toLowerCase() === selectedSub.toLowerCase());
+        }
 
         // Sort
         result = [...result];
@@ -175,7 +407,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
         else if (sortBy === 'AMT_ASC') result.sort((a, b) => (a.amount || 0) - (b.amount || 0));
 
         return result;
-    }, [baseFilteredSpending, selectedCat, sortBy]);
+    }, [baseFilteredSpending, selectedCat, selectedSub, sortBy]);
 
     // Global Position (Unfiltered Persistent State)
     const globalSummary = useMemo(() => {
@@ -320,7 +552,21 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
             {period === 'CUSTOM' && (
                 <div className="filter-section-block margin-t-1-5" onClick={(e) => e.stopPropagation()}>
                     <div className="filter-section-label"><CalendarDays size={13} /><span>SELECT AUDIT RANGE</span></div>
-                    {/* Standard Range Picker or similar could go here */}
+                    <div
+                        className="mui-range-trigger"
+                        onClick={() => {
+                            setTempRange(dateRange);
+                            setShowRangeModal(true);
+                        }}
+                    >
+                        <div className="trigger-icon"><Calendar size={18} /></div>
+                        <div className="trigger-text">
+                            {dateRange.start && dateRange.end
+                                ? `${dayjs(dateRange.start).format('MMM D')} — ${dayjs(dateRange.end).format('MMM D, YYYY')}`
+                                : (dateRange.start ? `From ${dayjs(dateRange.start).format('MMM D')}...` : 'Choose dates')}
+                        </div>
+                        <Edit2 size={14} className="trigger-edit-icon" />
+                    </div>
                 </div>
             )}
 
@@ -381,6 +627,16 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="page-container-super">
+            <WebRangeModal
+                open={showRangeModal}
+                onClose={() => setShowRangeModal(false)}
+                tempRange={tempRange}
+                setTempRange={setTempRange}
+                onConfirm={(range) => {
+                    setDateRange(range);
+                    setShowRangeModal(false);
+                }}
+            />
 
             {/* MOBILE-ONLY TOP FILTER & META PANEL */}
             <div className="mobile-only-top-controls">
@@ -595,11 +851,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                         ))
                     ) : (
                         <>
-                            <motion.div 
+                            <motion.div
                                 key="ALL"
                                 className="apple-category-pill glass-effect category-pill-wrapper"
                                 onClick={() => { setSelectedCat('ALL'); setSelectedSub('ALL'); }}
-                                style={{ 
+                                style={{
                                     cursor: 'pointer',
                                     '--card-border': selectedCat === 'ALL' ? '#6366f140' : 'rgba(0,0,0,0.05)'
                                 }}
@@ -642,11 +898,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                     const hasActivity = stats.spend > 0;
 
                                     return (
-                                        <motion.div 
-                                            key={cat} 
+                                        <motion.div
+                                            key={cat}
                                             className="apple-category-pill glass-effect category-pill-wrapper"
                                             onClick={() => { setSelectedCat(selectedCat === cat ? 'ALL' : cat); setSelectedSub('ALL'); }}
-                                            style={{ 
+                                            style={{
                                                 cursor: 'pointer',
                                                 '--card-border': selectedCat === cat ? `${style.color}40` : 'rgba(0,0,0,0.05)'
                                             }}

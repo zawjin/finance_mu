@@ -38,7 +38,16 @@ app.include_router(ai_router, prefix="/api/ai")
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static")
 
 if os.path.exists(static_dir):
-    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+    # Only mount assets if they exist
+    assets_dir = os.path.join(static_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+    
+    # Ensure uploads dir exists and mount it
+    uploads_dir = os.path.join(static_dir, "uploads")
+    if not os.path.exists(uploads_dir):
+        os.makedirs(uploads_dir)
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):

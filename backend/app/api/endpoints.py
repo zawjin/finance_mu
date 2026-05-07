@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException
-from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, YearlyExpenseItem, PrivateLendingItem, HealthHabit, HealthLog
+from fastapi import APIRouter, HTTPException, File, UploadFile
+from app.models.schemas import SpendingItem, InvestmentItem, CategorySchema, DebtItem, ReserveItem, YearlyExpenseItem, PrivateLendingItem, HealthHabit, HealthLog, FamilyMember
 from app.core.database import db
 from bson import ObjectId
 import urllib.request
@@ -7,6 +7,10 @@ import json
 import httpx
 from datetime import datetime
 from app.core.config import settings
+
+import os
+import shutil
+import uuid
 
 router = APIRouter()
 
@@ -395,11 +399,63 @@ async def delete_asset_class(cat_id: str):
     await db.asset_classes.delete_one({"_id": ObjectId(cat_id)})
     return {"status": "ok"}
 
-# DEBT LEDGER ENDPOINTS
-@router.get("/debt", tags=["Debt Ledger"])
-async def get_debt():
-    cursor = db.debt.find().sort("date", -1)
+@router.post("/upload-image", tags=["System Configuration"])
+async def upload_image(file: UploadFile = File(...)):
+    try:
+        # Save to static/uploads
+        static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "static")
+        uploads_dir = os.path.join(static_dir, "uploads")
+        if not os.path.exists(uploads_dir):
+            os.makedirs(uploads_dir)
+            
+        file_ext = file.filename.split(".")[-1]
+        unique_name = f"{uuid.uuid4()}.{file_ext}"
+        file_path = os.path.join(uploads_dir, unique_name)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        return {"url": f"/uploads/{unique_name}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# FAMILY MANAGEMENT ENDPOINTS
+@router.get("/family", tags=["Family Management"])
+async def get_family():
+    cursor = db.family.find()
     return [format_doc(doc) async for doc in cursor]
+
+@router.post("/family", tags=["Family Management"])
+async def add_family_member(item: FamilyMember):
+    try:
+        # Convert to dict and remove the 'id' field if it exists
+        data = item.dict(exclude={"id"}, by_alias=True)
+        result = await db.family.insert_one(data)
+        return {"id": str(result.inserted_id)}
+    except Exception as e:
+        print(f"DATABASE ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/family/{item_id}", tags=["Family Management"])
+async def update_family_member(item_id: str, item: FamilyMember):
+    try:
+        data = item.dict(exclude={"id"}, by_alias=True)
+        await db.family.update_one({"_id": ObjectId(item_id)}, {"$set": data})
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/family/{item_id}", tags=["Family Management"])
+async def delete_family_member(item_id: str):
+    try:
+        await db.family.delete_one({"_id": ObjectId(item_id)})
+        # Clean up children - set their fatherId or motherId to None
+        await db.family.update_many({"fatherId": item_id}, {"$set": {"fatherId": None}})
+        await db.family.update_many({"motherId": item_id}, {"$set": {"motherId": None}})
+        await db.family.update_many({"spouseId": item_id}, {"$set": {"spouseId": None}})
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/debt", tags=["Debt Ledger"])
 async def add_debt(item: DebtItem):
@@ -900,4 +956,5 @@ async def sync_all_prices():
         except Exception as e:
             print(f"SYNC ITEM ERROR [{item.get('name')}]: {e}")
     return {"status": "sync_task_completed", "updated_count": synced_count}
+
 

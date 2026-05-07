@@ -13,39 +13,41 @@ import { logout } from '../../store/authSlice';
 import './TopNavbar.scss';
 
 const NAV_ITEMS = [
-    { to: '/',               label: 'Dashboard',     module: 'Dashboard',       icon: <LayoutDashboard size={22} />, color: '#6366f1', bg: '#eef2ff' },
-    { to: '/spending',       label: 'Audit Ledger',  module: 'Audit Ledger',    icon: <Wallet size={22} />,          color: '#0ea5e9', bg: '#e0f2fe' },
-    { to: '/reserves',       label: 'Cash Reserves', module: 'Cash Reserves',   icon: <Banknote size={22} />,        color: '#10b981', bg: '#d1fae5' },
-    { to: '/investments',    label: 'Assets',        module: 'Asset Portfolio', icon: <Gem size={22} />,             color: '#f59e0b', bg: '#fef3c7' },
-    { to: '/fixed-expenses', label: 'Fixed Costs',   module: 'Fixed Costs',     icon: <Bookmark size={22} />,        color: '#8b5cf6', bg: '#ede9fe' },
-    { to: '/health',         label: 'Health',        module: 'Health',          icon: <Activity size={22} />,        color: '#ef4444', bg: '#fee2e2' },
+    { to: '/', label: 'Dashboard', module: 'Dashboard', icon: <LayoutDashboard size={22} />, color: '#6366f1', bg: '#eef2ff' },
+    { to: '/spending', label: 'Audit Ledger', module: 'Audit Ledger', icon: <Wallet size={22} />, color: '#0ea5e9', bg: '#e0f2fe' },
+    { to: '/reserves', label: 'Cash Reserves', module: 'Cash Reserves', icon: <Banknote size={22} />, color: '#10b981', bg: '#d1fae5' },
+    { to: '/investments', label: 'Assets', module: 'Asset Portfolio', icon: <Gem size={22} />, color: '#f59e0b', bg: '#fef3c7' },
+    { to: '/fixed-expenses', label: 'Fixed Costs', module: 'Fixed Costs', icon: <Bookmark size={22} />, color: '#8b5cf6', bg: '#ede9fe' },
+    { to: '/health', label: 'Health', module: 'Health', icon: <Activity size={22} />, color: '#ef4444', bg: '#fee2e2' },
 ];
 
 const ADMIN_ITEMS = [
     { to: '/admin/users', label: 'User Mgmt', module: 'User Management', icon: <Users size={22} />, color: '#6366f1', bg: '#eef2ff' },
-    { to: '/admin/roles', label: 'Role Mgmt', module: 'Role Management', icon: <Key size={22} />,   color: '#0ea5e9', bg: '#e0f2fe' },
+    { to: '/admin/roles', label: 'Role Mgmt', module: 'Role Management', icon: <Key size={22} />, color: '#0ea5e9', bg: '#e0f2fe' },
     { to: '/admin/database', label: 'DB Health', module: 'System Settings', icon: <Database size={22} />, color: '#ec4899', bg: '#fdf2f8' },
 ];
 
 const TOOL_ITEMS = [
-    { type: 'action', label: 'AI Analyst',    icon: <Sparkles size={18} />,    color: '#f97316', bg: '#fff7ed', action: 'ai' },
-    { type: 'link',   to: '/salary-calculation', label: 'Salary Calc',  icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
-    { type: 'link',   to: '/categories',         label: 'Config',       icon: <Settings size={18} />,   color: '#8b5cf6', bg: '#ede9fe' },
+    { type: 'action', label: 'AI Analyst', icon: <Sparkles size={18} />, color: '#f97316', bg: '#fff7ed', action: 'ai' },
+    { type: 'link', to: '/salary-calculation', label: 'Salary Calc', icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
+    { type: 'link', to: '/categories', label: 'Config', icon: <Settings size={18} />, color: '#8b5cf6', bg: '#ede9fe' },
+    { type: 'link',   to: '/management/family-tree', label: 'Family Tree',  icon: <Users size={18} />,       color: '#ec4899', bg: '#fdf2f8' },
     { type: 'link',   to: '/profile',            label: 'Profile',      icon: <User size={18} />,       color: '#10b981', bg: '#d1fae5' },
 ];
 
 const PAGE_TITLE_MAP = {
-    '/':                    { title: 'Dashboard',       sub: 'Financial Overview' },
-    '/spending':            { title: 'Audit Ledger',    sub: 'Transaction History' },
-    '/reserves':            { title: 'Cash Reserves',   sub: 'Liquidity Management' },
-    '/investments':         { title: 'Asset Portfolio', sub: 'Investment Tracker' },
-    '/fixed-expenses':      { title: 'Fixed Costs',     sub: 'Recurring Obligations' },
-    '/health':              { title: 'Health Connect',  sub: 'Habit Tracker' },
-    '/categories':          { title: 'Configuration',   sub: 'Categories & Settings' },
-    '/salary-calculation':  { title: 'Salary Calc',     sub: 'Take-Home Calculator' },
-    '/profile':             { title: 'Profile',         sub: 'Account Settings' },
-    '/settings':            { title: 'Settings',        sub: 'Preferences' },
+    '/': { title: 'Dashboard', sub: 'Financial Overview' },
+    '/spending': { title: 'Audit Ledger', sub: 'Transaction History' },
+    '/reserves': { title: 'Cash Reserves', sub: 'Liquidity Management' },
+    '/investments': { title: 'Asset Portfolio', sub: 'Investment Tracker' },
+    '/fixed-expenses': { title: 'Fixed Costs', sub: 'Recurring Obligations' },
+    '/health': { title: 'Health Connect', sub: 'Habit Tracker' },
+    '/categories': { title: 'Configuration', sub: 'Categories & Settings' },
+    '/salary-calculation': { title: 'Salary Calc', sub: 'Take-Home Calculator' },
+    '/profile': { title: 'Profile', sub: 'Account Settings' },
+    '/settings': { title: 'Settings', sub: 'Preferences' },
     '/site-settings':       { title: 'Site Settings',   sub: 'App Configuration' },
+    '/management/family-tree': { title: 'Heritage Nexus', sub: 'Combined Lineage Mapping' },
 };
 
 export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
@@ -61,7 +63,7 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
     // Live financial stats for the bottom sheet header
     const { reserves, summary } = useSelector(state => state.finance);
     const { user } = useSelector(state => state.auth);
-    
+
     const handleLogout = () => {
         dispatch(logout());
         navigate('/login');
@@ -125,7 +127,7 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                         {NAV_ITEMS.map(item => hasPermission(item.module) && (
                             <ClassicNavLink key={item.to} to={item.to} label={item.label.toUpperCase()} icon={item.icon} />
                         ))}
-                        
+
                     </div>
                 </div>
 
@@ -150,18 +152,19 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
                             </div>
                             {profileOpen && (
                                 <div className="dropdown-menu-glass">
-                                    <MenuOption icon={<User size={16} />}     label="Profile"       onClick={() => { setProfileOpen(false); navigate('/profile'); }} />
-                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Settings"      onClick={() => { setProfileOpen(false); navigate('/settings'); }} />}
+                                    <MenuOption icon={<User size={16} />} label="Profile" onClick={() => { setProfileOpen(false); navigate('/profile'); }} />
+                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Settings" onClick={() => { setProfileOpen(false); navigate('/settings'); }} />}
                                     {hasPermission('Salary Calculation') && <MenuOption icon={<Banknote size={16} />} label="S Calculation" onClick={() => { setProfileOpen(false); navigate('/salary-calculation'); }} />}
-                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Config"        onClick={() => { setProfileOpen(false); navigate('/categories'); }} />}
-                                    
+                                    {hasPermission('Settings') && <MenuOption icon={<Settings size={16} />} label="Config" onClick={() => { setProfileOpen(false); navigate('/categories'); }} />}
+                                    <MenuOption icon={<Users size={16} />} label="Family Tree" onClick={() => { setProfileOpen(false); navigate('/management/family-tree'); }} />
+
                                     <div className="menu-divider-glass"></div>
-                                    
+
                                     {hasPermission('User Management') && <MenuOption icon={<Users size={16} />} label="Users" onClick={() => { setProfileOpen(false); navigate('/admin/users'); }} />}
                                     {hasPermission('Role Management') && <MenuOption icon={<Key size={16} />} label="Roles" onClick={() => { setProfileOpen(false); navigate('/admin/roles'); }} />}
-                                    
+
                                     <div className="menu-divider-glass"></div>
-                                    
+
                                     <MenuOption icon={<LogOut size={16} />} label="Sign Out" onClick={handleLogout} className="logout-option" />
                                 </div>
                             )}

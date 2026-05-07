@@ -26,6 +26,8 @@ export default function SalaryCalcPage() {
     const [pfYearly, setPfYearly] = useState(0);
     const [grossInput, setGrossInput] = useState('');
     const [bonusYearly, setBonusYearly] = useState(0);
+    const [juneBonus, setJuneBonus] = useState(400000); // MG4 -> 4L
+    const [grade, setGrade] = useState('MG4');
 
     const handleGrossChange = (val) => {
         setGrossInput(val);
@@ -44,7 +46,7 @@ export default function SalaryCalcPage() {
     const monthlyGross = basic + hra + specialAllowance + lta;
     const annualGross = monthlyGross * 12;
     const fixedCtc = annualGross + pfYearly;
-    const ctc = fixedCtc + bonusYearly;
+    const ctc = fixedCtc + bonusYearly + juneBonus;
 
     const standardDeduction = 75000;
 
@@ -79,18 +81,30 @@ export default function SalaryCalcPage() {
     };
 
     const taxDetails = useMemo(() => computeTax(annualGross), [annualGross]);
-    const taxWithBonus = useMemo(() => computeTax(annualGross + bonusYearly), [annualGross, bonusYearly]);
+    const taxWithJulyBonus = useMemo(() => computeTax(annualGross + bonusYearly), [annualGross, bonusYearly]);
+    const taxWithJuneBonus = useMemo(() => computeTax(annualGross + juneBonus), [annualGross, juneBonus]);
+    const totalTaxWithBonuses = useMemo(() => computeTax(annualGross + bonusYearly + juneBonus), [annualGross, bonusYearly, juneBonus]);
+
+    const isMg4Above = useMemo(() => {
+        const level = parseInt(grade.replace(/\D/g, '')) || 0;
+        return level >= 4;
+    }, [grade]);
 
     const monthlyPf = pfYearly / 12;
     const monthlyTax = taxDetails.finalTax / 12;
-    const monthlyFood = 500;
+    const monthlyFood = isMg4Above ? 500 : 0;
     const monthlyFrs = 5;
     const monthlyTakeHome = monthlyGross - monthlyPf - monthlyTax - monthlyFood - monthlyFrs;
-    const annualTakeHome = monthlyTakeHome * 12;
-    const effectiveTaxRate = annualGross > 0 ? (taxDetails.finalTax / annualGross) * 100 : 0;
+    
+    // Tax impact of bonuses (simplified as marginal tax)
+    const julyBonusTax = taxWithJulyBonus.finalTax - taxDetails.finalTax;
+    const juneBonusTax = taxWithJuneBonus.finalTax - taxDetails.finalTax;
 
-    const bonusTax = taxWithBonus.finalTax - taxDetails.finalTax;
-    const julyTakeHome = monthlyGross + bonusYearly - monthlyPf - monthlyTax - monthlyFood - monthlyFrs - bonusTax;
+    const annualTakeHome = (monthlyTakeHome * 12) + bonusYearly + juneBonus - (totalTaxWithBonuses.finalTax - taxDetails.finalTax);
+    const effectiveTaxRate = annualGross > 0 ? (totalTaxWithBonuses.finalTax / (annualGross + bonusYearly + juneBonus)) * 100 : 0;
+
+    const julyTakeHome = monthlyGross + bonusYearly - monthlyPf - monthlyTax - monthlyFood - monthlyFrs - julyBonusTax;
+    const juneTakeHome = monthlyGross + juneBonus - monthlyPf - monthlyTax - monthlyFood - monthlyFrs - juneBonusTax;
 
     const components = [
         { label: 'Basic', value: basic, onChange: setBasic, color: '#6366f1' },
@@ -99,7 +113,7 @@ export default function SalaryCalcPage() {
         { label: 'Leave Travel Allowance', value: lta, onChange: setLta, color: '#10b981' },
     ];
 
-    const bonusPctOfCtc = ctc > 0 ? (bonusYearly / ctc) * 100 : 0;
+    const bonusPctOfCtc = ctc > 0 ? ((bonusYearly + juneBonus) / ctc) * 100 : 0;
 
     return (
         <motion.div
@@ -114,14 +128,28 @@ export default function SalaryCalcPage() {
                 </div>
                 <div className="header-text">
                     <h1>Salary Profiler</h1>
-                    <p>New Tax Regime — FY 2024–25 Simulator</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <p>New Tax Regime — FY 2024–25 Simulator</p>
+                        <span className="grade-badge">Grade: {grade}</span>
+                    </div>
                 </div>
             </div>
 
             <div className="salary-calc-layout">
                 <div className="salary-calc-inputs">
                     <div className="quick-ctc-card">
-                        <div className="label">⚡ Enter Total CTC — Auto-fill</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                            <div className="label">⚡ Enter Total CTC</div>
+                            <select 
+                                value={grade} 
+                                onChange={e => setGrade(e.target.value)}
+                                className="grade-select"
+                            >
+                                {['MG1','MG2','MG3','MG4','MG5','MG6'].map(g => (
+                                    <option key={g} value={g}>{g}</option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="input-wrap">
                             <span>₹</span>
                             <input
@@ -131,7 +159,9 @@ export default function SalaryCalcPage() {
                                 onChange={e => handleGrossChange(e.target.value)}
                             />
                         </div>
-                        <div className="footer">Calculates all components automatically</div>
+                        <div className="footer">
+                            {isMg4Above ? 'Canteen: ₹500 (Deducted)' : 'Canteen: ₹0 (No deduction for below MG4)'}
+                        </div>
                     </div>
 
                     <div className="salary-white-card">
@@ -162,6 +192,27 @@ export default function SalaryCalcPage() {
                         </div>
                     </div>
 
+                    <div className="salary-white-card" style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af)', border: 'none' }}>
+                        <div className="card-title-row" style={{ marginBottom: '1rem' }}>
+                            <Banknote size={16} color="#93c5fd" />
+                            <span style={{ color: '#dbeafe' }}>Annual Bonus (June)</span>
+                            <span style={{ marginLeft: 'auto', fontSize: '0.65rem', background: 'rgba(147,197,253,0.15)', color: '#93c5fd', borderRadius: 20, padding: '0.15rem 0.6rem', fontWeight: 700 }}>June Only</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: '0.65rem 1rem', border: '1px solid rgba(147,197,253,0.3)' }}>
+                            <span style={{ color: '#93c5fd', fontWeight: 800, marginRight: '0.5rem' }}>₹</span>
+                            <input
+                                type="number"
+                                value={juneBonus}
+                                onChange={e => setJuneBonus(Number(e.target.value))}
+                                style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '1.05rem', fontWeight: 700, color: '#fff', fontFamily: 'Outfit, sans-serif' }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
+                            <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>Grade {grade} Specific</span>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#93c5fd' }}>June Payout</span>
+                        </div>
+                    </div>
+
                     <div className="salary-white-card" style={{ background: 'linear-gradient(135deg, #451a03, #78350f)', border: 'none' }}>
                         <div className="card-title-row" style={{ marginBottom: '1rem' }}>
                             <Banknote size={16} color="#fbbf24" />
@@ -179,7 +230,7 @@ export default function SalaryCalcPage() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
                             <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>Bulk TDS in July</span>
-                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fbbf24' }}>~{bonusPctOfCtc.toFixed(1)}% CTC</span>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fbbf24' }}>Variable Pay</span>
                         </div>
                     </div>
                 </div>
@@ -205,6 +256,43 @@ export default function SalaryCalcPage() {
                         <StatCard label="Total CTC" value={formatCurrency(ctc)} sub={`Incl. Incentive`} color="#0369a1" bg="#f0f9ff" />
                     </div>
 
+                    <div className="bonus-month-card" style={{ background: 'linear-gradient(135deg, #1e3a8a, #1e40af)' }}>
+                        <div className="bonus-header">
+                            <div className="bonus-main">
+                                <div className="title-row">
+                                    <Banknote size={14} color="#93c5fd" />
+                                    <span>June — Annual Bonus Month</span>
+                                </div>
+                                <div className="value" style={{ color: '#fff' }}>{formatCurrency(juneTakeHome)}</div>
+                                <div className="compare" style={{ color: 'rgba(255,255,255,0.6)' }}>vs normal {formatCurrency(monthlyTakeHome)}</div>
+                            </div>
+                            <div style={{ background: 'rgba(147,197,253,0.1)', borderRadius: 14, padding: '1rem 1.25rem', border: '1px solid rgba(147,197,253,0.2)', textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>Grade {grade} Bonus</div>
+                                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#dbeafe' }}>+{formatCurrency(juneBonus)}</div>
+                            </div>
+                        </div>
+                        <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {[
+                                { label: 'Monthly Gross', amt: monthlyGross, color: '#a7f3d0' },
+                                { label: `Annual Bonus (June)`, amt: juneBonus, color: '#93c5fd', prefix: '+' },
+                                { label: 'Regular TDS (Monthly)', amt: -monthlyTax, color: '#fca5a5' },
+                                { label: 'Bonus Tax (Deduction)', amt: -juneBonusTax, color: '#f87171' },
+                                { label: 'EPF Deduction', amt: -monthlyPf, color: '#fca5a5' },
+                                { label: 'Food / Canteen', amt: -monthlyFood, color: '#fca5a5' },
+                                { label: 'FRS Fund', amt: -monthlyFrs, color: '#93c5fd' },
+                            ].map((r, i) => (
+                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{r.label}</span>
+                                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: r.color }}>{r.prefix || ''}{formatCurrency(Math.abs(r.amt))}</span>
+                                </div>
+                            ))}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(147,197,253,0.3)' }}>
+                                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#dbeafe' }}>Net June Take Home</span>
+                                <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#93c5fd' }}>{formatCurrency(juneTakeHome)}</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bonus-month-card">
                         <div className="bonus-header">
                             <div className="bonus-main">
@@ -225,7 +313,7 @@ export default function SalaryCalcPage() {
                                 { label: 'Monthly Gross', amt: monthlyGross, color: '#a7f3d0' },
                                 { label: `Performance Incentive`, amt: bonusYearly, color: '#fcd34d', prefix: '+' },
                                 { label: 'Regular TDS (Monthly)', amt: -monthlyTax, color: '#fca5a5' },
-                                { label: 'Incentive Tax (Bulk Deduction)', amt: -bonusTax, color: '#f87171' },
+                                { label: 'Incentive Tax (Bulk Deduction)', amt: -julyBonusTax, color: '#f87171' },
                                 { label: 'EPF Deduction', amt: -monthlyPf, color: '#fca5a5' },
                                 { label: 'Food / Canteen', amt: -monthlyFood, color: '#fca5a5' },
                                 { label: 'FRS Fund', amt: -monthlyFrs, color: '#93c5fd' },
