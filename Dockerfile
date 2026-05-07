@@ -9,7 +9,7 @@ COPY frontend/package*.json ./
 
 # Install ALL dependencies (including devDependencies like Vite)
 # We do NOT set NODE_ENV=production here so that dev tools are installed
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the frontend source
 COPY frontend/ ./
