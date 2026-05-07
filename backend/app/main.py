@@ -10,7 +10,7 @@ from app.api.auth import router as auth_router
 from app.api.user_mgmt import router as user_router
 from app.middleware.logging import RequestLoggingMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import os
 
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -49,14 +49,23 @@ if os.path.exists(static_dir):
         os.makedirs(uploads_dir)
     app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        # Check if the requested path exists as a file in static
-        file_path = os.path.join(static_dir, full_path)
-        if full_path != "" and os.path.exists(file_path):
+    @app.get("/{path:path}")
+    async def serve_spa(path: str):
+        # 1. Skip if it's an API route (should be handled by routers above, but safety first)
+        if path.startswith("api"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+
+        # 2. Check if the path is a real file (like /assets/index.js)
+        file_path = os.path.join(static_dir, path)
+        if path != "" and os.path.isfile(file_path):
             return FileResponse(file_path)
-        # Otherwise serve index.html for SPA routing
-        return FileResponse(os.path.join(static_dir, "index.html"))
+            
+        # 3. Otherwise, serve index.html for SPA client-side routing
+        index_path = os.path.join(static_dir, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+            
+        return JSONResponse({"detail": "Frontend not built"}, status_code=404)
 
 # Removed market_watcher scheduler as requested
 

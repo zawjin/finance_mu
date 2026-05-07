@@ -300,11 +300,10 @@ function RelationEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, 
 const nodeTypes = { memberNode: MemberNode };
 const edgeTypes = { relationEdge: RelationEdge };
 
-// ─── Members → Nodes + Edges ──────────────────────────────────
 function buildFlowData(members, onEdit, onDelete, savedPositions = {}) {
-  const { positions, spouseOf, childrenOf } = computeLayout(members);
+  const { positions = {}, spouseOf = {}, childrenOf = {} } = computeLayout(members) || {};
 
-  const nodes = members.map(m => {
+  const nodes = (Array.isArray(members) ? members : []).map(m => {
     const mId = getId(m);
     const pos = savedPositions[mId] || positions[mId] || { x: 0, y: 0 };
     return {
