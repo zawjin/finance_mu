@@ -28,7 +28,7 @@ const ADMIN_ITEMS = [
 ];
 
 const TOOL_ITEMS = [
-    { type: 'action', label: 'AI Analyst', icon: <Sparkles size={18} />, color: '#f97316', bg: '#fff7ed', action: 'ai' },
+    { type: 'link', to: '/neural-advisor', label: 'Neural Advisor', icon: <Sparkles size={18} />, color: '#f97316', bg: '#fff7ed' },
     { type: 'link', to: '/salary-calculation', label: 'Salary Calc', icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
     { type: 'link', to: '/categories', label: 'Config', icon: <Settings size={18} />, color: '#8b5cf6', bg: '#ede9fe' },
     { type: 'link',   to: '/management/family-tree', label: 'Family Tree',  icon: <Users size={18} />,       color: '#ec4899', bg: '#fdf2f8' },
@@ -48,6 +48,7 @@ const PAGE_TITLE_MAP = {
     '/settings': { title: 'Settings', sub: 'Preferences' },
     '/site-settings':       { title: 'Site Settings',   sub: 'App Configuration' },
     '/management/family-tree': { title: 'Heritage Nexus', sub: 'Combined Lineage Mapping' },
+    '/neural-advisor': { title: 'Neural Advisor', sub: 'Behavioral Audit Engine' },
 };
 
 export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnalytics, showAnalytics }) {
@@ -133,9 +134,9 @@ export default function TopNavbar({ onAdd, addLabel, onOpenAiModal, onToggleAnal
 
                 <div className="action-cluster-nav">
                     <div className="nav-action-group">
-                        <button onClick={onOpenAiModal} className="btn-ai-analyst">
-                            <Sparkles size={16} color="#fb923c" /> AI ANALYST
-                        </button>
+                        <NavLink to="/neural-advisor" className="btn-ai-analyst" style={{ textDecoration: 'none' }}>
+                            <Sparkles size={16} color="#fb923c" /> NEURAL ADVISOR
+                        </NavLink>
                         {showAddBtn && (
                             <>
                                 {showAnalyticsBtn && (

@@ -104,7 +104,7 @@ const DailyQuoteBox = () => {
 
 
 export default function OverviewPage() {
-    const { loading, spending, reserves, investments, debt, yearlyExpenses, summary } = useSelector(s => s.finance);
+    const { loading, spending, reserves, investments, debt, yearlyExpenses, categories, summary } = useSelector(s => s.finance);
     const [activePeriod, setActivePeriod] = useState('month');
     const [currentTime, setCurrentTime] = useState(dayjs());
 
@@ -427,6 +427,8 @@ export default function OverviewPage() {
                     </div>
                 </div>
             </motion.div>
+
+            {/* ── Neural Pulse (AI Command) ────────────────── */}
 
             {/* ── Net Worth Card ────────────────────────────── */}
             {hasModule('Cash Reserves') && hasModule('Asset Portfolio') && (

@@ -1828,3 +1828,9 @@
         display: none !important;
     }
 }
+
+desktop-only-filter {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}

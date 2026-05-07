@@ -457,6 +457,11 @@ async def delete_family_member(item_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/debt", tags=["Debt Ledger"])
+async def get_debt():
+    cursor = db.debt.find().sort("date", -1)
+    return [format_doc(doc) async for doc in cursor]
+
 @router.post("/debt", tags=["Debt Ledger"])
 async def add_debt(item: DebtItem):
     result = await db.debt.insert_one(item.dict(exclude={"id"}))

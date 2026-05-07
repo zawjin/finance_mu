@@ -50,6 +50,26 @@ body {
   }
 }
 
+// ─── Neural Advisor Context Overrides ──────────────────────────
+.neural-context {
+  background: #000 !important;
+  
+  .content-shell {
+    background: #000 !important;
+  }
+  
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: #000 !important;
+
+    @media (max-width: 768px) {
+      padding: 0 !important;
+    }
+  }
+}
+
 // ─── Shared UI Elements ───────────────────────────────────────────
 
 .modal-switcher-wrap {

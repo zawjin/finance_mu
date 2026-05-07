@@ -16,6 +16,7 @@ import Loader from '../components/ui/Loader';
 import Modal from '../components/ui/Modal';
 import BaseDialog from '../components/ui/BaseDialog';
 import './SpendingPage.scss';
+import './SpendingPage.scss';
 import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField, CircularProgress } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
@@ -35,7 +36,7 @@ import { getIcon } from '../utils/iconMap';
 const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) => {
     const [viewDate, setViewDate] = useState(dayjs());
     const [showYearPicker, setShowYearPicker] = useState(false);
-    
+
     const startOfMonth = viewDate.startOf('month');
     const daysInMonth = viewDate.daysInMonth();
     const startDay = startOfMonth.day();
@@ -73,21 +74,21 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
     for (let y = currentYear - 10; y <= currentYear + 2; y++) years.push(y);
 
     return (
-        <Dialog 
-            open={open} 
-            onClose={onClose} 
-            fullWidth 
-            maxWidth="xs" 
-            PaperProps={{ 
-                sx: { 
-                    borderRadius: '32px', 
-                    p: 0, 
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="xs"
+            PaperProps={{
+                sx: {
+                    borderRadius: '32px',
+                    p: 0,
                     overflow: 'hidden',
                     background: 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
-                } 
+                }
             }}
         >
             <Box sx={{ p: 3 }}>
@@ -101,12 +102,12 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
                         <IconButton onClick={() => setViewDate(viewDate.subtract(1, 'month'))} size="small" sx={{ border: '1px solid rgba(0,0,0,0.05)' }}>
                             <ChevronLeft size={20} />
                         </IconButton>
-                        
-                        <Button 
+
+                        <Button
                             onClick={() => setShowYearPicker(!showYearPicker)}
-                            sx={{ 
-                                fontWeight: 900, 
-                                fontSize: '1rem', 
+                            sx={{
+                                fontWeight: 900,
+                                fontSize: '1rem',
                                 color: '#6366f1',
                                 borderRadius: '12px',
                                 textTransform: 'uppercase',
@@ -145,13 +146,13 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
                                 }}
                             >
                                 {years.map(y => (
-                                    <Button 
-                                        key={y} 
+                                    <Button
+                                        key={y}
                                         onClick={() => {
                                             setViewDate(viewDate.year(y));
                                             setShowYearPicker(false);
                                         }}
-                                        sx={{ 
+                                        sx={{
                                             borderRadius: '10px',
                                             fontWeight: viewDate.year() === y ? 900 : 500,
                                             bgcolor: viewDate.year() === y ? '#6366f1' : 'transparent',
@@ -195,7 +196,7 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
                                     position: 'relative',
                                     bgcolor: (start || end) ? '#6366f1' : (inRange ? 'rgba(99,102,241,0.08)' : 'transparent'),
                                     color: (start || end) ? 'white' : (inRange ? '#6366f1' : 'inherit'),
-                                    '&:hover': { 
+                                    '&:hover': {
                                         bgcolor: (start || end) ? '#6366f1' : 'rgba(0,0,0,0.04)',
                                         transform: 'scale(1.05)'
                                     },
@@ -204,16 +205,16 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
                             >
                                 {d.date()}
                                 {(start || end) && (
-                                    <motion.div 
+                                    <motion.div
                                         layoutId="active-dot"
-                                        style={{ 
-                                            position: 'absolute', 
-                                            bottom: '6px', 
-                                            width: '4px', 
-                                            height: '4px', 
-                                            background: 'white', 
-                                            borderRadius: '50%' 
-                                        }} 
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '6px',
+                                            width: '4px',
+                                            height: '4px',
+                                            background: 'white',
+                                            borderRadius: '50%'
+                                        }}
                                     />
                                 )}
                             </Box>
@@ -222,30 +223,30 @@ const WebRangeModal = ({ open, onClose, tempRange, setTempRange, onConfirm }) =>
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 1.5 }}>
-                    <Button 
-                        fullWidth 
-                        onClick={onClose} 
-                        sx={{ 
-                            borderRadius: '16px', 
+                    <Button
+                        fullWidth
+                        onClick={onClose}
+                        sx={{
+                            borderRadius: '16px',
                             py: 1.5,
-                            fontWeight: 900, 
-                            color: '#1d1d1f', 
+                            fontWeight: 900,
+                            color: '#1d1d1f',
                             bgcolor: 'rgba(0,0,0,0.05)',
                             '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' }
                         }}
                     >
                         Cancel
                     </Button>
-                    <Button 
-                        fullWidth 
-                        variant="contained" 
-                        onClick={() => onConfirm(tempRange)} 
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => onConfirm(tempRange)}
                         disabled={!tempRange.start || !tempRange.end}
-                        sx={{ 
-                            borderRadius: '16px', 
+                        sx={{
+                            borderRadius: '16px',
                             py: 1.5,
-                            fontWeight: 900, 
-                            bgcolor: '#6366f1', 
+                            fontWeight: 900,
+                            bgcolor: '#6366f1',
                             color: 'white',
                             boxShadow: '0 10px 20px -5px rgba(99,102,241,0.3)',
                             '&:hover': { bgcolor: '#4f46e5' }
@@ -637,6 +638,7 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                     setShowRangeModal(false);
                 }}
             />
+
 
             {/* MOBILE-ONLY TOP FILTER & META PANEL */}
             <div className="mobile-only-top-controls">

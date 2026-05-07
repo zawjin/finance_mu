@@ -1,0 +1,192 @@
+.neural-pulse-super {
+    position: relative;
+    background: #0a0a0c;
+    border-radius: 40px;
+    padding: 1.75rem;
+    overflow: hidden;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    margin-bottom: 2rem;
+
+    .mesh-gradient {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 10% 10%, rgba(0, 209, 255, 0.1) 0%, transparent 40%);
+        opacity: 0.6; pointer-events: none;
+    }
+
+    .pulse-header {
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 10;
+
+        .tab-switcher-glass {
+            display: flex;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
+            .tab-btn {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 10px;
+                border: none;
+                background: transparent;
+                color: rgba(255, 255, 255, 0.4);
+                font-size: 0.55rem;
+                font-weight: 950;
+                border-radius: 50px;
+                cursor: pointer;
+                transition: 0.3s all cubic-bezier(0.4, 0, 0.2, 1);
+
+                &.active {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #ffffff;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                }
+            }
+        }
+    }
+
+    .pulse-content-area {
+        position: relative;
+        z-index: 5;
+        min-height: 320px;
+    }
+
+    .pulse-main-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+
+        .big-stat {
+            .s-label { font-size: 0.5rem; font-weight: 900; color: rgba(255, 255, 255, 0.3); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+            .s-value.archetype { font-size: 1.2rem; font-weight: 950; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        }
+
+        .display-right { display: flex; align-items: center; gap: 1.25rem; }
+
+        .health-harmony {
+            text-align: right;
+            .h-circle {
+                width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(52, 199, 89, 0.2);
+                display: grid; place-items: center; margin-left: auto; margin-bottom: 4px; color: #34c759;
+            }
+            .h-label { font-size: 0.45rem; font-weight: 900; color: rgba(255, 255, 255, 0.4); }
+        }
+
+        .efficiency-box.cute-glow {
+            padding: 0.85rem 1.25rem; border-radius: 24px; text-align: center; min-width: 80px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            .e-val { font-size: 1.6rem; font-weight: 950; line-height: 1; }
+            .e-lbl { font-size: 0.45rem; font-weight: 900; opacity: 0.6; margin-top: 4px; text-transform: uppercase; }
+        }
+    }
+
+    .daily-audit-list {
+        margin-bottom: 2rem;
+        .a-label { font-size: 0.5rem; font-weight: 950; color: rgba(255, 255, 255, 0.3); margin-bottom: 1rem; letter-spacing: 0.1em; }
+
+        .audit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.6rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+
+            .item-icon {
+                margin-top: 2px;
+                width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; flex-shrink: 0;
+            }
+            .item-text { font-size: 0.7rem; font-weight: 700; color: rgba(255, 255, 255, 0.8); line-height: 1.4; }
+
+            &.warn { border-color: rgba(255, 149, 0, 0.15); .item-icon { background: rgba(255, 149, 0, 0.1); color: #ff9500; } }
+            &.danger { border-color: rgba(255, 59, 48, 0.15); .item-icon { background: rgba(255, 59, 48, 0.1); color: #ff3b30; } }
+            &.info { border-color: rgba(0, 209, 255, 0.1); .item-icon { background: rgba(0, 209, 255, 0.05); color: #00d1ff; } }
+            &.success { border-color: rgba(52, 199, 89, 0.1); .item-icon { background: rgba(52, 199, 89, 0.05); color: #34c759; } }
+        }
+    }
+
+    .weekly-matrix-view, .monthly-matrix-view {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1.5rem;
+        border-radius: 32px;
+        margin-bottom: 2rem;
+
+        .weekly-hero-stats {
+            display: flex; gap: 2rem; margin-bottom: 1.5rem;
+            .w-stat {
+                flex: 1; .w-lbl { font-size: 0.5rem; font-weight: 900; color: rgba(255, 255, 255, 0.3); display: block; margin-bottom: 0.25rem; }
+                .w-val { font-size: 1.4rem; font-weight: 950; color: #fff; }
+            }
+        }
+
+        .weekly-insights {
+            .weekly-point {
+                display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem;
+                font-size: 0.7rem; font-weight: 700; color: rgba(255, 255, 255, 0.6);
+            }
+        }
+    }
+
+    .monthly-projection {
+        margin-bottom: 1.5rem;
+        .p-label { font-size: 0.5rem; font-weight: 900; color: rgba(255, 255, 255, 0.3); margin-bottom: 0.5rem; }
+        .p-value { font-size: 1.1rem; font-weight: 950; margin-bottom: 0.75rem; }
+        .p-progress {
+            height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden;
+            .p-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+        }
+    }
+
+    .fixed-expense-audit {
+        .f-label { font-size: 0.5rem; font-weight: 900; color: rgba(255, 255, 255, 0.3); margin-bottom: 0.75rem; }
+        .f-meter {
+            display: flex; align-items: center; gap: 1rem;
+            .f-val { font-size: 1.5rem; font-weight: 950; color: #00d1ff; }
+            .f-desc { font-size: 0.65rem; font-weight: 700; color: rgba(255, 255, 255, 0.5); line-height: 1.4; }
+        }
+    }
+
+    .pulse-wealth-projection.cute-card {
+        background: rgba(255, 255, 255, 0.03); padding: 1.5rem; border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 2rem;
+        .w-label { font-size: 0.5rem; font-weight: 900; color: rgba(255, 255, 255, 0.4); margin-bottom: 0.5rem; letter-spacing: 0.1em; }
+        .w-value { font-size: 2rem; font-weight: 950; color: #00d1ff; letter-spacing: -0.04em; margin-bottom: 1rem; }
+        .w-roadmap {
+            padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.05);
+            .roadmap-title { font-size: 0.5rem; font-weight: 950; color: rgba(255, 255, 255, 0.3); margin-bottom: 0.75rem; }
+            .roadmap-step { display: flex; align-items: center; gap: 0.75rem; font-size: 0.7rem; font-weight: 700; color: rgba(255, 255, 255, 0.7); }
+        }
+    }
+
+    .pulse-footer-advice {
+        background: rgba(255, 255, 255, 0.04); padding: 1.5rem; border-radius: 28px; display: flex; align-items: center; gap: 1.25rem;
+        .ai-mood-icon { width: 42px; height: 42px; border-radius: 16px; display: grid; place-items: center; flex-shrink: 0; }
+        .advice-content {
+            .advice-title { font-size: 0.7rem; font-weight: 950; text-transform: uppercase; margin-bottom: 4px; opacity: 0.6; }
+            .advice-text.tamil { font-size: 0.8rem; font-weight: 700; color: rgba(255, 255, 255, 0.85); line-height: 1.6; }
+        }
+    }
+}
+
+.neural-pulse-super.loading {
+    display: grid; place-items: center; min-height: 400px;
+    .loader-inner {
+        text-align: center;
+        span { font-size: 0.6rem; font-weight: 950; color: rgba(255, 255, 255, 0.3); letter-spacing: 0.2em; display: block; margin-top: 1rem; }
+    }
+}
+
+@keyframes pulse-node {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 0.5; }
+}
