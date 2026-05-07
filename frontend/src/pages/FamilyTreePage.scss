@@ -189,7 +189,7 @@
     }
 
     // Lift elements above overlay
-    > *:not(.ft-handle):not(::before):not(::after) {
+    > *:not(.ft-handle) {
       position: relative; z-index: 1;
     }
   }
