@@ -20,6 +20,7 @@ import './SpendingPage.scss';
 import { Skeleton, Box, Button, Typography, Grid, IconButton, Divider, Dialog, DialogTitle, DialogContent, Grow, Stack, Select, MenuItem, TextField, CircularProgress } from '@mui/material';
 import api from '../utils/api';
 import { fetchFinanceData } from '../store/financeSlice';
+import SpendingHeatmap from '../components/ui/SpendingHeatmap';
 
 // Charting
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
@@ -819,6 +820,20 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                 )}
             </Dialog>
 
+            {/* SPENDING HEATMAP V2 */}
+            <AnimatePresence>
+                {showAnalytics && (
+                    <motion.div 
+                        initial={{ opacity: 0, height: 0 }} 
+                        animate={{ opacity: 1, height: 'auto' }} 
+                        exit={{ opacity: 0, height: 0 }}
+                        style={{ overflow: 'hidden' }}
+                    >
+                        <SpendingHeatmap spending={spending} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* FINANCIAL SUMMARY CORE */}
             <div className="summary-grid">
                 <div className="summary-card-premium">
@@ -1049,6 +1064,11 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
                                                         </div>
                                                         <div className="tx-amount-col">
                                                             <div className="tx-amount-main">{formatCurrency(outstanding)}</div>
+                                                            {s.is_split && s.split_status === 'PENDING' && (
+                                                                <div className="tx-split-badge-micro" style={{ fontSize: '0.6rem', fontWeight: 900, color: '#6366f1', marginTop: '2px' }}>
+                                                                    SPLIT PENDING: {formatCurrency(s.split_amount)}
+                                                                </div>
+                                                            )}
                                                             {s.recovered > 0 && (
                                                                 <div className="tx-recovery-small">Rec: {formatCurrency(s.recovered)}</div>
                                                             )}
@@ -1056,6 +1076,21 @@ export default function SpendingPage({ onEdit, showAnalytics, onToggleAnalytics 
 
                                                         {/* High-Fidelity Action Cluster */}
                                                         <div className="row-action-cluster tx-action-cluster">
+                                                            {s.is_split && s.split_status === 'PENDING' && (
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    onClick={async () => {
+                                                                        try {
+                                                                            await api.put(`/spending/${s._id}`, { ...s, split_status: 'RECEIVED', recovered: (s.recovered || 0) + s.split_amount });
+                                                                            dispatch(fetchFinanceData());
+                                                                        } catch (err) { console.error(err); }
+                                                                    }} 
+                                                                    sx={{ color: '#34c759', '&:hover': { bgcolor: 'rgba(52, 199, 89, 0.1)' } }}
+                                                                    title="Mark Split as Received"
+                                                                >
+                                                                    <CheckCircle2 size={14} />
+                                                                </IconButton>
+                                                            )}
                                                             {isUnsettled && (
                                                                 <IconButton size="small" onClick={() => {
                                                                     setSettleData({ cardId: s.payment_source_id, sourceId: '', amount: outstanding.toString(), targetTx: s });

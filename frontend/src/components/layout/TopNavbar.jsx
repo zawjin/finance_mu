@@ -18,6 +18,7 @@ const NAV_ITEMS = [
     { to: '/reserves', label: 'Cash Reserves', module: 'Cash Reserves', icon: <Banknote size={22} />, color: '#10b981', bg: '#d1fae5' },
     { to: '/investments', label: 'Assets', module: 'Asset Portfolio', icon: <Gem size={22} />, color: '#f59e0b', bg: '#fef3c7' },
     { to: '/fixed-expenses', label: 'Fixed Costs', module: 'Fixed Costs', icon: <Bookmark size={22} />, color: '#8b5cf6', bg: '#ede9fe' },
+    { to: '/budget', label: 'Budget', module: 'Dashboard', icon: <Calculator size={22} />, color: '#6366f1', bg: '#eef2ff' },
     { to: '/health', label: 'Health', module: 'Health', icon: <Activity size={22} />, color: '#ef4444', bg: '#fee2e2' },
 ];
 
@@ -29,6 +30,7 @@ const ADMIN_ITEMS = [
 
 const TOOL_ITEMS = [
     { type: 'link', to: '/neural-advisor', label: 'Neural Advisor', icon: <Sparkles size={18} />, color: '#f97316', bg: '#fff7ed' },
+    { type: 'link', to: '/budget', label: 'Budget Tracker', icon: <Calculator size={18} />, color: '#6366f1', bg: '#eef2ff' },
     { type: 'link', to: '/salary-calculation', label: 'Salary Calc', icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
     { type: 'link', to: '/categories', label: 'Config', icon: <Settings size={18} />, color: '#8b5cf6', bg: '#ede9fe' },
     { type: 'link',   to: '/management/family-tree', label: 'Family Tree',  icon: <Users size={18} />,       color: '#ec4899', bg: '#fdf2f8' },
@@ -41,6 +43,7 @@ const PAGE_TITLE_MAP = {
     '/reserves': { title: 'Cash Reserves', sub: 'Liquidity Management' },
     '/investments': { title: 'Asset Portfolio', sub: 'Investment Tracker' },
     '/fixed-expenses': { title: 'Fixed Costs', sub: 'Recurring Obligations' },
+    '/budget': { title: 'Budget Envelopes', sub: 'Category Spending Limits' },
     '/health': { title: 'Health Connect', sub: 'Habit Tracker' },
     '/categories': { title: 'Configuration', sub: 'Categories & Settings' },
     '/salary-calculation': { title: 'Salary Calc', sub: 'Take-Home Calculator' },

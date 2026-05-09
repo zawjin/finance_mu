@@ -112,6 +112,51 @@
             &.danger { border-color: rgba(255, 59, 48, 0.15); .item-icon { background: rgba(255, 59, 48, 0.1); color: #ff3b30; } }
             &.info { border-color: rgba(0, 209, 255, 0.1); .item-icon { background: rgba(0, 209, 255, 0.05); color: #00d1ff; } }
             &.success { border-color: rgba(52, 199, 89, 0.1); .item-icon { background: rgba(52, 199, 89, 0.05); color: #34c759; } }
+
+            .btn-add-recurring-mini {
+                display: block;
+                margin-top: 8px;
+                padding: 4px 10px;
+                background: rgba(0, 209, 255, 0.1);
+                border: 1px solid rgba(0, 209, 255, 0.2);
+                border-radius: 8px;
+                color: #00d1ff;
+                font-size: 0.5rem;
+                font-weight: 950;
+                cursor: pointer;
+                transition: 0.2s;
+                letter-spacing: 0.05em;
+
+                &:hover { background: #00d1ff; color: #000; }
+            }
+        }
+
+        .anomaly-alert-box {
+            background: rgba(255, 59, 48, 0.05);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            animation: pulse-border 2s infinite ease-in-out;
+
+            .anomaly-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.65rem;
+                font-weight: 950;
+                color: #ff3b30;
+                letter-spacing: 0.05em;
+                margin-bottom: 8px;
+            }
+
+            .anomaly-item {
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.9);
+                line-height: 1.4;
+                b { color: #ff3b30; }
+            }
         }
     }
 
@@ -145,6 +190,28 @@
             height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden;
             .p-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
         }
+    }
+
+    .forecast-card-neural {
+        background: rgba(251, 146, 60, 0.05);
+        border: 1px solid rgba(251, 146, 60, 0.15);
+        border-radius: 24px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+
+        .f-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.55rem;
+            font-weight: 950;
+            color: #fb923c;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .f-val { font-size: 1.4rem; font-weight: 950; color: #fff; margin-bottom: 4px; }
+        .f-desc { font-size: 0.6rem; font-weight: 700; color: rgba(255, 255, 255, 0.4); }
     }
 
     .fixed-expense-audit {
@@ -189,4 +256,10 @@
     0% { transform: scale(1); opacity: 0.5; }
     50% { transform: scale(1.1); opacity: 0.8; }
     100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes pulse-border {
+    0% { border-color: rgba(255, 59, 48, 0.15); }
+    50% { border-color: rgba(255, 59, 48, 0.4); }
+    100% { border-color: rgba(255, 59, 48, 0.15); }
 }

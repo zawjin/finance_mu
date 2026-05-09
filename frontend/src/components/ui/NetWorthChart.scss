@@ -1,0 +1,118 @@
+.net-worth-chart {
+    background: #fff;
+    border-radius: 24px;
+    padding: 1.5rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    margin-bottom: 1.5rem;
+
+    .nwc-loading {
+        text-align: center;
+        padding: 3rem;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .nwc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+
+        .nwc-title-group {
+            display: flex;
+            flex-direction: column;
+
+            .nwc-title {
+                font-size: 0.9rem;
+                font-weight: 950;
+                color: #0f172a;
+            }
+            .nwc-sub {
+                font-size: 0.65rem;
+                font-weight: 700;
+                color: #94a3b8;
+                margin-top: 2px;
+            }
+        }
+
+        .nwc-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.7rem;
+            font-weight: 950;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: currentColor;
+            color: inherit;
+            
+            // trick: text is color, bg is transparent version
+            background: rgba(0, 0, 0, 0.0);
+            border: 1.5px solid currentColor;
+            opacity: 0.8;
+        }
+    }
+
+    .nwc-current-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 16px;
+
+        @media (max-width: 640px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .nwc-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+
+            &.highlight {
+                border-left: 2px solid var(--c, #10b981);
+                padding-left: 0.75rem;
+                margin-left: 0.25rem;
+            }
+
+            .nwc-stat-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+            }
+
+            .nwc-stat-val {
+                font-size: 0.85rem;
+                font-weight: 950;
+                color: #0f172a;
+                letter-spacing: -0.02em;
+
+                &.big { font-size: 1rem; }
+            }
+            .nwc-stat-lbl {
+                font-size: 0.55rem;
+                font-weight: 800;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-top: 2px;
+            }
+        }
+    }
+
+    .nwc-chart-area {
+        height: 200px;
+        position: relative;
+
+        @media (max-width: 768px) {
+            height: 160px;
+        }
+    }
+}

@@ -14,6 +14,9 @@ class SpendingItem(BaseModel):
     payment_source_id: Optional[str] = None  # Reserve account _id if debited
     target_account_id: Optional[str] = None  # Reserve account _id if credited/settled (e.g. Card Payment)
     is_settled: bool = True  # Tracks if card transactions are paid off
+    is_split: bool = False
+    split_amount: float = 0.0
+    split_status: str = "NONE" # NONE, PENDING, RECEIVED
     metadata: Optional[dict] = {} # For tagging (e.g. is_investment: True)
 
 class YearlyExpenseItem(BaseModel):
@@ -185,3 +188,20 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+class BudgetEnvelope(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    category: str
+    monthly_limit: float
+    color: Optional[str] = "#6366f1"
+    icon: Optional[str] = "Wallet"
+
+class GoalItem(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    name: str
+    target_amount: float
+    current_amount: float = 0.0
+    deadline: str # YYYY-MM-DD
+    category: str = "SAVINGS" # SAVINGS, INVESTMENT, PURCHASE, DEBT_FREE
+    status: str = "ACTIVE" # ACTIVE, COMPLETED, ARCHIVED
+    color: Optional[str] = "#6366f1"

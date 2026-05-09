@@ -13,6 +13,8 @@ import {
     Activity, Calendar, Clock, Zap, Smartphone, Database
 } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
+import NetWorthChart from '../components/ui/NetWorthChart';
+import GoalTracker from '../components/ui/GoalTracker';
 import './OverviewPage.scss';
 
 ChartJS.register(
@@ -430,52 +432,17 @@ export default function OverviewPage() {
 
             {/* ── Neural Pulse (AI Command) ────────────────── */}
 
-            {/* ── Net Worth Card ────────────────────────────── */}
+            {/* ── Net Worth Chart ────────────────────────────── */}
             {hasModule('Cash Reserves') && hasModule('Asset Portfolio') && (
                 <motion.div {...fadeUp(0.05)}>
-                    <div className="ov-networth" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div>
-                            <div className="ov-networth__label" style={{ position: 'relative', zIndex: 1 }}>
-                                <Activity size={12} /> Total Net Worth
-                            </div>
-                            <div className="ov-networth__value" style={{ position: 'relative', zIndex: 1 }}>
-                                {formatCurrency(pulse.netWorth)}
-                            </div>
-                            <div className="ov-networth__pills">
-                                <div className="ov-networth__pill positive">
-                                    <TrendingUp size={12} color="#6ee7b7" />
-                                    <span className="pill-val">{formatCurrency(pulse.liquidity)}</span>
-                                    <span className="pill-lbl">Liquid</span>
-                                </div>
-                                <div className="ov-networth__pill">
-                                    <BarChart2 size={12} color="rgba(255,255,255,0.6)" />
-                                    <span className="pill-val">{formatCurrency(pulse.totalValuation)}</span>
-                                    <span className="pill-lbl">Invested</span>
-                                </div>
-                                {pulse.grossLiabilities > 0 && (
-                                    <div className="ov-networth__pill negative">
-                                        <TrendingDown size={12} color="#fca5a5" />
-                                        <span className="pill-val">{formatCurrency(pulse.grossLiabilities)}</span>
-                                        <span className="pill-lbl">Liability</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div style={{ position: 'relative', zIndex: 1, textAlign: 'right', padding: '1.25rem', background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.4rem', letterSpacing: '0.05em' }}>
-                                <Calendar size={12} /> Next Month Est. Outflow
-                            </div>
-                            <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#fca5a5' }}>
-                                -{formatCurrency(Number(pulse.monthlyObligation || 0) + Number(pulse.totalMonthly || 0) + Number(sourceAnalytics.credit || 0))}
-                            </div>
-                            <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.35rem', maxWidth: '160px', marginLeft: 'auto', lineHeight: 1.4 }}>
-                                SIP + Bills + Credit Cards
-                            </div>
-                        </div>
-                    </div>
+                    <NetWorthChart />
                 </motion.div>
             )}
+
+            {/* ── Goal Tracker ────────────────────────────────── */}
+            <motion.div {...fadeUp(0.08)}>
+                <GoalTracker />
+            </motion.div>
 
             {/* ── Key Metrics ───────────────────────────────── */}
             <motion.div {...fadeUp(0.1)}>

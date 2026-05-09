@@ -1,0 +1,186 @@
+.goal-tracker-premium {
+    background: #fff;
+    border-radius: 28px;
+    padding: 1.5rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 2rem;
+
+    .gt-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+
+        .gt-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 950;
+            color: #0f172a;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-add-goal {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover { background: #6366f1; color: #fff; border-color: #6366f1; }
+        }
+    }
+
+    .goals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+
+        .goals-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            p { font-size: 0.8rem; font-weight: 700; margin-top: 1rem; }
+        }
+    }
+
+    .goal-card-v2 {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 22px;
+        padding: 1.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+
+        .gc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+
+            .gc-name { font-size: 0.95rem; font-weight: 950; color: #0f172a; margin-bottom: 4px; }
+            .gc-deadline {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 0.65rem;
+                font-weight: 800;
+                color: #64748b;
+            }
+
+            .gc-actions {
+                display: flex;
+                gap: 6px;
+                opacity: 0;
+                transition: 0.2s;
+            }
+
+            .gc-btn {
+                width: 28px; height: 28px; border-radius: 8px; border: none; display: grid; place-items: center; cursor: pointer;
+                &.edit { background: rgba(99, 102, 241, 0.05); color: #6366f1; }
+                &.del { background: rgba(239, 68, 68, 0.05); color: #ef4444; }
+                &:hover { filter: brightness(0.9); transform: scale(1.05); }
+            }
+        }
+
+        &:hover .gc-actions { opacity: 1; }
+
+        .gc-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+
+            .gc-progress-bar {
+                flex: 1; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden;
+                .gc-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+            }
+            .gc-pct { font-size: 0.75rem; font-weight: 950; width: 32px; text-align: right; }
+        }
+
+        .gc-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            .gc-stat {
+                .lbl { display: block; font-size: 0.55rem; font-weight: 950; color: #94a3b8; margin-bottom: 2px; }
+                .val { font-size: 0.9rem; font-weight: 950; color: #0f172a; }
+                &.right { text-align: right; }
+            }
+        }
+
+        .gc-topup-section {
+            padding-top: 0.75rem;
+            border-top: 1px dashed #e2e8f0;
+
+            .btn-topup-trigger {
+                width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+                padding: 6px; border: none; background: transparent; color: #6366f1; font-size: 0.65rem; font-weight: 900;
+                cursor: pointer; border-radius: 8px; transition: 0.2s;
+                &:hover { background: rgba(99,102,241,0.05); }
+            }
+
+            .topup-input-wrap {
+                display: flex; gap: 6px;
+                input {
+                    flex: 1; padding: 6px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #fff;
+                    font-size: 0.75rem; font-weight: 800; color: #0f172a; outline: none;
+                    &:focus { border-color: #6366f1; }
+                }
+                .btn-confirm-up {
+                    padding: 0 12px; border: none; border-radius: 8px; background: #6366f1; color: #fff;
+                    font-size: 0.6rem; font-weight: 950; cursor: pointer;
+                }
+                .btn-cancel-up {
+                    width: 28px; border: none; background: #f1f5f9; border-radius: 8px; color: #94a3b8; cursor: pointer;
+                    display: grid; place-items: center;
+                }
+            }
+        }
+    }
+}
+
+// Modal Styles
+.gt-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+    z-index: 1000; display: grid; place-items: center; padding: 1rem;
+}
+
+.gt-modal {
+    background: #fff; width: 100%; max-width: 420px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); overflow: hidden;
+
+    .modal-header {
+        padding: 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;
+        span { font-size: 1rem; font-weight: 950; color: #0f172a; }
+        button { border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; color: #64748b; }
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        label { display: block; font-size: 0.6rem; font-weight: 950; color: #94a3b8; letter-spacing: 0.1em; margin: 1.25rem 0 0.5rem; &:first-child { margin-top: 0; } }
+        input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 14px; background: #f8fafc;
+            font-size: 0.9rem; font-weight: 700; color: #0f172a; transition: 0.2s; outline: none; box-sizing: border-box;
+            &:focus { border-color: #6366f1; background: #fff; }
+        }
+    }
+
+    .modal-footer {
+        padding: 1.5rem; border-top: 1px solid #f1f5f9;
+        .btn-save-goal {
+            width: 100%; padding: 14px; border: none; border-radius: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff; font-size: 0.85rem; font-weight: 950; cursor: pointer; box-shadow: 0 8px 20px rgba(99,102,241,0.3);
+        }
+    }
+}

@@ -476,7 +476,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                 );
                             })() : (
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mt: 1 }}>
-                                    {reserves?.filter(r => r.account_type !== 'CREDIT_CARD').map(r => {
+                                    {reserves?.map(r => {
                                         const isInsufficient = parseFloat(r.balance || 0) < payModalItem.amount;
                                         const isSelected = paySourceId === r._id;
                                         return (
@@ -504,7 +504,7 @@ export default function YearlyExpensePage({ onEdit }) {
                                             >
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5, width: '100%' }}>
                                                     <Box sx={{ color: isSelected ? '#6366f1' : '#94a3b8' }}>
-                                                        {r.account_type === 'BANK' ? <Landmark size={14} /> : <Wallet size={14} />}
+                                                        {r.account_type === 'BANK' ? <Landmark size={14} /> : r.account_type === 'CREDIT_CARD' ? <CreditCard size={14} /> : <Wallet size={14} />}
                                                     </Box>
                                                     <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: isSelected ? '#1d1d1f' : '#64748b', textTransform: 'uppercase', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                         {r.account_name}

@@ -102,14 +102,58 @@ const NeuralPulse = () => {
                                 </div>
                             </div>
 
-                            <div className="daily-audit-list">
+                             <div className="daily-audit-list">
                                 <div className="a-label">BEHAVIORAL DIAGNOSTICS (10 POINTS)</div>
+                                
+                                {aiData?.daily?.anomalies?.length > 0 && (
+                                    <div className="anomaly-alert-box">
+                                        <div className="anomaly-header">
+                                            <Flame size={14} color="#ff3b30" />
+                                            <span>ANOMALY DETECTED</span>
+                                        </div>
+                                        {aiData.daily.anomalies.map((a, i) => (
+                                            <div key={i} className="anomaly-item">
+                                                <span>'{a.description}' at ₹{a.amount.toLocaleString()} is <b>{a.factor}x</b> avg.</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
                                 {aiData?.daily?.points?.map((p, i) => (
                                     <div key={i} className={`audit-item ${p.type}`}>
                                         <div className="item-icon">
                                             {p.type === 'warn' ? <AlertCircle size={10} /> : p.type === 'danger' ? <Flame size={10} /> : <CheckCircle2 size={10} />}
                                         </div>
-                                        <div className="item-text">{p.text}</div>
+                                        <div className="item-text">
+                                            {p.text}
+                                            {p.text.includes('Recurring Alert') && (
+                                                <button 
+                                                    className="btn-add-recurring-mini"
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        const match = p.text.match(/'(.*)' \(₹(.*)\)/);
+                                                        if (match) {
+                                                            const desc = match[1];
+                                                            const amt = parseFloat(match[2].replace(/,/g, ''));
+                                                            try {
+                                                                await api.post('/yearly-expenses', {
+                                                                    description: desc,
+                                                                    amount: amt,
+                                                                    frequency: 'MONTHLY',
+                                                                    is_paid: false,
+                                                                    category: 'RECURRING'
+                                                                });
+                                                                alert(`Success: '${desc}' added to Fixed Expenses!`);
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    ADD AS BILL
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -148,6 +192,16 @@ const NeuralPulse = () => {
                                     <div className="p-fill" style={{ width: `${Math.min(100, (aiData?.monthly?.total / aiData?.monthly?.avg) * 100)}%`, background: status.color }}></div>
                                 </div>
                             </div>
+                            
+                            <div className="forecast-card-neural">
+                                <div className="f-header">
+                                    <Sparkles size={14} color="#fb923c" />
+                                    <span>MONTH-END FORECAST</span>
+                                </div>
+                                <div className="f-val">₹{Math.round(aiData?.monthly?.forecasted || 0).toLocaleString()}</div>
+                                <div className="f-desc">Based on your current daily burn rate.</div>
+                            </div>
+
                             <div className="fixed-expense-audit">
                                 <div className="f-label">FIXED COST COVERAGE</div>
                                 <div className="f-meter">

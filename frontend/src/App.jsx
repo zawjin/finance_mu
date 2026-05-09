@@ -32,6 +32,7 @@ import RoleManagementPage from './pages/RoleManagementPage';
 import DatabaseHealthPage from './pages/DatabaseHealthPage';
 import FamilyTreePage from './pages/FamilyTreePage';
 import NeuralAdvisorPage from './pages/NeuralAdvisorPage';
+import BudgetPage from './pages/BudgetPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { fetchCurrentUser } from './store/authSlice';
 import BaseDialog from './components/ui/BaseDialog';
@@ -434,7 +435,8 @@ export default function App() {
                                                     <Route path="/admin/roles" element={<ProtectedRoute module="Role Management"><RoleManagementPage /></ProtectedRoute>} />
                                                     <Route path="/admin/database" element={<ProtectedRoute module="System Settings"><DatabaseHealthPage /></ProtectedRoute>} />
                                                     <Route path="/management/family-tree" element={<ProtectedRoute module="Dashboard"><FamilyTreePage /></ProtectedRoute>} />
-                                                    <Route path="/neural-advisor" element={<ProtectedRoute module="Dashboard"><NeuralAdvisorPage /></ProtectedRoute>} />
+                                                     <Route path="/neural-advisor" element={<ProtectedRoute module="Dashboard"><NeuralAdvisorPage /></ProtectedRoute>} />
+                                                     <Route path="/budget" element={<ProtectedRoute module="Dashboard"><BudgetPage /></ProtectedRoute>} />
                                                 </Routes>
                                             </main>
                                         </div>

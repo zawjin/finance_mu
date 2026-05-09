@@ -7,10 +7,11 @@ import {
 import dayjs from 'dayjs';
 import {
     Box, TextField, Select, MenuItem, Button, Typography,
-    InputAdornment, FormHelperText, Stack, Autocomplete, CircularProgress
+    InputAdornment, FormHelperText, Stack, Autocomplete, CircularProgress, Switch
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getIcon } from '../../utils/iconMap';
 import { predictSmartCategory } from '../../utils/aiUtils';
 import './Forms.scss';
@@ -27,7 +28,10 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         recovery_desc: initialData?.recovery_description || '',
         payment_method: initialData?.payment_method || '',
         payment_source_id: initialData?.payment_source_id || '',
-        target_account_id: initialData?.target_account_id || ''
+        payment_source_id: initialData?.payment_source_id || '',
+        target_account_id: initialData?.target_account_id || '',
+        is_split: initialData?.is_split || false,
+        split_amount: initialData?.split_amount || ''
     });
 
     const [errors, setErrors] = useState({});
@@ -42,6 +46,9 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
         if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = 'Amount must be greater than 0';
         if (!formData.category) newErrors.category = 'Please select a category';
         if (!formData.date) newErrors.date = 'Date is required';
+        if (formData.is_split && (!formData.split_amount || parseFloat(formData.split_amount) <= 0)) {
+            newErrors.split_amount = 'Split amount is required';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -64,7 +71,10 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                     recovery_description: formData.recovery_desc || "",
                     payment_method: formData.payment_method || null,
                     payment_source_id: formData.payment_source_id || null,
-                    target_account_id: formData.target_account_id || null
+                    target_account_id: formData.target_account_id || null,
+                    is_split: formData.is_split,
+                    split_amount: parseFloat(formData.split_amount) || 0,
+                    split_status: formData.is_split ? "PENDING" : "NONE"
                 });
             } catch (err) {
                 console.error("Submission error:", err);
@@ -198,15 +208,81 @@ export default function ExpenseForm({ categories, onSubmit, onCancel, initialDat
                         sx={{ width: '100%' }}
                         slotProps={{
                             textField: {
-                                fullWidth: true, size: 'small', error: !!errors.date,
-                                helperText: errors.date, className: "form-input-premium",
-                                inputProps: { readOnly: true },
-                                InputProps: {
-                                    startAdornment: <InputAdornment position="start"><Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}><Calendar size={18} /></Box></InputAdornment>
-                                }
-                            }
+                                fullWidth: true,
+                                size: 'small',
+                                error: !!errors.date,
+                                helperText: errors.date,
+                                className: "form-input-premium"
+                            },
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Box className="form-icon-vibrant" sx={{ bgcolor: 'rgba(255, 45, 85, 0.1)', color: '#ff2d55' }}>
+                                            <Calendar size={18} />
+                                        </Box>
+                                    </InputAdornment>
+                                )
+                            },
+                            htmlInput: { readOnly: true }
                         }}
                     />
+                </Box>
+
+                {/* SPLIT TRACKING (Cute & Small) */}
+                <Box sx={{ 
+                    px: 1.5, py: 1,
+                    borderRadius: '16px', 
+                    background: formData.is_split ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
+                    border: `1px solid ${formData.is_split ? 'rgba(99, 102, 241, 0.2)' : 'rgba(0,0,0,0.05)'}`,
+                    transition: '0.3s all ease'
+                }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CircleDollarSign size={14} color={formData.is_split ? "#6366f1" : "#86868b"} />
+                            <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: formData.is_split ? '#1d1d1f' : '#86868b' }}>
+                                SPLIT EXPENSE
+                            </Typography>
+                        </Box>
+                        <Switch 
+                            size="small"
+                            checked={formData.is_split}
+                            onChange={(e) => setFormData({...formData, is_split: e.target.checked})}
+                            sx={{
+                                '& .MuiSwitch-switchBase.Mui-checked': { color: '#6366f1' },
+                                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#6366f1' }
+                            }}
+                        />
+                    </Box>
+
+                    <AnimatePresence>
+                        {formData.is_split && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0, marginTop: 0 }} 
+                                animate={{ opacity: 1, height: 'auto', marginTop: 12 }} 
+                                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                style={{ overflow: 'hidden' }}
+                            >
+                                <Typography sx={{ fontSize: '0.55rem', fontWeight: 950, color: '#6366f1', mb: 0.5, letterSpacing: '0.05em' }}>
+                                    AMOUNT TO BE REIMBURSED (₹)
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    placeholder="Friend's share..."
+                                    variant="outlined"
+                                    size="small"
+                                    value={formData.split_amount}
+                                    onChange={e => {
+                                        const val = e.target.value;
+                                        if (val === '' || /^\d*\.?\d*$/.test(val)) setFormData({ ...formData, split_amount: val });
+                                    }}
+                                    error={!!errors.split_amount}
+                                    helperText={errors.split_amount}
+                                    className="form-input-premium"
+                                    sx={{ '& .MuiInputBase-root': { height: '36px', fontSize: '0.8rem' } }}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </Box>
 
                 {/* CATEGORY */}
