@@ -6,7 +6,7 @@ import {
     LayoutDashboard, Wallet, Gem, Settings, Plus, BarChart2, Sparkles,
     User, Globe, Banknote, Bookmark, Activity,
     X, ArrowLeft, Zap, ChevronRight, Home, TrendingUp,
-    Shield, Calculator, CreditCard, LogOut, Users, Key, Database
+    Shield, Calculator, CreditCard, LogOut, Users, Key, Database, Settings2
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { logout } from '../../store/authSlice';
@@ -30,11 +30,11 @@ const ADMIN_ITEMS = [
 
 const TOOL_ITEMS = [
     { type: 'link', to: '/neural-advisor', label: 'Neural Advisor', icon: <Sparkles size={18} />, color: '#f97316', bg: '#fff7ed' },
+    { type: 'link', to: '/settings', label: 'System CMD', icon: <Settings2 size={18} />, color: '#6366f1', bg: '#eef2ff' },
     { type: 'link', to: '/budget', label: 'Budget Tracker', icon: <Calculator size={18} />, color: '#6366f1', bg: '#eef2ff' },
     { type: 'link', to: '/salary-calculation', label: 'Salary Calc', icon: <Calculator size={18} />, color: '#0ea5e9', bg: '#e0f2fe' },
     { type: 'link', to: '/categories', label: 'Config', icon: <Settings size={18} />, color: '#8b5cf6', bg: '#ede9fe' },
     { type: 'link',   to: '/management/family-tree', label: 'Family Tree',  icon: <Users size={18} />,       color: '#ec4899', bg: '#fdf2f8' },
-    { type: 'link',   to: '/profile',            label: 'Profile',      icon: <User size={18} />,       color: '#10b981', bg: '#d1fae5' },
 ];
 
 const PAGE_TITLE_MAP = {

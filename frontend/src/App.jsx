@@ -435,8 +435,8 @@ export default function App() {
                                                     <Route path="/admin/roles" element={<ProtectedRoute module="Role Management"><RoleManagementPage /></ProtectedRoute>} />
                                                     <Route path="/admin/database" element={<ProtectedRoute module="System Settings"><DatabaseHealthPage /></ProtectedRoute>} />
                                                     <Route path="/management/family-tree" element={<ProtectedRoute module="Dashboard"><FamilyTreePage /></ProtectedRoute>} />
-                                                     <Route path="/neural-advisor" element={<ProtectedRoute module="Dashboard"><NeuralAdvisorPage /></ProtectedRoute>} />
-                                                     <Route path="/budget" element={<ProtectedRoute module="Dashboard"><BudgetPage /></ProtectedRoute>} />
+                                                    <Route path="/neural-advisor" element={<ProtectedRoute module="Dashboard"><NeuralAdvisorPage /></ProtectedRoute>} />
+                                                    <Route path="/budget" element={<ProtectedRoute module="Dashboard"><BudgetPage /></ProtectedRoute>} />
                                                 </Routes>
                                             </main>
                                         </div>

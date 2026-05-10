@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    Zap, Activity, Brain, TrendingDown, TrendingUp, 
-    ShieldCheck, AlertCircle, Sparkles, Clock, 
-    CheckCircle2, Flame, Calendar, PieChart, BarChart3, ChevronRight 
+import {
+    Zap, Activity, Brain, TrendingDown, TrendingUp,
+    ShieldCheck, AlertCircle, Sparkles, Clock,
+    CheckCircle2, Flame, Calendar, PieChart, BarChart3, ChevronRight
 } from 'lucide-react';
 import api from '../../utils/api';
 import './NeuralPulse.scss';
@@ -17,7 +17,7 @@ const NeuralPulse = () => {
 
     useEffect(() => {
         if (hasFetched.current) return;
-        
+
         const fetchAnalysis = async () => {
             try {
                 const res = await api.get('/ai/analyze');
@@ -55,11 +55,11 @@ const NeuralPulse = () => {
     return (
         <div className={`neural-pulse-super ${status.label?.toLowerCase()}`}>
             <div className="mesh-gradient"></div>
-            
+
             <div className="pulse-header">
                 <div className="tab-switcher-glass">
                     {tabs.map(tab => (
-                        <button 
+                        <button
                             key={tab.id}
                             className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                             onClick={() => setActiveTab(tab.id)}
@@ -72,7 +72,7 @@ const NeuralPulse = () => {
             </div>
 
             <AnimatePresence mode="wait">
-                <motion.div 
+                <motion.div
                     key={activeTab}
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -102,9 +102,9 @@ const NeuralPulse = () => {
                                 </div>
                             </div>
 
-                             <div className="daily-audit-list">
+                            <div className="daily-audit-list">
                                 <div className="a-label">BEHAVIORAL DIAGNOSTICS (10 POINTS)</div>
-                                
+
                                 {aiData?.daily?.anomalies?.length > 0 && (
                                     <div className="anomaly-alert-box">
                                         <div className="anomaly-header">
@@ -127,7 +127,7 @@ const NeuralPulse = () => {
                                         <div className="item-text">
                                             {p.text}
                                             {p.text.includes('Recurring Alert') && (
-                                                <button 
+                                                <button
                                                     className="btn-add-recurring-mini"
                                                     onClick={async (e) => {
                                                         e.stopPropagation();
@@ -192,7 +192,7 @@ const NeuralPulse = () => {
                                     <div className="p-fill" style={{ width: `${Math.min(100, (aiData?.monthly?.total / aiData?.monthly?.avg) * 100)}%`, background: status.color }}></div>
                                 </div>
                             </div>
-                            
+
                             <div className="forecast-card-neural">
                                 <div className="f-header">
                                     <Sparkles size={14} color="#fb923c" />

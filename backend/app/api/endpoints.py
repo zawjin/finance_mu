@@ -1105,22 +1105,103 @@ async def create_backup(send_email: bool = False):
         if send_email:
             # In a real production environment, this would call an external 
             # mailing API (Resend, SendGrid, etc.) that we control.
-            print(f"NEURAL RELAY: Dispatched backup {filename} to vashajin@gmail.com")
+            print(f"NEURAL RELAY: Dispatched backup {filename} to shajin.fstpl@gmail.com")
             # We'll simulate a slight delay for realism in the frontend
 
         from fastapi.responses import JSONResponse
         return JSONResponse(
-            content={"status": "dispatched", "filename": filename, "target": "vashajin@gmail.com"},
+            content={"status": "dispatched", "filename": filename, "target": "shajin.fstpl@gmail.com"},
         )
     except Exception as e:
         print(f"BACKUP ERROR: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/system/backup/gdrive", tags=["System & Maintenance"])
+async def backup_to_gdrive(token_data: dict):
+    try:
+        # 1. Capture the access token from frontend
+        access_token = token_data.get("access_token")
+        if not access_token:
+            raise HTTPException(status_code=400, detail="No Google access token provided")
+
+        # 2. Generate the backup data
+        def json_serializable(doc):
+            if isinstance(doc, dict): return {k: json_serializable(v) for k, v in doc.items()}
+            elif isinstance(doc, list): return [json_serializable(v) for v in doc]
+            elif isinstance(doc, ObjectId): return str(doc)
+            elif isinstance(doc, datetime): return doc.isoformat()
+            return doc
+
+        collections = await db.list_collection_names()
+        backup_data = {}
+        for col_name in collections:
+            cursor = db[col_name].find()
+            items = []
+            async for doc in cursor:
+                items.append(json_serializable(doc))
+            backup_data[col_name] = items
+
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"finance_backup_{ts}.zip"
+
+        # 3. Create a ZIP archive in memory
+        import io
+        import zipfile
+        
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for col_name, items in backup_data.items():
+                # Write each collection as a separate JSON file inside the zip
+                col_json = json.dumps(items, indent=2)
+                zip_file.writestr(f"{col_name}.json", col_json)
+        
+        zip_buffer.seek(0)
+        zip_content = zip_buffer.getvalue()
+
+        # 4. Upload ZIP to Google Drive via httpx
+        import httpx
+        async with httpx.AsyncClient() as client:
+            metadata = {
+                "name": filename,
+                "mimeType": "application/zip",
+            }
+            
+            files = {
+                'metadata': (None, json.dumps(metadata), 'application/json; charset=UTF-8'),
+                'file': (filename, zip_content, 'application/zip')
+            }
+            
+            headers = {"Authorization": f"Bearer {access_token}"}
+            upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+            
+            res = await client.post(
+                upload_url,
+                headers=headers,
+                files=files
+            )
+            
+            if res.status_code != 200:
+                print(f"GDRIVE ERROR: {res.text}")
+                raise HTTPException(status_code=res.status_code, detail=f"Google Drive Upload Failed: {res.text}")
+
+        # 4. Log to history
+        await db.backup_history.insert_one({
+            "date": datetime.now().isoformat(),
+            "filename": filename,
+            "status": "SUCCESS",
+            "method": "GOOGLE_DRIVE"
+        })
+
+        return {"status": "success", "fileId": res.json().get("id")}
+    except Exception as e:
+        print(f"GDRIVE BACKUP ERROR: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/system/settings", tags=["System & Maintenance"])
 async def get_system_settings():
     settings = await db.system_settings.find_one({"type": "BACKUP"})
     if not settings:
-        return {"backup_email": "vashajin@gmail.com"}
+        return {"backup_email": "shajin.fstpl@gmail.com"}
     return format_doc(settings)
 
 @router.post("/system/settings", tags=["System & Maintenance"])
