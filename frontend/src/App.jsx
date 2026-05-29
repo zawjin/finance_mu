@@ -112,10 +112,13 @@ export default function App() {
     const { user, token } = useSelector(state => state.auth);
 
     useEffect(() => {
+        dispatch(fetchFinanceData());
+    }, [dispatch]);
+
+    useEffect(() => {
         if (token) {
             dispatch(fetchCurrentUser());
         }
-        dispatch(fetchFinanceData());
     }, [dispatch, token]);
 
     const handleExpenseSubmit = async (data) => {

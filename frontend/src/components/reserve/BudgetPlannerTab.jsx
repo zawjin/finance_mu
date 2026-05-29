@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Box, Typography, TextField, InputAdornment, Paper, Stack, Divider, Grid } from '@mui/material';
-import { Wallet, Landmark, CreditCard, PlusCircle, Calculator, TrendingUp, TrendingDown, Sigma, Sparkles, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Wallet, Landmark, CreditCard, PlusCircle, Calculator, TrendingUp, TrendingDown, Sigma, Sparkles, AlertCircle, ShieldCheck, Coins } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import './BudgetPlannerTab.scss';
 
-export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaultOtherIncome, defaultCcOutstanding, lastMonthCcOutstanding }) {
+export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaultOtherIncome, defaultCcOutstanding, lastMonthCcOutstanding, nextMonthChitTotal = 0 }) {
     const [ccMode, setCcMode] = useState('current');
     const [ccOutstanding, setCcOutstanding] = useState(defaultCcOutstanding?.toString() || '');
     const [others, setOthers] = useState('');
     const [invest, setInvest] = useState('12500');
-    const [income, setIncome] = useState('123000');
+    const [income, setIncome] = useState('133000');
     const [otherIncome, setOtherIncome] = useState(defaultOtherIncome?.toString() || '');
 
     // Update CC value when mode changes
@@ -32,7 +32,7 @@ export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaul
 
     const totalIncomeVal = netIncomeVal + otherIncomeVal;
 
-    const totalExpenses = yearlySip + monthlyObligations + ccVal + othersVal + investVal;
+    const totalExpenses = yearlySip + monthlyObligations + nextMonthChitTotal + ccVal + othersVal + investVal;
     const remaining = totalIncomeVal - totalExpenses;
 
     const containerVariants = {
@@ -108,6 +108,13 @@ export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaul
                                         <Typography className="data-title">Monthly Bills</Typography>
                                     </Box>
                                     <Typography className="data-value">{formatCurrency(monthlyObligations)}</Typography>
+                                </Box>
+                                <Box className="data-row">
+                                    <Box className="data-info">
+                                        <Coins size={18} color="#f59e0b" />
+                                        <Typography className="data-title">Chit Fund Payment</Typography>
+                                    </Box>
+                                    <Typography className="data-value" style={{ color: '#f59e0b', fontWeight: 800 }}>{formatCurrency(nextMonthChitTotal)}</Typography>
                                 </Box>
                                 <Box className="data-row">
                                     <Box className="data-info">
@@ -250,36 +257,30 @@ export default function BudgetPlannerTab({ yearlySip, monthlyObligations, defaul
                             <Typography>3. STRATEGIC ALLOCATION</Typography>
                         </Box>
                         <Box sx={{ p: 3 }}>
-                            {remaining > 0 ? (
-                                <>
-                                    <Typography className="allocation-desc">Recommended split for your <strong>{formatCurrency(remaining)}</strong> surplus:</Typography>
-                                    <Stack spacing={2} sx={{ mt: 3 }}>
-                                        <Box className="allocation-row-mini">
-                                            <div className="dot blue" />
-                                            <Box flex={1}>
-                                                <Typography className="alloc-label">Equity Growth (40%)</Typography>
-                                                <Typography className="alloc-val">{formatCurrency(remaining * 0.4)}</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box className="allocation-row-mini">
-                                            <div className="dot emerald" />
-                                            <Box flex={1}>
-                                                <Typography className="alloc-label">Emergency Buffer (40%)</Typography>
-                                                <Typography className="alloc-val">{formatCurrency(remaining * 0.4)}</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box className="allocation-row-mini">
-                                            <div className="dot amber" />
-                                            <Box flex={1}>
-                                                <Typography className="alloc-label">Flexible Cash (20%)</Typography>
-                                                <Typography className="alloc-val">{formatCurrency(remaining * 0.2)}</Typography>
-                                            </Box>
-                                        </Box>
-                                    </Stack>
-                                </>
-                            ) : (
-                                <Box className="deficit-notice-mini">
-                                    <AlertCircle size={32} color="#f43f5e" />
+                            <Typography className="allocation-desc" sx={{ mb: 3 }}>
+                                Next month's planned money split:
+                            </Typography>
+                            <Stack spacing={2}>
+                                <Box className="allocation-row-mini">
+                                    <div className="dot blue" />
+                                    <Box flex={1}>
+                                        <Typography className="alloc-label">Direct Investment (Planned)</Typography>
+                                        <Typography className="alloc-val" style={{ color: '#6366f1' }}>{formatCurrency(investVal)}</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className="allocation-row-mini">
+                                    <div className={remaining >= 0 ? 'dot emerald' : 'dot red'} />
+                                    <Box flex={1}>
+                                        <Typography className="alloc-label">Free Cash (After All Obligations)</Typography>
+                                        <Typography className="alloc-val" style={{ color: remaining >= 0 ? '#10b981' : '#f43f5e', fontWeight: 900 }}>
+                                            {formatCurrency(remaining)}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Stack>
+                            {remaining < 0 && (
+                                <Box className="deficit-notice-mini" sx={{ mt: 3 }}>
+                                    <AlertCircle size={28} color="#f43f5e" />
                                     <Typography className="notice-title">Deficit Alert</Typography>
                                     <Typography className="notice-desc">Monthly burn exceeds income by {formatCurrency(Math.abs(remaining))}.</Typography>
                                 </Box>

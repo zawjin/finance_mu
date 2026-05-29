@@ -1,4 +1,16 @@
 import React, { useMemo } from 'react';
+
+const CHIT_SCHEDULE_5L = [
+    25000, 18750, 19000, 19250, 19500, 19750, 20000, 20500, 21000, 21500,
+    22000, 22500, 23000, 23500, 24000, 24250, 24500, 24750, 25000, 25000
+];
+
+function getChitMultiplier(principal) {
+    if (principal === 100000) return 0.2;
+    if (principal === 1000000) return 2;
+    if (principal === 1500000) return 3;
+    return 1; // 5L default
+}
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Replace, Trash2, Edit2, AlertCircle, Banknote, Wallet, ArrowRightLeft, History, PieChart, Activity, Briefcase, TrendingUp, TrendingDown, Landmark, Receipt, FileText, BarChart3, Handshake, Calendar, CheckCircle2, ArrowRight, Sigma, Sparkles, ShieldCheck } from 'lucide-react';
@@ -234,6 +246,23 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
         return { principalTotal, activeValuation, yield: totalYield, totalMonthlyInst };
     }, [sortedInvestments]);
 
+    // Next month chit fund payment (sum of next unpaid term across all active chits)
+    const nextMonthChitTotal = useMemo(() => {
+        return sortedInvestments
+            .filter(item => item.status !== 'SETTLED')
+            .reduce((sum, item) => {
+                const principal = parseFloat(item.principal || 0);
+                const multiplier = getChitMultiplier(principal);
+                const schedule = CHIT_SCHEDULE_5L.map(v => v * multiplier);
+                const nextIdx = schedule.findIndex((_, idx) => {
+                    const termPayments = (item.payments || []).filter(p => p.term_number === (idx + 1));
+                    const paid = termPayments.reduce((a, p) => a + p.amount, 0);
+                    return paid < schedule[idx];
+                });
+                return sum + (nextIdx >= 0 ? schedule[nextIdx] : 0);
+            }, 0);
+    }, [sortedInvestments]);
+
     // ────────────────────────────────────────────────────────────────────────
 
 
@@ -432,6 +461,7 @@ export default function ReservePage({ activeTab, setActiveTab, onEdit, onEditDeb
                     defaultOtherIncome={debtStats.receivables}
                     defaultCcOutstanding={totalCCOutstanding}
                     lastMonthCcOutstanding={lastMonthCCPayments}
+                    nextMonthChitTotal={nextMonthChitTotal}
                 />
             )}
 

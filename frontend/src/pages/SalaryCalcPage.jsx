@@ -8,12 +8,18 @@ const SLAB_COLORS = ['#94a3b8', '#60a5fa', '#34d399', '#facc15', '#fb923c', '#f8
 
 // Derive all salary components from Total CTC
 function deriveFromTotalCTC(totalCTC) {
-    const monthlyGross = (0.85 * totalCTC) / 12.6048;
+    const fixedCTC = 0.85 * totalCTC;
+    let monthlyGross = fixedCTC / 12.6048;
+    
+    if (monthlyGross * 0.42 > 15000) {
+        monthlyGross = (fixedCTC - 21600) / 12;
+    }
+
     const basicM = Math.round(monthlyGross * 0.42);
     const hraM = Math.round(basicM * 0.50);
     const ltaM = Math.round(basicM * 0.13);
     const saM = Math.round(monthlyGross - basicM - hraM - ltaM);
-    const pfY = Math.round(basicM * 12 * 0.12);
+    const pfY = Math.round(Math.min(basicM, 15000) * 12 * 0.12);
     const bonus = Math.round((0.15 * totalCTC) / 100) * 100; // round to nearest ₹100
     return { basic: basicM, hra: hraM, lta: ltaM, specialAllowance: saM, pfYearly: pfY, bonus };
 }
